@@ -1,6 +1,6 @@
-import main.java.view.DummyScreenForJar;
+package main.java;
 
-import javax.swing.SwingUtilities;
+import main.java.view.DummyScreenForJar;
 
 public class Main {
     public static void main(String[] args) {
