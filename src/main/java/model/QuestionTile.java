@@ -9,19 +9,9 @@ public class QuestionTile extends SpecialTile
         super(x, y, isFlagged, isRevealed, activationCost);
     }
 
-    public QuestionTile(double x, double y, boolean isFlagged, boolean isRevealed, boolean isActivated, int activationCost)
-    {
-        super(x, y, isFlagged, isRevealed, isActivated, activationCost);
-    }
-
     public QuestionTile(double x, double y, boolean isFlagged, boolean isRevealed)
     {
         super(x, y, isFlagged, isRevealed);
-    }
-
-    public QuestionTile(double x, double y, boolean isActivated, int activationCost)
-    {
-        super(x, y, isActivated, activationCost);
     }
 
     public QuestionTile(double x, double y, int activationCost)
@@ -34,10 +24,6 @@ public class QuestionTile extends SpecialTile
         super(x, y);
     }
 
-    public QuestionTile(boolean isFlagged, boolean isRevealed, boolean isActivated, int activationCost)
-    {
-        super(isFlagged, isRevealed, isActivated, activationCost);
-    }
 
     public QuestionTile(boolean isFlagged, boolean isRevealed, int activationCost)
     {
@@ -47,11 +33,6 @@ public class QuestionTile extends SpecialTile
     public QuestionTile(boolean isFlagged, boolean isRevealed)
     {
         super(isFlagged, isRevealed);
-    }
-
-    public QuestionTile(boolean isActivated, int activationCost)
-    {
-        super(isActivated, activationCost);
     }
 
     public QuestionTile(int activationCost)

@@ -10,6 +10,9 @@ public class Tile
     private boolean isFlagged;
     private boolean isRevealed;
 
+    //Indicator of whether the tile has been activated
+    private boolean isActivated;
+
 
     //Constructors
 
@@ -21,6 +24,7 @@ public class Tile
         this.y = y;
         this.isFlagged = isFlagged;
         this.isRevealed = isRevealed;
+        this.isActivated = false;
     }
 
     public Tile(double x, double y) {
@@ -30,6 +34,7 @@ public class Tile
         this.isRevealed = false;
         this.x = x;
         this.y = y;
+        this.isActivated = false;
     }
 
     public Tile(boolean isFlagged, boolean isRevealed)
@@ -38,6 +43,7 @@ public class Tile
         this.isRevealed = isRevealed;
         this.x = 0;
         this.y = 0;
+        this.isActivated = false;
     }
 
     public Tile()
@@ -46,6 +52,7 @@ public class Tile
         this.isRevealed = false;
         this.x = 0;
         this.y = 0;
+        this.isActivated = false;
     }
 
     //Getters and setters for the tile class
@@ -92,6 +99,12 @@ public class Tile
             throw new IllegalArgumentException("Invalid coordinates");
         this.y = y;
     }
+    public boolean isActivated() {
+        return isActivated;
+    }
+    public void setActivated(boolean activated) {
+        isActivated = activated;
+    }
 
     //Methods for the tile class
 
@@ -107,8 +120,11 @@ public class Tile
     //Flags the tile if it is not flagged already
     public void flag()
     {
-        if (!isFlagged&&!isRevealed)
+        if (!isFlagged&&!isRevealed&&!isActivated)
+        {
             isFlagged = true;
+            isActivated = true;
+        }
         else
             throw new IllegalMoveException("flag");
     }
@@ -116,9 +132,22 @@ public class Tile
     //Unflags the tile if it is flagged already
     public void unflag()
     {
-        if (isFlagged&&!isRevealed)
+        if (isFlagged&&!isRevealed&&!isActivated)
+        {
             isFlagged = false;
+            isActivated = true;
+        }
+
         else
             throw new IllegalMoveException("unflag");
+    }
+
+    //Activates the tile if it is not activated already
+    public void activate()
+    {
+        if (!isActivated&&!isFlagged()&&!isRevealed())
+            isActivated = true;
+        else
+            throw new IllegalMoveException("activate");
     }
 }

@@ -5,10 +5,6 @@ public class SurpriseTile extends SpecialTile
 {
     // Constructors
 
-    public SurpriseTile(double x, double y, boolean isFlagged, boolean isRevealed, boolean isActivated, int activationCost)
-    {
-        super(x, y, isFlagged, isRevealed, isActivated, activationCost);
-    }
 
     public SurpriseTile(double x, double y, boolean isFlagged, boolean isRevealed, int activationCost)
     {
@@ -18,11 +14,6 @@ public class SurpriseTile extends SpecialTile
     public SurpriseTile(double x, double y, boolean isFlagged, boolean isRevealed)
     {
         super(x, y, isFlagged, isRevealed);
-    }
-
-    public SurpriseTile(double x, double y, boolean isActivated, int activationCost)
-    {
-        super(x, y, isActivated, activationCost);
     }
 
     public SurpriseTile(double x, double y, int activationCost)
@@ -35,10 +26,6 @@ public class SurpriseTile extends SpecialTile
         super(x, y);
     }
 
-    public SurpriseTile(boolean isFlagged, boolean isRevealed, boolean isActivated, int activationCost)
-    {
-        super(isFlagged, isRevealed, isActivated, activationCost);
-    }
 
     public SurpriseTile(boolean isFlagged, boolean isRevealed, int activationCost)
     {
@@ -48,11 +35,6 @@ public class SurpriseTile extends SpecialTile
     public SurpriseTile(boolean isFlagged, boolean isRevealed)
     {
         super(isFlagged, isRevealed);
-    }
-
-    public SurpriseTile(boolean isActivated, int activationCost)
-    {
-        super(isActivated, activationCost);
     }
 
     public SurpriseTile(int activationCost)
