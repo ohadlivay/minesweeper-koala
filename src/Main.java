@@ -6,6 +6,6 @@ public class Main {
         System.out.println("No");
         System.out.println("ohad was here");
         System.out.println("Hola mundo, mi nombre es Tom");
-        System.out.println("Hello Liran");
+        System.out.println("Liran");
     }
 }
