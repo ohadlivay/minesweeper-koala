@@ -10,3 +10,6 @@
 .idea/workspace.xml
 *.xml
 *.class
+/out/
+minesweeper-koala.iml
+minesweeper-koala.iml
