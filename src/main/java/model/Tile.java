@@ -111,8 +111,12 @@ public class Tile
     //Reveals the tile if it is not revealed already
     public void reveal()
     {
-        if (!isRevealed&&!isFlagged)
+        if (!isRevealed&&!isFlagged&&!isActivated)
+        {
             isRevealed = true;
+            isActivated = true;
+        }
+
         else
             throw new IllegalMoveException("reveal");
     }
@@ -120,7 +124,7 @@ public class Tile
     //Flags the tile if it is not flagged already
     public void flag()
     {
-        if (!isFlagged&&!isRevealed&&!isActivated)
+        if (!isFlagged&&!isRevealed)
         {
             isFlagged = true;
             isActivated = true;
@@ -132,10 +136,9 @@ public class Tile
     //Unflags the tile if it is flagged already
     public void unflag()
     {
-        if (isFlagged&&!isRevealed&&!isActivated)
+        if (isFlagged&&!isRevealed)
         {
             isFlagged = false;
-            isActivated = true;
         }
 
         else
@@ -145,7 +148,7 @@ public class Tile
     //Activates the tile if it is not activated already
     public void activate()
     {
-        if (!isActivated&&!isFlagged()&&!isRevealed())
+        if (!isActivated&&!isFlagged&&isRevealed)
             isActivated = true;
         else
             throw new IllegalMoveException("activate");
