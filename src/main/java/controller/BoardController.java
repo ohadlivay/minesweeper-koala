@@ -1,13 +1,13 @@
 /* Asserted imports for this class:
-model.GameSession
+model.Board
 view.BoardLayout
  */
 
 package main.java.controller;
 
-import main.java.model.GameSession;
-import main.java.view.BoardLayout;
-
+//import main.java.model.Board;
+//import main.java.view.BoardLayout;
 
 public class BoardController {
+    private int test; //testing
 }
