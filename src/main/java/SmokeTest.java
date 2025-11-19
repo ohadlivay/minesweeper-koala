@@ -37,6 +37,11 @@ public class SmokeTest {
             }
         }
 
+        //TEST 2: Navigation
+        public static boolean testNavigation() {
+
+        }
+
         //ADD TEST FOR BOARD INITIALIZATION
         //ADD TEST FOR TILE DISTRIBUTION
         //ADD TEST FOR CSV

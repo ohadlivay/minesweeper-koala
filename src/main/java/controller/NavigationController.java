@@ -1,46 +1,43 @@
 package main.java.controller;
 
 import javax.swing.JFrame;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+
 import main.java.view.*;
 
 public class NavigationController {
-    private final JFrame VisFrame;
+    private final JFrame visFrame;
 
     public NavigationController(JFrame frame) {
-        this.VisFrame = frame;
+        this.visFrame = frame;
     }
 
     //***Methods to navigate between screens***//
 
     public void goToHome() {
-        VisFrame.setContentPane(new HomeScreen(this));
+        visFrame.setContentPane(new HomeScreen(this));
         refresh();
     }
 
     public void goToGame() {
-        VisFrame.setContentPane(new GameScreen(this));
+        visFrame.setContentPane(new GameScreen(this));
         refresh();
     }
 
     public void goToHistory() {
-        VisFrame.setContentPane(new GameHistoryScreen(this));
+        visFrame.setContentPane(new GameHistoryScreen(this));
         refresh();
     }
 
     public void goToQuestionManager() {
-        VisFrame.setContentPane(new QuestionManagerScreen(this));
+        visFrame.setContentPane(new QuestionManagerScreen(this));
         refresh();
     }
 
-    //***Methods to open Overlays***//
-
-    //***Other Methods***//
+    //***Helper Methods***//
 
     private void refresh() {
-        VisFrame.revalidate();
-        VisFrame.repaint();
+        visFrame.revalidate();
+        visFrame.repaint();
     }
 
 
