@@ -20,12 +20,24 @@ public class SmokeTest {
             e.printStackTrace(System.out);
             testsPassed = false;
         }
-            if (testsPassed) {
-                System.out.println("ALL TESTS PASSED");
+
+        // TEST 2: Navigation
+        try {
+            boolean navCheck = testNavigation();
+            if (navCheck) {
+                System.out.println("TEST 2: Navigation || PASSED");
             } else {
-                System.out.println("TESTS FAILED"); //need to add specification
+                System.out.println("TEST 2: Navigation || FAILED");
             }
-            return testsPassed;
+        }
+        catch (Exception e){
+            System.out.println("Exception: ");
+            e.printStackTrace(System.out);
+            testsPassed = false;
+        }
+
+        System.out.println("COMPLETED ALL TESTS");
+        return testsPassed;
         }
         //ACTUAL TESTS HERE
         private static boolean testSystemStartup() {
@@ -39,6 +51,7 @@ public class SmokeTest {
 
         //TEST 2: Navigation
         public static boolean testNavigation() {
+
 
         }
 
