@@ -1,4 +1,12 @@
 package main.java.view;
 
-public class GameHistoryScreen {
+import main.java.controller.NavigationController;
+
+import javax.swing.*;
+
+
+public class GameHistoryScreen extends JPanel{
+
+    public GameHistoryScreen(NavigationController navigationController) {
+    }
 }

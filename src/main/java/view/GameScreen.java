@@ -1,4 +1,10 @@
 package main.java.view;
 
-public class GameScreen {
+import main.java.controller.NavigationController;
+
+import javax.swing.*;
+
+public class GameScreen extends JPanel {
+    public GameScreen(NavigationController navigationController) {
+    }
 }

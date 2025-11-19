@@ -1,4 +1,10 @@
 package main.java.view;
 
-public class HomeScreen {
+import main.java.controller.NavigationController;
+import javax.swing.*;
+
+public class HomeScreen extends JPanel {
+
+    public HomeScreen(NavigationController navigationController) {
+    }
 }
