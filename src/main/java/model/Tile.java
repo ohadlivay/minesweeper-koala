@@ -99,14 +99,26 @@ public class Tile
             throw new IllegalArgumentException("Invalid coordinates");
         this.y = y;
     }
-    public boolean isActivated() {
+
+    public boolean isActivated()
+    {
         return isActivated;
     }
-    public void setActivated(boolean activated) {
+
+    public void setActivated(boolean activated)
+    {
         isActivated = activated;
     }
 
     //Methods for the tile class
+
+
+
+    //Method to get the coordinates of the tile
+    public double[] getCoordinates()
+    {
+        return new double[]{x,y};
+    }
 
     //Reveals the tile if it is not revealed already
     public void reveal()
