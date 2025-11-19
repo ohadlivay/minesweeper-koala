@@ -1,4 +1,6 @@
-package main.java;
+package main.java.test;
+
+import main.java.Main;
 
 //SMOKE TESTS FOR MAIN FUNCTIONALITIES
 public class SmokeTest {
