@@ -21,21 +21,6 @@ public class SmokeTest {
             testsPassed = false;
         }
 
-        // TEST 2: Navigation
-        try {
-            boolean navCheck = testNavigation();
-            if (navCheck) {
-                System.out.println("TEST 2: Navigation || PASSED");
-            } else {
-                System.out.println("TEST 2: Navigation || FAILED");
-            }
-        }
-        catch (Exception e){
-            System.out.println("Exception: ");
-            e.printStackTrace(System.out);
-            testsPassed = false;
-        }
-
         System.out.println("COMPLETED ALL TESTS");
         return testsPassed;
         }
@@ -47,12 +32,6 @@ public class SmokeTest {
             } catch (Exception e) {
                 return false;
             }
-        }
-
-        //TEST 2: Navigation
-        public static boolean testNavigation() {
-
-
         }
 
         //ADD TEST FOR BOARD INITIALIZATION
