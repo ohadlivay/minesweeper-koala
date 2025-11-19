@@ -12,12 +12,12 @@ public class Board {
     private Tile[][] tiles;
     private static final Random RANDOM = new Random();
 
-    private Board(){
+    Board(){
         this.PK = RANDOM.nextInt(99999999);
         this.tiles = new Tile[10][10];
     }
 
-    private void populateBoard(int gridSize, int numMines){
+    void populateBoard(int gridSize, int numMines){
         //need GameSession to send me the gridSize and number of mines
 
 

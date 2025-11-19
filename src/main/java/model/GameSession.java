@@ -1,9 +1,175 @@
 package main.java.model;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
-public class GameSession {
+//hi Tom
+//my Board model needs to know the difficulty, because difficulty translates to tile grid size and how many mines will be placed
+//so when you create a Board object, please send it the needed knowledge
+//-ohad
 
-    //hi Tom
-    //my Board model needs to know the difficulty, because difficulty translates to tile grid size and how many mines will be placed
-    //so when you create a Board object, please send it the needed knowledge
-    //-ohad
+/*
+        Dear Ohad,
+        I would love to create the boards myself using the constructor or initiate the method with the appropriate values.
+        unfortunately, I do not have access to those methods as they are both Private
+        Took the initiative to change them to Package instead
+*/
+
+
+public class GameSession
+{
+    //Indicates when the game session was created
+    private final LocalDateTime timeStamp;
+
+    //Names of the players involved in the game session
+    private String rightPlayerName;
+    private String leftPlayerName;
+
+    //Game difficulty
+    private GameDifficulty gameDifficulty;
+
+    //Boards of the players involved in the game session
+    private Board leftBoard;
+    private Board rightBoard;
+
+    //Health pool and points of the players involved in the game session
+    private int healthPool;
+    private int points;
+
+    //Indicates whether it is the left player's turn or not
+    private boolean turn;
+
+    //The size of the grid and the number of mines to place on each board
+    private int gridSize;
+    private int numMines;
+
+    //Constructors
+
+
+    public GameSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
+    {
+        this.timeStamp = LocalDateTime.now();
+        if (Objects.equals(rightPlayerName, leftPlayerName))
+            throw new IllegalArgumentException("Right player name cannot be the same as left player name");
+        this.gameDifficulty = Objects.requireNonNullElse(gameDifficulty, GameDifficulty.EASY);
+        this.rightPlayerName = Objects.requireNonNullElse(rightPlayerName, "Player 2");
+        this.leftPlayerName = Objects.requireNonNullElse(leftPlayerName, "Player 1");
+        this.turn = true;
+        this.leftBoard = new Board();
+        this.rightBoard = new Board();
+        // Game settings by difficulty
+        switch (gameDifficulty)
+        {
+            case EASY:
+                gridSize = 81;
+                numMines = 10;
+                break;
+            case MEDIUM:
+                gridSize = 169;
+                numMines = 26;
+                break;
+            case HARD:
+                gridSize = 256;
+                numMines = 44;
+                break;
+        }
+        // Initialize the boards
+        this.initializeBoards();
+
+    }
+
+    //Getters and setters
+    public LocalDateTime getTimeStamp() {
+        return timeStamp;
+    }
+
+    public String getRightPlayerName() {
+        return rightPlayerName;
+    }
+
+    public String getLeftPlayerName() {
+        return leftPlayerName;
+    }
+
+    public GameDifficulty getGameDifficulty() {
+        return gameDifficulty;
+    }
+
+    public Board getLeftBoard() {
+        return leftBoard;
+    }
+
+    public Board getRightBoard() {
+        return rightBoard;
+    }
+
+    public int getHealthPool() {
+        return healthPool;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public boolean isTurn() {
+        return turn;
+    }
+
+    public int getGridSize() {
+        return gridSize;
+    }
+
+    public int getNumMines() {
+        return numMines;
+    }
+
+    public void setRightPlayerName(String rightPlayerName) {
+        this.rightPlayerName = rightPlayerName;
+    }
+
+    public void setLeftPlayerName(String leftPlayerName) {
+        this.leftPlayerName = leftPlayerName;
+    }
+
+    public void setLeftBoard(Board leftBoard) {
+        this.leftBoard = leftBoard;
+    }
+
+    public void setRightBoard(Board rightBoard) {
+        this.rightBoard = rightBoard;
+    }
+
+    public void setHealthPool(int healthPool) {
+        this.healthPool = healthPool;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+    public void setTurn(boolean turn) {
+        this.turn = turn;
+    }
+
+    public void setGameDifficulty(GameDifficulty gameDifficulty) {
+        this.gameDifficulty = gameDifficulty;
+    }
+
+    public void setGridSize(int gridSize) {
+        this.gridSize = gridSize;
+    }
+
+    public void setNumMines(int numMines) {
+        this.numMines = numMines;
+    }
+
+    //Methods
+
+    //Initializes the boards with the given grid size and number of mines
+    private void initializeBoards()
+    {
+        leftBoard.populateBoard(this.gridSize,this.numMines);
+        rightBoard.populateBoard(this.gridSize,this.numMines);
+    }
+
+
 }
