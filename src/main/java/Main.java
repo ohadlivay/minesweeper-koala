@@ -1,8 +1,7 @@
 package main.java;
 
 import main.java.controller.NavigationController;
-import main.java.view.DummyScreenForJar;
-import main.java.SmokeTest;
+import main.java.test.SmokeTest;
 
 import javax.swing.*;
 
