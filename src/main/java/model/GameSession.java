@@ -2,18 +2,12 @@ package main.java.model;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-//hi Tom
-//my Board model needs to know the difficulty, because difficulty translates to tile grid size and how many mines will be placed
-//so when you create a Board object, please send it the needed knowledge
-//-ohad
 
 /*
-        Dear Ohad,
-        I would love to create the boards myself using the constructor or initiate the method with the appropriate values.
-        unfortunately, I do not have access to those methods as they are both Private
-        Took the initiative to change them to Package instead
+Dear Ohad,
+I would love to create the boards myself using the constructor or initiate the method with the appropriate values.
+unfortunately, I do not have access to those methods as they are both Private
 */
-
 
 public class GameSession
 {
@@ -25,7 +19,7 @@ public class GameSession
     private String leftPlayerName;
 
     //Game difficulty
-    private GameDifficulty gameDifficulty;
+    private Difficulty gameDifficulty;
 
     //Boards of the players involved in the game session
     private Board leftBoard;
@@ -45,12 +39,12 @@ public class GameSession
     //Constructors
 
 
-    public GameSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
+    public GameSession(String leftPlayerName, String rightPlayerName, Difficulty gameDifficulty)
     {
         this.timeStamp = LocalDateTime.now();
         if (Objects.equals(rightPlayerName, leftPlayerName))
             throw new IllegalArgumentException("Right player name cannot be the same as left player name");
-        this.gameDifficulty = Objects.requireNonNullElse(gameDifficulty, GameDifficulty.EASY);
+        this.gameDifficulty = Objects.requireNonNullElse(gameDifficulty, Difficulty.EASY);
         this.rightPlayerName = Objects.requireNonNullElse(rightPlayerName, "Player 2");
         this.leftPlayerName = Objects.requireNonNullElse(leftPlayerName, "Player 1");
         this.turn = true;
@@ -90,7 +84,7 @@ public class GameSession
         return leftPlayerName;
     }
 
-    public GameDifficulty getGameDifficulty() {
+    public Difficulty getGameDifficulty() {
         return gameDifficulty;
     }
 
@@ -150,7 +144,7 @@ public class GameSession
         this.turn = turn;
     }
 
-    public void setGameDifficulty(GameDifficulty gameDifficulty) {
+    public void setGameDifficulty(Difficulty gameDifficulty) {
         this.gameDifficulty = gameDifficulty;
     }
 
