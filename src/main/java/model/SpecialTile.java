@@ -4,72 +4,55 @@ package main.java.model;
 public abstract class SpecialTile extends NumberTile
 {
     // Cost of activating the tile
-    private int activationCost;
+    protected final int activationCost;
+    // Difficulty of the game, for calculating activation cost
+    protected final Difficulty difficulty;
 
 
     // Constructors
 
-
-    public SpecialTile(double x, double y, boolean isFlagged, boolean isRevealed, int activationCost)
+    public SpecialTile(double x, double y, boolean isFlagged, boolean isRevealed, Difficulty difficulty)
     {
         super(x, y, isFlagged, isRevealed);
-        if (activationCost < 0)
-            throw new IllegalArgumentException("Invalid activation cost");
-        this.activationCost = activationCost;
+        if (difficulty == null)
+            throw new IllegalArgumentException("Difficulty cannot be null");
+        this.difficulty = difficulty;
+        this.activationCost = difficulty.getActivationCost();
     }
 
-    public SpecialTile(double x, double y, boolean isFlagged, boolean isRevealed)
-    {
-        super(x, y, isFlagged, isRevealed);
-        this.activationCost = 0;
-    }
-
-    public SpecialTile(double x, double y, int activationCost)
+    public SpecialTile(double x, double y, Difficulty difficulty)
     {
         super(x, y);
-        if (activationCost < 0)
-            throw new IllegalArgumentException("Invalid activation cost");
-        this.activationCost = activationCost;
+        if (difficulty == null)
+            throw new IllegalArgumentException("Difficulty cannot be null");
+        this.difficulty = difficulty;
+        this.activationCost = difficulty.getActivationCost();
     }
 
-    public SpecialTile(double x, double y)
-    {
-        super(x, y);
-        this.activationCost = 0;
-    }
-
-    public SpecialTile(boolean isFlagged, boolean isRevealed, int activationCost)
+    public SpecialTile(boolean isFlagged, boolean isRevealed, Difficulty difficulty)
     {
         super(isFlagged, isRevealed);
-        if (activationCost < 0)
-            throw new IllegalArgumentException("Invalid activation cost");
-        this.activationCost = activationCost;
+        if (difficulty == null)
+            throw new IllegalArgumentException("Difficulty cannot be null");
+        this.difficulty = difficulty;
+        this.activationCost = difficulty.getActivationCost();
     }
 
-    public SpecialTile(boolean isFlagged, boolean isRevealed)
-    {
-        super(isFlagged, isRevealed);
-        this.activationCost = 0;
-    }
-
-    public SpecialTile(int activationCost)
+    public SpecialTile(Difficulty difficulty)
     {
         super();
-        if (activationCost < 0)
-            throw new IllegalArgumentException("Invalid activation cost");
-        this.activationCost = activationCost;
+        if (difficulty == null)
+            throw new IllegalArgumentException("Difficulty cannot be null");
+        this.difficulty = difficulty;
+        this.activationCost = difficulty.getActivationCost();
     }
 
-    public SpecialTile()
+    // Getters and setters
+
+    public int getActivationCost()
     {
-        super();
-        this.activationCost = 0;
+        return activationCost;
     }
 
-    public void setActivationCost(int activationCost)
-    {
-        if (activationCost < 0)
-            throw new IllegalArgumentException("Invalid activation cost");
-        this.activationCost = activationCost;
-    }
+
 }

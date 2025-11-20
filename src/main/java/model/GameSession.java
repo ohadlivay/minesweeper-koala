@@ -44,6 +44,7 @@ public class GameSession
         this.rightPlayerName = Objects.requireNonNullElse(rightPlayerName, "Player 2");
         this.leftPlayerName = Objects.requireNonNullElse(leftPlayerName, "Player 1");
         this.turn = true;
+        // Initialize the health pool based on the game difficulty
         switch (gameDifficulty)
         {
             case EASY:

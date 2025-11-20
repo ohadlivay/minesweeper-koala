@@ -6,44 +6,19 @@ public class SurpriseTile extends SpecialTile
     // Constructors
 
 
-    public SurpriseTile(double x, double y, boolean isFlagged, boolean isRevealed, int activationCost)
-    {
-        super(x, y, isFlagged, isRevealed, activationCost);
+    public SurpriseTile(double x, double y, boolean isFlagged, boolean isRevealed, Difficulty difficulty) {
+        super(x, y, isFlagged, isRevealed, difficulty);
     }
 
-    public SurpriseTile(double x, double y, boolean isFlagged, boolean isRevealed)
-    {
-        super(x, y, isFlagged, isRevealed);
+    public SurpriseTile(double x, double y, Difficulty difficulty) {
+        super(x, y, difficulty);
     }
 
-    public SurpriseTile(double x, double y, int activationCost)
-    {
-        super(x, y, activationCost);
+    public SurpriseTile(boolean isFlagged, boolean isRevealed, Difficulty difficulty) {
+        super(isFlagged, isRevealed, difficulty);
     }
 
-    public SurpriseTile(double x, double y)
-    {
-        super(x, y);
-    }
-
-
-    public SurpriseTile(boolean isFlagged, boolean isRevealed, int activationCost)
-    {
-        super(isFlagged, isRevealed, activationCost);
-    }
-
-    public SurpriseTile(boolean isFlagged, boolean isRevealed)
-    {
-        super(isFlagged, isRevealed);
-    }
-
-    public SurpriseTile(int activationCost)
-    {
-        super(activationCost);
-    }
-
-    public SurpriseTile()
-    {
-        super();
+    public SurpriseTile(Difficulty difficulty) {
+        super(difficulty);
     }
 }
