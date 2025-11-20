@@ -12,17 +12,20 @@ public class Board {
     private Tile[][] tiles;
     private static final Random RANDOM = new Random();
 
-    private Board(){
-        this.PK = RANDOM.nextInt(99999999);
-        this.tiles = new Tile[10][10];
+    private Board(Difficulty difficulty) {
+        this.PK = RANDOM.nextInt(99999999); //not even sure we need this
+        this.tiles = new Tile[difficulty.getGridSize()][difficulty.getGridSize()];
+        this.minesLeft = difficulty.getMineCount();
+        this.tiles = populateBoard();
     }
 
-    private void populateBoard(Difficulty difficulty){
-        //need GameSession to send me the difficulty enum
+    private int[][] populateBoard() {
 
         /*
         this create a temporary, low weight and high performance board generator.
         since some generations can be faulty, this keeps that process light weight before we actually make the board.
          */
         BoardGenerator boardGenerator = new BoardGenerator(difficulty);
-        boardGenerator.getValidBoard(int seed);
+        return;
+    }
+}
