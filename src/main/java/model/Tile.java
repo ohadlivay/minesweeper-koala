@@ -16,36 +16,6 @@ public class Tile
 
     //Constructors
 
-    public Tile(double x, double y, boolean isFlagged, boolean isRevealed)
-    {
-        if (x < 0 || y < 0)
-            throw new IllegalArgumentException("Invalid coordinates");
-        this.x = x;
-        this.y = y;
-        this.isFlagged = isFlagged;
-        this.isRevealed = isRevealed;
-        this.isActivated = false;
-    }
-
-    public Tile(double x, double y) {
-        if (x < 0 || y < 0)
-            throw new IllegalArgumentException("Invalid coordinates");
-        this.isFlagged = false;
-        this.isRevealed = false;
-        this.x = x;
-        this.y = y;
-        this.isActivated = false;
-    }
-
-    public Tile(boolean isFlagged, boolean isRevealed)
-    {
-        this.isFlagged = isFlagged;
-        this.isRevealed = isRevealed;
-        this.x = 0;
-        this.y = 0;
-        this.isActivated = false;
-    }
-
     public Tile()
     {
         this.isFlagged = false;
@@ -123,10 +93,10 @@ public class Tile
     //Reveals the tile if it is not revealed already
     public void reveal()
     {
-        if (!isRevealed&&!isFlagged&&!isActivated)
+        if (!isRevealed&&!isFlagged)
         {
             isRevealed = true;
-            isActivated = true;
+            isActivated = false;
         }
 
         else

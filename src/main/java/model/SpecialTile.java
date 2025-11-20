@@ -11,33 +11,6 @@ public abstract class SpecialTile extends NumberTile
 
     // Constructors
 
-    public SpecialTile(double x, double y, boolean isFlagged, boolean isRevealed, Difficulty difficulty)
-    {
-        super(x, y, isFlagged, isRevealed);
-        if (difficulty == null)
-            throw new IllegalArgumentException("Difficulty cannot be null");
-        this.difficulty = difficulty;
-        this.activationCost = difficulty.getActivationCost();
-    }
-
-    public SpecialTile(double x, double y, Difficulty difficulty)
-    {
-        super(x, y);
-        if (difficulty == null)
-            throw new IllegalArgumentException("Difficulty cannot be null");
-        this.difficulty = difficulty;
-        this.activationCost = difficulty.getActivationCost();
-    }
-
-    public SpecialTile(boolean isFlagged, boolean isRevealed, Difficulty difficulty)
-    {
-        super(isFlagged, isRevealed);
-        if (difficulty == null)
-            throw new IllegalArgumentException("Difficulty cannot be null");
-        this.difficulty = difficulty;
-        this.activationCost = difficulty.getActivationCost();
-    }
-
     public SpecialTile(Difficulty difficulty)
     {
         super();
