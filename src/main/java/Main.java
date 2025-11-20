@@ -1,7 +1,9 @@
 package main.java;
 
-import main.java.view.DummyScreenForJar;
-import main.java.SmokeTest;
+import main.java.controller.NavigationController;
+import main.java.test.SmokeTest;
+
+import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -16,7 +18,18 @@ public class Main {
     }
 
         public static void launchSystem() {
-            DummyScreenForJar ds4j = new DummyScreenForJar();
-            ds4j.setVisible(true);
+//            DummyScreenForJar ds4j = new DummyScreenForJar();
+//            ds4j.setVisible(true);
+
+            SwingUtilities.invokeLater(() -> {
+                JFrame frame = new JFrame("Koala Minesweeper");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(1000, 700);   // temp size!
+
+                NavigationController nav = new NavigationController(frame);
+                nav.goToHome();
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+            });
         }
     }

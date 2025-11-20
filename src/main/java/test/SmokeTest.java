@@ -1,4 +1,6 @@
-package main.java;
+package main.java.test;
+
+import main.java.Main;
 
 //SMOKE TESTS FOR MAIN FUNCTIONALITIES
 public class SmokeTest {
@@ -20,12 +22,9 @@ public class SmokeTest {
             e.printStackTrace(System.out);
             testsPassed = false;
         }
-            if (testsPassed) {
-                System.out.println("ALL TESTS PASSED");
-            } else {
-                System.out.println("TESTS FAILED"); //need to add specification
-            }
-            return testsPassed;
+
+        System.out.println("COMPLETED ALL TESTS");
+        return testsPassed;
         }
         //ACTUAL TESTS HERE
         private static boolean testSystemStartup() {

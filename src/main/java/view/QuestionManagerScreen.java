@@ -1,4 +1,10 @@
 package main.java.view;
 
-public class QuestionManagerScreen {
+import main.java.controller.NavigationController;
+
+import javax.swing.*;
+
+public class QuestionManagerScreen extends JPanel {
+    public QuestionManagerScreen(NavigationController navigationController) {
+    }
 }

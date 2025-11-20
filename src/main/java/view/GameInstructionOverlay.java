@@ -4,8 +4,8 @@ import main.java.controller.NavigationController;
 
 import javax.swing.*;
 
-public class GameSettingsScreen extends OverlayView{
-    public GameSettingsScreen(NavigationController navigationController) {
+public class GameInstructionOverlay extends OverlayView {
+    public GameInstructionOverlay(NavigationController navigationController) {
         super(navigationController);
     }
 }
