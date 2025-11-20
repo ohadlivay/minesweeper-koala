@@ -151,12 +151,16 @@ public class GameSession
     //Adds points to the players' score
     public void addPoints(int points)
     {
+        if (points < 0)
+            throw new IllegalArgumentException("Invalid points");
         this.points += points;
     }
 
     //Deducts points from the players' score
     public void deductPoints(int points)
     {
+        if (points < 0)
+            throw new IllegalArgumentException("Invalid points");
         this.points -= points;
         if (this.points < 0)
             this.points = 0;
@@ -165,6 +169,8 @@ public class GameSession
     //Adds health to the players' health pool
     public void addHealth(int health)
     {
+        if (health < 0)
+            throw new IllegalArgumentException("Invalid health");
         this.healthPool += health;
         if (this.healthPool > 10)
             this.healthPool = 10;
@@ -173,6 +179,8 @@ public class GameSession
     //Deducts health from the players' health pool
     public void deductHealth(int health)
     {
+        if (health < 0)
+            throw new IllegalArgumentException("Invalid health");
         this.healthPool -= health;
         if (this.healthPool < 0)
             this.healthPool = 0;
