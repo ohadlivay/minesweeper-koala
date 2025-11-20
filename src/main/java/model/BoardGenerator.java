@@ -7,12 +7,10 @@ public class BoardGenerator {
     private int numMines;
     private int numQuestionTiles;
     private int numSurpriseTiles;
-    private int seed; //seed based randomization for repeatability and testing.
 
     BoardGenerator(Difficulty difficulty){
         gridSize = difficulty.getGridSize();
         numMines = difficulty.getMineCount();
-        seed = 42; //for developers use; testing by repeatability
     }
     public Tile[][] generateValidBoard(int seed){
         boolean validBoardCreated = false;

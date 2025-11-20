@@ -19,13 +19,14 @@ public class Board {
         this.tiles = populateBoard();
     }
 
-    private int[][] populateBoard() {
+    private Tile[][] populateBoard() {
 
         /*
         this create a temporary, low weight and high performance board generator.
         since some generations can be faulty, this keeps that process light weight before we actually make the board.
          */
         BoardGenerator boardGenerator = new BoardGenerator(difficulty);
+        boardGenerator.generateValidBoard(42)
         return;
     }
 }
