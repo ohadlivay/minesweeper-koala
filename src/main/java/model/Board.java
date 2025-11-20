@@ -17,47 +17,12 @@ public class Board {
         this.tiles = new Tile[10][10];
     }
 
-    private void populateBoard(int gridSize, int numMines){
-        //need GameSession to send me the gridSize and number of mines
-
+    private void populateBoard(Difficulty difficulty){
+        //need GameSession to send me the difficulty enum
 
         /*
         this create a temporary, low weight and high performance board generator.
         since some generations can be faulty, this keeps that process light weight before we actually make the board.
          */
-/*
-        int[][] tempTiles = new int[gridSize][gridSize];
-
-        int placed = 0 ;
-        while (placed < numMines) {
-            int r = RANDOM.nextInt(gridSize);
-            int c = RANDOM.nextInt(gridSize);
-
-            if (tempTiles[r][c] == 0) {   // only place if empty
-                tempTiles[r][c] = 1;
-                placed++;
-            }
-        }
-        int countNoMineNeighborTiles = 0;
-        for (int i = 0; i < gridSize; i++){
-            for (int j = 0; j < gridSize; j++){
-                if(tempTiles[i][j] == 1);
-                    continue;
-
-                if (!hasMineNeighbors(tempTiles, i, j)){
-                    countNoMineNeighborTiles++;
-                }
-            }
-        }
-
-        for(int i = 0; i < gridSize; i++){
-            for(int j = 0; j < gridSize; j++){
-                 tiles[i][j] = new Tile(i, j,false, false);
-            }
-        }
-
- */
-    }
-
-
-}
+        BoardGenerator boardGenerator = new BoardGenerator(difficulty);
+        boardGenerator.getValidBoard(int seed);
