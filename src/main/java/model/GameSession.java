@@ -32,10 +32,6 @@ public class GameSession
     //Indicates whether it is the left player's turn or not
     private boolean turn;
 
-    //The size of the grid and the number of mines to place on each board
-    private int gridSize;
-    private int numMines;
-
     //Constructors
 
 
@@ -48,25 +44,9 @@ public class GameSession
         this.rightPlayerName = Objects.requireNonNullElse(rightPlayerName, "Player 2");
         this.leftPlayerName = Objects.requireNonNullElse(leftPlayerName, "Player 1");
         this.turn = true;
+        // Initialize the boards
         this.leftBoard = new Board();
         this.rightBoard = new Board();
-        // Game settings by difficulty
-        switch (gameDifficulty)
-        {
-            case EASY:
-                gridSize = 81;
-                numMines = 10;
-                break;
-            case MEDIUM:
-                gridSize = 169;
-                numMines = 26;
-                break;
-            case HARD:
-                gridSize = 256;
-                numMines = 44;
-                break;
-        }
-        // Initialize the boards
         this.initializeBoards();
 
     }
@@ -108,14 +88,6 @@ public class GameSession
         return turn;
     }
 
-    public int getGridSize() {
-        return gridSize;
-    }
-
-    public int getNumMines() {
-        return numMines;
-    }
-
     public void setRightPlayerName(String rightPlayerName) {
         this.rightPlayerName = rightPlayerName;
     }
@@ -148,21 +120,13 @@ public class GameSession
         this.gameDifficulty = gameDifficulty;
     }
 
-    public void setGridSize(int gridSize) {
-        this.gridSize = gridSize;
-    }
-
-    public void setNumMines(int numMines) {
-        this.numMines = numMines;
-    }
-
     //Methods
 
     //Initializes the boards with the given grid size and number of mines
     private void initializeBoards()
     {
-        leftBoard.populateBoard(this.gridSize,this.numMines);
-        rightBoard.populateBoard(this.gridSize,this.numMines);
+        leftBoard.populateBoard();
+        rightBoard.populateBoard();
     }
 
 
