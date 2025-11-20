@@ -44,6 +44,17 @@ public class GameSession
         this.rightPlayerName = Objects.requireNonNullElse(rightPlayerName, "Player 2");
         this.leftPlayerName = Objects.requireNonNullElse(leftPlayerName, "Player 1");
         this.turn = true;
+        switch (gameDifficulty)
+        {
+            case EASY:
+                this.healthPool = 10;
+                break;
+            case MEDIUM:
+                this.healthPool = 8;
+                break;
+            case HARD:
+                this.healthPool = 6;
+        }
         // Initialize the boards
         this.leftBoard = new Board();
         this.rightBoard = new Board();
@@ -105,6 +116,8 @@ public class GameSession
     }
 
     public void setHealthPool(int healthPool) {
+        if (healthPool < 0||healthPool>10)
+            throw new IllegalArgumentException("Invalid health pool");
         this.healthPool = healthPool;
     }
 
@@ -127,6 +140,42 @@ public class GameSession
     {
         leftBoard.populateBoard();
         rightBoard.populateBoard();
+    }
+
+    //Changes the turn of the game session
+    public void changeTurn()
+    {
+        this.turn = !this.turn;
+    }
+
+    //Adds points to the players' score
+    public void addPoints(int points)
+    {
+        this.points += points;
+    }
+
+    //Deducts points from the players' score
+    public void deductPoints(int points)
+    {
+        this.points -= points;
+        if (this.points < 0)
+            this.points = 0;
+    }
+
+    //Adds health to the players' health pool
+    public void addHealth(int health)
+    {
+        this.healthPool += health;
+        if (this.healthPool > 10)
+            this.healthPool = 10;
+    }
+
+    //Deducts health from the players' health pool
+    public void deductHealth(int health)
+    {
+        this.healthPool -= health;
+        if (this.healthPool < 0)
+            this.healthPool = 0;
     }
 
 
