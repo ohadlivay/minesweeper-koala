@@ -3,16 +3,22 @@ package main.java.model;
 import java.util.Random;
 
 public class BoardGenerator {
-    private int gridSize;
+    private int rows;
+    private int cols;
     private int numMines;
     private int numQuestionTiles;
     private int numSurpriseTiles;
 
     BoardGenerator(Difficulty difficulty){
-        gridSize = difficulty.getGridSize();
+        rows = difficulty.getRows();
+        cols = difficulty.getCols();
         numMines = difficulty.getMineCount();
     }
+/*
     public Tile[][] generateValidBoard(int seed){
+
+ */
+    public void generateValidBoard(int seed){
         boolean validBoardCreated = false;
         while(!validBoardCreated){
             int[][] grid = generateTempBoard(seed);
@@ -27,14 +33,14 @@ public class BoardGenerator {
 
     private int[][] generateTempBoard(int seed) {
         // create gridSize x gridSize grid filled with 0's
-        int[][] tempTiles = new int[gridSize][gridSize];
+        int[][] tempTiles = new int[rows][cols];
 
         Random rng = new Random(seed);
 
         int placed = 0;
         while (placed < numMines) {
-            int r = rng.nextInt(gridSize); // 0 .. gridSize-1
-            int c = rng.nextInt(gridSize); // 0 .. gridSize-1
+            int r = rng.nextInt(rows); // 0 .. gridSize-1
+            int c = rng.nextInt(cols); // 0 .. gridSize-1
 
             // only place a mine if the cell is still 0
             if (tempTiles[r][c] == 0) {
