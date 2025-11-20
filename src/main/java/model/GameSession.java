@@ -57,8 +57,8 @@ public class GameSession
                 this.healthPool = 6;
         }
         // Initialize the boards
-        this.leftBoard = new Board();
-        this.rightBoard = new Board();
+        this.leftBoard = new Board(this.gameDifficulty);
+        this.rightBoard = new Board(this.gameDifficulty);
         this.initializeBoards();
 
     }
