@@ -5,7 +5,7 @@ public class SurpriseTile extends SpecialTile
 {
     // Constructors
 
-    public SurpriseTile(Difficulty difficulty) {
-        super(difficulty);
+    public SurpriseTile(GameDifficulty gameDifficulty) {
+        super(gameDifficulty);
     }
 }

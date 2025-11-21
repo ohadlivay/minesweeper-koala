@@ -4,7 +4,7 @@ public class QuestionTile extends SpecialTile
 {
     // Constructors
 
-    public QuestionTile(Difficulty difficulty) {
-        super(difficulty);
+    public QuestionTile(GameDifficulty gameDifficulty) {
+        super(gameDifficulty);
     }
 }

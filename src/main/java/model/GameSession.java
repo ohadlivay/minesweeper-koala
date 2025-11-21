@@ -2,13 +2,6 @@ package main.java.model;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-
-/*
-Dear Ohad,
-I would love to create the boards myself using the constructor or initiate the method with the appropriate values.
-unfortunately, I do not have access to those methods as they are both Private
-*/
-
 public class GameSession
 {
     //Indicates when the game session was created
@@ -19,7 +12,7 @@ public class GameSession
     private String leftPlayerName;
 
     //Game difficulty
-    private Difficulty gameDifficulty;
+    private GameDifficulty gameDifficulty;
 
     //Boards of the players involved in the game session
     private Board leftBoard;
@@ -35,12 +28,12 @@ public class GameSession
     //Constructors
 
 
-    public GameSession(String leftPlayerName, String rightPlayerName, Difficulty gameDifficulty)
+    public GameSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
     {
         this.timeStamp = LocalDateTime.now();
         if (Objects.equals(rightPlayerName, leftPlayerName))
             throw new IllegalArgumentException("Right player name cannot be the same as left player name");
-        this.gameDifficulty = Objects.requireNonNullElse(gameDifficulty, Difficulty.EASY);
+        this.gameDifficulty = Objects.requireNonNullElse(gameDifficulty, GameDifficulty.EASY);
         this.rightPlayerName = Objects.requireNonNullElse(rightPlayerName, "Player 2");
         this.leftPlayerName = Objects.requireNonNullElse(leftPlayerName, "Player 1");
         this.turn = true;
@@ -57,9 +50,8 @@ public class GameSession
                 this.healthPool = 6;
         }
         // Initialize the boards
-        this.leftBoard = new Board(this.gameDifficulty);
-        this.rightBoard = new Board(this.gameDifficulty);
-        this.initializeBoards();
+        this.leftBoard = Board.createNewBoard(this.gameDifficulty);
+        this.rightBoard = Board.createNewBoard(this.gameDifficulty);
 
     }
 
@@ -76,7 +68,7 @@ public class GameSession
         return leftPlayerName;
     }
 
-    public Difficulty getGameDifficulty() {
+    public GameDifficulty getGameDifficulty() {
         return gameDifficulty;
     }
 
@@ -130,17 +122,8 @@ public class GameSession
         this.turn = turn;
     }
 
-    public void setGameDifficulty(Difficulty gameDifficulty) {
+    public void setGameDifficulty(GameDifficulty gameDifficulty) {
         this.gameDifficulty = gameDifficulty;
-    }
-
-    //Methods
-
-    //Initializes the boards with the given grid size and number of mines
-    private void initializeBoards()
-    {
-        leftBoard.populateBoard();
-        rightBoard.populateBoard();
     }
 
     //Changes the turn of the game session
