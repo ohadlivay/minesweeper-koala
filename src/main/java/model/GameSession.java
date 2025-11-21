@@ -9,6 +9,22 @@ I would love to create the boards myself using the constructor or initiate the m
 unfortunately, I do not have access to those methods as they are both Private
 */
 
+/*
+Dearest Thomas,
+
+Sadly, it would be bad practice to expose my constructor or private methods,
+as that would tightly couple your code to my internal implementation.
+However! I have created a dedicated public method just for you.
+
+You may safely call:
+    createNewBoard(gameDifficulty)
+
+Rest assured — it will return a valid and fully initialized Board.
+
+Cheers and all the best to you and your family,
+Ohad
+*/
+
 public class GameSession
 {
     //Indicates when the game session was created
@@ -19,7 +35,7 @@ public class GameSession
     private String leftPlayerName;
 
     //Game difficulty
-    private Difficulty gameDifficulty;
+    private GameDifficulty gameDifficulty;
 
     //Boards of the players involved in the game session
     private Board leftBoard;
@@ -35,12 +51,12 @@ public class GameSession
     //Constructors
 
 
-    public GameSession(String leftPlayerName, String rightPlayerName, Difficulty gameDifficulty)
+    public GameSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
     {
         this.timeStamp = LocalDateTime.now();
         if (Objects.equals(rightPlayerName, leftPlayerName))
             throw new IllegalArgumentException("Right player name cannot be the same as left player name");
-        this.gameDifficulty = Objects.requireNonNullElse(gameDifficulty, Difficulty.EASY);
+        this.gameDifficulty = Objects.requireNonNullElse(gameDifficulty, GameDifficulty.EASY);
         this.rightPlayerName = Objects.requireNonNullElse(rightPlayerName, "Player 2");
         this.leftPlayerName = Objects.requireNonNullElse(leftPlayerName, "Player 1");
         this.turn = true;
@@ -76,7 +92,7 @@ public class GameSession
         return leftPlayerName;
     }
 
-    public Difficulty getGameDifficulty() {
+    public GameDifficulty getGameDifficulty() {
         return gameDifficulty;
     }
 
@@ -130,7 +146,7 @@ public class GameSession
         this.turn = turn;
     }
 
-    public void setGameDifficulty(Difficulty gameDifficulty) {
+    public void setGameDifficulty(GameDifficulty gameDifficulty) {
         this.gameDifficulty = gameDifficulty;
     }
 

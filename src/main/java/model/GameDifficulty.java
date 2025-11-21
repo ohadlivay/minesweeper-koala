@@ -4,7 +4,7 @@ package main.java.model;
    grid size, mine count etc.
    need to add more info like activation cost or penalties which are specific to difficulty.
 */
-public enum Difficulty {
+public enum GameDifficulty {
     EASY(9, 9, 10, 5),
     MEDIUM(13, 13, 40, 8),
     HARD(16, 16, 99, 12);
@@ -17,7 +17,7 @@ public enum Difficulty {
 
     private final int activationCost;
 
-    Difficulty(int rows, int cols, int mineCount, int activationCost) {
+    GameDifficulty(int rows, int cols, int mineCount, int activationCost) {
         this.rows = rows;
         this.cols = cols;
         this.mineCount = mineCount;

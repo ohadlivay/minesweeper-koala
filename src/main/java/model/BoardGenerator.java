@@ -9,10 +9,10 @@ public class BoardGenerator {
     private int numQuestionTiles;
     private int numSurpriseTiles;
 
-    BoardGenerator(Difficulty difficulty){
-        rows = difficulty.getRows();
-        cols = difficulty.getCols();
-        numMines = difficulty.getMineCount();
+    BoardGenerator(GameDifficulty gameDifficulty){
+        rows = gameDifficulty.getRows();
+        cols = gameDifficulty.getCols();
+        numMines = gameDifficulty.getMineCount();
     }
 /*
     public Tile[][] generateValidBoard(int seed){

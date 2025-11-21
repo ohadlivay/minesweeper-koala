@@ -6,18 +6,18 @@ public abstract class SpecialTile extends NumberTile
     // Cost of activating the tile
     protected final int activationCost;
     // Difficulty of the game, for calculating activation cost
-    protected final Difficulty difficulty;
+    protected final GameDifficulty gameDifficulty;
 
 
     // Constructors
 
-    public SpecialTile(Difficulty difficulty)
+    public SpecialTile(GameDifficulty gameDifficulty)
     {
         super();
-        if (difficulty == null)
+        if (gameDifficulty == null)
             throw new IllegalArgumentException("Difficulty cannot be null");
-        this.difficulty = difficulty;
-        this.activationCost = difficulty.getActivationCost();
+        this.gameDifficulty = gameDifficulty;
+        this.activationCost = gameDifficulty.getActivationCost();
     }
 
     // Getters and setters
