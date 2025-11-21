@@ -1,6 +1,9 @@
 package main.java.model;
+
+import main.java.test.Testable;
+
 //Tile class for the minesweeper game
-public class Tile
+public class Tile implements Testable
 {
     //Coordinates of the tile
     private double x;
@@ -135,4 +138,49 @@ public class Tile
         else
             throw new IllegalMoveException("activate");
     }
+
+    @Override
+    public boolean runClassTests()
+    {
+        try {
+            Tile t = new Tile();
+            // defaults
+            if (t.isFlagged() || t.isRevealed() || t.isActivated()) return false;
+            if (t.getX() != 0 || t.getY() != 0) return false;
+
+            // invalid coordinates should throw
+            try { t.setX(-1); return false; } catch (IllegalArgumentException ignored) {}
+            try { t.setY(-1); return false; } catch (IllegalArgumentException ignored) {}
+
+            // flag / unflag behavior
+            Tile t2 = new Tile();
+            t2.flag();
+            if (!t2.isFlagged() || !t2.isActivated()) return false;
+            try { t2.flag(); return false; } catch (IllegalMoveException ignored) {}
+            t2.unflag();
+            if (t2.isFlagged()) return false;
+            try { t2.unflag(); return false; } catch (IllegalMoveException ignored) {}
+
+            // reveal / activate behavior
+            Tile t3 = new Tile();
+            t3.reveal();
+            if (!t3.isRevealed() || t3.isActivated()) return false;
+            try { t3.reveal(); return false; } catch (IllegalMoveException ignored) {}
+            try { t3.flag(); return false; } catch (IllegalMoveException ignored) {}
+
+            t3.activate();
+            if (!t3.isActivated()) return false;
+            try { t3.activate(); return false; } catch (IllegalMoveException ignored) {}
+
+            // coordinates consistency
+            double[] coords = t3.getCoordinates();
+            if (coords.length != 2) return false;
+            if (coords[0] != t3.getX() || coords[1] != t3.getY()) return false;
+
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }
