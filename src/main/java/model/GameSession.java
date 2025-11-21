@@ -73,9 +73,9 @@ public class GameSession
                 this.healthPool = 6;
         }
         // Initialize the boards
-        this.leftBoard = new Board(this.gameDifficulty);
-        this.rightBoard = new Board(this.gameDifficulty);
-        this.initializeBoards();
+        this.leftBoard = Board.createNewBoard(this.gameDifficulty);
+        this.rightBoard = Board.createNewBoard(this.gameDifficulty);
+//        this.initializeBoards();
 
     }
 
@@ -153,11 +153,14 @@ public class GameSession
     //Methods
 
     //Initializes the boards with the given grid size and number of mines
-    private void initializeBoards()
-    {
-        leftBoard.populateBoard();
-        rightBoard.populateBoard();
-    }
+
+    //tom, once you have a board instance (using Board.createNewBoard(..)) you can assume it is initialized properly
+    //-ohad
+//    private void initializeBoards()
+//    {
+//        leftBoard.populateBoard();
+//        rightBoard.populateBoard();
+//    }
 
     //Changes the turn of the game session
     public void changeTurn()
