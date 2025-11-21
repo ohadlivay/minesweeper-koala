@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 public class GameData
 {
     private final LocalDateTime timeStamp;
-    private final String rightPlayerName;
     private final String leftPlayerName;
+    private final String rightPlayerName;
     private final Difficulty gameDifficulty;
     private final int points;
 
@@ -15,10 +15,20 @@ public class GameData
     public GameData(GameSession gameSession)
     {
         this.timeStamp = gameSession.getTimeStamp();
-        this.rightPlayerName = gameSession.getRightPlayerName();
         this.leftPlayerName = gameSession.getLeftPlayerName();
+        this.rightPlayerName = gameSession.getRightPlayerName();
         this.gameDifficulty = gameSession.getGameDifficulty();
         this.points = gameSession.getPoints();
+    }
+
+    //Copy constructor
+    public GameData(LocalDateTime timeStamp, String leftPlayerName, String rightPlayerName, Difficulty gameDifficulty, int points)
+    {
+        this.timeStamp = timeStamp;
+        this.leftPlayerName = leftPlayerName;
+        this.rightPlayerName = rightPlayerName;
+        this.gameDifficulty = gameDifficulty;
+        this.points = points;
     }
 
     //Getters
