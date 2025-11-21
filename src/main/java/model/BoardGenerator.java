@@ -8,11 +8,21 @@ public class BoardGenerator {
     private int numMines;
     private int numQuestionTiles;
     private int numSurpriseTiles;
+    private static BoardGenerator instance;
 
-    BoardGenerator(Difficulty difficulty){
-        rows = difficulty.getRows();
-        cols = difficulty.getCols();
-        numMines = difficulty.getMineCount();
+    private BoardGenerator(GameDifficulty gameDifficulty){
+        rows = gameDifficulty.getRows();
+        cols = gameDifficulty.getCols();
+        numMines = gameDifficulty.getMineCount();
+    }
+
+    public static BoardGenerator getInstance(GameDifficulty gameDifficulty){
+
+        if (instance == null) {
+            instance = new BoardGenerator(gameDifficulty);
+        }
+        // If you want a strict singleton per configuration, you could add checks here.
+        return instance;
     }
 /*
     public Tile[][] generateValidBoard(int seed){
