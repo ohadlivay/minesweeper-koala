@@ -30,6 +30,8 @@ public class Main {
                 nav.goToHome();
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
+
+
             });
         }
     }
