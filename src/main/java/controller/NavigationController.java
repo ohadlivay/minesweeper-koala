@@ -14,7 +14,8 @@ public class NavigationController {
     //***Methods to navigate between screens***//
 
     public void goToHome() {
-        visFrame.setContentPane(new HomeScreen(this));
+        StartScreen startScreen = new StartScreen(this);
+        visFrame.setContentPane(startScreen.getMainPanel());
         refresh();
     }
 

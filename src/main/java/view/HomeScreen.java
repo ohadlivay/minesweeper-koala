@@ -6,5 +6,6 @@ import javax.swing.*;
 public class HomeScreen extends JPanel {
 
     public HomeScreen(NavigationController navigationController) {
+
     }
 }
