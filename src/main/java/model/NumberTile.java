@@ -28,28 +28,64 @@ public class NumberTile extends Tile
         this.adjacentMines = adjacentMines;
     }
 
+    //Adds a mine neighbor to the tile
+    public void addMineNeighbor()
+    {
+        if (adjacentMines < 8)
+            this.adjacentMines++;
+        else
+            throw new IllegalArgumentException("Invalid number of adjacent mines");
+    }
+
+    //Tests the NumberTile class
     @Override
     public boolean runClassTests()
     {
         try {
-            // run parent tests first
+            // ensure parent tests pass
             if (!super.runClassTests()) return false;
 
-            // the default value should be 0
+            // default should be 0
             NumberTile nt = new NumberTile();
             if (nt.getAdjacentMines() != 0) return false;
 
-            // valid range 0..8
+            // valid range 0..8 via setter
             for (int v = 0; v <= 8; v++) {
                 nt.setAdjacentMines(v);
                 if (nt.getAdjacentMines() != v) return false;
             }
 
-            // invalid values should throw
-            try { nt.setAdjacentMines(-1); return false; } catch (IllegalArgumentException ignored) {}
-            try { nt.setAdjacentMines(9); return false; } catch (IllegalArgumentException ignored) {}
+            // setter rejects values outside 0..8
+            boolean threw = false;
+            try {
+                nt.setAdjacentMines(-1);
+            } catch (IllegalArgumentException ex) {
+                threw = true;
+            }
+            if (!threw) return false;
 
-            return true;
+            threw = false;
+            try {
+                nt.setAdjacentMines(9);
+            } catch (IllegalArgumentException ex) {
+                threw = true;
+            }
+            if (!threw) return false;
+
+            // addMineNeighbor increments correctly up to 8, then throws
+            nt.setAdjacentMines(6);
+            nt.addMineNeighbor(); // -> 7
+            if (nt.getAdjacentMines() != 7) return false;
+            nt.addMineNeighbor(); // -> 8
+            if (nt.getAdjacentMines() != 8) return false;
+
+            threw = false;
+            try {
+                nt.addMineNeighbor(); // should throw when >8
+            } catch (IllegalArgumentException ex) {
+                threw = true;
+            }
+            return threw;
         } catch (Exception e) {
             return false;
         }

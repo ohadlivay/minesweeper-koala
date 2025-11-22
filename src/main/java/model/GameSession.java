@@ -1,8 +1,10 @@
 package main.java.model;
+import main.java.test.Testable;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class GameSession
+public class GameSession implements Testable
 {
     //Indicates when the game session was created
     private final LocalDateTime timeStamp;
@@ -25,10 +27,13 @@ public class GameSession
     //Indicates whether it is the left player's turn or not
     private boolean turn;
 
+    //Maximum health pool for a game session
+    private static final int MAX_HEALTH_POOL = 10;
+
     //Constructors
 
 
-    public GameSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
+    private GameSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
     {
         this.timeStamp = LocalDateTime.now();
         if (Objects.equals(rightPlayerName, leftPlayerName))
@@ -37,7 +42,22 @@ public class GameSession
         this.rightPlayerName = Objects.requireNonNullElse(rightPlayerName, "Player 2");
         this.leftPlayerName = Objects.requireNonNullElse(leftPlayerName, "Player 1");
         this.turn = true;
-        // Initialize the health pool based on the game difficulty
+        this.initializeMaxHealthPool();
+        this.initializeBoards();
+
+
+    }
+
+    //Create a new game session
+    public static GameSession createNewSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
+    {
+        return new GameSession(leftPlayerName, rightPlayerName, gameDifficulty);
+    }
+
+    // Initialize the health pool based on the game difficulty
+    private void initializeMaxHealthPool()
+    {
+
         switch (gameDifficulty)
         {
             case EASY:
@@ -49,10 +69,13 @@ public class GameSession
             case HARD:
                 this.healthPool = 6;
         }
-        // Initialize the boards
+    }
+
+    //Initialize the boards of the players involved in the game session
+    private void initializeBoards()
+    {
         this.leftBoard = Board.createNewBoard(this.gameDifficulty);
         this.rightBoard = Board.createNewBoard(this.gameDifficulty);
-
     }
 
     //Getters and setters
@@ -109,7 +132,7 @@ public class GameSession
     }
 
     public void setHealthPool(int healthPool) {
-        if (healthPool < 0||healthPool>10)
+        if (healthPool < 0||healthPool>MAX_HEALTH_POOL)
             throw new IllegalArgumentException("Invalid health pool");
         this.healthPool = healthPool;
     }
@@ -124,6 +147,11 @@ public class GameSession
 
     public void setGameDifficulty(GameDifficulty gameDifficulty) {
         this.gameDifficulty = gameDifficulty;
+    }
+
+    public static int getMaxHealthPool()
+    {
+        return MAX_HEALTH_POOL;
     }
 
     //Changes the turn of the game session
@@ -156,8 +184,8 @@ public class GameSession
         if (health < 0)
             throw new IllegalArgumentException("Invalid health");
         this.healthPool += health;
-        if (this.healthPool > 10)
-            this.healthPool = 10;
+        if (this.healthPool > MAX_HEALTH_POOL)
+            this.healthPool = MAX_HEALTH_POOL;
     }
 
     //Deducts health from the players' health pool
@@ -171,4 +199,95 @@ public class GameSession
     }
 
 
+    //Tests the game session class
+    @Override
+    public boolean runClassTests()
+    {
+        try {
+            // Test 1: normal creation and getters
+            GameSession s1 = GameSession.createNewSession("Left", "Right", GameDifficulty.MEDIUM);
+            if (!"Left".equals(s1.getLeftPlayerName())) return false;
+            if (!"Right".equals(s1.getRightPlayerName())) return false;
+            if (s1.getGameDifficulty() != GameDifficulty.MEDIUM) return false;
+            if (s1.getHealthPool() != 8) return false; // MEDIUM -> 8
+            if (!s1.isTurn()) return false;
+            if (s1.getPoints() != 0) return false;
+            if (s1.getLeftBoard() == null || s1.getRightBoard() == null) return false;
+            if (s1.getTimeStamp() == null) return false;
+
+            // Test 2: identical names should throw
+            boolean threw = false;
+            try {
+                GameSession.createNewSession("A", "A", GameDifficulty.EASY);
+            } catch (IllegalArgumentException ex) {
+                threw = true;
+            }
+            if (!threw) return false;
+
+            // Test 3: null defaults
+            GameSession s2 = GameSession.createNewSession(null, null, null);
+            if (!"Player 1".equals(s2.getLeftPlayerName())) return false;
+            if (!"Player 2".equals(s2.getRightPlayerName())) return false;
+            if (s2.getGameDifficulty() != GameDifficulty.EASY) return false;
+            if (s2.getHealthPool() != GameSession.getMaxHealthPool()) return false; // EASY -> MAX_HEALTH_POOL (10)
+
+            // Test 4: setHealthPool valid and invalid
+            s2.setHealthPool(5);
+            if (s2.getHealthPool() != 5) return false;
+            try {
+                s2.setHealthPool(-1);
+                return false;
+            } catch (IllegalArgumentException ignored) {}
+            try {
+                s2.setHealthPool(GameSession.getMaxHealthPool() + 1);
+                return false;
+            } catch (IllegalArgumentException ignored) {}
+
+            // Test 5: points add/deduct and bounds
+            s2.setPoints(0);
+            s2.addPoints(5);
+            if (s2.getPoints() != 5) return false;
+            s2.deductPoints(3);
+            if (s2.getPoints() != 2) return false;
+            s2.deductPoints(5); // should clamp to 0
+            if (s2.getPoints() != 0) return false;
+            try {
+                s2.addPoints(-1);
+                return false;
+            } catch (IllegalArgumentException ignored) {}
+            try {
+                s2.deductPoints(-1);
+                return false;
+            } catch (IllegalArgumentException ignored) {}
+
+            // Test 6: health add/deduct and bounds
+            s2.setHealthPool(5);
+            s2.addHealth(3);
+            if (s2.getHealthPool() != 8) return false;
+            s2.addHealth(10); // should clamp to MAX
+            if (s2.getHealthPool() != GameSession.getMaxHealthPool()) return false;
+            s2.deductHealth(100); // should clamp to 0
+            if (s2.getHealthPool() != 0) return false;
+            try {
+                s2.addHealth(-1);
+                return false;
+            } catch (IllegalArgumentException ignored) {}
+            try {
+                s2.deductHealth(-1);
+                return false;
+            } catch (IllegalArgumentException ignored) {}
+
+            // Test 7: changeTurn toggles
+            boolean initial = s2.isTurn();
+            s2.changeTurn();
+            if (s2.isTurn() == initial) return false;
+            s2.changeTurn();
+            return s2.isTurn() == initial;
+
+            // All tests passed
+        } catch (Exception ex) {
+            // Any unexpected exception is a failure
+            return false;
+        }
+    }
 }

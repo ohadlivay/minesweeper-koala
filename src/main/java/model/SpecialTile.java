@@ -5,7 +5,7 @@ public abstract class SpecialTile extends NumberTile
 {
     // Cost of activating the tile
     protected final int activationCost;
-    // Difficulty of the game, for calculating activation cost
+    // Difficulty of the game for calculating activation cost
     protected final GameDifficulty gameDifficulty;
 
 
@@ -27,35 +27,56 @@ public abstract class SpecialTile extends NumberTile
         return activationCost;
     }
 
-    @Override
+    public GameDifficulty getGameDifficulty()
+    {
+        return gameDifficulty;
+    }
+
+    // Class tests
     public boolean runClassTests()
     {
-        // Run parent tests first
-        if (!super.runClassTests()) {
+        // --- 1. Run Parent Tests ---
+        try {
+            if (!super.runClassTests()) {
+                return false;
+            }
+        } catch (Exception e) {
             return false;
         }
 
-        // Check that the constructor rejects null difficulty
+        // --- 2. Test Case: Null Parameter (Failure Case) ---
         try {
-            // instantiate an anonymous subclass to exercise the abstract class constructor
-            SpecialTile s = new SpecialTile(null) { };
-            // If we get here, no exception was thrown — test fails
+            // We must use a concrete subclass to call the abstract class constructor
+            SpecialTile s = new SurpriseTile(null);
+            // Test Failure: Exception was NOT thrown
             return false;
         } catch (IllegalArgumentException expected) {
-            // expected behavior
+            // Test Success: Expected exception was thrown
         } catch (Exception e) {
-            // unexpected exception type
+            // Test Failure: Threw the wrong type of exception
             return false;
         }
 
-        // Verify activationCost matches the difficulty's activation cost
-        if (this.gameDifficulty == null) {
-            return false; // should not happen for a correctly constructed instance
-        }
-        if (this.activationCost != this.gameDifficulty.getActivationCost()) {
+
+        try {
+            // Instantiate a new instance for the success test
+            SpecialTile s = new SurpriseTile(GameDifficulty.EASY);
+
+            // Verify the gameDifficulty field
+            if (s.getGameDifficulty() != GameDifficulty.EASY) {
+                return false;
+            }
+
+            // Verify activationCost field
+            if (s.getActivationCost() != GameDifficulty.EASY.getActivationCost()) {
+                return false;
+            }
+        } catch (Exception e) {
+            // Test Failure: Unexpected exception during successful construction
             return false;
         }
 
+        // If all tests pass
         return true;
     }
 

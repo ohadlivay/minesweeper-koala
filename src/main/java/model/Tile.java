@@ -139,6 +139,7 @@ public class Tile implements Testable
             throw new IllegalMoveException("activate");
     }
 
+    //Tests the tile class
     @Override
     public boolean runClassTests()
     {
@@ -175,9 +176,7 @@ public class Tile implements Testable
             // coordinates consistency
             double[] coords = t3.getCoordinates();
             if (coords.length != 2) return false;
-            if (coords[0] != t3.getX() || coords[1] != t3.getY()) return false;
-
-            return true;
+            return coords[0] == t3.getX() && coords[1] == t3.getY();
         } catch (Exception e) {
             return false;
         }
