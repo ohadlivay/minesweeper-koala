@@ -1,11 +1,9 @@
 package main.java.util;
 import java.util.List;
 import main.java.model.*;
-import main.java.test.Testable;
 
 import java.io.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.time.format.DateTimeFormatter;
 
 //Class that handles the CSV file for storing the game data
@@ -18,8 +16,11 @@ public class GameDataCSVManager
     //Header of the CSV file
     private static final String CSV_HEADER = "Timestamp,LeftPlayerName,RightPlayerName,GameDifficulty,Points";
 
-    //Write the game data list to a CSV file
-    public static void writeGameDataListToCSV(List<GameData> gameDataList, String filePath) throws IOException {
+    //Write the game data list to a CSV file using the SysData singleton
+    public static void writeGameDataListToCSV(String filePath) throws IOException {
+        SysData sys = SysData.getInstance();
+        List<GameData> gameDataList = sys.getGames();
+
         try (FileWriter fw = new FileWriter(filePath);
              PrintWriter pw = new PrintWriter(fw))
         {
@@ -48,10 +49,11 @@ public class GameDataCSVManager
         }
     }
 
-    //Read the game data list from a CSV file
-    public static List<GameData> readGameDataListFromCSV(String filePath) throws IOException
+    //Read the game data list from a CSV file and populate the SysData singleton
+    public static void readGameDataListFromCSV(String filePath) throws IOException
     {
-        List<GameData> gameDataList = new ArrayList<>();
+        SysData sys = SysData.getInstance();
+        sys.clearGames();
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -63,7 +65,7 @@ public class GameDataCSVManager
                     System.err.println("Warning: CSV header mismatch. Expected: " + CSV_HEADER);
                 }
             } else {
-                return gameDataList;
+                return;
             }
 
 
@@ -99,16 +101,16 @@ public class GameDataCSVManager
                         }
 
                         GameData gd = new GameData(timeStamp, leftPlayerName, rightPlayerName, gameDifficulty, points);
-                        gameDataList.add(gd);
+                        sys.addGame(gd);
                     } catch (IllegalArgumentException e) {
                         System.err.println("Skipping malformed line in CSV: " + line + ". Error: " + e.getMessage());
                     }
                 }
             }
         } catch (java.io.FileNotFoundException e) {
-            return gameDataList;
+            // File does not exist; treat as empty data set
+            System.err.println("CSV file not found: " + filePath + ". Starting with empty game data.");
         }
-        return gameDataList;
     }
 
 
