@@ -73,7 +73,7 @@ public class GameDataCSVManager
                         String leftPlayerName = values[1].trim();
                         String rightPlayerName = values[2].trim();
 
-                        Difficulty gameDifficulty = Difficulty.valueOf(values[3].trim().toUpperCase());
+                        GameDifficulty gameDifficulty = GameDifficulty.valueOf(values[3].trim().toUpperCase());
 
                         int points = Integer.parseInt(values[4].trim());
                     } catch (IllegalArgumentException e) {
