@@ -8,7 +8,7 @@ public class GameData
     private final LocalDateTime timeStamp;
     private final String leftPlayerName;
     private final String rightPlayerName;
-    private final Difficulty gameDifficulty;
+    private final GameDifficulty gameDifficulty;
     private final int points;
 
     //Constructors
@@ -22,7 +22,7 @@ public class GameData
     }
 
     //Copy constructor
-    public GameData(LocalDateTime timeStamp, String leftPlayerName, String rightPlayerName, Difficulty gameDifficulty, int points)
+    public GameData(LocalDateTime timeStamp, String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty, int points)
     {
         this.timeStamp = timeStamp;
         this.leftPlayerName = leftPlayerName;
@@ -44,7 +44,7 @@ public class GameData
         return leftPlayerName;
     }
 
-    public Difficulty getGameDifficulty() {
+    public GameDifficulty getGameDifficulty() {
         return gameDifficulty;
     }
 
