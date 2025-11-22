@@ -7,7 +7,7 @@ import javax.swing.*;
 //SMOKE TESTS FOR MAIN FUNCTIONALITIES
 public class SmokeTest {
 
-    public static boolean runAllTests() {
+    public static boolean runAllTests(String[] args) {
         boolean testsPassed = true;
 
         /* TEST 1: System startup
