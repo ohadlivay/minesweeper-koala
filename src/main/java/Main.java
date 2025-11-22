@@ -27,7 +27,7 @@ public class Main {
             SwingUtilities.invokeLater(() -> {
                 JFrame frame = new JFrame("Koala Minesweeper");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setSize(1000, 700);   // temp size!
+                frame.setSize(1200, 640);   // temp size!
 
                 NavigationController nav = new NavigationController(frame);
                 nav.goToHome();

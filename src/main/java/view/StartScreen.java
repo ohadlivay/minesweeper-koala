@@ -4,7 +4,6 @@ import javax.swing.*;
 
 public class StartScreen {
     private JPanel mainPanel;
-    private JPanel panel1;
     private JLabel startScreenLabel;
     private JButton button1;
     private JButton button2;
