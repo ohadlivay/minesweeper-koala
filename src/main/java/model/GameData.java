@@ -1,9 +1,11 @@
 package main.java.model;
 
+import main.java.test.Testable;
+
 import java.time.LocalDateTime;
 
 // GameData class to store the game data after the game is over
-public class GameData
+public class GameData implements Testable
 {
     private final LocalDateTime timeStamp;
     private final String leftPlayerName;
@@ -50,5 +52,24 @@ public class GameData
 
     public int getPoints() {
         return points;
+    }
+
+    //Class tests
+    @Override
+    public boolean runClassTests()
+    {
+        try {
+            LocalDateTime ts = LocalDateTime.of(2020, 1, 1, 12, 0);
+            GameData gd = new GameData(ts, "Left", "Right", GameDifficulty.HARD, 42);
+            if (gd.getTimeStamp() == null || !gd.getTimeStamp().equals(ts)) return false;
+            if (!"Left".equals(gd.getLeftPlayerName())) return false;
+            if (!"Right".equals(gd.getRightPlayerName())) return false;
+            if (gd.getGameDifficulty() != GameDifficulty.HARD) return false;
+            return gd.getPoints() == 42;
+
+            // All checks passed
+        } catch (Exception ex) {
+            return false;
+        }
     }
 }
