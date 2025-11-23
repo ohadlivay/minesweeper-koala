@@ -20,7 +20,8 @@ public class NavigationController {
     }
 
     public void goToGame() {
-        visFrame.setContentPane(new GameScreen(this));
+        GameScreen gameScreen = new GameScreen(this);
+        visFrame.setContentPane(gameScreen.getGamePanel());
         refresh();
     }
 
