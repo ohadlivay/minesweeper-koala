@@ -10,6 +10,9 @@ import javax.swing.*;
 public abstract class OverlayView extends JPanel{
     protected OverlayListener listener;
 
+    public OverlayView(NavigationController navigationController) {
+    }
+
     public void setListener(OverlayListener listener) {
         this.listener = listener;
     }
