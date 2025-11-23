@@ -19,19 +19,24 @@ public class BoardLayout extends JPanel {
         this.rows = difficulty.getRows();
         this.cols = difficulty.getCols();
 
+        //using setter for input checks
         setTiles();
 
         initBoardPanel();
         populateBoard();
     }
 
+
+    //Initialize the board panel
     private void initBoardPanel() {
         setLayout(new GridLayout(rows, cols));
         setBorder(new javax.swing.border.LineBorder(
                 new java.awt.Color(220, 220, 17, 255), 2, true));
     }
 
+    //Populate the board with the tiles,
     private void populateBoard() {
+
         removeAll();
 
         for (int i = 0; i < rows; i++) {
@@ -51,18 +56,16 @@ public class BoardLayout extends JPanel {
 
         revalidate();
         repaint();
-
     }
 
-    //getters & setters
-
+    /**getters & setters**/
     public void setTiles() {
-        Tile[][] board;
+        Tile[][] board = null;
         try {
             board = BoardController.getBoard();
         } catch (Exception e) {
-            // if retrieval failed, treat as empty board and deal later
-            board = null;
+            System.err.println("Failed to get board from BoardController:");
+            e.printStackTrace();
         }
 
         if (board == null) {
