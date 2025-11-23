@@ -32,6 +32,7 @@ public class BoardLayout extends JPanel {
         setLayout(new GridLayout(rows, cols));
         setBorder(new javax.swing.border.LineBorder(
                 new java.awt.Color(220, 220, 17, 255), 2, true));
+        /**Q: does this board know if he's the left or right one? maybe the border should be changed by the game session controller?**/
     }
 
     //Populate the board with the tiles,
