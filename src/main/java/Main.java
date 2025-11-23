@@ -34,6 +34,7 @@ public class Main {
                 JFrame frame = new JFrame("Koala Minesweeper");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setSize(1200, 640);   // temp size!
+                frame.setResizable(false); //if we don't find a way to make it look good when resized
 
                 NavigationController nav = new NavigationController(frame);
                 nav.goToHome();
