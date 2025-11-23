@@ -1,26 +1,26 @@
 package main.java.view;
 
 
-import main.java.controller.BoardController;
-import main.java.model.GameDifficulty;
+import main.java.model.Board;
 import main.java.model.Tile;
-
+import main.java.controller.BoardController;
 import javax.swing.*;
 import java.awt.*;
 
 
 public class BoardLayout extends JPanel {
-    private Tile[][] tiles;     //might be board?
+    private Board board;
     private final int rows;
     private final int cols;
+    private final BoardController boardController = new BoardController();
 
 
-    public BoardLayout(GameDifficulty difficulty) { //remove diff
-        this.rows = difficulty.getRows();
-        this.cols = difficulty.getCols();
+    public BoardLayout(Board board) {
 
         //using setter for input checks
-        setTiles();
+        setBoard(board);
+        this.rows = boardController.getRows(board);
+        this.cols = boardController.getCols(board);
 
         initBoardPanel();
         populateBoard();
@@ -42,10 +42,7 @@ public class BoardLayout extends JPanel {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 Tile t = null;
-                if (tiles != null && i < tiles.length && tiles[i] != null && j < tiles[i].length) {
-                    t = tiles[i][j];
-                }
-
+                t = boardController.getTiles(board)[i][j]; //get tile from board controller
                 if (t != null) {
                     add(new TileButton(t));
                 } else {
@@ -58,36 +55,13 @@ public class BoardLayout extends JPanel {
         repaint();
     }
 
-    /**getters & setters**/
-    public void setTiles() {
-        Tile[][] board = null;
-        try {
-            board = BoardController.getBoard();
-        } catch (Exception e) {
-            System.err.println("Failed to get board from BoardController:");
-            e.printStackTrace();
-        }
-
-        if (board == null) {
-            this.tiles = null;
-            return;
-        }
-
-        this.tiles = board;     //need to make sure later to handle null board
-                                //and matching or rows&cols to difficulty?
-    }
-
-    public Tile[][] getTiles() {
-        return tiles;
-    }
-
-    public int getRows() {
-        return rows;
-    }
-
-    public int getCols() {
-        return cols;
+    /**
+     * getters & setters
+     **/
+    public void setBoard(Board board) {
+        if (board == null)
+            throw new IllegalArgumentException("Board cannot be null");
+        this.board = board;
     }
 }
-
 
