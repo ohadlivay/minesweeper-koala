@@ -7,4 +7,10 @@ public class QuestionTile extends SpecialTile
     public QuestionTile(GameDifficulty gameDifficulty) {
         super(gameDifficulty);
     }
+
+    @Override
+    public void initiate()
+    {
+        setUsed();
+    }
 }

@@ -1,28 +1,31 @@
 package main.java;
 
 import main.java.controller.NavigationController;
-import main.java.model.Board;
 import main.java.model.BoardGenerator;
 import main.java.model.GameDifficulty;
-import main.java.test.SmokeTest;
+import main.java.test.Testable;
 
 import javax.swing.*;
 
-public class Main {
+public class Main implements Testable {
     public static void main(String[] args) {
+        /* tali's test:
+         * This is a test for the Main class to ensure that the GUI components can be created and displayed without errors.
+         * It creates a JFrame and uses the NavigationController to navigate to the home screen.
+         * If the GUI components are created and displayed successfully, the test returns true; otherwise, it returns false.
+         */
+        Main mainTester = new Main();
+        System.out.println("Main startup test: " + mainTester.runClassTests());
+        //end of tali's test
 
         //ohad's tests:
         // (this will be replaced with smarter tests)
         BoardGenerator testBoard = new BoardGenerator(GameDifficulty.MEDIUM);
         System.out.println(testBoard.runClassTests());
         //end of ohad's tests
-        try {
-            SmokeTest.runAllTests(args);
-        } catch (Exception e) {
-            System.out.println("Tests failed:");
-            e.printStackTrace();
-            return;
-        }
+
+
+
         launchSystem();
     }
 
@@ -34,7 +37,7 @@ public class Main {
                 JFrame frame = new JFrame("Koala Minesweeper");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setSize(1200, 640);   // temp size!
-                frame.setResizable(false); //if we don't find a way to make it look good when resized
+                frame.setResizable(false);
 
                 NavigationController nav = new NavigationController(frame);
                 nav.goToHome();
@@ -44,4 +47,24 @@ public class Main {
 
             });
         }
+
+    @Override
+    public boolean runClassTests() {
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                JFrame testFrame = new JFrame("Koala Minesweeper - TEST");
+                testFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                testFrame.setSize(1200, 640);
+                testFrame.setResizable(false);
+
+                NavigationController nav = new NavigationController(testFrame);
+                nav.goToHome();
+                testFrame.dispose();
+            });
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
+}

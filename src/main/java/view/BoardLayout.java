@@ -10,12 +10,12 @@ import java.awt.*;
 
 
 public class BoardLayout extends JPanel {
-    private Tile[][] tiles;
+    private Tile[][] tiles;     //might be board?
     private final int rows;
     private final int cols;
 
 
-    public BoardLayout(GameDifficulty difficulty) {
+    public BoardLayout(GameDifficulty difficulty) { //remove diff
         this.rows = difficulty.getRows();
         this.cols = difficulty.getCols();
 
