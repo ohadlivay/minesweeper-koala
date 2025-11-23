@@ -1,4 +1,6 @@
 package main.java.view;
 
-public class TileButton {
+import javax.swing.*;
+
+public class TileButton extends JButton {
 }
