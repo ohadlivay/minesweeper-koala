@@ -8,6 +8,7 @@ public class GameScreen extends JPanel {
     private JPanel gameScreen;
     private JPanel board1Placeholder;
     private JPanel board2Placeholder;
+    private JButton exitBtn;
 
     public GameScreen(NavigationController navigationController) {
     }
