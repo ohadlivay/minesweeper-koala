@@ -35,7 +35,7 @@ public class BoardGenerator implements Testable {
         // Keep generating temporary boards until the minimum
         // candidate-tile requirement is satisfied
         do {
-            grid = generateTempBoard(seed);
+            grid = generateTempBoard(seed); //need to seed++ or handle some way
         } while (numCandidateTiles(grid) < (this.numQuestionTiles + this.numSurpriseTiles));
 
         // A valid blueprint has been found — convert it into Tiles
@@ -117,7 +117,7 @@ public class BoardGenerator implements Testable {
         }
         return total;
     }
-    public Tile[][] toTileGrid(int[][] grid) {
+    public Tile[][] toTileGrid(int[][] grid) { //privatize
         int rows = grid.length;
         int cols = grid[0].length;
 

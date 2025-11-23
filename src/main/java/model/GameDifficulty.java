@@ -16,8 +16,8 @@ public enum GameDifficulty {
     private final int mineCount;
 
     private final int activationCost;
-
-    GameDifficulty(int rows, int cols, int mineCount, int activationCost) {
+//
+    private GameDifficulty(int rows, int cols, int mineCount, int activationCost) {
         this.rows = rows;
         this.cols = cols;
         this.mineCount = mineCount;
