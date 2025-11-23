@@ -19,23 +19,31 @@ public class BoardGenerator implements Testable {
         numMines = gameDifficulty.getMineCount();
     }
 
-/*
-    public Tile[][] generateValidBoard(int seed){
+    /*
+     * Generates a valid board configuration.
+     *
+     * Repeatedly creates temporary grids using a seeded generator
+     * until the grid contains enough candidate tiles to support
+     * the required number of question and surprise tiles.
+     *
+     * Once a valid layout is found, it is converted into a
+     * fully-initialized Tile[][] board.
+     */
+    public Tile[][] generateValidBoard(int seed) {
+        int[][] grid;
 
- */
-    public int[][] generateValidBoard(int seed){
-        int[][] grid = null;
-        boolean validBoardCreated = false;
-        while(!validBoardCreated){
+        // Keep generating temporary boards until the minimum
+        // candidate-tile requirement is satisfied
+        do {
             grid = generateTempBoard(seed);
-            int numCandidates = numCandidateTiles(grid);
-            if (numCandidates >= (this.numQuestionTiles + this.numSurpriseTiles)){
-                validBoardCreated = true;
-            }
-        }
-        // at this point, we know grid is a valid blueprint for generating a legal board.
-        return grid;
+        } while (numCandidateTiles(grid) < (this.numQuestionTiles + this.numSurpriseTiles));
+
+        // A valid blueprint has been found — convert it into Tiles
+        Tile[][] tileGrid = toTileGrid(grid);
+
+        return tileGrid;
     }
+
 
     private int[][] generateTempBoard(int seed) {
         // create gridSize x gridSize grid filled with 0's
@@ -100,7 +108,6 @@ public class BoardGenerator implements Testable {
 
         return count;
     }
-
     private int countMines(int[][] grid) {
         int total = 0;
         for (int[] row : grid) {
@@ -109,6 +116,27 @@ public class BoardGenerator implements Testable {
             }
         }
         return total;
+    }
+    public Tile[][] toTileGrid(int[][] grid) {
+        int rows = grid.length;
+        int cols = grid[0].length;
+
+        Tile[][] tiles = new Tile[rows][cols];
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+
+                if (grid[r][c] == 1) {
+                    // mine tile
+                    tiles[r][c] = new MineTile();
+                } else {
+                    // empty tile
+                    tiles[r][c] = new Tile();
+                }
+            }
+        }
+
+        return tiles;
     }
 
     @Override
@@ -126,14 +154,12 @@ public class BoardGenerator implements Testable {
         if (countMines(grid) != numMines) return false;
 
         // 3. test valid board generator
-        int[][] valid = generateValidBoard(seed);
-        int candidates = numCandidateTiles(valid);
-        if (candidates < (numQuestionTiles + numSurpriseTiles)) return false;
+        Tile[][] tileGrid = generateValidBoard(seed);
 
         System.out.println("Sample valid board:");
-        for (int[] row : valid) {
-            for (int cell : row) {
-                System.out.print(cell + " ");
+        for (Tile[] row : tileGrid) {
+            for (Tile tile : row) {
+                System.out.print(tile.toString() + " ");
             }
             System.out.println();
         }

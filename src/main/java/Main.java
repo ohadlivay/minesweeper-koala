@@ -12,8 +12,9 @@ public class Main {
     public static void main(String[] args) {
 
         //ohad's tests:
-        BoardGenerator temp = new BoardGenerator(GameDifficulty.MEDIUM);
-        System.out.println(temp.runClassTests());
+        // (this will be replaced with smarter tests)
+        BoardGenerator testBoard = new BoardGenerator(GameDifficulty.MEDIUM);
+        System.out.println(testBoard.runClassTests());
         //end of ohad's tests
         try {
             SmokeTest.runAllTests(args);

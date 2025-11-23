@@ -29,8 +29,7 @@ public class Board {
          */
         BoardGenerator x = new BoardGenerator(gameDifficulty);
         x.generateValidBoard(42);
-        int rows = gameDifficulty.getRows();
-        int cols = gameDifficulty.getCols();
+
 
        Tile[][] tiles = new Tile[1][1]; //temp till logic completes. tom please provide public method for initializing tiles.
         return tiles;
