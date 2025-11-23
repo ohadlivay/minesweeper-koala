@@ -1,45 +1,49 @@
 package main.java.model;
 
+import main.java.test.Testable;
+
+import java.util.Arrays;
 import java.util.Random;
 
-public class BoardGenerator {
+public class BoardGenerator implements Testable {
     private int rows;
     private int cols;
     private int numMines;
     private int numQuestionTiles;
     private int numSurpriseTiles;
-    private static BoardGenerator instance;
 
-    private BoardGenerator(GameDifficulty gameDifficulty){
+    //public for now
+    public BoardGenerator(GameDifficulty gameDifficulty){
         rows = gameDifficulty.getRows();
         cols = gameDifficulty.getCols();
         numMines = gameDifficulty.getMineCount();
     }
 
-    public static BoardGenerator getInstance(GameDifficulty gameDifficulty){
+    /*
+     * Generates a valid board configuration.
+     *
+     * Repeatedly creates temporary grids using a seeded generator
+     * until the grid contains enough candidate tiles to support
+     * the required number of question and surprise tiles.
+     *
+     * Once a valid layout is found, it is converted into a
+     * fully-initialized Tile[][] board.
+     */
+    public Tile[][] generateValidBoard(int seed) {
+        int[][] grid;
 
-        if (instance == null) {
-            instance = new BoardGenerator(gameDifficulty);
-        }
-        // If you want a strict singleton per configuration, you could add checks here.
-        return instance;
+        // Keep generating temporary boards until the minimum
+        // candidate-tile requirement is satisfied
+        do {
+            grid = generateTempBoard(seed);
+        } while (numCandidateTiles(grid) < (this.numQuestionTiles + this.numSurpriseTiles));
+
+        // A valid blueprint has been found — convert it into Tiles
+        Tile[][] tileGrid = toTileGrid(grid);
+
+        return tileGrid;
     }
-/*
-    public Tile[][] generateValidBoard(int seed){
 
- */
-    public void generateValidBoard(int seed){
-        boolean validBoardCreated = false;
-        while(!validBoardCreated){
-            int[][] grid = generateTempBoard(seed);
-            int numCandidates = numCandidateTiles(grid);
-            if (numCandidates >= (this.numQuestionTiles + this.numSurpriseTiles)){
-                validBoardCreated = true;
-            }
-        }
-        // at this point, we know grid is a valid blueprint for generating a legal board.
-
-    }
 
     private int[][] generateTempBoard(int seed) {
         // create gridSize x gridSize grid filled with 0's
@@ -104,5 +108,63 @@ public class BoardGenerator {
 
         return count;
     }
+    private int countMines(int[][] grid) {
+        int total = 0;
+        for (int[] row : grid) {
+            for (int cell : row) {
+                if (cell == 1) total++;
+            }
+        }
+        return total;
+    }
+    public Tile[][] toTileGrid(int[][] grid) {
+        int rows = grid.length;
+        int cols = grid[0].length;
 
+        Tile[][] tiles = new Tile[rows][cols];
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+
+                if (grid[r][c] == 1) {
+                    // mine tile
+                    tiles[r][c] = new MineTile();
+                } else {
+                    // empty tile
+                    tiles[r][c] = new Tile();
+                }
+            }
+        }
+
+        return tiles;
+    }
+
+    @Override
+    public boolean runClassTests() {
+        // simple deterministic test:
+        int seed = 20;
+
+        int[][] grid = generateTempBoard(seed);
+
+        // 1. size sanity
+        if (grid.length != rows) return false;
+        if (grid[0].length != cols) return false;
+
+        // 2. mine count sanity
+        if (countMines(grid) != numMines) return false;
+
+        // 3. test valid board generator
+        Tile[][] tileGrid = generateValidBoard(seed);
+
+        System.out.println("Sample valid board:");
+        for (Tile[] row : tileGrid) {
+            for (Tile tile : row) {
+                System.out.print(tile.toString() + " ");
+            }
+            System.out.println();
+        }
+
+
+        return true;
+    }
 }

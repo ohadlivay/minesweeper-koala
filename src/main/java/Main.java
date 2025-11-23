@@ -2,6 +2,7 @@ package main.java;
 
 import main.java.controller.NavigationController;
 import main.java.model.Board;
+import main.java.model.BoardGenerator;
 import main.java.model.GameDifficulty;
 import main.java.test.SmokeTest;
 
@@ -10,6 +11,11 @@ import javax.swing.*;
 public class Main {
     public static void main(String[] args) {
 
+        //ohad's tests:
+        // (this will be replaced with smarter tests)
+        BoardGenerator testBoard = new BoardGenerator(GameDifficulty.MEDIUM);
+        System.out.println(testBoard.runClassTests());
+        //end of ohad's tests
         try {
             SmokeTest.runAllTests(args);
         } catch (Exception e) {

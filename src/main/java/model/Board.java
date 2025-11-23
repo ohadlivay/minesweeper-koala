@@ -27,11 +27,9 @@ public class Board {
         this create a temporary, low weight and high performance board generator.
         since some generations can be faulty, this keeps that process light weight before we actually make the board.
          */
-        BoardGenerator x = BoardGenerator.getInstance(gameDifficulty);
+        BoardGenerator x = new BoardGenerator(gameDifficulty);
         x.generateValidBoard(42);
 
-        int rows = gameDifficulty.getRows();
-       int cols = gameDifficulty.getCols();
 
        Tile[][] tiles = new Tile[1][1]; //temp till logic completes. tom please provide public method for initializing tiles.
         return tiles;
