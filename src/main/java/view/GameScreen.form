@@ -3,38 +3,17 @@
   <grid id="27dc6" binding="gameScreen" layout-manager="GridLayoutManager" row-count="1" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="20" right="0"/>
     <constraints>
-      <xy x="23" y="20" width="2080" height="703"/>
+      <xy x="5" y="5" width="2374" height="1029"/>
     </constraints>
     <properties>
       <background color="-15790321"/>
     </properties>
     <border type="none"/>
     <children>
-      <grid id="c8758" binding="board2Placeholder" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="true" same-size-vertically="true" hgap="-1" vgap="-1">
-        <margin top="0" left="0" bottom="0" right="0"/>
-        <constraints>
-          <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="500" height="500"/>
-            <maximum-size width="500" height="500"/>
-          </grid>
-        </constraints>
-        <properties>
-          <background color="-15591894"/>
-        </properties>
-        <border type="none"/>
-        <children/>
-      </grid>
       <hspacer id="28741">
         <constraints>
           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="250" height="-1"/>
-          </grid>
-        </constraints>
-      </hspacer>
-      <hspacer id="1fe1f">
-        <constraints>
-          <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="200" height="-1"/>
           </grid>
         </constraints>
       </hspacer>
@@ -45,20 +24,6 @@
           </grid>
         </constraints>
       </hspacer>
-      <grid id="f392a" binding="board1Placeholder" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="true" same-size-vertically="true" hgap="-1" vgap="-1">
-        <margin top="0" left="0" bottom="0" right="0"/>
-        <constraints>
-          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="500" height="500"/>
-            <maximum-size width="500" height="500"/>
-          </grid>
-        </constraints>
-        <properties>
-          <background color="-15591894"/>
-        </properties>
-        <border type="none"/>
-        <children/>
-      </grid>
       <component id="9c0ed" class="javax.swing.JButton" binding="exitBtn">
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="1" anchor="2" fill="0" indent="2" use-parent-layout="false"/>
@@ -73,6 +38,84 @@
           <verticalAlignment value="0"/>
         </properties>
       </component>
+      <grid id="65749" binding="wrapperPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+        <constraints>
+          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="500" height="500"/>
+            <maximum-size width="500" height="500"/>
+          </grid>
+        </constraints>
+        <properties>
+          <background color="-15790321"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <grid id="f392a" binding="board1Placeholder" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="true" same-size-vertically="true" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints border-constraint="Center"/>
+            <properties>
+              <background color="-15591894"/>
+            </properties>
+            <border type="none"/>
+            <children/>
+          </grid>
+          <component id="f897d" class="javax.swing.JLabel" binding="player1Label">
+            <constraints border-constraint="North"/>
+            <properties>
+              <background color="-1"/>
+              <font name="Segoe UI Black" size="20" style="1"/>
+              <foreground color="-1"/>
+              <horizontalAlignment value="10"/>
+              <horizontalTextPosition value="11"/>
+              <maximumSize width="77" height="27"/>
+              <text value="Player 1"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <grid id="b7c35" binding="wrapperPanel2" layout-manager="BorderLayout" hgap="0" vgap="0">
+        <constraints>
+          <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="500" height="500"/>
+            <maximum-size width="500" height="500"/>
+          </grid>
+        </constraints>
+        <properties>
+          <background color="-15790321"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <grid id="aadba" binding="board2Placeholder" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="true" same-size-vertically="true" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints border-constraint="Center"/>
+            <properties>
+              <background color="-15591894"/>
+            </properties>
+            <border type="none"/>
+            <children/>
+          </grid>
+          <component id="7d589" class="javax.swing.JLabel" binding="player2Label">
+            <constraints border-constraint="North"/>
+            <properties>
+              <background color="-1"/>
+              <font name="Segoe UI Black" size="20" style="1"/>
+              <foreground color="-1"/>
+              <horizontalAlignment value="10"/>
+              <horizontalTextPosition value="11"/>
+              <maximumSize width="77" height="27"/>
+              <text value="Player 2"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <hspacer id="fd704">
+        <constraints>
+          <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="0" anchor="0" fill="3" indent="20" use-parent-layout="false">
+            <preferred-size width="20" height="-1"/>
+            <maximum-size width="20" height="-1"/>
+          </grid>
+        </constraints>
+      </hspacer>
     </children>
   </grid>
 </form>
