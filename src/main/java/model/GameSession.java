@@ -57,7 +57,7 @@ public class GameSession implements Testable
     private GameSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
     {
         this.timeStamp = LocalDateTime.now();
-        if (Objects.equals(rightPlayerName, leftPlayerName))
+        if (Objects.equals(rightPlayerName, leftPlayerName)&&rightPlayerName!=null)
             throw new IllegalArgumentException("Right player name cannot be the same as left player name");
         this.gameDifficulty = Objects.requireNonNullElse(gameDifficulty, GameDifficulty.EASY);
         this.rightPlayerName = Objects.requireNonNullElse(rightPlayerName, "Player 2");
