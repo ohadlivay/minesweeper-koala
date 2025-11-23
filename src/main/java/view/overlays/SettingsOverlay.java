@@ -9,6 +9,19 @@ public class SettingsOverlay extends JDialog {
     private JButton buttonCancel;
     private JPanel bottomPanel;
     private JPanel mainPanel;
+    private JLabel difficultyLabel;
+    private JPanel labelPanel;
+    private JPanel difficultyPanel;
+    private JPanel nameInputPanel;
+    private JPanel startBtnPanel;
+    private JLabel easy;
+    private JLabel medium;
+    private JLabel hard;
+    private JTextField textField1;
+    private JTextField textField2;
+    private JPanel nameLabelPanel;
+    private JLabel player1Label;
+    private JLabel player2Label;
 
     public SettingsOverlay() {
         setContentPane(contentPane);
