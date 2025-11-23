@@ -1,44 +1,40 @@
 package main.java.model;
 
+import main.java.test.Testable;
+
+import java.util.Arrays;
 import java.util.Random;
 
-public class BoardGenerator {
+public class BoardGenerator implements Testable {
     private int rows;
     private int cols;
     private int numMines;
     private int numQuestionTiles;
     private int numSurpriseTiles;
-    private static BoardGenerator instance;
 
-    private BoardGenerator(GameDifficulty gameDifficulty){
+    //public for now
+    public BoardGenerator(GameDifficulty gameDifficulty){
         rows = gameDifficulty.getRows();
         cols = gameDifficulty.getCols();
         numMines = gameDifficulty.getMineCount();
     }
 
-    public static BoardGenerator getInstance(GameDifficulty gameDifficulty){
-
-        if (instance == null) {
-            instance = new BoardGenerator(gameDifficulty);
-        }
-        // If you want a strict singleton per configuration, you could add checks here.
-        return instance;
-    }
 /*
     public Tile[][] generateValidBoard(int seed){
 
  */
-    public void generateValidBoard(int seed){
+    public int[][] generateValidBoard(int seed){
+        int[][] grid = null;
         boolean validBoardCreated = false;
         while(!validBoardCreated){
-            int[][] grid = generateTempBoard(seed);
+            grid = generateTempBoard(seed);
             int numCandidates = numCandidateTiles(grid);
             if (numCandidates >= (this.numQuestionTiles + this.numSurpriseTiles)){
                 validBoardCreated = true;
             }
         }
         // at this point, we know grid is a valid blueprint for generating a legal board.
-
+        return grid;
     }
 
     private int[][] generateTempBoard(int seed) {
@@ -105,4 +101,44 @@ public class BoardGenerator {
         return count;
     }
 
+    private int countMines(int[][] grid) {
+        int total = 0;
+        for (int[] row : grid) {
+            for (int cell : row) {
+                if (cell == 1) total++;
+            }
+        }
+        return total;
+    }
+
+    @Override
+    public boolean runClassTests() {
+        // simple deterministic test:
+        int seed = 20;
+
+        int[][] grid = generateTempBoard(seed);
+
+        // 1. size sanity
+        if (grid.length != rows) return false;
+        if (grid[0].length != cols) return false;
+
+        // 2. mine count sanity
+        if (countMines(grid) != numMines) return false;
+
+        // 3. test valid board generator
+        int[][] valid = generateValidBoard(seed);
+        int candidates = numCandidateTiles(valid);
+        if (candidates < (numQuestionTiles + numSurpriseTiles)) return false;
+
+        System.out.println("Sample valid board:");
+        for (int[] row : valid) {
+            for (int cell : row) {
+                System.out.print(cell + " ");
+            }
+            System.out.println();
+        }
+
+
+        return true;
+    }
 }
