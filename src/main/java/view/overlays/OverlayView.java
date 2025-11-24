@@ -14,13 +14,7 @@ public abstract class OverlayView extends JDialog {
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
     }
 
-    public OverlayView() {
-        this(null);
-    }
-
     public void open() {
         this.setVisible(true);
     }
-
-    // what will happen when the overlay closes?
 }

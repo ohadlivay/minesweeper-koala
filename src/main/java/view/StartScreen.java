@@ -16,7 +16,7 @@ public class StartScreen {
     public StartScreen(NavigationController nav) {
         this.nav = nav;
 
-        // set listener to send user input to controller
+        // listener to open the GameSettings overlay
         startGameBtn.addActionListener(e -> {
             SettingsOverlay SO = new SettingsOverlay(nav);
             SO.open();
