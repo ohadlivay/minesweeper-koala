@@ -33,12 +33,12 @@ public class Tile implements Testable
     }
 
     //Getters and setters for the tile class
-    boolean isFlagged()
+    public boolean isFlagged()
     {
         return isFlagged;
     }
 
-    boolean isRevealed()
+    public boolean isRevealed()
     {
         return isRevealed;
     }
@@ -67,7 +67,7 @@ public class Tile implements Testable
         this.y = y;
     }
 
-    boolean isActivated()
+    public boolean isActivated()
     {
         return isActivated;
     }
