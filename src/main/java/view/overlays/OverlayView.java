@@ -8,12 +8,9 @@ import javax.swing.*;
  * It also allows setting a listener to handle actions when the overlay is closed.
  */
 public abstract class OverlayView extends JDialog {
-    protected OverlayListener listener;
-    protected NavigationController nav;
 
     public OverlayView(NavigationController nav) {
         super(nav.getVisFrame(), true);
-        this.nav = nav;
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
     }
 
@@ -21,19 +18,9 @@ public abstract class OverlayView extends JDialog {
         this(null);
     }
 
-    public void setListener(OverlayListener listener) {
-        this.listener = listener;
-    }
-
     public void open() {
         this.setVisible(true);
     }
 
     // what will happen when the overlay closes?
-    public void close() {
-        this.setVisible(false);
-        if (listener != null) {
-            listener.actionOnClose(this);
-        }
-    }
 }
