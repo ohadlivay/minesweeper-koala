@@ -1,6 +1,11 @@
 package main.java.model;
 
 import main.java.test.Testable;
+import main.java.view.TileListener;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /*
 tom i think might want to reconsider the access modifiers of the setters here (true for GameSession too)
 and we need to re-evaluate the use of isActivated here, so it won't be confused with special tiles
@@ -33,12 +38,12 @@ public class Tile implements Testable
     }
 
     //Getters and setters for the tile class
-    boolean isFlagged()
+    public boolean isFlagged()
     {
         return isFlagged;
     }
 
-    boolean isRevealed()
+    public boolean isRevealed()
     {
         return isRevealed;
     }
@@ -101,6 +106,7 @@ public class Tile implements Testable
         {
             isFlagged = true;
             activate();
+            notifyListeners();
         }
         else
             throw new IllegalMoveException("flag");
@@ -112,6 +118,7 @@ public class Tile implements Testable
         if (isFlagged&&!isRevealed)
         {
             isFlagged = false;
+            notifyListeners();
         }
 
         else
@@ -122,6 +129,18 @@ public class Tile implements Testable
     protected void activate()
     {
         isActivated = true;
+    }
+
+    private List<TileListener> listeners = new ArrayList<>();
+
+    public void addListener(TileListener listener) {
+        listeners.add(listener);
+    }
+
+    private void notifyListeners() {
+        for (TileListener l : listeners) {
+            l.update();
+        }
     }
 
     //Tests the tile class
