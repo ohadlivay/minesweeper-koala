@@ -24,9 +24,12 @@ public class SettingsOverlay extends OverlayView {
     private JPanel nameLabelPanel;
     private JLabel player1Label;
     private JLabel player2Label;
+    private final NavigationController nav;
+
 
     public SettingsOverlay(NavigationController nav) {
         super(nav);
+        this.nav = nav;
         setContentPane(contentPane);
         pack();
         setLocationRelativeTo(nav.getVisFrame());
@@ -46,7 +49,8 @@ public class SettingsOverlay extends OverlayView {
 
     // close the overlay and go to the game screen
     private void onOK() {
-        setVisible(false);
+        nav.goToGame();
+        dispose();
     }
 
     private void onCancel() {

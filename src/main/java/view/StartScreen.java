@@ -20,11 +20,6 @@ public class StartScreen {
         startGameBtn.addActionListener(e -> {
             SettingsOverlay SO = new SettingsOverlay(nav);
             SO.open();
-            String player1 = SO.getPlayer1Name().trim();
-            String player2 = SO.getPlayer2Name().trim();
-            nav.goToGame();
-            //need to send difficulty
-
         });
         gameHistoryBtn.addActionListener(e -> nav.goToHistory());
         mngQuestionsBtn.addActionListener(e -> nav.goToQuestionManager());
