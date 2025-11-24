@@ -9,6 +9,7 @@ package main.java.controller;
 //import main.java.view.BoardLayout;
 
 import main.java.model.Board;
+import main.java.model.IllegalMoveException;
 import main.java.model.Tile;
 
 public class BoardController {
@@ -27,4 +28,19 @@ public class BoardController {
     public int getCols(Board board) {
         return board.getCols();
     }
+
+    public void tileRightClick(Tile tile) {
+        if (tile.isFlagged()) {
+            tile.unflag();
+        }
+        else {
+            tile.flag();
+        }
+    }
+
+    public void tileLeftClick(Tile tile) {
+        tile.reveal();
+    }
+
+
 }

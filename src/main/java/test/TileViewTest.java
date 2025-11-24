@@ -1,6 +1,7 @@
-package main.java.view;
+package main.java.test;
 
 import main.java.model.Tile;
+import main.java.view.TileView;
 
 import javax.swing.*;
 
