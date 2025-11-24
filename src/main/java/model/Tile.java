@@ -33,41 +33,41 @@ public class Tile implements Testable
     }
 
     //Getters and setters for the tile class
-    public boolean isFlagged()
+    boolean isFlagged()
     {
         return isFlagged;
     }
 
-    public boolean isRevealed()
+    boolean isRevealed()
     {
         return isRevealed;
     }
 
-    public double getX()
+    double getX()
     {
         return x;
     }
 
-    public void setX(double x)
+    void setX(double x)
     {
         if (x < 0)
             throw new IllegalArgumentException("Invalid coordinates");
         this.x = x;
     }
 
-    public double getY()
+    double getY()
     {
         return y;
     }
 
-    public void setY(double y)
+    void setY(double y)
     {
         if (y < 0)
             throw new IllegalArgumentException("Invalid coordinates");
         this.y = y;
     }
 
-    public boolean isActivated()
+    boolean isActivated()
     {
         return isActivated;
     }
@@ -76,7 +76,7 @@ public class Tile implements Testable
 
 
     //Method to get the coordinates of the tile
-    public double[] getCoordinates()
+    double[] getCoordinates()
     {
         return new double[]{x,y};
     }
@@ -119,7 +119,7 @@ public class Tile implements Testable
     }
 
     //Activates the tile if it is not activated already
-    private void activate()
+    protected void activate()
     {
         isActivated = true;
     }

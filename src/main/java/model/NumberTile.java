@@ -16,12 +16,12 @@ public class NumberTile extends Tile
 
 
     //Getters and setters for the NumberTile class
-    public int getAdjacentMines()
+    int getAdjacentMines()
     {
         return adjacentMines;
     }
 
-    public void setAdjacentMines(int adjacentMines)
+    void setAdjacentMines(int adjacentMines)
     {
         if (adjacentMines < 0||adjacentMines>8)
             throw new IllegalArgumentException("Invalid number of adjacent mines");
@@ -29,7 +29,7 @@ public class NumberTile extends Tile
     }
 
     //Adds a mine neighbor to the tile
-    public void addMineNeighbor()
+    void addMineNeighbor()
     {
         if (adjacentMines < 8)
             this.adjacentMines++;
