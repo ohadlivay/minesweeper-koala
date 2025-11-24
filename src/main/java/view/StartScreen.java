@@ -1,5 +1,7 @@
 package main.java.view;
 import main.java.controller.NavigationController;
+import main.java.view.overlays.SettingsOverlay;
+
 import javax.swing.*;
 
 public class StartScreen {
@@ -14,7 +16,20 @@ public class StartScreen {
     public StartScreen(NavigationController nav) {
         this.nav = nav;
 
-        startGameBtn.addActionListener(e -> nav.goToGame());
+        // set listener to send user input to controller
+        startGameBtn.addActionListener(e -> {
+                    SettingsOverlay SO = new SettingsOverlay(nav);
+                    SO.setListener(oview -> {
+                        SettingsOverlay overlay = (SettingsOverlay) oview;
+
+                        String player1 = overlay.getPlayer1Name().trim();
+                        String player2 = overlay.getPlayer2Name().trim();
+                        //need to send difficulty
+                    });
+
+                    SO.open();
+
+                });
         gameHistoryBtn.addActionListener(e -> nav.goToHistory());
         mngQuestionsBtn.addActionListener(e -> nav.goToQuestionManager());
     }
