@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class TileView extends JButton implements BoardListener {
+public class TileView extends JButton implements TileListener {
     private final Tile tile;
     private final BoardController boardController;
 

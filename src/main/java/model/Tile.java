@@ -1,7 +1,7 @@
 package main.java.model;
 
 import main.java.test.Testable;
-import main.java.view.BoardListener;
+import main.java.view.TileListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -132,13 +132,16 @@ public class Tile implements Testable
         isActivated = true;
     }
 
-    private final List<BoardListener> listeners = new ArrayList<>();
-    public void addListener(BoardListener listener) {
+    /*observer pattern to notify TileView of changes
+    * holds a list of all listeners that need to know when the tile state changes
+     */
+    private final List<TileListener> listeners = new ArrayList<>();
+    public void addListener(TileListener listener) {
         listeners.add(listener);
     }
 
     private void notifyListeners() {
-        for (BoardListener l : listeners) {
+        for (TileListener l : listeners) {
             l.update();
         }
     }
