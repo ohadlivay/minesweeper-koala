@@ -14,9 +14,12 @@ public class GameScreen extends JPanel {
     private JLabel player1Label;
     private JLabel player2Label;
     private JButton exitBtn;
+    private final NavigationController nav;
 
     public GameScreen(NavigationController navigationController) {
+        this.nav = navigationController;
 
+        exitBtn.addActionListener(e -> nav.goToHome());
     }
 
     public JPanel getGamePanel() {
