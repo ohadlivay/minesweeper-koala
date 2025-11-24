@@ -4,7 +4,7 @@ import main.java.controller.NavigationController;
 
 import javax.swing.*;
 /* An abstract class representing an overlay.
- * It provides methods to open and close the overlay.
+ * It provides helper methods to open and close the overlay.
  * It also allows setting a listener to handle actions when the overlay is closed.
  */
 public abstract class OverlayView extends JDialog {
@@ -29,6 +29,7 @@ public abstract class OverlayView extends JDialog {
         this.setVisible(true);
     }
 
+    // what will happen when the overlay closes?
     public void close() {
         this.setVisible(false);
         if (listener != null) {

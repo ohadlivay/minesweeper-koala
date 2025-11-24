@@ -34,7 +34,7 @@ public class SettingsOverlay extends OverlayView {
         buttonOK.addActionListener(e -> onOK());
         buttonCancel.addActionListener(e -> onCancel());
 
-        // call onCancel() when cross is clicked
+        // call onCancel() when X is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -42,20 +42,25 @@ public class SettingsOverlay extends OverlayView {
             }
         });
 
-        // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
+    // close the overlay and go to the game screen
     private void onOK() {
         nav.goToGame();
+        setVisible(false);
     }
 
     private void onCancel() {
         close();
+    }
+
+    // add getters to retrieve user input
+    public String getPlayer1Name() {
+        return player1Name.getText();
+    }
+
+    public String getPlayer2Name() {
+        return player2Name.getText();
     }
 
 }
