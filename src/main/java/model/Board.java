@@ -21,22 +21,22 @@ public class Board {
         this.tiles = populateBoard(gameDifficulty);
     }
 
-    private Tile[][] populateBoard(GameDifficulty gameDifficulty) {
+    private Tile[][] populateBoard() {
 
         /*
         this create a temporary, low weight and high performance board generator.
         since some generations can be faulty, this keeps that process light weight before we actually make the board.
          */
-        BoardGenerator x = new BoardGenerator(gameDifficulty);
-        x.generateValidBoard(42);
-       Tile[][] tiles = new Tile[1][1]; //temp till logic completes. tom please provide public method for initializing tiles.
+        BoardGenerator boardGenerator = new BoardGenerator(this.gameDifficulty);
+        // Tile[][] tiles = boardGenerator.generateValidBoard(42); // 
+        Tile[][] tiles = new Tile[1][1]; //temp till logic completes. tom please provide public method for initializing tiles.
         return tiles;
     }
     //factory design pattern
     //anyone can use this method and they are guaranteed a valid board with all tiles.
     public static Board createNewBoard(GameDifficulty gameDifficulty){
         Board board = new Board(gameDifficulty);
-        board.populateBoard(gameDifficulty);
+        board.populateBoard();
         return board;
     }
 }
