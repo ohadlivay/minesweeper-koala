@@ -20,7 +20,7 @@ public class Main implements Testable {
 
         //ohad's tests:
         // (this will be replaced with smarter tests)
-        BoardGenerator testBoard = new BoardGenerator(GameDifficulty.MEDIUM);
+        BoardGenerator testBoard = new BoardGenerator(GameDifficulty.HARD);
         System.out.println(testBoard.runClassTests());
         //end of ohad's tests
 

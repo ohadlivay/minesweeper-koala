@@ -18,22 +18,22 @@ public class Board {
         this.tiles = new Tile[gameDifficulty.getRows()][gameDifficulty.getCols()];
         this.minesLeft = gameDifficulty.getMineCount();
         this.gameDifficulty = gameDifficulty;
-        this.tiles = populateBoard(gameDifficulty);
+        this.tiles = populateBoard();
     }
 
     private Tile[][] populateBoard() {
 
         /*
-        this create a temporary, low weight and high performance board generator.
-        since some generations can be faulty, this keeps that process light weight before we actually make the board.
+        create temporary, low weight and high performance board generator.
+        since some generations can be faulty, this keeps that process light weight before we actually construct Tiles
          */
         BoardGenerator boardGenerator = new BoardGenerator(this.gameDifficulty);
-        // Tile[][] tiles = boardGenerator.generateValidBoard(42); // 
-        Tile[][] tiles = new Tile[1][1]; //temp till logic completes. tom please provide public method for initializing tiles.
-        return tiles;
+        //
+        return boardGenerator.generateValidBoard(42); //currently set at 42 for testing
     }
     //factory design pattern
-    //anyone can use this method and they are guaranteed a valid board with all tiles.
+    //anyone can use this method and they are guaranteed a valid board with all tiles
+    //contemplating merging this into c'tor since logic isnt really that complicated in the end
     public static Board createNewBoard(GameDifficulty gameDifficulty){
         Board board = new Board(gameDifficulty);
         board.populateBoard();
