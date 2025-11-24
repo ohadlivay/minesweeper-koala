@@ -35,6 +35,10 @@ public class NavigationController {
         refresh();
     }
 
+    public JFrame getVisFrame() {
+        return visFrame;
+    }
+
     //***Helper Methods***//
 
     private void refresh() {

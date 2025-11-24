@@ -1,9 +1,11 @@
 package main.java.view.overlays;
 
+import main.java.controller.NavigationController;
+
 import javax.swing.*;
 import java.awt.event.*;
 
-public class SettingsOverlay extends JDialog {
+public class SettingsOverlay extends OverlayView {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -17,28 +19,20 @@ public class SettingsOverlay extends JDialog {
     private JLabel easy;
     private JLabel medium;
     private JLabel hard;
-    private JTextField textField1;
-    private JTextField textField2;
+    private JTextField player1Name;
+    private JTextField player2Name;
     private JPanel nameLabelPanel;
     private JLabel player1Label;
     private JLabel player2Label;
 
-    public SettingsOverlay() {
+    public SettingsOverlay(NavigationController nav) {
+        super(nav);
         setContentPane(contentPane);
-        setModal(true);
-        getRootPane().setDefaultButton(buttonOK);
+        pack();
+        setLocationRelativeTo(nav.getVisFrame());
 
-        buttonOK.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
-
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        });
+        buttonOK.addActionListener(e -> onOK());
+        buttonCancel.addActionListener(e -> onCancel());
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -57,19 +51,11 @@ public class SettingsOverlay extends JDialog {
     }
 
     private void onOK() {
-        // add your code here
-        dispose();
+        nav.goToGame();
     }
 
     private void onCancel() {
-        // add your code here if necessary
-        dispose();
+        close();
     }
 
-    public static void main(String[] args) {
-        SettingsOverlay dialog = new SettingsOverlay();
-        dialog.pack();
-        dialog.setVisible(true);
-        System.exit(0);
-    }
 }
