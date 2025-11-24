@@ -46,12 +46,11 @@ public class SettingsOverlay extends OverlayView {
 
     // close the overlay and go to the game screen
     private void onOK() {
-        nav.goToGame();
         setVisible(false);
     }
 
     private void onCancel() {
-        close();
+        setVisible(false);
     }
 
     // add getters to retrieve user input

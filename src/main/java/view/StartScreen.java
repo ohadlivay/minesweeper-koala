@@ -18,18 +18,14 @@ public class StartScreen {
 
         // set listener to send user input to controller
         startGameBtn.addActionListener(e -> {
-                    SettingsOverlay SO = new SettingsOverlay(nav);
-                    SO.setListener(oview -> {
-                        SettingsOverlay overlay = (SettingsOverlay) oview;
+            SettingsOverlay SO = new SettingsOverlay(nav);
+            SO.open();
+            String player1 = SO.getPlayer1Name().trim();
+            String player2 = SO.getPlayer2Name().trim();
+            nav.goToGame();
+            //need to send difficulty
 
-                        String player1 = overlay.getPlayer1Name().trim();
-                        String player2 = overlay.getPlayer2Name().trim();
-                        //need to send difficulty
-                    });
-
-                    SO.open();
-
-                });
+        });
         gameHistoryBtn.addActionListener(e -> nav.goToHistory());
         mngQuestionsBtn.addActionListener(e -> nav.goToQuestionManager());
     }
