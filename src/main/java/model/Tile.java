@@ -1,7 +1,11 @@
 package main.java.model;
 
 import main.java.test.Testable;
-
+/*
+tom i think might want to reconsider the access modifiers of the setters here (true for GameSession too)
+and we need to re-evaluate the use of isActivated here, so it won't be confused with special tiles
+-ohad
+ */
 //Tile class for the minesweeper game
 public class Tile implements Testable
 {

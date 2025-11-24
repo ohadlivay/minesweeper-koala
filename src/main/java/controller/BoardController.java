@@ -15,15 +15,16 @@ public class BoardController {
     private int test; //testing
 
     //Ohad please implement the following methods
+    //Done. im assuming your view has a board instance, need to check if this is ok
     public static Tile[][] getTiles(Board board) {     //will this method be here?
-        return null;        //temp return line
+        return board.getTiles();
     }
 
     public int getRows(Board board) {
-        return 0;
+        return board.getRows();
     }
 
     public int getCols(Board board) {
-        return 0;
+        return board.getCols();
     }
 }

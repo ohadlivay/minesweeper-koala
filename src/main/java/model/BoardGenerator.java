@@ -12,7 +12,6 @@ public class BoardGenerator implements Testable {
     private int numQuestionTiles;
     private int numSurpriseTiles;
 
-    //public for now
     public BoardGenerator(GameDifficulty gameDifficulty){
         rows = gameDifficulty.getRows();
         cols = gameDifficulty.getCols();

@@ -39,4 +39,16 @@ public class Board {
         board.populateBoard();
         return board;
     }
+
+// for controller use
+    public Tile[][] getTiles() {
+        return tiles;
+    }
+    public int getRows() {
+        return (tiles == null) ? 0 : tiles.length;
+    }
+
+    public int getCols() {
+        return (tiles == null || tiles.length == 0) ? 0 : tiles[0].length;
+    }
 }
