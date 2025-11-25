@@ -40,6 +40,28 @@ public class Board {
         return board;
     }
 
+    boolean reveal(int r, int c)
+    {
+        Tile tile = tiles[r][c];
+        boolean activated = tile.isActivated();
+        tile.reveal();
+        return activated;
+    }
+    boolean flag(int r, int c)
+    {
+        Tile tile = tiles[r][c];
+        boolean activated = tile.isActivated();
+        tile.flag();
+        return activated;
+    }
+    boolean unflag(int r, int c)
+    {
+        Tile tile = tiles[r][c];
+        boolean activated = tile.isActivated();
+        tile.unflag();
+        return activated;
+    }
+
 // for controller use
     public Tile[][] getTiles() {
         return tiles;

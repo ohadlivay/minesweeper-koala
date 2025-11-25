@@ -125,7 +125,7 @@ public class GameSession implements Testable
     }
 
     //Changes the turn of the game session
-    public void changeTurn()
+    private void changeTurn()
     {
         this.turn = !this.turn;
     }
@@ -176,6 +176,46 @@ public class GameSession implements Testable
     public void forceGameOver() {
         this.healthPool = 0;
     }
+
+    //Methods for the gameplay
+    public boolean isGameOver()
+    {
+        return healthPool <= 0;
+    }
+
+    public void reveal(int r, int c,boolean left) throws Exception
+    {
+        boolean activated = false;
+        try
+        {
+            activated = (left) ? leftBoard.reveal(r, c) : rightBoard.reveal(r, c);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+        changeTurn();
+
+    }
+    public void flag(int r, int c,boolean left) throws Exception
+    {
+        boolean activated = false;
+        try {
+            activated = (left) ? leftBoard.flag(r, c) : rightBoard.flag(r, c);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+
+    }
+    public void unflag(int r, int c,boolean left) throws Exception
+    {
+        boolean activated = false;
+        try
+        {
+            activated = (left) ? leftBoard.unflag(r, c) : rightBoard.unflag(r, c);
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
+
 
     //Tests the game session class
     @Override

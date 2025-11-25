@@ -127,7 +127,7 @@ public class Tile implements Testable
     }
 
     //Activates the tile if it is not activated already
-    protected void activate()
+    private void activate()
     {
         isActivated = true;
     }
