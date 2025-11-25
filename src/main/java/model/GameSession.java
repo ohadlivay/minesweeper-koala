@@ -63,7 +63,7 @@ public class GameSession implements Testable
         this.rightPlayerName = Objects.requireNonNullElse(rightPlayerName, "Player 2");
         this.leftPlayerName = Objects.requireNonNullElse(leftPlayerName, "Player 1");
         this.turn = true;
-        this.initializeMaxHealthPool();
+        this.healthPool = gameDifficulty.getInitialHealthPool();
         this.initializeBoards();
 
 
@@ -73,23 +73,6 @@ public class GameSession implements Testable
     public static GameSession createNewSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
     {
         return new GameSession(leftPlayerName, rightPlayerName, gameDifficulty);
-    }
-
-    // Initialize the health pool based on the game difficulty
-    private void initializeMaxHealthPool()
-    {
-
-        switch (gameDifficulty)
-        {
-            case EASY:
-                this.healthPool = 10;
-                break;
-            case MEDIUM:
-                this.healthPool = 8;
-                break;
-            case HARD:
-                this.healthPool = 6;
-        }
     }
 
     //Initialize the boards of the players involved in the game session
