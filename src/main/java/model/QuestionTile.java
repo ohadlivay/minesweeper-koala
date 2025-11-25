@@ -4,7 +4,19 @@ public class QuestionTile extends SpecialTile
 {
     // Constructors
 
-    public QuestionTile(GameDifficulty gameDifficulty) {
-        super(gameDifficulty);
+    public QuestionTile()
+    {
+        super();
+    }
+
+    @Override
+    public void initiate(GameDifficulty gameDifficulty)
+    {
+        setUsed();
+    }
+
+    @Override
+    public String toString() {
+        return "Q";
     }
 }

@@ -1,8 +1,6 @@
-package main.java.view;
+package main.java.view.overlays;
 
 import main.java.controller.NavigationController;
-
-import javax.swing.*;
 
 public class ViewQuestionOverlay extends OverlayView {
     public ViewQuestionOverlay(NavigationController navigationController) {

@@ -18,29 +18,37 @@ public class Board {
         this.tiles = new Tile[gameDifficulty.getRows()][gameDifficulty.getCols()];
         this.minesLeft = gameDifficulty.getMineCount();
         this.gameDifficulty = gameDifficulty;
-        this.tiles = populateBoard(gameDifficulty);
+        this.tiles = populateBoard();
     }
 
-    private Tile[][] populateBoard(GameDifficulty gameDifficulty) {
+    private Tile[][] populateBoard() {
 
         /*
-        this create a temporary, low weight and high performance board generator.
-        since some generations can be faulty, this keeps that process light weight before we actually make the board.
+        create temporary, low weight and high performance board generator.
+        since some generations can be faulty, this keeps that process light weight before we actually construct Tiles
          */
-        BoardGenerator x = BoardGenerator.getInstance(gameDifficulty);
-        x.generateValidBoard(42);
-
-        int rows = gameDifficulty.getRows();
-       int cols = gameDifficulty.getCols();
-
-       Tile[][] tiles = new Tile[1][1]; //temp till logic completes. tom please provide public method for initializing tiles.
-        return tiles;
+        BoardGenerator boardGenerator = new BoardGenerator(this.gameDifficulty);
+        //
+        return boardGenerator.generateValidBoard(42); //currently set at 42 for testing
     }
     //factory design pattern
-    //anyone can use this method and they are guaranteed a valid board with all tiles.
+    //anyone can use this method and they are guaranteed a valid board with all tiles
+    //contemplating merging this into c'tor since logic isnt really that complicated in the end
     public static Board createNewBoard(GameDifficulty gameDifficulty){
         Board board = new Board(gameDifficulty);
-        board.populateBoard(gameDifficulty);
+        board.populateBoard();
         return board;
+    }
+
+// for controller use
+    public Tile[][] getTiles() {
+        return tiles;
+    }
+    public int getRows() {
+        return (tiles == null) ? 0 : tiles.length;
+    }
+
+    public int getCols() {
+        return (tiles == null || tiles.length == 0) ? 0 : tiles[0].length;
     }
 }

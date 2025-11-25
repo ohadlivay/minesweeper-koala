@@ -8,6 +8,39 @@ package main.java.controller;
 //import main.java.model.Board;
 //import main.java.view.BoardLayout;
 
+import main.java.model.Board;
+import main.java.model.IllegalMoveException;
+import main.java.model.Tile;
+
 public class BoardController {
     private int test; //testing
+
+    //Ohad please implement the following methods
+    //Done. im assuming your view has a board instance, need to check if this is ok
+    public static Tile[][] getTiles(Board board) {     //will this method be here?
+        return board.getTiles();
+    }
+
+    public int getRows(Board board) {
+        return board.getRows();
+    }
+
+    public int getCols(Board board) {
+        return board.getCols();
+    }
+
+    public void tileRightClick(Tile tile) {
+        if (tile.isFlagged()) {
+            tile.unflag();
+        }
+        else {
+            tile.flag();
+        }
+    }
+
+    public void tileLeftClick(Tile tile) {
+        tile.reveal();
+    }
+
+
 }

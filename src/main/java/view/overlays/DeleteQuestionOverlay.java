@@ -1,9 +1,8 @@
-package main.java.view;
+package main.java.view.overlays;
 
 import main.java.controller.NavigationController;
-import javax.swing.*;
 
-public class DeleteQuestionOverlay extends OverlayView{
+public class DeleteQuestionOverlay extends OverlayView {
     public DeleteQuestionOverlay(NavigationController navigationController) {
         super(navigationController);
     }
