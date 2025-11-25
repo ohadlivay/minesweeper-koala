@@ -131,43 +131,10 @@ public class BoardGenerator implements Testable {
                 } else {
                     // empty tile
                     tiles[r][c] = new NumberTile();
-                    calculateAdjacentMines((NumberTile) tiles[r][c],grid, r, c);
                 }
             }
         }
-
         return tiles;
-    }
-
-    private void calculateAdjacentMines(NumberTile t,int [][] grid, int r, int c)
-    {
-        int rows = grid.length;
-        int cols = grid[0].length;
-        int adjacentMineCount = 0;
-
-        // Iterate through all 8 neighboring cells
-        for (int dr = -1; dr <= 1; dr++) {
-            for (int dc = -1; dc <= 1; dc++) {
-                // Skip the current cell (dr = 0 and dc = 0)
-                if (dr == 0 && dc == 0) {
-                    continue;
-                }
-
-                int neighborR = r + dr;
-                int neighborC = c + dc;
-
-                // Check if the neighbor is within the grid boundaries
-                if (neighborR >= 0 && neighborR < rows && neighborC >= 0 && neighborC < cols) {
-                    // Check if the neighbor is a mine (value 1 in the grid)
-                    if (grid[neighborR][neighborC] == 1) {
-                        adjacentMineCount++;
-                    }
-                }
-            }
-        }
-
-        // Set the calculated count on the NumberTile
-        t.setAdjacentMines(adjacentMineCount);
     }
 
     @Override
