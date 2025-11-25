@@ -5,16 +5,19 @@ public class SurpriseTile extends SpecialTile
 {
     // Constructors
 
-    public SurpriseTile(GameDifficulty gameDifficulty)
+    public SurpriseTile()
     {
-        super(gameDifficulty);
+        super();
     }
 
     @Override
-    public void initiate()
+    public void initiate(GameDifficulty gameDifficulty)
     {
         setUsed();
     }
 
-
+    @Override
+    public String toString() {
+        return "S";
+    }
 }
