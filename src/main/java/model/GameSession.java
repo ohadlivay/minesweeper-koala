@@ -218,6 +218,7 @@ public class GameSession implements Testable
         }
         if (!isGameOver(left))
             changeTurn();
+        else initiateGameOver();
 
     }
     public void flag(int r, int c,boolean left) throws Exception
@@ -245,6 +246,8 @@ public class GameSession implements Testable
             }
                 
         }
+        if (isGameOver(left))
+            initiateGameOver();
 
     }
     public void unflag(int r, int c,boolean left) throws Exception
