@@ -196,16 +196,16 @@ public class GameSession implements Testable
     public void reveal(int r, int c,boolean left) throws Exception
     {
         Board board = (left) ? leftBoard : rightBoard;
-        boolean activated = true;
+        Board.RevealResult result = null;
         try
         {
-            activated = board.reveal(r, c);
+            result = board.reveal(r, c);
         } catch (Exception e) {
             throw new Exception(e);
         }
-        if (!activated)
+        if (!result.wasActivated)
         {
-            Tile t = board.getTiles()[r][c];
+            Tile t = result.revealedTile;
             if (t instanceof MineTile)
                 deductHealth(1);
             else if (t instanceof NumberTile nt)
@@ -214,7 +214,7 @@ public class GameSession implements Testable
                 if (nt.getAdjacentMines()==0)
                     board.cascade(r, c);
             }
-                
+
         }
         if (!isGameOver(left))
             changeTurn();
@@ -224,30 +224,49 @@ public class GameSession implements Testable
     public void flag(int r, int c,boolean left) throws Exception
     {
         Board board = (left) ? leftBoard : rightBoard;
-        boolean activated = true;
+
+        // Inspect the tile first to decide behavior (do not blindly call board.flag)
+        Tile tile = board.getTileAt(r, c);
+        if (tile == null) {
+            // Preserve previous behavior: let board.flag handle invalid coords exceptions if desired.
+            // We throw a generic exception to keep interface compatibility.
+            throw new Exception("Invalid tile coordinates");
+        }
+
+        // If it's a mine: reveal it and ensure it is not flagged at all (do not flag)
+        if (tile instanceof MineTile) {
+            // Only act if this tile wasn't already activated to preserve prior semantics
+            if (!tile.isActivated()) {
+                // Reveal the mine (may throw, preserve original try/ignore pattern)
+                try {
+                    board.reveal(r, c);
+                } catch (Exception ignored) {}
+                // Award points as before
+                addPoints(1);
+                // Preserve original behavior: check if all mines are revealed (side-effect retained but unused)
+                boolean over = board.allMinesRevealed();
+            }
+            return; // done — do not flag mines
+        }
+
+        // Non-mine: proceed with original flag logic via Board.flag(...)
+        Board.FlagResult result = null;
         try {
-            activated = board.flag(r, c);
+            result = board.flag(r, c);
         } catch (Exception e) {
             throw new Exception(e);
         }
-        if (!activated)
+        if (!result.wasActivated)
         {
-            Tile t = board.getTiles()[r][c];
-            if (t instanceof MineTile)
-            {
-                addPoints(1);
-                boolean over = false;
-                over = board.reveal(r,c);
-                over = board.allMinesRevealed();
-            }
-            else if (t instanceof NumberTile nt)
+            Tile t = result.flaggedTile;
+            // mines case already handled above, so here we only handle NumberTile penalty
+            if (t instanceof NumberTile nt)
             {
                 deductPoints(3);
             }
-                
+
         }
-        if (isGameOver(left))
-            initiateGameOver();
+
 
     }
     public void unflag(int r, int c,boolean left) throws Exception
@@ -260,7 +279,7 @@ public class GameSession implements Testable
             throw new Exception(e);
         }
     }
-    
+
 
     //Tests the game session class
     @Override

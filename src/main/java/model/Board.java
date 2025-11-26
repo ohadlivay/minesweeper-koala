@@ -40,13 +40,47 @@ public class Board {
         return board;
     }
 
-    protected boolean reveal(int r, int c)
+    // Fixed: safe accessor for tiles (return null when out of bounds)
+    public Tile getTileAt(int r, int c)
+    {
+        if (!inBounds(r, c)) return null;
+        return tiles[r][c];
+    }
+
+    // Fixed: central bounds check (true when inside bounds)
+    private boolean inBounds(int r, int c)
+    {
+        return r >= 0 && c >= 0 && r < getRows() && c < getCols();
+    }
+
+    // RevealResult to return both previous activation state and the revealed tile
+    public static class RevealResult {
+        public final boolean wasActivated;
+        public final Tile revealedTile;
+        public RevealResult(boolean wasActivated, Tile revealedTile) {
+            this.wasActivated = wasActivated;
+            this.revealedTile = revealedTile;
+        }
+    }
+
+    // New: FlagResult to return both previous activation state and the flagged tile
+    public static class FlagResult {
+        public final boolean wasActivated;
+        public final Tile flaggedTile;
+        public FlagResult(boolean wasActivated, Tile flaggedTile) {
+            this.wasActivated = wasActivated;
+            this.flaggedTile = flaggedTile;
+        }
+    }
+
+    // Changed: reveal now returns RevealResult instead of boolean
+    protected RevealResult reveal(int r, int c)
     {
         Tile tile = tiles[r][c];
         boolean activated = tile.isActivated();
         tile.reveal();
         if (tile instanceof MineTile) minesLeft--;
-        return activated;
+        return new RevealResult(activated, tile);
     }
     protected void revealAll()
     {
@@ -58,12 +92,13 @@ public class Board {
         }
     }
 
-    protected boolean flag(int r, int c)
+    // Changed: flag now returns FlagResult instead of boolean
+    protected FlagResult flag(int r, int c)
     {
         Tile tile = tiles[r][c];
         boolean activated = tile.isActivated();
         tile.flag();
-        return activated;
+        return new FlagResult(activated, tile);
     }
     protected void unflag(int r, int c)
     {
@@ -74,8 +109,8 @@ public class Board {
     protected void cascade(int r, int c)
     {
         // bounds check
-        if (r < 0 || c < 0 || r >= getRows() || c >= getCols()) return;
-        Tile tile = tiles[r][c];
+        if (!inBounds(r, c)) return;
+        Tile tile = getTileAt(r, c);
         if (tile == null) return;
 
         // skip already activated, flagged or mine tiles
@@ -91,8 +126,8 @@ public class Board {
                     if (dr == 0 && dc == 0) continue;
                     int nr = r + dr;
                     int nc = c + dc;
-                    if (nr < 0 || nc < 0 || nr >= getRows() || nc >= getCols()) continue;
-                    Tile neigh = tiles[nr][nc];
+                    if (!inBounds(nr, nc)) continue;
+                    Tile neigh = getTileAt(nr, nc);
                     if (neigh == null) continue;
                     if (neigh.isRevealed() || neigh.isFlagged() || neigh instanceof MineTile) continue;
                     // recurse to reveal neighbor (cascade will reveal and expand further if needed)
