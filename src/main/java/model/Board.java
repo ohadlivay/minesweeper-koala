@@ -40,14 +40,12 @@ public class Board {
         return board;
     }
 
-    // Fixed: safe accessor for tiles (return null when out of bounds)
     public Tile getTileAt(int r, int c)
     {
         if (!inBounds(r, c)) return null;
         return tiles[r][c];
     }
 
-    // Fixed: central bounds check (true when inside bounds)
     private boolean inBounds(int r, int c)
     {
         return r >= 0 && c >= 0 && r < getRows() && c < getCols();

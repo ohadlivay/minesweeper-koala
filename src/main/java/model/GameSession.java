@@ -196,7 +196,7 @@ public class GameSession implements Testable
     public void reveal(int r, int c,boolean left) throws Exception
     {
         Board board = (left) ? leftBoard : rightBoard;
-        Board.RevealResult result = null;
+        Board.RevealResult result;
         try
         {
             result = board.reveal(r, c);
@@ -224,33 +224,22 @@ public class GameSession implements Testable
     public void flag(int r, int c,boolean left) throws Exception
     {
         Board board = (left) ? leftBoard : rightBoard;
-
-        // Inspect the tile first to decide behavior (do not blindly call board.flag)
         Tile tile = board.getTileAt(r, c);
         if (tile == null) {
-            // Preserve previous behavior: let board.flag handle invalid coords exceptions if desired.
-            // We throw a generic exception to keep interface compatibility.
             throw new Exception("Invalid tile coordinates");
         }
-
-        // If it's a mine: reveal it and ensure it is not flagged at all (do not flag)
-        if (tile instanceof MineTile) {
-            // Only act if this tile wasn't already activated to preserve prior semantics
-            if (!tile.isActivated()) {
-                // Reveal the mine (may throw, preserve original try/ignore pattern)
+        if (tile instanceof MineTile)
+        {
+            if (!tile.isRevealed())
+            {
                 try {
                     board.reveal(r, c);
                 } catch (Exception ignored) {}
-                // Award points as before
                 addPoints(1);
-                // Preserve original behavior: check if all mines are revealed (side-effect retained but unused)
                 boolean over = board.allMinesRevealed();
             }
-            return; // done — do not flag mines
         }
-
-        // Non-mine: proceed with original flag logic via Board.flag(...)
-        Board.FlagResult result = null;
+        Board.FlagResult result;
         try {
             result = board.flag(r, c);
         } catch (Exception e) {
@@ -259,12 +248,10 @@ public class GameSession implements Testable
         if (!result.wasActivated)
         {
             Tile t = result.flaggedTile;
-            // mines case already handled above, so here we only handle NumberTile penalty
             if (t instanceof NumberTile nt)
             {
                 deductPoints(3);
             }
-
         }
 
 

@@ -72,7 +72,7 @@ public class Tile implements Testable
         this.y = y;
     }
 
-    public boolean isActivated()
+    protected boolean isActivated()
     {
         return isActivated;
     }
