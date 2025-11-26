@@ -99,6 +99,11 @@ public class Tile implements Testable
         else
             throw new IllegalMoveException("reveal");
     }
+    protected void forceReveal()
+    {
+        isRevealed = true;
+        notifyListeners();
+    }
 
     //Flags the tile if it is not flagged already
     public void flag()

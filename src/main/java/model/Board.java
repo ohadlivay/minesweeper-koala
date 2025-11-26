@@ -40,26 +40,70 @@ public class Board {
         return board;
     }
 
-    boolean reveal(int r, int c)
+    protected boolean reveal(int r, int c)
     {
         Tile tile = tiles[r][c];
         boolean activated = tile.isActivated();
         tile.reveal();
+        if (tile instanceof MineTile) minesLeft--;
         return activated;
     }
-    boolean flag(int r, int c)
+    protected void revealAll()
+    {
+        for (int r = 0; r < getRows(); r++) {
+            for (int c = 0; c < getCols(); c++) {
+                Tile tile = tiles[r][c];
+                tile.forceReveal();
+            }
+        }
+    }
+
+    protected boolean flag(int r, int c)
     {
         Tile tile = tiles[r][c];
         boolean activated = tile.isActivated();
         tile.flag();
         return activated;
     }
-    boolean unflag(int r, int c)
+    protected void unflag(int r, int c)
     {
         Tile tile = tiles[r][c];
-        boolean activated = tile.isActivated();
         tile.unflag();
-        return activated;
+    }
+
+    protected void cascade(int r, int c)
+    {
+        // bounds check
+        if (r < 0 || c < 0 || r >= getRows() || c >= getCols()) return;
+        Tile tile = tiles[r][c];
+        if (tile == null) return;
+
+        // skip already activated, flagged or mine tiles
+        if (tile.isRevealed() || tile.isFlagged() || tile instanceof MineTile) return;
+
+        // reveal this tile (updates state and minesLeft via reveal helper)
+        reveal(r, c);
+
+        // only expand if it's a number tile with zero adjacent mines
+        if (tile instanceof NumberTile && ((NumberTile) tile).getAdjacentMines() == 0) {
+            for (int dr = -1; dr <= 1; dr++) {
+                for (int dc = -1; dc <= 1; dc++) {
+                    if (dr == 0 && dc == 0) continue;
+                    int nr = r + dr;
+                    int nc = c + dc;
+                    if (nr < 0 || nc < 0 || nr >= getRows() || nc >= getCols()) continue;
+                    Tile neigh = tiles[nr][nc];
+                    if (neigh == null) continue;
+                    if (neigh.isRevealed() || neigh.isFlagged() || neigh instanceof MineTile) continue;
+                    // recurse to reveal neighbor (cascade will reveal and expand further if needed)
+                    cascade(nr, nc);
+                }
+            }
+        }
+    }
+    protected boolean allMinesRevealed()
+    {
+        return minesLeft == 0;
     }
 
 // for controller use
