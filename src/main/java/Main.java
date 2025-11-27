@@ -56,7 +56,8 @@ public class Main implements Testable {
                 testFrame.setSize(1200, 640);
                 testFrame.setResizable(false);
 
-                NavigationController navTest = new NavigationController(testFrame);
+                NavigationController navTest = new NavigationController(testFrame); /**Remove this from main or
+                                                                                        lets figure out a new solution**/
                 navTest.goToHome();
                 testFrame.dispose();
             });
