@@ -38,7 +38,7 @@ public class Main implements Testable {
                 frame.setSize(1200, 640);   // temp size!
                 frame.setResizable(false);
 
-                NavigationController nav = new NavigationController(frame);
+                NavigationController nav = NavigationController.getInstance(frame);
                 nav.goToHome();
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
@@ -56,8 +56,8 @@ public class Main implements Testable {
                 testFrame.setSize(1200, 640);
                 testFrame.setResizable(false);
 
-                NavigationController nav = new NavigationController(testFrame);
-                nav.goToHome();
+                NavigationController navTest = new NavigationController(testFrame);
+                navTest.goToHome();
                 testFrame.dispose();
             });
             return true;
