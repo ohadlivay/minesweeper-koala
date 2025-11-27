@@ -8,8 +8,7 @@ public class NavigationController {
     private static NavigationController instance;
     private final JFrame visFrame;
 
-    public NavigationController(JFrame frame) {     /**Will be changed to private when main.runAllTests
-                                                        will stop  using it**/
+    private NavigationController(JFrame frame) {
         this.visFrame = frame;
     }
 
@@ -17,7 +16,7 @@ public class NavigationController {
         if (instance == null) {
             instance = new NavigationController(frame);
         }
-        else  if (instance.getVisFrame() != frame) {
+        else if (instance.getVisFrame() != frame) {
 
         }
         return instance;
