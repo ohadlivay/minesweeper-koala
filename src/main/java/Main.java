@@ -32,7 +32,6 @@ public class Main implements Testable {
         public static void launchSystem() {
 //            DummyScreenForJar ds4j = new DummyScreenForJar();
 //            ds4j.setVisible(true);
-
             SwingUtilities.invokeLater(() -> {
                 JFrame frame = new JFrame("Koala Minesweeper");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
