@@ -23,6 +23,7 @@ public class TileView extends JButton{
         setPreferredSize(new Dimension(40, 40)); // tweak size as you like
         setFocusPainted(false);
         setMargin(new Insets(0, 0, 0, 0));
+        setText(tile.toString());
     }
 
     private void mouseClicked() {
@@ -36,6 +37,18 @@ public class TileView extends JButton{
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
                     boardController.tileLeftClick(tile);
                 }
+                setText(tile.toString());
+                if (tile.isFlagged())
+                    setBackground(Color.RED);
+
+                if (tile.isRevealed()) {
+                    setBackground(Color.BLUE);
+                    setEnabled(false);
+                }
+
+
+                repaint();
+                revalidate();
             }
         });
     }
