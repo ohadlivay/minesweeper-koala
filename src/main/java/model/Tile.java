@@ -2,8 +2,6 @@ package main.java.model;
 
 import main.java.test.Testable;
 
-import java.util.ArrayList;
-
 /*
 tom i think might want to reconsider the access modifiers of the setters here (true for GameSession too)
 and we need to re-evaluate the use of isActivated here, so it won't be confused with special tiles
@@ -96,6 +94,10 @@ public class Tile implements Testable
         else
             throw new IllegalMoveException("reveal");
     }
+    protected void forceReveal()
+    {
+        isRevealed = true;
+    }
 
     //Flags the tile if it is not flagged already
     public void flag()
@@ -122,11 +124,10 @@ public class Tile implements Testable
     }
 
     //Activates the tile if it is not activated already
-    protected void activate()
+    private void activate()
     {
         isActivated = true;
     }
-
 
     //Tests the tile class
     @Override
