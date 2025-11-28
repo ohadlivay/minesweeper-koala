@@ -1,7 +1,5 @@
 package main.java.controller;
 
-import java.util.ArrayList;
-
 
 /*waht does the list of listeners do here, is it listening to the model changes?
 also i changed name from TileController to TilesController to imply singleton

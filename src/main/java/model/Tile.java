@@ -2,8 +2,6 @@ package main.java.model;
 
 import main.java.test.Testable;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /*
 tom i think might want to reconsider the access modifiers of the setters here (true for GameSession too)
