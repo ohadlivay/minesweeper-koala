@@ -110,8 +110,7 @@ public class Board {
         if (!inBounds(r, c)) return;
         Tile tile = getTileAt(r, c);
         if (tile == null) return;
-
-        // skip already activated, flagged or mine tiles
+        
         if (tile.isRevealed() || tile.isFlagged() || tile instanceof MineTile) return;
 
         // reveal this tile (updates state and minesLeft via reveal helper)
