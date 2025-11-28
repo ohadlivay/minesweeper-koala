@@ -1,7 +1,4 @@
-/* Asserted imports for this class:
-java.util.Random
- */
-
+// Java
 package main.java.model;
 import java.util.Random;
 
@@ -14,7 +11,7 @@ public class Board {
     private final GameDifficulty gameDifficulty;
 
     private Board(GameDifficulty gameDifficulty) {
-        this.PK = RANDOM.nextInt(99999999); //not even sure we need this
+        this.PK = RANDOM.nextInt(99999999);
         this.tiles = new Tile[gameDifficulty.getRows()][gameDifficulty.getCols()];
         this.minesLeft = gameDifficulty.getMineCount();
         this.gameDifficulty = gameDifficulty;
@@ -22,22 +19,14 @@ public class Board {
     }
 
     private Tile[][] populateBoard() {
-
-        /*
-        create temporary, low weight and high performance board generator.
-        since some generations can be faulty, this keeps that process light weight before we actually construct Tiles
-         */
         BoardGenerator boardGenerator = new BoardGenerator(this.gameDifficulty);
-        //
-        return boardGenerator.generateValidBoard(42); //currently set at 42 for testing
+        int seed = RANDOM.nextInt(); // use a fresh random seed per board
+        return boardGenerator.generateValidBoard(seed);
     }
-    //factory design pattern
-    //anyone can use this method and they are guaranteed a valid board with all tiles
-    //contemplating merging this into c'tor since logic isnt really that complicated in the end
+
+    // factory design pattern
     public static Board createNewBoard(GameDifficulty gameDifficulty){
-        Board board = new Board(gameDifficulty);
-        board.populateBoard();
-        return board;
+        return new Board(gameDifficulty);
     }
 
     protected boolean reveal(int r, int c)
@@ -73,18 +62,14 @@ public class Board {
 
     protected void cascade(int r, int c)
     {
-        // bounds check
         if (r < 0 || c < 0 || r >= getRows() || c >= getCols()) return;
         Tile tile = tiles[r][c];
         if (tile == null) return;
 
-        // skip already activated, flagged or mine tiles
         if (tile.isRevealed() || tile.isFlagged() || tile instanceof MineTile) return;
 
-        // reveal this tile (updates state and minesLeft via reveal helper)
         reveal(r, c);
 
-        // only expand if it's a number tile with zero adjacent mines
         if (tile instanceof NumberTile && ((NumberTile) tile).getAdjacentMines() == 0) {
             for (int dr = -1; dr <= 1; dr++) {
                 for (int dc = -1; dc <= 1; dc++) {
@@ -95,7 +80,6 @@ public class Board {
                     Tile neigh = tiles[nr][nc];
                     if (neigh == null) continue;
                     if (neigh.isRevealed() || neigh.isFlagged() || neigh instanceof MineTile) continue;
-                    // recurse to reveal neighbor (cascade will reveal and expand further if needed)
                     cascade(nr, nc);
                 }
             }
@@ -106,7 +90,6 @@ public class Board {
         return minesLeft == 0;
     }
 
-// for controller use
     public Tile[][] getTiles() {
         return tiles;
     }
