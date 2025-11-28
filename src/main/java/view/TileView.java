@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class TileView extends JButton implements TileListener {
+public class TileView extends JButton {
     private final Tile tile;
     private final BoardsController boardController;
 
@@ -16,12 +16,11 @@ public class TileView extends JButton implements TileListener {
         this.tile = tile;
         initTile();
         mouseClicked();
-        tile.addListener(this);
         this.boardController = BoardsController.getInstance();
     }
 
     private void initTile() {
-        setPreferredSize(new Dimension(40, 40)); // tweak size as you like
+        setPreferredSize(new Dimension(40, 40));
         setFocusPainted(false);
         setMargin(new Insets(0, 0, 0, 0));
     }
@@ -41,7 +40,6 @@ public class TileView extends JButton implements TileListener {
         });
     }
     //temporary method for getting the tile's state from the model
-    @Override
     public void update() {
         if (tile.isFlagged()) {
             setText("F");
