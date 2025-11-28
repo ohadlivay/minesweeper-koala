@@ -47,12 +47,6 @@ public class Tile implements Testable
     //Methods for the tile class
 
 
-    //Method to get the coordinates of the tile
-    double[] getCoordinates()
-    {
-        return new double[]{x,y};
-    }
-
     //Reveals the tile if it is not revealed already
     public void reveal()
     {
