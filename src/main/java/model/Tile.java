@@ -1,10 +1,8 @@
 package main.java.model;
 
 import main.java.test.Testable;
-import main.java.view.TileListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /*
 tom i think might want to reconsider the access modifiers of the setters here (true for GameSession too)
@@ -93,7 +91,6 @@ public class Tile implements Testable
         {
             isRevealed = true;
             activate();
-            notifyListeners();
         }
 
         else
@@ -107,7 +104,6 @@ public class Tile implements Testable
         {
             isFlagged = true;
             activate();
-            notifyListeners();
         }
         else
             throw new IllegalMoveException("flag");
@@ -119,7 +115,6 @@ public class Tile implements Testable
         if (isFlagged&&!isRevealed)
         {
             isFlagged = false;
-            notifyListeners();
         }
 
         else
@@ -132,19 +127,6 @@ public class Tile implements Testable
         isActivated = true;
     }
 
-    /*observer pattern to notify TileView of changes
-    * holds a list of all listeners that need to know when the tile state changes
-     */
-    private final ArrayList<TileListener> listeners = new ArrayList<>();
-    public void addListener(TileListener listener) {
-        listeners.add(listener);
-    }
-
-    private void notifyListeners() {
-        for (TileListener l : listeners) {
-            l.update();
-        }
-    }
 
     //Tests the tile class
     @Override

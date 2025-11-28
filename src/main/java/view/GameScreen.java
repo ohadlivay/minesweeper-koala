@@ -1,28 +1,45 @@
 package main.java.view;
+
+import main.java.controller.NavigationController;
+import main.java.model.Board;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-public class GameScreen extends JFrame {
+public class GameScreen {
+    private final NavigationController nav;
 
-    public GameScreen() {
-        setTitle("Koala Minesweeper");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1200, 640);
-        setLocationRelativeTo(null);
-        setResizable(false);
+    private JPanel mainPanel;
+    private JPanel centerPanel;
+    private BoardLayout leftBoard;
+    private BoardLayout rightBoard;
+
+    public GameScreen(NavigationController nav) {
+        this.nav = nav;
         initUI();
     }
 
-    private void initUI() {
-        JPanel root = new JPanel(new BorderLayout());
-        root.setBackground(Color.BLACK);
-        root.setBorder(new EmptyBorder(10, 10, 10, 10)); // outer margin
-        setContentPane(root);
+    public void setBoards(Board left, Board right) {
+        leftBoard = new BoardLayout(left);
+        rightBoard = new BoardLayout(right);
 
-        //top panel holds the player names
+        centerPanel.add(leftBoard);
+        centerPanel.add(Box.createHorizontalStrut(50)); // gap
+        centerPanel.add(rightBoard);
+        centerPanel.revalidate();
+        centerPanel.repaint();
+    }
+
+    private void initUI() {
+        mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(Color.BLACK);
+        mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        //top panel holds player names
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
+
         Font font = new Font("Segoe UI Black", Font.BOLD, 14);
 
         JLabel player1Label = new JLabel("Player 1");
@@ -37,47 +54,33 @@ public class GameScreen extends JFrame {
         topPanel.add(player2Label, BorderLayout.EAST);
         topPanel.setBorder(new EmptyBorder(20, 5, 5, 5)); // spacing under labels
 
-        root.add(topPanel, BorderLayout.NORTH);
+        mainPanel.add(topPanel, BorderLayout.NORTH);
 
-        //center panel holds the boards
-        JPanel centerPanel = new JPanel();
+        //center panel holds the boardlayouts
+        centerPanel = new JPanel();
         centerPanel.setBackground(Color.BLACK);
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.X_AXIS));
 
-        JPanel leftBoard = createBoardPanel();
-        JPanel rightBoard = createBoardPanel();
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
 
-        centerPanel.add(leftBoard);
-        centerPanel.add(Box.createHorizontalStrut(50)); // middle gap (the “bar”)
-        centerPanel.add(rightBoard);
-
-        root.add(centerPanel, BorderLayout.CENTER);
-
-        //bottom panel holds the home button
+        // bottom panel holds the home button
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setOpaque(false);
         bottomPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
-
         JButton homeButton = createHomeButton();
+        homeButton.addActionListener(e -> nav.goToHome());
         bottomPanel.add(homeButton, BorderLayout.WEST);
 
-        root.add(bottomPanel, BorderLayout.SOUTH);
-    }
-
-    private JPanel createBoardPanel() {
-        JPanel board = new JPanel();
-        board.setBackground(Color.WHITE);
-        board.setPreferredSize(new Dimension(520, 430));
-        board.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-
-        return board;
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
     }
 
     private JButton createHomeButton() {
         JButton button = new JButton();
         button.setPreferredSize(new Dimension(72, 36));
         java.net.URL icon = getClass().getResource("/home.png");
-        button.setIcon(new ImageIcon(icon));
+        if (icon != null) {
+            button.setIcon(new ImageIcon(icon));
+        }
 
         button.setBackground(new Color(10, 10, 10));
         button.setBorder(BorderFactory.createLineBorder(new Color(70, 80, 100), 2));
@@ -87,4 +90,7 @@ public class GameScreen extends JFrame {
         return button;
     }
 
+    public JPanel getMainPanel() {
+        return mainPanel;
+    }
 }

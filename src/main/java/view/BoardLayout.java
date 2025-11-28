@@ -44,7 +44,7 @@ public class BoardLayout extends JPanel{
                 Tile t = null;
                 t = board.getTiles()[i][j]; //get tile from board controller
                 if (t != null) {
-                    add(new TileButton(t));
+                    add(new TileView(t));
                 } else {
                     add(new JButton()); // placeholder button for debugging
                 }

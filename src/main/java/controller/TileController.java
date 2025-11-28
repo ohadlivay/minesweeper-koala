@@ -1,6 +1,5 @@
 package main.java.controller;
 
-import main.java.view.TileListener;
 import java.util.ArrayList;
 
 
@@ -8,8 +7,7 @@ import java.util.ArrayList;
 also i changed name from TileController to TilesController to imply singleton
  */
 
-public class TileController implements TileListener{
-    private ArrayList<TileListener> tileListeners = new ArrayList<>();
+public class TileController{
     private static TileController controller;
 
     private TileController(){
@@ -23,8 +21,5 @@ public class TileController implements TileListener{
         return TileController.controller;
     }
 
-    @Override
-    public void update() {
 
-    }
 }

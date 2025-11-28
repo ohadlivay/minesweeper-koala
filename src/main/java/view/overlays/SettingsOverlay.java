@@ -1,6 +1,8 @@
 package main.java.view.overlays;
 
+import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
+import main.java.model.GameDifficulty;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -47,7 +49,9 @@ public class SettingsOverlay extends OverlayView {
 
     }
 
-    // close the overlay and go to the game screen
+    /* close the overlay and go to the game screen
+        hardcoded to hard for now
+     */
     private void onOK() {
         nav.goToGame();
         dispose();
