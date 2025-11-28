@@ -225,30 +225,33 @@ public class GameSession implements Testable
     {
         Board board = (left) ? leftBoard : rightBoard;
         boolean activated = true;
-        try {
-            activated = board.flag(r, c);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-        if (!activated)
+        Tile t = board.getTiles()[r][c];
+        if (t instanceof NumberTile)
         {
-            Tile t = board.getTiles()[r][c];
-            if (t instanceof MineTile)
+            try {
+                activated = board.flag(r, c);
+            } catch (Exception e) {
+                throw new Exception(e);
+            }
+            if (!activated)
+                deductPoints(3);
+        }
+        if (t instanceof MineTile)
+        {
+            try
+            {
+                activated = board.reveal(r, c);
+            }catch (Exception e){
+                throw new Exception(e);
+            }
+            if (!activated)
             {
                 addPoints(1);
-                boolean over = false;
-                over = board.reveal(r,c);
-                over = board.allMinesRevealed();
             }
-            else if (t instanceof NumberTile nt)
-            {
-                deductPoints(3);
-            }
-                
         }
+
         if (isGameOver(left))
             initiateGameOver();
-
     }
     public void unflag(int r, int c,boolean left) throws Exception
     {
