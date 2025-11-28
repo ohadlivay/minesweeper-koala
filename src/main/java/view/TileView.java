@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class TileView extends JButton implements TileListener {
+public class TileView extends JButton{
     private final Tile tile;
     private final BoardsController boardController;
 
@@ -16,7 +16,6 @@ public class TileView extends JButton implements TileListener {
         this.tile = tile;
         initTile();
         mouseClicked();
-        tile.addListener(this);
         this.boardController = BoardsController.getInstance();
     }
 
@@ -41,7 +40,7 @@ public class TileView extends JButton implements TileListener {
         });
     }
     //temporary method for getting the tile's state from the model
-    @Override
+    /* @Override
     public void update() {
         if (tile.isFlagged()) {
             setText("F");
@@ -50,7 +49,7 @@ public class TileView extends JButton implements TileListener {
         } else {
             setText("");
         }
-    }
+    }*/
 
 
 
