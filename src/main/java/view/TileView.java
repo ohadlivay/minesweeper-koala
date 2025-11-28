@@ -23,7 +23,7 @@ public class TileView extends JButton{
         setPreferredSize(new Dimension(40, 40)); // tweak size as you like
         setFocusPainted(false);
         setMargin(new Insets(0, 0, 0, 0));
-        setText("O");
+        setText("");
     }
 
     private void mouseClicked() {
@@ -37,36 +37,27 @@ public class TileView extends JButton{
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
                     boardController.tileLeftClick(tile);
                 }
-                setText(tile.toString());
-
-                if (tile.isFlagged()) {
-                    setBackground(Color.RED);
-                    setText("F");
-                }
-
-                if (tile.isRevealed()) {
-                    setBackground(Color.BLUE);
-                    setEnabled(false);
-                    setText(tile.toString());
-                }
-
 
                 repaint();
                 revalidate();
+                refreshUI();
             }
         });
     }
     //temporary method for getting the tile's state from the model
-    /* @Override
-    public void update() {
+    public void refreshUI() {
         if (tile.isFlagged()) {
+            setBackground(Color.RED);
             setText("F");
         } else if (tile.isRevealed()) {
+            setBackground(Color.BLUE);
+            setEnabled(false);
             setText("R");
         } else {
             setText("");
+            setBackground(null);
         }
-    }*/
+    }
 
 
 
