@@ -7,7 +7,7 @@ public class NavigationControllerTest {
 
     public static void runTestNav() throws Exception {
         JFrame frame = new JFrame();
-        NavigationController nav = new NavigationController(frame);
+        NavigationController nav = NavigationController.getInstance(frame);
         frame.setSize(1000, 700);
         frame.setVisible(true);
 

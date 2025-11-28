@@ -135,7 +135,7 @@ public class Tile implements Testable
     /*observer pattern to notify TileView of changes
     * holds a list of all listeners that need to know when the tile state changes
      */
-    private final List<TileListener> listeners = new ArrayList<>();
+    private final ArrayList<TileListener> listeners = new ArrayList<>();
     public void addListener(TileListener listener) {
         listeners.add(listener);
     }

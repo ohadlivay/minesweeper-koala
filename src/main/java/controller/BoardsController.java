@@ -5,15 +5,22 @@ view.BoardLayout
 
 package main.java.controller;
 
-//import main.java.model.Board;
-//import main.java.view.BoardLayout;
-
 import main.java.model.Board;
-import main.java.model.IllegalMoveException;
 import main.java.model.Tile;
 
-public class BoardController {
-    private int test; //testing
+public class BoardsController {
+    private static BoardsController boardsController; //static cuz shared across all instances
+    private Board board;
+    private BoardsController(){
+    }
+
+    public static BoardsController getInstance() {
+        if (BoardsController.boardsController == null) {
+            BoardsController.boardsController = new BoardsController();
+            return BoardsController.boardsController;
+        }
+        return BoardsController.boardsController;
+    }
 
     //Ohad please implement the following methods
     //Done. im assuming your view has a board instance, need to check if this is ok

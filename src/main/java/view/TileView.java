@@ -1,6 +1,6 @@
 package main.java.view;
 
-import main.java.controller.BoardController;
+import main.java.controller.BoardsController;
 import main.java.model.Tile;
 
 import javax.swing.*;
@@ -10,14 +10,14 @@ import java.awt.event.MouseEvent;
 
 public class TileView extends JButton implements TileListener {
     private final Tile tile;
-    private final BoardController boardController;
+    private final BoardsController boardController;
 
     public TileView(Tile tile) {
         this.tile = tile;
         initTile();
         mouseClicked();
         tile.addListener(this);
-        this.boardController = new BoardController();
+        this.boardController = BoardsController.getInstance();
     }
 
     private void initTile() {

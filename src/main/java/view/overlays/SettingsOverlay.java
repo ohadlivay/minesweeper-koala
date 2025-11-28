@@ -24,7 +24,7 @@ public class SettingsOverlay extends OverlayView {
     private JPanel nameLabelPanel;
     private JLabel player1Label;
     private JLabel player2Label;
-    private final NavigationController nav;
+    private final NavigationController nav; //very good
 
 
     public SettingsOverlay(NavigationController nav) {
