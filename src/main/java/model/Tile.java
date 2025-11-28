@@ -2,6 +2,7 @@ package main.java.model;
 
 import main.java.test.Testable;
 
+import java.util.ArrayList;
 
 /*
 tom i think might want to reconsider the access modifiers of the setters here (true for GameSession too)
@@ -103,7 +104,6 @@ public class Tile implements Testable
         {
             isFlagged = true;
             activate();
-
         }
         else
             throw new IllegalMoveException("flag");
@@ -127,9 +127,6 @@ public class Tile implements Testable
         isActivated = true;
     }
 
-    /*observer pattern to notify TileView of changes
-    * holds a list of all listeners that need to know when the tile state changes
-     */
 
     //Tests the tile class
     @Override
