@@ -43,14 +43,14 @@ public class NavigationController {
 
 
     public void goToHistory() {
-        GameSessionController gsc = GameSessionController.getinstance();
         GameHistoryScreen gameHistoryScreen = new GameHistoryScreen(this);
         visFrame.setContentPane(gameHistoryScreen.getMainPanel());
         refresh();
     }
 
     public void goToQuestionManager() {
-        visFrame.setContentPane(new QuestionManagerScreen(this));
+        QuestionManagerScreen questionManager = new QuestionManagerScreen(this);
+        visFrame.setContentPane(questionManager.getMainPanel());
         refresh();
     }
 
