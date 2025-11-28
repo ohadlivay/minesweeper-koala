@@ -35,7 +35,7 @@ public class GameHistoryScreen extends JPanel{
 
         Font font = new Font("Segoe UI Black", Font.BOLD, 14);
 
-        historyLabel = new JLabel("Game History (Under", SwingConstants.CENTER);
+        historyLabel = new JLabel("Game History (Under construction🚧🛠️)", SwingConstants.CENTER);
 
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
