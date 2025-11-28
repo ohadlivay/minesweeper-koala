@@ -2,6 +2,7 @@ package main.java.view;
 
 import main.java.controller.NavigationController;
 import main.java.model.Board;
+import main.java.model.GameSession;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -9,15 +10,23 @@ import java.awt.*;
 
 public class GameScreen {
     private final NavigationController nav;
+    private final GameSession session; // Always holds the current game session
 
     private JPanel mainPanel;
     private JPanel centerPanel;
+
     private BoardLayout leftBoard;
     private BoardLayout rightBoard;
+    private JLabel player1Label;
+    private JLabel player2Label;
 
-    public GameScreen(NavigationController nav) {
+
+    public GameScreen(NavigationController nav, GameSession session) {
         this.nav = nav;
+        this.session = session;
         initUI();
+        setBoards(session.getLeftBoard(), session.getRightBoard());
+        setPlayerNames(session.getLeftPlayerName(),session.getRightPlayerName());
     }
 
     public void setBoards(Board left, Board right) {
@@ -31,6 +40,12 @@ public class GameScreen {
         centerPanel.repaint();
     }
 
+    public void setPlayerNames(String leftName, String rightName) {
+        player1Label.setText(leftName);
+        player2Label.setText(rightName);
+    }
+
+
     private void initUI() {
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.BLACK);
@@ -42,11 +57,11 @@ public class GameScreen {
 
         Font font = new Font("Segoe UI Black", Font.BOLD, 14);
 
-        JLabel player1Label = new JLabel("Player 1");
+        player1Label = new JLabel();
         player1Label.setForeground(Color.WHITE);
         player1Label.setFont(font);
 
-        JLabel player2Label = new JLabel("Player 2");
+        player2Label = new JLabel();
         player2Label.setForeground(Color.WHITE);
         player2Label.setFont(font);
 
@@ -70,6 +85,17 @@ public class GameScreen {
         JButton homeButton = createHomeButton();
         homeButton.addActionListener(e -> nav.goToHome());
         bottomPanel.add(homeButton, BorderLayout.WEST);
+
+        // TEMP BUTTON FOR TESTING GAME SAVES
+        JButton endGameButton = new JButton("End Game");
+        endGameButton.setBackground(new Color(10, 10, 10));
+        endGameButton.setBorder(BorderFactory.createLineBorder(new Color(70, 80, 100), 2));
+        endGameButton.setFocusPainted(false);
+        endGameButton.setPreferredSize(new Dimension(72, 36));
+        endGameButton.setContentAreaFilled(true);
+        endGameButton.setForeground(Color.WHITE);
+        bottomPanel.add(endGameButton, BorderLayout.EAST);
+
 
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
     }

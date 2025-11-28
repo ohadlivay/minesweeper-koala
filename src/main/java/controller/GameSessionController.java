@@ -6,10 +6,12 @@ model.GameSession
 package main.java.controller;
 
 import main.java.model.Board;
+import main.java.model.GameDifficulty;
 import main.java.model.GameSession;
 import main.java.view.GameScreen;
 
 public class GameSessionController {
+    private GameSession session;
 
     private static GameSessionController controller;
 
@@ -24,19 +26,23 @@ public class GameSessionController {
         return GameSessionController.controller;
     }
 
+    // for now only hardcoded values, later will get from user input
     public GameScreen startNewGame(NavigationController nav) {
-        BoardsController boardsController = BoardsController.getInstance();
-        boardsController.initBoards();
+        String leftName  = "George";
+        String rightName = "Ali";
+        GameDifficulty difficulty = GameDifficulty.HARD;
 
-        Board left  = boardsController.getBoard1();
-        Board right = boardsController.getBoard2();
+        session = GameSession.createNewSession(leftName, rightName, difficulty);
 
-        GameScreen gameScreen = new GameScreen(nav);
-        gameScreen.setBoards(left, right);
-
-        return gameScreen;
+        return new GameScreen(nav, session);
     }
 
 
+
+
+
+    public GameSession getSession() {
+        return session;
+    }
 }
 
