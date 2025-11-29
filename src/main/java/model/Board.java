@@ -1,8 +1,7 @@
-/* Asserted imports for this class:
-java.util.Random
- */
-
+// Java
 package main.java.model;
+import main.java.view.TurnListener;
+
 import java.util.Random;
 
 public class Board {
@@ -12,74 +11,94 @@ public class Board {
     private Tile[][] tiles;
     private static final Random RANDOM = new Random();
     private final GameDifficulty gameDifficulty;
+    private boolean turn;
+    private GameSession gameSession;
+    private TurnListener turnListener;
 
     private Board(GameDifficulty gameDifficulty) {
-        this.PK = RANDOM.nextInt(99999999); //not even sure we need this
+        this.PK = RANDOM.nextInt(99999999);
         this.tiles = new Tile[gameDifficulty.getRows()][gameDifficulty.getCols()];
         this.minesLeft = gameDifficulty.getMineCount();
         this.gameDifficulty = gameDifficulty;
         this.tiles = populateBoard();
+        this.turn = false;
+        this.gameSession = GameSession.getInstance();
     }
 
     private Tile[][] populateBoard() {
-
-        /*
-        create temporary, low weight and high performance board generator.
-        since some generations can be faulty, this keeps that process light weight before we actually construct Tiles
-         */
         BoardGenerator boardGenerator = new BoardGenerator(this.gameDifficulty);
-        //
-        return boardGenerator.generateValidBoard(42); //currently set at 42 for testing
+        int seed = RANDOM.nextInt(); // use a fresh random seed per board
+        Tile[][] tiles = boardGenerator.generateValidBoard(seed);
+
+        //give the tiles their parent board
+        for(Tile[] row : tiles) {
+            for(Tile tile : row) {
+                tile.setParentBoard(this);
+            }
+        }
+        return tiles;
     }
-    //factory design pattern
-    //anyone can use this method and they are guaranteed a valid board with all tiles
-    //contemplating merging this into c'tor since logic isnt really that complicated in the end
+
+    // factory design pattern
     public static Board createNewBoard(GameDifficulty gameDifficulty){
-        Board board = new Board(gameDifficulty);
-        board.populateBoard();
-        return board;
+        return new Board(gameDifficulty);
     }
 
-    public Tile getTileAt(int r, int c)
-    {
-        if (!inBounds(r, c)) return null;
-        return tiles[r][c];
-    }
+    protected void reveal(Tile tile) {
+        if(tile.isRevealed())
+            return;
+        if(tile.isFlagged())
+            return;
+        System.out.println("Revealing tile " + tile);
 
-    private boolean inBounds(int r, int c)
-    {
-        return r >= 0 && c >= 0 && r < getRows() && c < getCols();
-    }
-
-    // RevealResult to return both previous activation state and the revealed tile
-    public static class RevealResult {
-        public final boolean wasActivated;
-        public final Tile revealedTile;
-        public RevealResult(boolean wasActivated, Tile revealedTile) {
-            this.wasActivated = wasActivated;
-            this.revealedTile = revealedTile;
+        if (tile instanceof MineTile){
+            minesLeft--;
+            tile.setIsRevealed(true);
+        }
+        if (tile instanceof NumberTile){
+            if(((NumberTile) tile).getAdjacentMines() == 0){
+                System.out.println("cascading " + tile);
+                this.cascade(tile); //this should not call board.reveal!!
+            }
+            else{
+                tile.setIsRevealed(true);
+            }
         }
     }
 
-    // New: FlagResult to return both previous activation state and the flagged tile
-    public static class FlagResult {
-        public final boolean wasActivated;
-        public final Tile flaggedTile;
-        public FlagResult(boolean wasActivated, Tile flaggedTile) {
-            this.wasActivated = wasActivated;
-            this.flaggedTile = flaggedTile;
+    private int getTileRow(Tile tile) {
+        for (int r = 0; r < tiles.length; r++) {
+            for (int c = 0; c < tiles[r].length; c++) {
+                if (tiles[r][c].equals(tile)) {
+                    return r;
+                }
+            }
         }
+        throw new IllegalArgumentException("Tile not found in grid");
     }
 
-    // Changed: reveal now returns RevealResult instead of boolean
-    protected RevealResult reveal(int r, int c)
-    {
-        Tile tile = tiles[r][c];
-        boolean activated = tile.isActivated();
-        tile.reveal();
-        if (tile instanceof MineTile) minesLeft--;
-        return new RevealResult(activated, tile);
+    private int getTileCol(Tile tile) {
+        for (int r = 0; r < tiles.length; r++) {
+            for (int c = 0; c < tiles[r].length; c++) {
+                if (tiles[r][c].equals(tile)) {
+                    return c;
+                }
+            }
+        }
+        throw new IllegalArgumentException("Tile not found in grid");
     }
+
+    private Tile getTileAt(int row, int col) {
+        if (row < 0 || row >= tiles.length)
+            throw new IndexOutOfBoundsException("Invalid row: " + row);
+
+        if (col < 0 || col >= tiles[row].length)
+            throw new IndexOutOfBoundsException("Invalid col: " + col);
+
+        return tiles[row][col];
+    }
+
+
     protected void revealAll()
     {
         for (int r = 0; r < getRows(); r++) {
@@ -90,13 +109,12 @@ public class Board {
         }
     }
 
-    // Changed: flag now returns FlagResult instead of boolean
-    protected FlagResult flag(int r, int c)
+    protected boolean flag(int r, int c)
     {
         Tile tile = tiles[r][c];
         boolean activated = tile.isActivated();
         tile.flag();
-        return new FlagResult(activated, tile);
+        return activated;
     }
     protected void unflag(int r, int c)
     {
@@ -104,33 +122,10 @@ public class Board {
         tile.unflag();
     }
 
-    protected void cascade(int r, int c)
-    {
-        // bounds check
-        if (!inBounds(r, c)) return;
-        Tile tile = getTileAt(r, c);
-        if (tile == null) return;
-        
-        if (tile.isRevealed() || tile.isFlagged() || tile instanceof MineTile) return;
-
-        // reveal this tile (updates state and minesLeft via reveal helper)
-        reveal(r, c);
-
-        // only expand if it's a number tile with zero adjacent mines
-        if (tile instanceof NumberTile && ((NumberTile) tile).getAdjacentMines() == 0) {
-            for (int dr = -1; dr <= 1; dr++) {
-                for (int dc = -1; dc <= 1; dc++) {
-                    if (dr == 0 && dc == 0) continue;
-                    int nr = r + dr;
-                    int nc = c + dc;
-                    if (!inBounds(nr, nc)) continue;
-                    Tile neigh = getTileAt(nr, nc);
-                    if (neigh == null) continue;
-                    if (neigh.isRevealed() || neigh.isFlagged() || neigh instanceof MineTile) continue;
-                    // recurse to reveal neighbor (cascade will reveal and expand further if needed)
-                    cascade(nr, nc);
-                }
-            }
+    private void cascade(Tile tile) {
+        Cascader casader = new Cascader(tile,this.tiles);
+        for( Tile t : casader.getTilesToReveal()){
+            t.setIsRevealed(true);
         }
     }
     protected boolean allMinesRevealed()
@@ -138,7 +133,6 @@ public class Board {
         return minesLeft == 0;
     }
 
-// for controller use
     public Tile[][] getTiles() {
         return tiles;
     }
@@ -148,5 +142,30 @@ public class Board {
 
     public int getCols() {
         return (tiles == null || tiles.length == 0) ? 0 : tiles[0].length;
+    }
+
+    public boolean getTurn(){
+        return this.turn;
+    }
+    public void setTurn(boolean turn){
+        if (this.turn == turn) return;  // no state change
+
+        this.turn = turn;
+        if (turnListener != null) {
+            turnListener.updateTurn();
+        }
+    }
+
+
+    public void setTurnListener(TurnListener turnListener) {
+        this.turnListener = turnListener;
+    }
+
+    private void setMinesLeft(int minesLeft){
+        this.minesLeft = minesLeft;
+    };
+
+    private int getMinesLeft(){
+        return this.minesLeft;
     }
 }

@@ -5,10 +5,25 @@ import javax.swing.JFrame;
 import main.java.view.*;
 
 public class NavigationController {
+    private static NavigationController instance;
     private final JFrame visFrame;
 
-    public NavigationController(JFrame frame) {
+    private NavigationController(JFrame frame) {
         this.visFrame = frame;
+    }
+
+    public static NavigationController getInstance(JFrame frame) {
+        if (instance == null) {
+            instance = new NavigationController(frame);
+        }
+        else if (instance.getVisFrame() != frame) {
+
+        }
+        return instance;
+    }
+
+    public static NavigationController getInstance() {
+        return instance;
     }
 
     //***Methods to navigate between screens***//
@@ -20,18 +35,22 @@ public class NavigationController {
     }
 
     public void goToGame() {
-        GameScreen gameScreen = new GameScreen(this);
-        visFrame.setContentPane(gameScreen.getGamePanel());
+        GameSessionController gsc = GameSessionController.getInstance();
+        GameScreen gameScreen = gsc.startNewGame(this);
+        visFrame.setContentPane(gameScreen.getMainPanel());
         refresh();
     }
 
+
     public void goToHistory() {
-        visFrame.setContentPane(new GameHistoryScreen(this));
+        GameHistoryScreen gameHistoryScreen = new GameHistoryScreen(this);
+        visFrame.setContentPane(gameHistoryScreen.getMainPanel());
         refresh();
     }
 
     public void goToQuestionManager() {
-        visFrame.setContentPane(new QuestionManagerScreen(this));
+        QuestionManagerScreen questionManager = new QuestionManagerScreen(this);
+        visFrame.setContentPane(questionManager.getMainPanel());
         refresh();
     }
 

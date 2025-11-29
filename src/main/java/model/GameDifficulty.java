@@ -5,9 +5,9 @@ package main.java.model;
    need to add more info like activation cost or penalties which are specific to difficulty.
 */
 public enum GameDifficulty {
-    EASY(9, 9, 10,6,2, 5,10),
-    MEDIUM(13, 13, 26,7,3, 8,8),
-    HARD(16, 16, 44,11,4, 12,6);
+    EASY(9, 9, 10,6,2, 5,10, 1),
+    MEDIUM(13, 13, 26,7,3, 8,8, 1),
+    HARD(16, 16, 44,11,4, 12,6, 1);
 
     //even though rows=cols in all current  cases, we want to be prepared to support a feature where this is not the case.
     private final int rows;
@@ -19,8 +19,13 @@ public enum GameDifficulty {
 
     private final int activationCost;
     private final int initialHealthPool;
-//
-    private GameDifficulty(int rows, int cols, int mineCount,int questionCount, int surpriseCount, int activationCost, int initialHealthPool) {
+
+    private final int revealMinePoints;
+
+
+    //
+
+    private GameDifficulty(int rows, int cols, int mineCount,int questionCount, int surpriseCount, int activationCost, int initialHealthPool, int revealMinePoints) {
         this.rows = rows;
         this.cols = cols;
         this.mineCount = mineCount;
@@ -28,6 +33,7 @@ public enum GameDifficulty {
         this.questionCount = questionCount;
         this.surpriseCount = surpriseCount;
         this.initialHealthPool = initialHealthPool;
+        this.revealMinePoints = revealMinePoints;
     }
 
     public int getRows()      { return rows; }
@@ -37,4 +43,6 @@ public enum GameDifficulty {
     public int getQuestionCount() {return questionCount;}
     public int getSurpriseCount() {return surpriseCount;}
     public int getInitialHealthPool() { return initialHealthPool; }
+    public int getRevealMinePoints() { return revealMinePoints; }
+
 }

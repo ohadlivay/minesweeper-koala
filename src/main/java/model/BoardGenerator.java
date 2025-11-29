@@ -46,7 +46,7 @@ public class BoardGenerator implements Testable {
         calculateAdjacentMines(grid);
 
         // 2. Distribute special tiles (0 to 9 or 10)
-        distributeSpecialTiles(grid);
+        //distributeSpecialTiles(grid);
 
         // 3. Convert the final blueprint into Tiles
         return toTileGrid(grid);
@@ -169,7 +169,7 @@ public class BoardGenerator implements Testable {
 
         // Using a non-seeded Random ensures tile placement is unpredictable on each run
         // once a valid mine layout is found.
-        java.util.Random rng = new java.util.Random();
+        java.util.Random rng = new java.util.   Random();
 
         int placedQuestion = 0;
         int placedSurprise = 0;

@@ -1,7 +1,10 @@
 package main.java.model;
 import main.java.test.Testable;
+import main.java.view.GameScreen;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 /*
 Dear Ohad,
@@ -31,11 +34,11 @@ public class GameSession implements Testable
     private final LocalDateTime timeStamp;
 
     //Names of the players involved in the game session
-    private final String rightPlayerName;
-    private final String leftPlayerName;
+    private String rightPlayerName;
+    private String leftPlayerName;
 
     //Game difficulty
-    private final GameDifficulty gameDifficulty;
+    private GameDifficulty gameDifficulty;
 
     //Boards of the players involved in the game session
     private Board leftBoard;
@@ -45,13 +48,13 @@ public class GameSession implements Testable
     private int healthPool;
     private int points;
 
-    //Indicates whether it is the left player's turn or not
-    private boolean turn;
-
     //Maximum health pool for a game session
     private static final int MAX_HEALTH_POOL = 10;
 
+    private List<PointsListener> pointsListeners = new ArrayList<>();
+
     //Constructors
+    private static GameSession instance;
 
 
     private GameSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
@@ -62,24 +65,22 @@ public class GameSession implements Testable
         this.gameDifficulty = Objects.requireNonNullElse(gameDifficulty, GameDifficulty.EASY);
         this.rightPlayerName = Objects.requireNonNullElse(rightPlayerName, "Player 2");
         this.leftPlayerName = Objects.requireNonNullElse(leftPlayerName, "Player 1");
-        this.turn = true;
         this.healthPool = gameDifficulty.getInitialHealthPool();
-        this.initializeBoards();
-
-
     }
 
-    //Create a new game session
-    public static GameSession createNewSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
-    {
-        return new GameSession(leftPlayerName, rightPlayerName, gameDifficulty);
+    public static GameSession getInstance(){
+        if(instance==null){
+            instance = new GameSession("Player1", "Player2", GameDifficulty.EASY);
+        }
+        return instance;
     }
 
     //Initialize the boards of the players involved in the game session
-    private void initializeBoards()
+    public void initializeBoards()
     {
         this.leftBoard = Board.createNewBoard(this.gameDifficulty);
         this.rightBoard = Board.createNewBoard(this.gameDifficulty);
+        this.leftBoard.setTurn(true);
     }
 
     //Getters and setters
@@ -115,19 +116,16 @@ public class GameSession implements Testable
         return points;
     }
 
-    public boolean isTurn() {
-        return turn;
-    }
-
     public static int getMaxHealthPool()
     {
         return MAX_HEALTH_POOL;
     }
 
-    //Changes the turn of the game session
-    private void changeTurn()
+    //switch the turns of the boards
+    public void changeTurn()
     {
-        this.turn = !this.turn;
+        leftBoard.setTurn(!leftBoard.getTurn());
+        rightBoard.setTurn(!rightBoard.getTurn());
     }
 
     //Adds points to the players' score
@@ -153,10 +151,33 @@ public class GameSession implements Testable
     {
         if (health < 0)
             throw new IllegalArgumentException("Invalid health");
-        this.healthPool += health;
+        this.healthPool += health; // use a setter @TOM -ohad 29/11/25 8am
         if (this.healthPool > MAX_HEALTH_POOL)
             this.healthPool = MAX_HEALTH_POOL;
     }
+
+    //these have to be public since we're not using interfaces
+    public boolean setLeftPlayerName(String leftPlayerName){
+        this.leftPlayerName = leftPlayerName;
+        if(this.leftPlayerName.equals("tom")){
+//            this.setDifficulty(GameDifficulty.INSANE);
+        }
+        return true;
+    }
+
+    public boolean setRightPlayerName(String rightPlayerName){
+        this.rightPlayerName = rightPlayerName;
+        if(this.rightPlayerName.equals("tom")){
+//            this.setDifficulty(GameDifficulty.INSANE);
+        }
+        return true;
+    }
+
+    public boolean setDifficulty(GameDifficulty difficulty){
+        this.gameDifficulty = difficulty;
+        return true;
+    }
+
 
     //Deducts health from the players' health pool
     private void deductHealth(int health)
@@ -193,85 +214,135 @@ public class GameSession implements Testable
 
     }
 
-    public void reveal(int r, int c,boolean left) throws Exception
+    public void reveal(Tile tile) throws Exception
     {
-        Board board = (left) ? leftBoard : rightBoard;
-        Board.RevealResult result;
-        try
-        {
-            result = board.reveal(r, c);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-        if (!result.wasActivated)
-        {
-            Tile t = result.revealedTile;
-            if (t instanceof MineTile)
-                deductHealth(1);
-            else if (t instanceof NumberTile nt)
-            {
-                addPoints(1);
-                if (nt.getAdjacentMines()==0)
-                    board.cascade(r, c);
-            }
-
-        }
-        if (!isGameOver(left))
-            changeTurn();
-        else initiateGameOver();
+        Board board = tile.getParentBoard();
+        board.reveal(tile);
+//
+//        boolean activated = true;
+//        try
+//        {
+//            activated = board.reveal(r, c);
+//        } catch (Exception e) {
+//            throw new Exception(e);
+//        }
+//        if (!activated)
+//        {
+//            Tile t = board.getTiles()[r][c];
+//            if (t instanceof MineTile)
+//                deductHealth(1);
+//            else if (t instanceof NumberTile nt)
+//            {
+//                addPoints(1);
+//                if (nt.getAdjacentMines()==0)
+//                    board.cascade(r, c);
+//            }
+//
+//        }
+//        if (!isGameOver(left))
+//            changeTurn();
+//        else initiateGameOver();
 
     }
-    public void flag(int r, int c,boolean left) throws Exception
-    {
-        Board board = (left) ? leftBoard : rightBoard;
-        Tile tile = board.getTileAt(r, c);
-        if (tile == null) {
-            throw new Exception("Invalid tile coordinates");
-        }
-        if (tile instanceof MineTile)
-        {
-            if (!tile.isRevealed())
-            {
-                try {
-                    board.reveal(r, c);
-                } catch (Exception ignored) {}
-                addPoints(1);
-                boolean over = board.allMinesRevealed();
-            }
-        }
-        Board.FlagResult result;
-        try {
-            result = board.flag(r, c);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-        if (!result.wasActivated)
-        {
-            Tile t = result.flaggedTile;
-            if (t instanceof NumberTile nt)
-            {
-                deductPoints(3);
-            }
-        }
-
-
-    }
-    public void unflag(int r, int c,boolean left) throws Exception
-    {
-        Board board = (left) ? leftBoard : rightBoard;
-        try
-        {
-           board.unflag(r, c);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-    }
-
+//    public void flag(int r, int c,boolean left) throws Exception
+//    {
+//        Board board = (left) ? leftBoard : rightBoard;
+//        boolean activated = true;
+//        Tile t = board.getTiles()[r][c];
+//        if (t instanceof NumberTile)
+//        {
+//            try {
+//                activated = board.flag(r, c);
+//            } catch (Exception e) {
+//                throw new Exception(e);
+//            }
+//            if (!activated)
+//                deductPoints(3);
+//        }
+//        if (t instanceof MineTile)
+//        {
+//            try
+//            {
+//                activated = board.reveal(r, c);
+//            }catch (Exception e){
+//                throw new Exception(e);
+//            }
+//            if (!activated)
+//            {
+//                addPoints(1);
+//            }
+//        }
+//
+//        if (isGameOver(left))
+//            initiateGameOver();
+//    }
+//    public void unflag(int r, int c,boolean left) throws Exception
+//    {
+//        Board board = (left) ? leftBoard : rightBoard;
+//        try
+//        {
+//            board.unflag(r, c);
+//        } catch (Exception e) {
+//            throw new Exception(e);
+//        }
+//    }
 
     //Tests the game session class
     @Override
     public boolean runClassTests()
     {
         return true;
+    }
+
+    public void LeftClickedTile(Tile tile) {
+        /*
+        this encompasses all the logic that happens when a user tries to reveal a tile
+        its responsible for switching turns, gaining points and ordering board to reveal
+         */
+        System.out.println("Left clicked tile");
+        Board parentBoard = tile.getParentBoard();
+
+        //turn test
+        if( ! parentBoard.getTurn()){
+            System.out.println("Invalid turn");
+            return; //not his turn
+        }
+
+        //case tile was already revealed
+        if(tile.isRevealed()) {
+            System.out.println("already Revealed tile");
+            return;
+        }
+
+        //case its a mine
+        if(tile instanceof MineTile){
+            System.out.println("Mine");
+            this.gainPoints(-1 * gameDifficulty.getRevealMinePoints());
+            parentBoard.reveal(tile);
+            this.changeTurn();
+            return;
+        }
+        if(tile instanceof NumberTile){
+            this.gainPoints(0); //right now we dont reward revealing number tiles... right? :)
+            System.out.println("Its a number tile");
+            parentBoard.reveal(tile);
+        }
+
+        this.changeTurn();
+
+    }
+    private boolean hisTurn(Tile tile){
+        return tile.getParentBoard().getTurn();
+    }
+
+    private void gainPoints(int points){
+        this.setPoints(this.getPoints() + points);
+    }
+
+    private void setPoints(int i) {
+        this.points = i;
+        for (PointsListener listener : pointsListeners) {
+            listener.onPointsChanged(i); // your view should implement PointsListener and that method onPointsChanged should update the view
+        }
     }
 }

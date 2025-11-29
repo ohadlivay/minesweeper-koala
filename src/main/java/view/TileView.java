@@ -1,47 +1,76 @@
 package main.java.view;
 
-import main.java.controller.BoardController;
+import main.java.controller.GameSessionController;
 import main.java.model.Tile;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-public class TileView extends JButton implements TileListener {
+public class TileView extends JButton implements RevealListener {
     private final Tile tile;
-    private final BoardController boardController;
+    private final GameSessionController gameSessionController;
 
     public TileView(Tile tile) {
         this.tile = tile;
         initTile();
         mouseClicked();
-        tile.addListener(this);
-        this.boardController = new BoardController();
+        this.gameSessionController = GameSessionController.getInstance();
     }
 
     private void initTile() {
         setPreferredSize(new Dimension(40, 40)); // tweak size as you like
         setFocusPainted(false);
         setMargin(new Insets(0, 0, 0, 0));
+        tile.setRevealListener(this);
+
     }
 
     private void mouseClicked() {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (boardController==null) return;
+                if (gameSessionController==null) return;
 
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    boardController.tileRightClick(tile);
+                    gameSessionController.tileRightClick(tile); // i didnt work on this yet -ohad
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
-                    boardController.tileLeftClick(tile);
+                    gameSessionController.tileLeftClick(tile); //cascade works
                 }
+
+                if (tile.isFlagged()) {
+                    setBackground(Color.RED);
+                    setText("F");
+                }
+
+                else if (tile.isRevealed()) {
+                    setBackground(Color.BLUE);
+                    setEnabled(false);
+                    setText(tile.toString());
+                }
+                else {
+                    setText("");
+                    setBackground(null);
+                }
+
+
+                repaint();
+                revalidate();
             }
         });
     }
-    //temporary method for getting the tile's state from the model
+
     @Override
+    public void updateRevealed() {
+        setBackground(Color.BLUE);
+        setEnabled(false);
+        setText(tile.toString());
+        System.out.println("tileview: i got updated that tile was Revealed");
+    }
+    //temporary method for getting the tile's state from the model
+    /* @Override
     public void update() {
         if (tile.isFlagged()) {
             setText("F");
@@ -50,7 +79,7 @@ public class TileView extends JButton implements TileListener {
         } else {
             setText("");
         }
-    }
+    }*/
 
 
 

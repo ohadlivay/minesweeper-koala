@@ -1,6 +1,8 @@
 package main.java.view.overlays;
 
+import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
+import main.java.model.GameDifficulty;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -24,7 +26,7 @@ public class SettingsOverlay extends OverlayView {
     private JPanel nameLabelPanel;
     private JLabel player1Label;
     private JLabel player2Label;
-    private final NavigationController nav;
+    private final NavigationController nav; //very good
 
 
     public SettingsOverlay(NavigationController nav) {
@@ -47,7 +49,12 @@ public class SettingsOverlay extends OverlayView {
 
     }
 
-    // close the overlay and go to the game screen
+    /* close the overlay and go to the game screen
+        hardcoded to hard for now
+     */
+
+    // tali please send the difficulty level and player names here.
+    // 29/11/25 8am ohad
     private void onOK() {
         nav.goToGame();
         dispose();
