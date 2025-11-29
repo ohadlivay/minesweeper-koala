@@ -319,7 +319,7 @@ public class GameSession implements Testable
             System.out.println("Flagging and revealing mine");
             this.gainPoints(-1 * gameDifficulty.getRevealMinePoints());
             parentBoard.reveal(tile);
-            // this.changeTurn();   //if revealing a mine by flagging does change a turn, uncomment this line
+            this.changeTurn();   //revealing a mine by flagging does change a turn!
             return;
         }
 
