@@ -64,6 +64,7 @@ public class TileView extends JButton implements RevealListener {
 
     @Override
     public void updateRevealed() {
+
         setBackground(Color.BLUE);
         setEnabled(false);
         setText(tile.toString());

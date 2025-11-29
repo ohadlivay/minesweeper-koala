@@ -36,8 +36,6 @@ public class Main {
                     System.err.println("Error launching system: " + e.getMessage());
                 }
 
-
-
             });
         }
 
