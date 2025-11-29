@@ -9,6 +9,7 @@ import main.java.model.*;
 import main.java.util.GameDataCSVManager;
 import main.java.view.GameScreen;
 
+import javax.swing.*;
 import java.io.IOException;
 
 public class GameSessionController {
@@ -74,8 +75,7 @@ public class GameSessionController {
         GameData gameData = new GameData(session);
         SysData.getInstance().addGame(gameData);
         GameDataCSVManager.writeGameDataListToCSV("GameHistory.csv");
-
-    }
+        }
 
     public GameSession getSession() {
         return session;

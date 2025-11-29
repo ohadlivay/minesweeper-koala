@@ -101,9 +101,13 @@ public class GameScreen {
         endGameButton.addActionListener(e -> {
             try {
                 GameSessionController.getInstance().endGame(this.session,this.nav);
+                JOptionPane saved = new JOptionPane();
+                saved.showMessageDialog(mainPanel, "Game Over! Game data saved.", "Game Over", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                JOptionPane endGame = new JOptionPane();
+                endGame.showMessageDialog(mainPanel, "Error saving game data!", "Error", JOptionPane.ERROR_MESSAGE);
             }
+
         });
 
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
