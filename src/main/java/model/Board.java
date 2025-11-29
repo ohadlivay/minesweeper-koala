@@ -1,5 +1,7 @@
 // Java
 package main.java.model;
+import main.java.view.TurnListener;
+
 import java.util.Random;
 
 public class Board {
@@ -11,6 +13,7 @@ public class Board {
     private final GameDifficulty gameDifficulty;
     private boolean turn;
     private GameSession gameSession;
+    private TurnListener turnListener;
 
     private Board(GameDifficulty gameDifficulty) {
         this.PK = RANDOM.nextInt(99999999);
@@ -145,8 +148,17 @@ public class Board {
         return this.turn;
     }
     public void setTurn(boolean turn){
+        if (this.turn == turn) return;  // no state change
+
         this.turn = turn;
-        return;
+        if (turnListener != null) {
+            turnListener.updateTurn();
+        }
+    }
+
+
+    public void setTurnListener(TurnListener turnListener) {
+        this.turnListener = turnListener;
     }
 
     private void setMinesLeft(int minesLeft){

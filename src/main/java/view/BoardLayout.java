@@ -9,7 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class BoardLayout extends JPanel{
+public class BoardLayout extends JPanel implements TurnListener {
     private final int rows;
     private final int cols;
     private final GameSessionController gameSessionController = GameSessionController.getInstance(); //changed to singleton -ohad
@@ -30,9 +30,18 @@ public class BoardLayout extends JPanel{
     //Initialize the board panel
     private void initBoardPanel() {
         setLayout(new GridLayout(rows, cols));
-        setBorder(new javax.swing.border.LineBorder(
-                new java.awt.Color(220, 220, 17, 255), 2, true));
-        /**Q: does this board know if he's the left or right one? maybe the border should be changed by the game session controller?**/
+        board.setTurnListener(this);
+        if (board.getTurn()) {
+            setBorder(BorderFactory.createMatteBorder(
+                    3, 3, 3, 3,
+                    new Color(255, 255, 0, 150)   // translucent yellow
+            ));
+        } else {
+            setBorder(BorderFactory.createMatteBorder(
+                    3, 3, 3, 3,
+                    new Color(0, 0, 0, 150)
+            )); // translucent black
+        }
     }
 
     //Populate the board with the tiles,
@@ -56,6 +65,21 @@ public class BoardLayout extends JPanel{
         repaint();
     }
 
+    @Override
+    public void updateTurn() {
+        if (board.getTurn()) {
+            setBorder(BorderFactory.createMatteBorder(
+                    3, 3, 3, 3,
+                    new Color(255, 255, 0, 150)   // translucent yellow
+            ));
+        } else {
+            setBorder(BorderFactory.createMatteBorder(
+                    3, 3, 3, 3,
+                    new Color(0, 0, 0, 150)
+            )); // translucent black
+        }
+    }
+
     /**
      * getters & setters
      **/
@@ -64,5 +88,7 @@ public class BoardLayout extends JPanel{
             throw new IllegalArgumentException("Board cannot be null");
         this.board = board;
     }
+
+
 }
 

@@ -61,6 +61,9 @@ public class GameSessionController {
     }
 
     public void tileLeftClick(Tile tile) {
+        if(!tile.getParentBoard().getTurn()){
+            return;
+        }
         session.LeftClickedTile(tile);
     }
 
