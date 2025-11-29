@@ -33,12 +33,12 @@ public class BoardLayout extends JPanel implements TurnListener {
         board.setTurnListener(this);
         if (board.getTurn()) {
             setBorder(BorderFactory.createMatteBorder(
-                    3, 3, 3, 3,
+                    5, 5, 5, 5,
                     new Color(255, 255, 0, 150)   // translucent yellow
             ));
         } else {
             setBorder(BorderFactory.createMatteBorder(
-                    3, 3, 3, 3,
+                    5,5,5,5,
                     new Color(0, 0, 0, 150)
             )); // translucent black
         }
@@ -69,12 +69,12 @@ public class BoardLayout extends JPanel implements TurnListener {
     public void updateTurn() {
         if (board.getTurn()) {
             setBorder(BorderFactory.createMatteBorder(
-                    3, 3, 3, 3,
+                    5,5,5,5,
                     new Color(255, 255, 0, 150)   // translucent yellow
             ));
         } else {
             setBorder(BorderFactory.createMatteBorder(
-                    3, 3, 3, 3,
+                    5,5,5,5,
                     new Color(0, 0, 0, 150)
             )); // translucent black
         }
