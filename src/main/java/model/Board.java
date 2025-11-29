@@ -42,19 +42,23 @@ public class Board {
     }
 
     protected void reveal(Tile tile) {
-        System.out.println("Revealing tile " + tile);
         if(tile.isRevealed())
             return;
         if(tile.isFlagged())
             return;
+        System.out.println("Revealing tile " + tile);
+
         if (tile instanceof MineTile){
             minesLeft--;
+            tile.setIsRevealed(true);
         }
         if (tile instanceof NumberTile){
             if(((NumberTile) tile).getAdjacentMines() == 0){
                 System.out.println("cascading " + tile);
                 this.cascade(tile); //this should not call board.reveal!!
-
+            }
+            else{
+                tile.setIsRevealed(true);
             }
         }
     }
@@ -118,7 +122,7 @@ public class Board {
     private void cascade(Tile tile) {
         Cascader casader = new Cascader(tile,this.tiles);
         for( Tile t : casader.getTilesToReveal()){
-            t.reveal();
+            t.setIsRevealed(true);
         }
     }
     protected boolean allMinesRevealed()

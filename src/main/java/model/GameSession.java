@@ -323,8 +323,8 @@ public class GameSession implements Testable
             return;
         }
         if(tile instanceof NumberTile){
-            System.out.println("Number");
             this.gainPoints(0); //right now we dont reward revealing number tiles... right? :)
+            System.out.println("Its a number tile");
             parentBoard.reveal(tile);
         }
 
