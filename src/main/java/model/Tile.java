@@ -2,6 +2,7 @@ package main.java.model;
 
 import main.java.test.Testable;
 import main.java.view.RevealListener;
+import main.java.view.FlagListener;
 import main.java.view.TileView;
 
 /*
@@ -21,6 +22,7 @@ public class Tile implements Testable
     private boolean isActivated;
 
     private RevealListener revealListener;
+    private FlagListener flagListener;
 
     private Board parentBoard;
 
@@ -211,6 +213,23 @@ public class Tile implements Testable
         this.isRevealed = isRevealed;
         revealListener.updateRevealed();
         return true;
+    }
+
+
+    public boolean getIsFlagged(){
+        return this.isFlagged;
+    }
+
+    public void setIsFlagged(boolean isFlagged){
+        this.isFlagged = isFlagged;
+
+        System.out.println("Updating flagged tile view");
+        flagListener.updateFlagged();
+        return;
+    }
+
+    public void setFlagListener(TileView tileView) {
+        this.flagListener = tileView;
     }
 
     public void setRevealListener(TileView tileView) {

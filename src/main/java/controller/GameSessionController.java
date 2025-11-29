@@ -48,18 +48,10 @@ public class GameSessionController {
 
     public void tileRightClick(Tile tile) {
 
-        /*
-        when a player right clicks (tries to flag) a tile, this method is activated.
-         */
         if(!tile.getParentBoard().getTurn()){
             return;
         }
-        if (tile.isFlagged()) {
-            tile.unflag();
-        }
-        else {
-            tile.flag();
-        }
+        session.RightClickedTile(tile);
     }
 
     public void tileLeftClick(Tile tile) {

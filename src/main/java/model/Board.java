@@ -109,17 +109,32 @@ public class Board {
         }
     }
 
-    protected boolean flag(int r, int c)
+    protected void flag(Tile tile)
     {
-        Tile tile = tiles[r][c];
-        boolean activated = tile.isActivated();
-        tile.flag();
-        return activated;
+        if(tile.isRevealed()) {
+
+            System.out.println("Cannot flag a revealed tile");
+            return;
+        }
+        if(tile.isFlagged()) {
+            System.out.println("Cannot flag a flagged tile, umflagging");
+            this.unflag(tile);
+            return;
+        }
+        if (tile instanceof MineTile) {
+            System.out.println("Cannot flag a mine tile");
+            reveal(tile);
+            return;
+        }
+        System.out.println("Flagging tile: " + tile);
+
+
+        tile.setIsFlagged(true);
+
     }
-    protected void unflag(int r, int c)
+    protected void unflag(Tile tile)
     {
-        Tile tile = tiles[r][c];
-        tile.unflag();
+        tile.setIsFlagged(false);
     }
 
     private void cascade(Tile tile) {

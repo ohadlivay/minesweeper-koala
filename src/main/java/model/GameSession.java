@@ -294,6 +294,50 @@ public class GameSession implements Testable
         return true;
     }
 
+    public void RightClickedTile(Tile tile) {
+        /*
+        this encompasses all the logic that happens when a user tries to flag/unflag a tile
+        its responsible for switching turns, gaining points and ordering board to flag/unflag
+         */
+        System.out.println("Right clicked tile");
+        Board parentBoard = tile.getParentBoard();
+
+        //turn test
+        if(!parentBoard.getTurn()){
+            System.out.println("Invalid turn");
+            return; //not his turn
+        }
+
+        //case tile was already revealed
+        if(tile.isRevealed()) {
+            System.out.println("already Revealed tile");
+            return;
+        }
+
+        //case tile is a mine
+        if(tile instanceof MineTile){
+            System.out.println("Flagging and revealing mine");
+            this.gainPoints(-1 * gameDifficulty.getRevealMinePoints());
+            parentBoard.reveal(tile);
+            // this.changeTurn();   //if revealing a mine by flagging does change a turn, uncomment this line
+            return;
+        }
+
+        //case tile is flagged (unflag it)
+        if(tile.isFlagged()) {
+            System.out.println("Unflagging tile");
+            parentBoard.unflag(tile);
+          //  this.changeTurn();
+            return;
+        }
+
+        //case tile is not flagged (flag it)
+        System.out.println("Flagging tile");
+        parentBoard.flag(tile);
+        //this.gainPoints(-1 * gameDifficulty.getFlagTilePoints());
+        //this.changeTurn();
+    }
+
     public void LeftClickedTile(Tile tile) {
         /*
         this encompasses all the logic that happens when a user tries to reveal a tile

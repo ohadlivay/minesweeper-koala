@@ -7,9 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
-public class TileView extends JButton implements RevealListener {
+public class TileView extends JButton implements RevealListener, FlagListener {
     private final Tile tile;
     private final GameSessionController gameSessionController;
 
@@ -25,6 +24,7 @@ public class TileView extends JButton implements RevealListener {
         setFocusPainted(false);
         setMargin(new Insets(0, 0, 0, 0));
         tile.setRevealListener(this);
+        tile.setFlagListener(this);
 
     }
 
@@ -40,7 +40,7 @@ public class TileView extends JButton implements RevealListener {
                     gameSessionController.tileLeftClick(tile); //cascade works
                 }
 
-                if (tile.isFlagged()) {
+               /* if (tile.isFlagged()) {
                     setBackground(Color.RED);
                     setText("F");
                 }
@@ -53,7 +53,7 @@ public class TileView extends JButton implements RevealListener {
                 else {
                     setText("");
                     setBackground(null);
-                }
+                }*/
 
 
                 repaint();
@@ -65,10 +65,24 @@ public class TileView extends JButton implements RevealListener {
     @Override
     public void updateRevealed() {
 
-        setBackground(Color.BLUE);
+        if (tile.toString().equals("M")) {
+            setBackground(Color.GREEN);
+            System.out.println("tileview: i got updated that tile was a mine");
+        }
+        else
+            setBackground(Color.BLUE);
         setEnabled(false);
         setText(tile.toString());
         System.out.println("tileview: i got updated that tile was Revealed");
+    }
+
+    @Override
+    public void updateFlagged() {
+
+        setBackground(Color.RED);
+        setText("F");
+        System.out.println("tileview: i got updated that tile was flagged");
+
     }
     //temporary method for getting the tile's state from the model
     /* @Override
