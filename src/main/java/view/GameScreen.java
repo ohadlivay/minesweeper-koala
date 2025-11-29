@@ -8,6 +8,7 @@ import main.java.model.GameSession;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.io.IOException;
 
 public class GameScreen {
     private final NavigationController nav;
@@ -98,7 +99,11 @@ public class GameScreen {
         bottomPanel.add(endGameButton, BorderLayout.EAST);
 
         endGameButton.addActionListener(e -> {
-            GameSessionController.getInstance().endGame(this.session,this.nav);
+            try {
+                GameSessionController.getInstance().endGame(this.session,this.nav);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);

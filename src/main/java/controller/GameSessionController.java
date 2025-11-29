@@ -5,11 +5,11 @@ model.GameSession
 
 package main.java.controller;
 
-import main.java.model.GameData;
-import main.java.model.GameDifficulty;
-import main.java.model.GameSession;
-import main.java.model.Tile;
+import main.java.model.*;
+import main.java.util.GameDataCSVManager;
 import main.java.view.GameScreen;
+
+import java.io.IOException;
 
 public class GameSessionController {
     private GameSession session;
@@ -68,8 +68,12 @@ public class GameSessionController {
         session.LeftClickedTile(tile);
     }
 
-    public void endGame(GameSession session,NavigationController nav) {
+    public void endGame(GameSession session,NavigationController nav) throws IOException {
         session.forceGameOver();
+        session.forceGameOver();
+        GameData gameData = new GameData(session);
+        SysData.getInstance().addGame(gameData);
+        GameDataCSVManager.writeGameDataListToCSV("GameHistory.csv");
 
     }
 
