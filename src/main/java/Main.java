@@ -32,6 +32,7 @@ public class Main {
                     nav.goToHome();
                     frame.setLocationRelativeTo(null);
                     frame.setVisible(true);
+                    GameDataCSVManager.readGameDataListFromCSV("GameHistory.csv");
                 } catch (Exception e) {
                     System.err.println("Error launching system: " + e.getMessage());
                 }
