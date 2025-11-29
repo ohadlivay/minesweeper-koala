@@ -1,5 +1,6 @@
 package main.java.view;
 
+import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.model.Board;
 import main.java.model.GameSession;
@@ -96,6 +97,9 @@ public class GameScreen {
         endGameButton.setForeground(Color.WHITE);
         bottomPanel.add(endGameButton, BorderLayout.EAST);
 
+        endGameButton.addActionListener(e -> {
+            GameSessionController.getInstance().endGame(this.session,this.nav);
+        });
 
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
     }

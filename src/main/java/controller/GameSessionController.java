@@ -5,6 +5,7 @@ model.GameSession
 
 package main.java.controller;
 
+import main.java.model.GameData;
 import main.java.model.GameDifficulty;
 import main.java.model.GameSession;
 import main.java.model.Tile;
@@ -65,6 +66,11 @@ public class GameSessionController {
             return;
         }
         session.LeftClickedTile(tile);
+    }
+
+    public void endGame(GameSession session,NavigationController nav) {
+        session.forceGameOver();
+
     }
 
     public GameSession getSession() {
