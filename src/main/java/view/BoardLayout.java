@@ -1,9 +1,10 @@
 package main.java.view;
 
 
+import main.java.controller.GameSessionController;
 import main.java.model.Board;
 import main.java.model.Tile;
-import main.java.controller.BoardsController;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -11,7 +12,7 @@ import java.awt.*;
 public class BoardLayout extends JPanel{
     private final int rows;
     private final int cols;
-    private final BoardsController boardsController = BoardsController.getInstance(); //changed to singleton -ohad
+    private final GameSessionController gameSessionController = GameSessionController.getInstance(); //changed to singleton -ohad
     private Board board; //only use for getters
 
     public BoardLayout(Board board) {

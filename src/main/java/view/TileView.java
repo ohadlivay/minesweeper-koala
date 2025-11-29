@@ -1,6 +1,6 @@
 package main.java.view;
 
-import main.java.controller.BoardsController;
+import main.java.controller.GameSessionController;
 import main.java.model.Tile;
 
 import javax.swing.*;
@@ -10,13 +10,13 @@ import java.awt.event.MouseEvent;
 
 public class TileView extends JButton{
     private final Tile tile;
-    private final BoardsController boardController;
+    private final GameSessionController gameSessionController;
 
     public TileView(Tile tile) {
         this.tile = tile;
         initTile();
         mouseClicked();
-        this.boardController = BoardsController.getInstance();
+        this.gameSessionController = GameSessionController.getInstance();
     }
 
     private void initTile() {
@@ -29,12 +29,12 @@ public class TileView extends JButton{
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (boardController==null) return;
+                if (gameSessionController==null) return;
 
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    boardController.tileRightClick(tile);
+                    gameSessionController.tileRightClick(tile);
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
-                    boardController.tileLeftClick(tile);
+                    gameSessionController.tileLeftClick(tile);
                 }
 
                 if (tile.isFlagged()) {
