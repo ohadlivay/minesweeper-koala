@@ -34,12 +34,12 @@ public class GameSessionController {
         GameDifficulty difficulty = GameDifficulty.HARD;
 
         session = GameSession.getInstance();
-        session.initializeBoards();
-
         assert session != null;
-        if( !(session.setLeftPlayerName(leftName) && session.setRightPlayerName(leftName) && session.setDifficulty(difficulty))){
+        if( !(session.setLeftPlayerName(leftName) && session.setRightPlayerName(rightName) && session.setDifficulty(difficulty))){
             System.out.println("couldnt set either difficulty or player names");
         }
+
+        session.initializeBoards();
 
         return new GameScreen(nav, session);
     }
