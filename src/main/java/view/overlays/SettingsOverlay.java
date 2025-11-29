@@ -52,6 +52,9 @@ public class SettingsOverlay extends OverlayView {
     /* close the overlay and go to the game screen
         hardcoded to hard for now
      */
+
+    // tali please send the difficulty level and player names here.
+    // 29/11/25 8am ohad
     private void onOK() {
         nav.goToGame();
         dispose();

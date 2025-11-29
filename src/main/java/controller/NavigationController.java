@@ -35,7 +35,7 @@ public class NavigationController {
     }
 
     public void goToGame() {
-        GameSessionController gsc = GameSessionController.getinstance();
+        GameSessionController gsc = GameSessionController.getInstance();
         GameScreen gameScreen = gsc.startNewGame(this);
         visFrame.setContentPane(gameScreen.getMainPanel());
         refresh();

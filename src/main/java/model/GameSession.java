@@ -1,5 +1,6 @@
 package main.java.model;
 import main.java.test.Testable;
+import main.java.view.GameScreen;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -31,11 +32,11 @@ public class GameSession implements Testable
     private final LocalDateTime timeStamp;
 
     //Names of the players involved in the game session
-    private final String rightPlayerName;
-    private final String leftPlayerName;
+    private String rightPlayerName;
+    private String leftPlayerName;
 
     //Game difficulty
-    private final GameDifficulty gameDifficulty;
+    private GameDifficulty gameDifficulty;
 
     //Boards of the players involved in the game session
     private Board leftBoard;
@@ -50,9 +51,8 @@ public class GameSession implements Testable
 
     //Maximum health pool for a game session
     private static final int MAX_HEALTH_POOL = 10;
-
     //Constructors
-
+    private static GameSession instance;
 
     private GameSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
     {
@@ -65,14 +65,13 @@ public class GameSession implements Testable
         this.turn = true;
         this.healthPool = gameDifficulty.getInitialHealthPool();
         this.initializeBoards();
-
-
     }
 
-    //Create a new game session
-    public static GameSession createNewSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
-    {
-        return new GameSession(leftPlayerName, rightPlayerName, gameDifficulty);
+    public static GameSession getInstance(){
+        if(instance==null){
+            instance = new GameSession("Player1", "Player2", GameDifficulty.EASY);
+        }
+        return instance;
     }
 
     //Initialize the boards of the players involved in the game session
@@ -153,10 +152,33 @@ public class GameSession implements Testable
     {
         if (health < 0)
             throw new IllegalArgumentException("Invalid health");
-        this.healthPool += health;
+        this.healthPool += health; // use a setter @TOM -ohad 29/11/25 8am
         if (this.healthPool > MAX_HEALTH_POOL)
             this.healthPool = MAX_HEALTH_POOL;
     }
+
+    //these have to be public since we're not using interfaces
+    public boolean setLeftPlayerName(String leftPlayerName){
+        this.leftPlayerName = leftPlayerName;
+        if(this.leftPlayerName.equals("tom")){
+//            this.setDifficulty(GameDifficulty.INSANE);
+        }
+        return true;
+    }
+
+    public boolean setRightPlayerName(String rightPlayerName){
+        this.rightPlayerName = rightPlayerName;
+        if(this.rightPlayerName.equals("tom")){
+//            this.setDifficulty(GameDifficulty.INSANE);
+        }
+        return true;
+    }
+
+    public boolean setDifficulty(GameDifficulty difficulty){
+        this.gameDifficulty = difficulty;
+        return true;
+    }
+
 
     //Deducts health from the players' health pool
     private void deductHealth(int health)
@@ -214,7 +236,7 @@ public class GameSession implements Testable
                 if (nt.getAdjacentMines()==0)
                     board.cascade(r, c);
             }
-                
+
         }
         if (!isGameOver(left))
             changeTurn();
@@ -258,12 +280,12 @@ public class GameSession implements Testable
         Board board = (left) ? leftBoard : rightBoard;
         try
         {
-           board.unflag(r, c);
+            board.unflag(r, c);
         } catch (Exception e) {
             throw new Exception(e);
         }
     }
-    
+
 
     //Tests the game session class
     @Override
