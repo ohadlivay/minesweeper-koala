@@ -134,6 +134,7 @@ public class Board {
     }
     protected void unflag(Tile tile)
     {
+        System.out.println("Unflagging tile: " + tile);
         tile.setIsFlagged(false);
     }
 

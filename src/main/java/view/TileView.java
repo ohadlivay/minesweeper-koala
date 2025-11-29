@@ -77,11 +77,17 @@ public class TileView extends JButton implements RevealListener, FlagListener {
     }
 
     @Override
-    public void updateFlagged() {
+    public void updateFlagged(boolean flagged) {
 
-        setBackground(Color.RED);
-        setText("F");
-        System.out.println("tileview: i got updated that tile was flagged");
+        if (flagged) {
+            setBackground(Color.RED);
+            setText("F");
+            System.out.println("tileview: i got updated that tile was flagged");
+        }
+        else {
+            setBackground(null);
+            setText("");
+        }
 
     }
     //temporary method for getting the tile's state from the model

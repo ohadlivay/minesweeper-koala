@@ -224,7 +224,7 @@ public class Tile implements Testable
         this.isFlagged = isFlagged;
 
         System.out.println("Updating flagged tile view");
-        flagListener.updateFlagged();
+        flagListener.updateFlagged(isFlagged);
         return;
     }
 
