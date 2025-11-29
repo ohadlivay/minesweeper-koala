@@ -9,6 +9,7 @@ public class Board {
     private Tile[][] tiles;
     private static final Random RANDOM = new Random();
     private final GameDifficulty gameDifficulty;
+    private boolean turn;
 
     private Board(GameDifficulty gameDifficulty) {
         this.PK = RANDOM.nextInt(99999999);
@@ -16,12 +17,21 @@ public class Board {
         this.minesLeft = gameDifficulty.getMineCount();
         this.gameDifficulty = gameDifficulty;
         this.tiles = populateBoard();
+        this.turn = false;
     }
 
     private Tile[][] populateBoard() {
         BoardGenerator boardGenerator = new BoardGenerator(this.gameDifficulty);
         int seed = RANDOM.nextInt(); // use a fresh random seed per board
-        return boardGenerator.generateValidBoard(seed);
+        Tile[][] tiles = boardGenerator.generateValidBoard(seed);
+
+        //give the tiles their parent board
+        for(Tile[] row : tiles) {
+            for(Tile tile : row) {
+                tile.setParentBoard(this);
+            }
+        }
+        return tiles;
     }
 
     // factory design pattern
@@ -99,5 +109,13 @@ public class Board {
 
     public int getCols() {
         return (tiles == null || tiles.length == 0) ? 0 : tiles[0].length;
+    }
+
+    public boolean getTurn(){
+        return this.turn;
+    }
+    public void setTurn(boolean turn){
+        this.turn = turn;
+        return;
     }
 }

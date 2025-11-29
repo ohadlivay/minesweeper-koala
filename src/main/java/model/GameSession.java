@@ -46,9 +46,6 @@ public class GameSession implements Testable
     private int healthPool;
     private int points;
 
-    //Indicates whether it is the left player's turn or not
-    private boolean turn;
-
     //Maximum health pool for a game session
     private static final int MAX_HEALTH_POOL = 10;
     //Constructors
@@ -62,7 +59,6 @@ public class GameSession implements Testable
         this.gameDifficulty = Objects.requireNonNullElse(gameDifficulty, GameDifficulty.EASY);
         this.rightPlayerName = Objects.requireNonNullElse(rightPlayerName, "Player 2");
         this.leftPlayerName = Objects.requireNonNullElse(leftPlayerName, "Player 1");
-        this.turn = true;
         this.healthPool = gameDifficulty.getInitialHealthPool();
         this.initializeBoards();
     }
@@ -79,6 +75,7 @@ public class GameSession implements Testable
     {
         this.leftBoard = Board.createNewBoard(this.gameDifficulty);
         this.rightBoard = Board.createNewBoard(this.gameDifficulty);
+        this.leftBoard.setTurn(true);
     }
 
     //Getters and setters
@@ -114,19 +111,16 @@ public class GameSession implements Testable
         return points;
     }
 
-    public boolean isTurn() {
-        return turn;
-    }
-
     public static int getMaxHealthPool()
     {
         return MAX_HEALTH_POOL;
     }
 
-    //Changes the turn of the game session
-    private void changeTurn()
+    //switch the turns of the boards
+    public void changeTurn()
     {
-        this.turn = !this.turn;
+        leftBoard.setTurn(!leftBoard.getTurn());
+        rightBoard.setTurn(!rightBoard.getTurn());
     }
 
     //Adds points to the players' score
@@ -285,7 +279,6 @@ public class GameSession implements Testable
             throw new Exception(e);
         }
     }
-
 
     //Tests the game session class
     @Override

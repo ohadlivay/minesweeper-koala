@@ -18,6 +18,7 @@ public class Tile implements Testable
     //Indicator of whether the tile has been activated
     private boolean isActivated;
 
+    private Board parentBoard;
 
     //Constructors
 
@@ -26,6 +27,7 @@ public class Tile implements Testable
         this.isFlagged = false;
         this.isRevealed = false;
         this.isActivated = false;
+        this.parentBoard = null;
     }
 
     //Getters and setters for the tile class
@@ -184,5 +186,16 @@ public class Tile implements Testable
     @Override
     public String toString(){
         return "T";
+    }
+
+    public Board getParentBoard()
+    {
+        return this.parentBoard;
+    }
+
+    public void setParentBoard(Board parentBoard)
+    {
+        this.parentBoard = parentBoard;
+        return;
     }
 }
