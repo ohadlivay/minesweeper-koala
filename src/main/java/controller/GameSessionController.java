@@ -34,6 +34,8 @@ public class GameSessionController {
         GameDifficulty difficulty = GameDifficulty.HARD;
 
         session = GameSession.getInstance();
+        session.initializeBoards();
+
         assert session != null;
         if( !(session.setLeftPlayerName(leftName) && session.setRightPlayerName(leftName) && session.setDifficulty(difficulty))){
             System.out.println("couldnt set either difficulty or player names");
@@ -59,11 +61,7 @@ public class GameSessionController {
     }
 
     public void tileLeftClick(Tile tile) {
-        if(!tile.getParentBoard().getTurn()){
-            return;
-        }
-        tile.reveal();
-        session.changeTurn();
+        session.LeftClickedTile(tile);
     }
 
     public GameSession getSession() {

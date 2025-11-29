@@ -1,6 +1,8 @@
 package main.java.model;
 
 import main.java.test.Testable;
+import main.java.view.RevealListener;
+import main.java.view.TileView;
 
 /*
 tom i think might want to reconsider the access modifiers of the setters here (true for GameSession too)
@@ -18,6 +20,8 @@ public class Tile implements Testable
     //Indicator of whether the tile has been activated
     private boolean isActivated;
 
+    private RevealListener revealListener;
+
     private Board parentBoard;
 
     //Constructors
@@ -28,6 +32,7 @@ public class Tile implements Testable
         this.isRevealed = false;
         this.isActivated = false;
         this.parentBoard = null;
+
     }
 
     //Getters and setters for the tile class
@@ -54,7 +59,7 @@ public class Tile implements Testable
     {
         if (!isRevealed&&!isFlagged)
         {
-            isRevealed = true;
+            setIsRevealed(true);
             activate();
         }
 
@@ -63,7 +68,7 @@ public class Tile implements Testable
     }
     protected void forceReveal()
     {
-        isRevealed = true;
+        setIsRevealed(true);
     }
 
     //Flags the tile if it is not flagged already
@@ -197,5 +202,18 @@ public class Tile implements Testable
     {
         this.parentBoard = parentBoard;
         return;
+    }
+
+    public boolean getIsRevealed(){
+        return this.isRevealed;
+    }
+    public boolean setIsRevealed(boolean isRevealed){
+        this.isRevealed = isRevealed;
+        revealListener.updateRevealed();
+        return true;
+    }
+
+    public void setRevealListener(TileView tileView) {
+        this.revealListener = tileView;
     }
 }

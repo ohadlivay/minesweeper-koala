@@ -10,6 +10,7 @@ public class Board {
     private static final Random RANDOM = new Random();
     private final GameDifficulty gameDifficulty;
     private boolean turn;
+    private GameSession gameSession;
 
     private Board(GameDifficulty gameDifficulty) {
         this.PK = RANDOM.nextInt(99999999);
@@ -18,6 +19,7 @@ public class Board {
         this.gameDifficulty = gameDifficulty;
         this.tiles = populateBoard();
         this.turn = false;
+        this.gameSession = GameSession.getInstance();
     }
 
     private Tile[][] populateBoard() {
@@ -39,14 +41,57 @@ public class Board {
         return new Board(gameDifficulty);
     }
 
-    protected boolean reveal(int r, int c)
-    {
-        Tile tile = tiles[r][c];
-        boolean activated = tile.isActivated();
-        tile.reveal();
-        if (tile instanceof MineTile) minesLeft--;
-        return activated;
+    protected void reveal(Tile tile) {
+        System.out.println("Revealing tile " + tile);
+        if(tile.isRevealed())
+            return;
+        if(tile.isFlagged())
+            return;
+        if (tile instanceof MineTile){
+            minesLeft--;
+        }
+        if (tile instanceof NumberTile){
+            if(((NumberTile) tile).getAdjacentMines() == 0){
+                System.out.println("cascading " + tile);
+                this.cascade(tile); //this should not call board.reveal!!
+
+            }
+        }
     }
+
+    private int getTileRow(Tile tile) {
+        for (int r = 0; r < tiles.length; r++) {
+            for (int c = 0; c < tiles[r].length; c++) {
+                if (tiles[r][c].equals(tile)) {
+                    return r;
+                }
+            }
+        }
+        throw new IllegalArgumentException("Tile not found in grid");
+    }
+
+    private int getTileCol(Tile tile) {
+        for (int r = 0; r < tiles.length; r++) {
+            for (int c = 0; c < tiles[r].length; c++) {
+                if (tiles[r][c].equals(tile)) {
+                    return c;
+                }
+            }
+        }
+        throw new IllegalArgumentException("Tile not found in grid");
+    }
+
+    private Tile getTileAt(int row, int col) {
+        if (row < 0 || row >= tiles.length)
+            throw new IndexOutOfBoundsException("Invalid row: " + row);
+
+        if (col < 0 || col >= tiles[row].length)
+            throw new IndexOutOfBoundsException("Invalid col: " + col);
+
+        return tiles[row][col];
+    }
+
+
     protected void revealAll()
     {
         for (int r = 0; r < getRows(); r++) {
@@ -70,29 +115,10 @@ public class Board {
         tile.unflag();
     }
 
-    protected void cascade(int r, int c)
-    {
-        if (r < 0 || c < 0 || r >= getRows() || c >= getCols()) return;
-        Tile tile = tiles[r][c];
-        if (tile == null) return;
-
-        if (tile.isRevealed() || tile.isFlagged() || tile instanceof MineTile) return;
-
-        reveal(r, c);
-
-        if (tile instanceof NumberTile && ((NumberTile) tile).getAdjacentMines() == 0) {
-            for (int dr = -1; dr <= 1; dr++) {
-                for (int dc = -1; dc <= 1; dc++) {
-                    if (dr == 0 && dc == 0) continue;
-                    int nr = r + dr;
-                    int nc = c + dc;
-                    if (nr < 0 || nc < 0 || nr >= getRows() || nc >= getCols()) continue;
-                    Tile neigh = tiles[nr][nc];
-                    if (neigh == null) continue;
-                    if (neigh.isRevealed() || neigh.isFlagged() || neigh instanceof MineTile) continue;
-                    cascade(nr, nc);
-                }
-            }
+    private void cascade(Tile tile) {
+        Cascader casader = new Cascader(tile,this.tiles);
+        for( Tile t : casader.getTilesToReveal()){
+            t.reveal();
         }
     }
     protected boolean allMinesRevealed()
@@ -117,5 +143,13 @@ public class Board {
     public void setTurn(boolean turn){
         this.turn = turn;
         return;
+    }
+
+    private void setMinesLeft(int minesLeft){
+        this.minesLeft = minesLeft;
+    };
+
+    private int getMinesLeft(){
+        return this.minesLeft;
     }
 }

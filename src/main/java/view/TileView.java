@@ -7,8 +7,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-public class TileView extends JButton{
+public class TileView extends JButton implements RevealListener {
     private final Tile tile;
     private final GameSessionController gameSessionController;
 
@@ -23,6 +24,8 @@ public class TileView extends JButton{
         setPreferredSize(new Dimension(40, 40)); // tweak size as you like
         setFocusPainted(false);
         setMargin(new Insets(0, 0, 0, 0));
+        tile.setRevealListener(this);
+
     }
 
     private void mouseClicked() {
@@ -32,9 +35,9 @@ public class TileView extends JButton{
                 if (gameSessionController==null) return;
 
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    gameSessionController.tileRightClick(tile);
+                    gameSessionController.tileRightClick(tile); // i didnt work on this yet -ohad
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
-                    gameSessionController.tileLeftClick(tile);
+                    gameSessionController.tileLeftClick(tile); //cascade works
                 }
 
                 if (tile.isFlagged()) {
@@ -57,6 +60,14 @@ public class TileView extends JButton{
                 revalidate();
             }
         });
+    }
+
+    @Override
+    public void updateRevealed() {
+        setBackground(Color.BLUE);
+        setEnabled(false);
+        setText(tile.toString());
+        System.out.println("tileview: i got updated that tile was Revealed");
     }
     //temporary method for getting the tile's state from the model
     /* @Override
