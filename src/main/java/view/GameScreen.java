@@ -101,6 +101,7 @@ public class GameScreen {
             try {
                 GameSessionController.getInstance().endGame(this.session,this.nav);
                 JOptionPane saved = new JOptionPane();
+                endGameButton.setEnabled(false);
                 saved.showMessageDialog(mainPanel, "Game Over! Game data saved.", "Game Over", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException ex) {
                 JOptionPane endGame = new JOptionPane();
@@ -127,7 +128,7 @@ public class GameScreen {
         button.addActionListener(e -> {
             int option = JOptionPane.showConfirmDialog(
                     mainPanel,
-                    "Are you sure you want to return to the main menu? Unsaved progress will be lost.",
+                    "Are you sure you want to return to the main menu?",
                     "Confirm Navigation",
                     JOptionPane.YES_NO_OPTION
             );
