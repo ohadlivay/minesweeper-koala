@@ -3,18 +3,33 @@ package main.java.view.overlays;
 import main.java.controller.NavigationController;
 
 import javax.swing.*;
-/* An abstract class representing an overlay.
- * It provides helper methods to open and close the overlay.
- * It also allows setting a listener to handle actions when the overlay is closed.
+/**
+ * Abstract class representing a modal overlay dialog in the application.
+ * All specific overlays should extend this class.
  */
+
 public abstract class OverlayView extends JDialog {
 
+    protected final NavigationController nav;
+
     public OverlayView(NavigationController nav) {
-        super(nav.getVisFrame(), true);
+        super(nav.getVisFrame(), true); //sets the overlay to always be modal
+        this.nav = nav;
+        initBaseUI();
+    }
+
+    private void initBaseUI() {
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        this.setResizable(false);
     }
 
     public void open() {
+        this.pack(); // Adjusts size to fit content
+        this.setLocationRelativeTo(nav.getVisFrame()); // Center relative to main frame
         this.setVisible(true);
+    }
+
+    public void close() {
+        this.dispose();
     }
 }

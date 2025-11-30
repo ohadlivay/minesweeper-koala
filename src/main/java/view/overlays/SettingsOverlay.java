@@ -1,16 +1,14 @@
 package main.java.view.overlays;
 
-import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
-import main.java.model.GameDifficulty;
 
 import javax.swing.*;
 import java.awt.event.*;
 
 public class SettingsOverlay extends OverlayView {
     private JPanel contentPane;
-    private JButton buttonOK;
-    private JButton buttonCancel;
+    private JButton buttonStart;
+    private JButton buttonBack;
     private JPanel bottomPanel;
     private JPanel mainPanel;
     private JLabel difficultyLabel;
@@ -36,8 +34,8 @@ public class SettingsOverlay extends OverlayView {
         pack();
         setLocationRelativeTo(nav.getVisFrame());
 
-        buttonOK.addActionListener(e -> onOK());
-        buttonCancel.addActionListener(e -> onCancel());
+        buttonStart.addActionListener(e -> onOK());
+        buttonBack.addActionListener(e -> onCancel());
 
         // call onCancel() when X is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -50,21 +48,20 @@ public class SettingsOverlay extends OverlayView {
     }
 
     /* close the overlay and go to the game screen
-        hardcoded to hard for now
+        doesn't pass user input for now
      */
-
     // tali please send the difficulty level and player names here.
     // 29/11/25 8am ohad
     private void onOK() {
         nav.goToGame();
-        dispose();
+        close();
     }
 
     private void onCancel() {
-        setVisible(false);
+        close();
     }
 
-    // add getters to retrieve user input
+    /* add getters to retrieve user input
     public String getPlayer1Name() {
         return player1Name.getText();
     }
@@ -72,5 +69,7 @@ public class SettingsOverlay extends OverlayView {
     public String getPlayer2Name() {
         return player2Name.getText();
     }
+
+     */
 
 }
