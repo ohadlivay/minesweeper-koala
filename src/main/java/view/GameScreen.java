@@ -85,7 +85,6 @@ public class GameScreen {
         bottomPanel.setOpaque(false);
         bottomPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
         JButton homeButton = createHomeButton();
-        homeButton.addActionListener(e -> nav.goToHome());
         bottomPanel.add(homeButton, BorderLayout.WEST);
 
         // TEMP BUTTON FOR TESTING GAME SAVES
@@ -125,6 +124,17 @@ public class GameScreen {
         button.setBorder(BorderFactory.createLineBorder(new Color(70, 80, 100), 2));
         button.setFocusPainted(false);
         button.setContentAreaFilled(true);
+        button.addActionListener(e -> {
+            int option = JOptionPane.showConfirmDialog(
+                    mainPanel,
+                    "Are you sure you want to return to the main menu? Unsaved progress will be lost.",
+                    "Confirm Navigation",
+                    JOptionPane.YES_NO_OPTION
+            );
+            if (option == JOptionPane.YES_OPTION) {
+                nav.goToHome();
+        }
+        });
 
         return button;
     }
