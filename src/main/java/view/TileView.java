@@ -22,7 +22,7 @@ public class TileView extends JButton implements RevealListener, FlagListener {
     }
 
     private void initTile() {
-        setPreferredSize(new Dimension(40, 40)); // tweak size as you like
+        setPreferredSize(new Dimension(30, 30));
         setFocusPainted(false);
         setMargin(new Insets(0, 0, 0, 0));
         tile.setRevealListener(this);
@@ -37,26 +37,10 @@ public class TileView extends JButton implements RevealListener, FlagListener {
                 if (gameSessionController==null) return;
 
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    gameSessionController.tileRightClick(tile); // i didnt work on this yet -ohad
+                    gameSessionController.tileRightClick(tile);
                 } else if (SwingUtilities.isLeftMouseButton(e)) {
-                    gameSessionController.tileLeftClick(tile); //cascade works
+                    gameSessionController.tileLeftClick(tile);
                 }
-
-               /* if (tile.isFlagged()) {
-                    setBackground(Color.RED);
-                    setText("F");
-                }
-
-                else if (tile.isRevealed()) {
-                    setBackground(Color.BLUE);
-                    setEnabled(false);
-                    setText(tile.toString());
-                }
-                else {
-                    setText("");
-                    setBackground(null);
-                }*/
-
 
                 repaint();
                 revalidate();
@@ -92,17 +76,6 @@ public class TileView extends JButton implements RevealListener, FlagListener {
         }
 
     }
-    //temporary method for getting the tile's state from the model
-    /* @Override
-    public void update() {
-        if (tile.isFlagged()) {
-            setText("F");
-        } else if (tile.isRevealed()) {
-            setText("R");
-        } else {
-            setText("");
-        }
-    }*/
 
 
 
