@@ -1,6 +1,5 @@
 // Java
 package main.java.model;
-import main.java.view.TurnListener;
 
 import java.util.Random;
 
@@ -164,15 +163,13 @@ public class Board {
         return this.turn;
     }
     public void setTurn(boolean turn){
-        if (this.turn == turn) return;  // no state change
+        if (this.getTurn() == turn) return;  // no state change
 
         this.turn = turn;
         if (turnListener != null) {
             turnListener.updateTurn();
         }
     }
-
-
     public void setTurnListener(TurnListener turnListener) {
         this.turnListener = turnListener;
     }

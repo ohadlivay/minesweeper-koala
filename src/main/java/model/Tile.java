@@ -1,8 +1,6 @@
 package main.java.model;
 
 import main.java.test.Testable;
-import main.java.view.RevealListener;
-import main.java.view.FlagListener;
 import main.java.view.TileView;
 
 /*

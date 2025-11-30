@@ -11,6 +11,7 @@ public class SysData
     private static SysData instance = null;
     //List of game data
     private final List<GameData> games;
+    //need to add questions here??
 
     //Private constructor
     private SysData()

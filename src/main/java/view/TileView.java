@@ -1,6 +1,8 @@
 package main.java.view;
 
 import main.java.controller.GameSessionController;
+import main.java.model.FlagListener;
+import main.java.model.RevealListener;
 import main.java.model.Tile;
 
 import javax.swing.*;
