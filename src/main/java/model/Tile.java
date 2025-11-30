@@ -54,18 +54,18 @@ public class Tile implements Testable
     //Methods for the tile class
 
 
-    //Reveals the tile if it is not revealed already
-    public void reveal()
-    {
-        if (!isRevealed&&!isFlagged)
-        {
-            setIsRevealed(true);
-            activate();
-        }
-
-        else
-            throw new IllegalMoveException("reveal");
-    }
+//    //Reveals the tile if it is not revealed already
+//    public void reveal()
+//    {
+//        if (!isRevealed&&!isFlagged)
+//        {
+//            setIsRevealed(true);
+//            activate();
+//        }
+//
+//        else
+//            throw new IllegalMoveException("reveal");
+//    }
     protected void forceReveal()
     {
         setIsRevealed(true);
@@ -201,7 +201,6 @@ public class Tile implements Testable
     public void setParentBoard(Board parentBoard)
     {
         this.parentBoard = parentBoard;
-        return;
     }
 
     public boolean getIsRevealed(){

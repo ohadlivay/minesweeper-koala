@@ -1,7 +1,5 @@
 package main.java.model;
 
-import main.java.test.Testable;
-
 import java.util.ArrayList;
 import java.util.List;
 
