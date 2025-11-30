@@ -51,7 +51,7 @@ public class Board {
         System.out.println("Revealing tile " + tile);
 
         if (tile instanceof MineTile){
-            minesLeft--;
+            setMinesLeft(getMinesLeft() -1);
             tile.setIsRevealed(true);
         }
         if (tile instanceof NumberTile){
@@ -112,7 +112,7 @@ public class Board {
     }
     protected boolean allMinesRevealed()
     {
-        return minesLeft == 0;
+        return getMinesLeft() == 0;
     }
 
     public Tile[][] getTiles() {
@@ -143,7 +143,7 @@ public class Board {
 
     private void setMinesLeft(int minesLeft){
         this.minesLeft = minesLeft;
-    };
+    }
 
     private int getMinesLeft(){
         return this.minesLeft;
