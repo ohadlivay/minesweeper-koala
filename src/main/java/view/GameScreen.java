@@ -50,7 +50,7 @@ public class GameScreen {
 
     private void initUI() {
         mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(Color.BLACK);
+        mainPanel.setBackground(new Color(20, 20, 20));
         mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         //top panel holds player names
@@ -75,7 +75,7 @@ public class GameScreen {
 
         //center panel holds the boardlayouts
         centerPanel = new JPanel();
-        centerPanel.setBackground(Color.BLACK);
+        centerPanel.setBackground(new Color(20, 20, 20));
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.X_AXIS));
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
