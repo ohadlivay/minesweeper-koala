@@ -65,39 +65,6 @@ public class Board {
         }
     }
 
-    private int getTileRow(Tile tile) {
-        for (int r = 0; r < tiles.length; r++) {
-            for (int c = 0; c < tiles[r].length; c++) {
-                if (tiles[r][c].equals(tile)) {
-                    return r;
-                }
-            }
-        }
-        throw new IllegalArgumentException("Tile not found in grid");
-    }
-
-    private int getTileCol(Tile tile) {
-        for (int r = 0; r < tiles.length; r++) {
-            for (int c = 0; c < tiles[r].length; c++) {
-                if (tiles[r][c].equals(tile)) {
-                    return c;
-                }
-            }
-        }
-        throw new IllegalArgumentException("Tile not found in grid");
-    }
-
-    private Tile getTileAt(int row, int col) {
-        if (row < 0 || row >= tiles.length)
-            throw new IndexOutOfBoundsException("Invalid row: " + row);
-
-        if (col < 0 || col >= tiles[row].length)
-            throw new IndexOutOfBoundsException("Invalid col: " + col);
-
-        return tiles[row][col];
-    }
-
-
     protected void revealAll()
     {
         for (int r = 0; r < getRows(); r++) {
