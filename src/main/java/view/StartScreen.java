@@ -23,6 +23,17 @@ public class StartScreen {
         });
         gameHistoryBtn.addActionListener(e -> nav.goToHistory());
         mngQuestionsBtn.addActionListener(e -> nav.goToQuestionManager());
+        exitBtn.addActionListener(e -> {
+            int option = JOptionPane.showConfirmDialog(
+                    mainPanel,
+                    "Are you sure you want to exit the application?",
+                    "Exit Confirmation",
+                    JOptionPane.YES_NO_OPTION
+            );
+            if (option == JOptionPane.YES_OPTION) {
+                System.exit(0);
+            }
+        });
     }
 
     public JPanel getMainPanel() {
