@@ -208,7 +208,9 @@ public class Tile implements Testable
     }
     public boolean setIsRevealed(boolean isRevealed){
         this.isRevealed = isRevealed;
-        revealListener.updateRevealed();
+        if(revealListener != null) {
+            revealListener.updateRevealed();
+        }
         return true;
     }
 

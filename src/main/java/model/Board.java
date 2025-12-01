@@ -1,9 +1,11 @@
 // Java
 package main.java.model;
 
+import main.java.test.Testable;
+
 import java.util.Random;
 
-public class Board {
+public class Board implements Testable {
 
     private final int PK;
     private int minesLeft;
@@ -39,7 +41,7 @@ public class Board {
         return tiles;
     }
 
-    // factory design pattern
+    // we might want to implement a factory design pattern here
     public static Board createNewBoard(GameDifficulty gameDifficulty){
         return new Board(gameDifficulty);
     }
@@ -58,19 +60,20 @@ public class Board {
         if (tile instanceof NumberTile){
             if(((NumberTile) tile).getAdjacentMines() == 0){
                 System.out.println("cascading " + tile);
-                this.cascade(tile); //this should not call board.reveal!!
+                this.cascade(tile); //this should NEVER call board.reveal!!
             }
             else{
                 tile.setIsRevealed(true);
             }
         }
+        //else throw exception ?
     }
 
     protected void revealAll()
     {
         for (int r = 0; r < getRows(); r++) {
             for (int c = 0; c < getCols(); c++) {
-                Tile tile = tiles[r][c];
+                Tile tile = this.getTiles()[r][c];
                 tile.forceReveal();
             }
         }
@@ -143,9 +146,16 @@ public class Board {
     }
     private void setMinesLeft(int minesLeft){
         this.minesLeft = minesLeft;
-        minesLeftListener.updateMinesLeft(getMinesLeft());
+        if(minesLeftListener  != null) {
+            minesLeftListener.updateMinesLeft(getMinesLeft());
+        }
     }
     private int getMinesLeft(){
         return this.minesLeft;
+    }
+
+    @Override
+    public boolean runClassTests() {
+        return false;
     }
 }
