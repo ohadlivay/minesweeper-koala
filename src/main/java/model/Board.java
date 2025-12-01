@@ -13,6 +13,7 @@ public class Board {
     private boolean turn;
     private GameSession gameSession;
     private TurnListener turnListener;
+    private MinesLeftListener minesLeftListener;
 
     private Board(GameDifficulty gameDifficulty) {
         this.PK = RANDOM.nextInt(99999999);
@@ -140,11 +141,10 @@ public class Board {
     public void setTurnListener(TurnListener turnListener) {
         this.turnListener = turnListener;
     }
-
     private void setMinesLeft(int minesLeft){
         this.minesLeft = minesLeft;
+        minesLeftListener.updateMinesLeft(getMinesLeft());
     }
-
     private int getMinesLeft(){
         return this.minesLeft;
     }

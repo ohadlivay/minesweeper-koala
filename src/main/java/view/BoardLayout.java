@@ -3,6 +3,7 @@ package main.java.view;
 
 import main.java.controller.GameSessionController;
 import main.java.model.Board;
+import main.java.model.MinesLeftListener;
 import main.java.model.Tile;
 import main.java.model.TurnListener;
 
@@ -10,7 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class BoardLayout extends JPanel implements TurnListener {
+public class BoardLayout extends JPanel implements TurnListener, MinesLeftListener {
     private final int rows;
     private final int cols;
     private final GameSessionController gameSessionController = GameSessionController.getInstance(); //changed to singleton -ohad
@@ -91,5 +92,14 @@ public class BoardLayout extends JPanel implements TurnListener {
     }
 
 
+    @Override
+    public void updateMinesLeft(int minesLeft) {
+        /*
+        whoever implements the mines left in this view;
+        rest assured that this method will be used whenever minesLeft is updated.
+        you just have to implement the gui thingies
+         */
+        return;
+    }
 }
 
