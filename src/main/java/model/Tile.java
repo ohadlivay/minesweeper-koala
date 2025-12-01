@@ -227,11 +227,11 @@ public class Tile implements Testable
         return;
     }
 
-    public void setFlagListener(TileView tileView) {
-        this.flagListener = tileView;
+    public void setFlagListener(FlagListener flagListener) {
+        this.flagListener = flagListener;
     }
 
-    public void setRevealListener(TileView tileView) {
-        this.revealListener = tileView;
+    public void setRevealListener(RevealListener revealListener) {
+        this.revealListener = revealListener;
     }
 }
