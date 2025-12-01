@@ -32,7 +32,7 @@ Code was written in IntelliJ IDEA and Version Control was done... in this very r
 
 * **Roles:**
     * **Ohad** - Scrum Master + Developer
-    * **Tali** - Product Manager + Developer
+    * **Tali** - Product Owner + Developer
     * **Liran** - Developer
     * **Tom** - Developer
 * **Tasks:**
