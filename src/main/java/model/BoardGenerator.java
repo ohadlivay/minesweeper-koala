@@ -46,7 +46,7 @@ public class BoardGenerator implements Testable {
         calculateAdjacentMines(grid);
 
         // 2. Distribute special tiles (0 to 9 or 10)
-        //distributeSpecialTiles(grid);
+        distributeSpecialTiles(grid);
 
         // 3. Convert the final blueprint into Tiles
         return toTileGrid(grid);
