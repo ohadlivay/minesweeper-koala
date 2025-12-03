@@ -386,11 +386,11 @@ public class GameSession implements Testable
 
     private void gainPoints(int points){
         this.setPoints(this.getPoints() + points);
-        if (this.getPoints()<0) this.setPoints(0);
     }
 
     private void setPoints(int i) {
         this.points = i;
+        if (this.getPoints()<0) this.points = 0;
         for (PointsListener listener : pointsListeners) {
             listener.onPointsChanged(i); // your view should implement PointsListener and that method onPointsChanged should update the view
         }
