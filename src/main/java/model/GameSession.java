@@ -200,10 +200,9 @@ public class GameSession implements Testable
     }
 
     //Methods for the gameplay
-    private boolean isGameOver(boolean left)
+    private boolean isGameOver()
     {
-        boolean over = (left) ? leftBoard.allMinesRevealed() : rightBoard.allMinesRevealed();
-        return over || healthPool <= 0;
+        return leftBoard.allMinesRevealed() || rightBoard.allMinesRevealed() || healthPool <= 0;
     }
     private void initiateGameOver()
     {
@@ -317,7 +316,7 @@ public class GameSession implements Testable
         //case tile is a mine
         if(tile instanceof MineTile){
             System.out.println("Flagging and revealing mine");
-            this.gainPoints(-1 * gameDifficulty.getRevealMinePoints());
+            this.gainPoints(1);
             parentBoard.reveal(tile);
             this.changeTurn();   //revealing a mine by flagging does change a turn!
             return;
@@ -334,7 +333,7 @@ public class GameSession implements Testable
         //case tile is not flagged (flag it)
         System.out.println("Flagging tile");
         parentBoard.flag(tile);
-        //this.gainPoints(-1 * gameDifficulty.getFlagTilePoints());
+        this.gainPoints(-3);
         //this.changeTurn();
     }
 
@@ -367,13 +366,13 @@ public class GameSession implements Testable
         //case its a mine
         if(tile instanceof MineTile){
             System.out.println("Mine");
-            this.gainPoints(-1 * gameDifficulty.getRevealMinePoints());
+            //minus health
             parentBoard.reveal(tile);
             this.changeTurn();
             return;
         }
         if(tile instanceof NumberTile){
-            this.gainPoints(0); //right now we dont reward revealing number tiles... right? :)
+            this.gainPoints(1);
             System.out.println("Its a number tile");
             parentBoard.reveal(tile);
         }
@@ -387,6 +386,7 @@ public class GameSession implements Testable
 
     private void gainPoints(int points){
         this.setPoints(this.getPoints() + points);
+        if (this.getPoints()<0) this.setPoints(0);
     }
 
     private void setPoints(int i) {
