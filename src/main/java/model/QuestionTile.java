@@ -10,12 +10,6 @@ public class QuestionTile extends SpecialTile
     }
 
     @Override
-    public void initiate(GameDifficulty gameDifficulty)
-    {
-        setUsed();
-    }
-
-    @Override
     public String toString() {
         return "Q";
     }

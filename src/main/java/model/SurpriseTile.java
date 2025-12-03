@@ -10,11 +10,6 @@ public class SurpriseTile extends SpecialTile
         super();
     }
 
-    @Override
-    public void initiate(GameDifficulty gameDifficulty)
-    {
-        setUsed();
-    }
 
     @Override
     public String toString() {

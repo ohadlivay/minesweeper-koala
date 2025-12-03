@@ -27,9 +27,6 @@ public abstract class SpecialTile extends NumberTile
     }
 
 
-    // Methods for the special tile class
-    public abstract void initiate(GameDifficulty gameDifficulty);
-
     // Class tests
     public boolean runClassTests()
     {

@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 /*
 Dear Ohad,
 I would love to create the boards myself using the constructor or initiate the method with the appropriate values.
@@ -52,7 +53,7 @@ public class GameSession implements Testable
     private static final int MAX_HEALTH_POOL = 10;
 
     private List<PointsListener> pointsListeners = new ArrayList<>();
-    private List<MinesLeftListener> minesLeftListeners = new ArrayList<>();
+    private List<HealthListener> healthListeners = new ArrayList<>();
     //Constructors
     private static GameSession instance;
 
@@ -353,6 +354,29 @@ public class GameSession implements Testable
 
         //case tile was already revealed
         if(tile.isRevealed()) {
+            if (tile instanceof SpecialTile specialTile)
+            {
+                if (!specialTile.isUsed())
+                {
+                    if (this.getPoints()<gameDifficulty.getActivationCost())
+                        System.out.println("Not enough points to activate special tile");
+                    else {
+                        System.out.println("Activating special tile");
+                        this.gainPoints(-gameDifficulty.getActivationCost());
+                        if (specialTile instanceof SurpriseTile surpriseTile)
+                        {
+                            Random random = new Random();
+                            boolean resultOfRandom = random.nextBoolean();
+                            int plusMinus  = (resultOfRandom) ? 1 : -1;
+                            String message = (resultOfRandom)? "Good surprise!" : "Bad surprise!";
+                            System.out.println(message);
+                            this.gainPoints(plusMinus*gameDifficulty.getSurprisePoints());
+                            this.gainHealth(plusMinus*gameDifficulty.getSurpriseHealth());
+                            surpriseTile.setUsed();
+                        }
+                    }
+                }
+            }
             System.out.println("already Revealed tile");
             return;
         }
@@ -375,9 +399,7 @@ public class GameSession implements Testable
             this.gainPoints(1);
             System.out.println("Its a number tile");
             parentBoard.reveal(tile);
-        }
-
-        this.changeTurn();
+            this.changeTurn();}
 
     }
     private boolean hisTurn(Tile tile){
@@ -403,8 +425,11 @@ public class GameSession implements Testable
     private void setHealthPool(int i) {
         this.healthPool = i;
         if (this.getHealthPool()<0) this.healthPool = 0;
-        if (this.getHealthPool()>MAX_HEALTH_POOL) this.healthPool = MAX_HEALTH_POOL;
-        for (MinesLeftListener listener : minesLeftListeners)
-            listener.updateMinesLeft(i);// your view should implement MinesLeftListener and that method updateMinesLeft should update the view
+        if (this.getHealthPool()>MAX_HEALTH_POOL) {
+            this.gainPoints((i-MAX_HEALTH_POOL)*gameDifficulty.getActivationCost());
+            this.healthPool = MAX_HEALTH_POOL;
+        }
+        for (HealthListener listener : healthListeners)
+            listener.onHealthChanged(i); // your view should implement HealthListener and that method onHealthChanged should update the view
     }
 }
