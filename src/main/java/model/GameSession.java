@@ -51,6 +51,13 @@ public class GameSession implements Testable
     //Maximum health pool for a game session
     private static final int MAX_HEALTH_POOL = 10;
 
+<<<<<<< Updated upstream
+=======
+    private List<PointsListener> pointsListeners = new ArrayList<>();
+    private List<HealthListener> healthListeners = new ArrayList<>();
+    private List<GameOverListener> gameOverListeners = new ArrayList<>();
+
+>>>>>>> Stashed changes
     //Constructors
 
 
@@ -174,22 +181,23 @@ public class GameSession implements Testable
     Test the game over screen
      */
     public void forceGameOver() {
-        this.healthPool = 0;
+        setPoints(0);
         initiateGameOver();
     }
 
     //Methods for the gameplay
-    private boolean isGameOver(boolean left)
+    private boolean isGameOver()
     {
-        boolean over = (left) ? leftBoard.allMinesRevealed() : rightBoard.allMinesRevealed();
-        return over || healthPool <= 0;
+        return leftBoard.allMinesRevealed() || rightBoard.allMinesRevealed() || healthPool <= 0;
     }
     private void initiateGameOver()
     {
         leftBoard.revealAll();
         rightBoard.revealAll();
         if (healthPool > 0)
-            addPoints(healthPool*gameDifficulty.getActivationCost());
+            this.gainPoints(healthPool*gameDifficulty.getActivationCost());
+        for (GameOverListener listener: gameOverListeners)
+            listener.gameOver();
 
     }
 
@@ -274,4 +282,123 @@ public class GameSession implements Testable
     {
         return true;
     }
+<<<<<<< Updated upstream
+=======
+
+    public void RightClickedTile(Tile tile) {
+        /*
+        this encompasses all the logic that happens when a user tries to flag/unflag a tile
+        its responsible for switching turns, gaining points and ordering board to flag/unflag
+         */
+        System.out.println("Right clicked tile");
+        Board parentBoard = tile.getParentBoard();
+
+        //turn test
+        if(!parentBoard.getTurn()){
+            System.out.println("Invalid turn");
+            return; //not his turn
+        }
+
+        //case tile was already revealed
+        if(tile.isRevealed()) {
+            System.out.println("already Revealed tile");
+            return;
+        }
+
+        //case tile is a mine
+        if(tile instanceof MineTile){
+            System.out.println("Flagging and revealing mine");
+            this.gainPoints(1);
+            parentBoard.reveal(tile);
+            if (isGameOver()) initiateGameOver();
+            this.changeTurn();   //revealing a mine by flagging does change a turn!
+            return;
+        }
+
+        //case tile is flagged (unflag it)
+        if(tile.isFlagged()) {
+            System.out.println("Unflagging tile");
+            parentBoard.unflag(tile);
+          //  this.changeTurn();
+            return;
+        }
+
+        //case tile is not flagged (flag it)
+        System.out.println("Flagging tile");
+        parentBoard.flag(tile);
+        this.gainPoints(-3);
+        //this.changeTurn();
+    }
+
+    public void LeftClickedTile(Tile tile) {
+        /*
+        this encompasses all the logic that happens when a user tries to reveal a tile
+        its responsible for switching turns, gaining points and ordering board to reveal
+         */
+        System.out.println("Left clicked tile");
+        Board parentBoard = tile.getParentBoard();
+
+        //turn test
+        if( ! parentBoard.getTurn()){
+            System.out.println("Invalid turn");
+            return; //not his turn
+        }
+
+        //case tile was already revealed
+        if(tile.isRevealed()) {
+            System.out.println("already Revealed tile");
+            return;
+        }
+
+        //in case tile is flagged (do nothing)
+        if(tile.isFlagged()) {
+            System.out.println("tile is flagged and cannot be revealed");
+            return;
+        }
+
+        //case its a mine
+        if(tile instanceof MineTile){
+            System.out.println("Mine");
+            this.gainHealth(-1);
+            parentBoard.reveal(tile);
+            this.changeTurn();
+            return;
+        }
+        if(tile instanceof NumberTile){
+            this.gainPoints(1);
+            System.out.println("Its a number tile");
+            parentBoard.reveal(tile);
+        }
+
+        if (isGameOver()) initiateGameOver();
+        this.changeTurn();
+
+    }
+    private boolean hisTurn(Tile tile){
+        return tile.getParentBoard().getTurn();
+    }
+
+    private void gainPoints(int points){
+        this.setPoints(this.getPoints() + points);
+    }
+    private void gainHealth(int health){this.setHealth(this.getHealthPool() + health);}
+
+    private void setPoints(int i) {
+        this.points = i;
+        if(points < 0) points = 0;
+        for (PointsListener listener : pointsListeners) {
+            listener.onPointsChanged(i); // your view should implement PointsListener and that method onPointsChanged should update the view
+        }
+    }
+    private void setHealth(int health)
+    {
+        this.healthPool = health;
+        if(healthPool < 0) healthPool = 0;
+        if(healthPool > MAX_HEALTH_POOL) healthPool = MAX_HEALTH_POOL;
+        for (HealthListener listener : healthListeners){
+            listener.onHealthChanged(health); // your view should implement HealthListener and that method onHealthChanged should update the view
+        }
+
+    }
+>>>>>>> Stashed changes
 }

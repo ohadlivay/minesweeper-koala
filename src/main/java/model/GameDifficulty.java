@@ -19,7 +19,14 @@ public enum GameDifficulty {
 
     private final int activationCost;
     private final int initialHealthPool;
+<<<<<<< Updated upstream
 //
+=======
+
+
+    //
+
+>>>>>>> Stashed changes
     private GameDifficulty(int rows, int cols, int mineCount,int questionCount, int surpriseCount, int activationCost, int initialHealthPool) {
         this.rows = rows;
         this.cols = cols;
