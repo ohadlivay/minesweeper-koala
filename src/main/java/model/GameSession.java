@@ -52,7 +52,7 @@ public class GameSession implements Testable
     private static final int MAX_HEALTH_POOL = 10;
 
     private List<PointsListener> pointsListeners = new ArrayList<>();
-
+    private List<MinesLeftListener> minesLeftListeners = new ArrayList<>();
     //Constructors
     private static GameSession instance;
 
@@ -366,7 +366,7 @@ public class GameSession implements Testable
         //case its a mine
         if(tile instanceof MineTile){
             System.out.println("Mine");
-            //minus health
+            this.gainHealth(-1);
             parentBoard.reveal(tile);
             this.changeTurn();
             return;
@@ -394,5 +394,17 @@ public class GameSession implements Testable
         for (PointsListener listener : pointsListeners) {
             listener.onPointsChanged(i); // your view should implement PointsListener and that method onPointsChanged should update the view
         }
+    }
+
+    private void gainHealth(int health) {
+        this.setHealthPool(this.getHealthPool() + health);
+    }
+
+    private void setHealthPool(int i) {
+        this.healthPool = i;
+        if (this.getHealthPool()<0) this.healthPool = 0;
+        if (this.getHealthPool()>MAX_HEALTH_POOL) this.healthPool = MAX_HEALTH_POOL;
+        for (MinesLeftListener listener : minesLeftListeners)
+            listener.updateMinesLeft(i);// your view should implement MinesLeftListener and that method updateMinesLeft should update the view
     }
 }
