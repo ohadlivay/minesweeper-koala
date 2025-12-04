@@ -17,6 +17,7 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
     private final GameSessionController gameSessionController = GameSessionController.getInstance(); //changed to singleton -ohad
     private Board board; //only use for getters
 
+
     public BoardLayout(Board board) {
 
         //using setter for input checks
@@ -33,17 +34,8 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
     private void initBoardPanel() {
         setLayout(new GridLayout(rows, cols));
         board.setTurnListener(this); // could this be the responsibility of the controller?
-        if (board.getTurn()) {
-            setBorder(BorderFactory.createMatteBorder(
-                    5, 5, 5, 5,
-                    new Color(255, 255, 0, 150)   // translucent yellow
-            ));
-        } else {
-            setBorder(BorderFactory.createMatteBorder(
-                    5,5,5,5,
-                    new Color(0, 0, 0, 150)
-            )); // translucent black
-        }
+
+        updateTurn();
     }
 
     //Populate the board with the tiles,

@@ -12,7 +12,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
 
-public class GameScreen implements PointsListener, MinesLeftListener {
+public class GameScreen implements PointsListener {
     private final NavigationController nav;
     private final GameSession session; // Always holds the current game session
 
@@ -149,10 +149,5 @@ public class GameScreen implements PointsListener, MinesLeftListener {
     @Override
     public void onPointsChanged(int newPoints) {
         //When Points are visible, implement this method
-    }
-
-    @Override
-    public void updateMinesLeft(int minesLeft) {
-        //When mines left is visible, implement this method
     }
 }
