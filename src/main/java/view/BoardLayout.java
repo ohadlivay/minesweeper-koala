@@ -8,6 +8,8 @@ import main.java.model.TurnListener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class BoardLayout extends JPanel implements TurnListener, MinesLeftListener {
 
@@ -51,6 +53,8 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
 
         // initial state depending on whose turn it is
         applyTurnStyling(board.getTurn());
+
+        setupHover();
     }
 
     // Fill the grid with TileView
@@ -109,6 +113,42 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
 
         revalidate();
         repaint();
+    }
+
+    private void setupHover() {
+        hiddenPanel.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                if (!board.getTurn()) {
+                    cardLayout.show(BoardLayout.this, CARD_BOARD);
+                }
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                if (!board.getTurn()) {
+                    cardLayout.show(BoardLayout.this, CARD_HIDDEN);
+                }
+            }
+        });
+
+        gridPanel.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                if (!board.getTurn()) {
+                    cardLayout.show(BoardLayout.this, CARD_BOARD);
+                }
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                if (!board.getTurn()) {
+                    cardLayout.show(BoardLayout.this, CARD_HIDDEN);
+                }
+            }
+        });
     }
 
     @Override
