@@ -54,6 +54,7 @@ public class GameSession implements Testable
 
     private List<PointsListener> pointsListeners = new ArrayList<>();
     private List<HealthListener> healthListeners = new ArrayList<>();
+    private List<SpecialTileActivationListener> specialTileActivationListeners = new ArrayList<>();
     //Constructors
     private static GameSession instance;
 
@@ -358,23 +359,7 @@ public class GameSession implements Testable
             {
                 if (!specialTile.isUsed())
                 {
-                    if (this.getPoints()<gameDifficulty.getActivationCost())
-                        System.out.println("Not enough points to activate special tile");
-                    else {
-                        System.out.println("Activating special tile");
-                        this.gainPoints(-gameDifficulty.getActivationCost());
-                        if (specialTile instanceof SurpriseTile surpriseTile)
-                        {
-                            Random random = new Random();
-                            boolean resultOfRandom = random.nextBoolean();
-                            int plusMinus  = (resultOfRandom) ? 1 : -1;
-                            String message = (resultOfRandom)? "Good surprise!" : "Bad surprise!";
-                            System.out.println(message);
-                            this.gainPoints(plusMinus*gameDifficulty.getSurprisePoints());
-                            this.gainHealth(plusMinus*gameDifficulty.getSurpriseHealth());
-                            surpriseTile.setUsed();
-                        }
-                    }
+                    this.activateSpecialTile(specialTile);
                 }
                 else
                     System.out.println("Special tile already used");
@@ -435,5 +420,27 @@ public class GameSession implements Testable
         }
         for (HealthListener listener : healthListeners)
             listener.onHealthChanged(i); // your view should implement HealthListener and that method onHealthChanged should update the view
+    }
+
+    private void activateSpecialTile(SpecialTile specialTile){
+        if (this.getPoints()<gameDifficulty.getActivationCost())
+            System.out.println("Not enough points to activate special tile");
+        else {
+            System.out.println("Activating special tile");
+            this.gainPoints(-gameDifficulty.getActivationCost());
+            if (specialTile instanceof SurpriseTile surpriseTile)
+            {
+                Random random = new Random();
+                boolean resultOfRandom = random.nextBoolean();
+                int plusMinus  = (resultOfRandom) ? 1 : -1;
+                String message = (resultOfRandom)? "Good surprise!" : "Bad surprise!";
+                System.out.println(message);
+                this.gainPoints(plusMinus*gameDifficulty.getSurprisePoints());
+                this.gainHealth(plusMinus*gameDifficulty.getSurpriseHealth());
+                surpriseTile.setUsed();
+            }
+            for (SpecialTileActivationListener listener : specialTileActivationListeners)
+                listener.onSpecialTileActivated(); // your view should implement SpecialTileActivationListener and that method onSpecialTileActivated should update the view
+        }
     }
 }
