@@ -45,28 +45,29 @@ public class Board implements Testable {
     public static Board createNewBoard(GameDifficulty gameDifficulty){
         return new Board(gameDifficulty);
     }
-
-    protected void reveal(Tile tile) {
+    protected int reveal(Tile tile) {
         if(tile.isRevealed())
-            return;
+            return 0;
         if(tile.isFlagged())
-            return;
+            return 0;
         System.out.println("Revealing tile " + tile);
 
         if (tile instanceof MineTile){
             setMinesLeft(getMinesLeft() -1);
             tile.setIsRevealed(true);
+            return 1;
         }
         if (tile instanceof NumberTile){
             if(((NumberTile) tile).getAdjacentMines() == 0){
                 System.out.println("cascading " + tile);
-                this.cascade(tile); //this should NEVER call board.reveal!!
+                return this.cascade(tile);
             }
             else{
                 tile.setIsRevealed(true);
+                return 1;
             }
         }
-        //else throw exception ?
+        return 0;
     }
 
     protected void revealAll()
@@ -107,13 +108,16 @@ public class Board implements Testable {
         System.out.println("Unflagging tile: " + tile);
         tile.setIsFlagged(false);
     }
-
-    private void cascade(Tile tile) {
-        Cascader casader = new Cascader(tile,this.tiles);
-        for( Tile t : casader.getTilesToReveal()){
+    private int cascade(Tile tile) {
+        Cascader cascader = new Cascader(tile,this.tiles);
+        int revealedCount = 0;
+        for( Tile t : cascader.getTilesToReveal()){
             t.setIsRevealed(true);
+            revealedCount++;
         }
+        return revealedCount;
     }
+
     protected boolean allMinesRevealed()
     {
         return getMinesLeft() == 0;

@@ -5,6 +5,7 @@ public abstract class SpecialTile extends NumberTile
 {
     // Indicates whether the tile has been initiated or not
     protected boolean isUsed;
+    private SpecialTileActivationListener listener;
 
 
     // Constructors
@@ -24,9 +25,13 @@ public abstract class SpecialTile extends NumberTile
     protected void setUsed()
     {
         isUsed = true;
+        listener.onSpecialTileActivated();
     }
 
 
+    public void setSpecialTileActivationListener(SpecialTileActivationListener specialTileActivationListener) {
+        listener = specialTileActivationListener;
+    }
     // Class tests
     public boolean runClassTests()
     {
