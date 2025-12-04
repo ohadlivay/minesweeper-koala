@@ -4,13 +4,15 @@ import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.model.Board;
 import main.java.model.GameSession;
+import main.java.model.MinesLeftListener;
+import main.java.model.PointsListener;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
 
-public class GameScreen {
+public class GameScreen implements PointsListener, MinesLeftListener {
     private final NavigationController nav;
     private final GameSession session; // Always holds the current game session
 
@@ -142,5 +144,15 @@ public class GameScreen {
 
     public JPanel getMainPanel() {
         return mainPanel;
+    }
+
+    @Override
+    public void onPointsChanged(int newPoints) {
+        //When Points are visible, implement this method
+    }
+
+    @Override
+    public void updateMinesLeft(int minesLeft) {
+        //When mines left is visible, implement this method
     }
 }
