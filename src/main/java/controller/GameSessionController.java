@@ -63,7 +63,6 @@ public class GameSessionController {
 
     public void endGame(GameSession session,NavigationController nav) throws IOException {
         session.forceGameOver();
-        session.forceGameOver();
         GameData gameData = new GameData(session);
         SysData.getInstance().addGame(gameData);
         GameDataCSVManager.writeGameDataListToCSV("GameHistory.csv");
