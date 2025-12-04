@@ -113,8 +113,16 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
 
     @Override
     public void updateTurn() {
-        // whenever turn changes, update styling
-        applyTurnStyling(board.getTurn());
+
+        // is 400 enough time while also not feeling too laggy?
+        new javax.swing.Timer(400, e -> {
+            // whenever turn changes, update styling
+            applyTurnStyling(board.getTurn());
+        }) {{
+            setRepeats(false);
+            start();
+        }};
+
     }
 
     @Override
