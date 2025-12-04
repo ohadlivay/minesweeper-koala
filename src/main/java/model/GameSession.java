@@ -376,30 +376,34 @@ public class GameSession implements Testable
                         }
                     }
                 }
+                else
+                    System.out.println("Special tile already used");
             }
-            System.out.println("already Revealed tile");
-            return;
+            else
+                System.out.println("already Revealed tile");
+        }
+        else{
+            //in case tile is flagged (do nothing)
+            if(tile.isFlagged()) {
+                System.out.println("tile is flagged and cannot be revealed");
+                return;
+            }
+
+            //case its a mine
+            if(tile instanceof MineTile){
+                System.out.println("Mine");
+                this.gainHealth(-1);
+                parentBoard.reveal(tile);
+                this.changeTurn();
+                return;
+            }
+            if(tile instanceof NumberTile){
+                this.gainPoints(1);
+                System.out.println("Its a number tile");
+                parentBoard.reveal(tile);
+                this.changeTurn();}
         }
 
-        //in case tile is flagged (do nothing)
-        if(tile.isFlagged()) {
-            System.out.println("tile is flagged and cannot be revealed");
-            return;
-        }
-
-        //case its a mine
-        if(tile instanceof MineTile){
-            System.out.println("Mine");
-            this.gainHealth(-1);
-            parentBoard.reveal(tile);
-            this.changeTurn();
-            return;
-        }
-        if(tile instanceof NumberTile){
-            this.gainPoints(1);
-            System.out.println("Its a number tile");
-            parentBoard.reveal(tile);
-            this.changeTurn();}
 
     }
     private boolean hisTurn(Tile tile){
