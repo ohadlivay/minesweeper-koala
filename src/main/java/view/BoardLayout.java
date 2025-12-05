@@ -54,7 +54,7 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
         // initial state depending on whose turn it is
         applyTurnStyling(board.getTurn());
 
-        setupHover();
+        //  setupHover();
     }
 
     // Fill the grid with TileView
