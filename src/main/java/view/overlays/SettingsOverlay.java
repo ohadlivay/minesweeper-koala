@@ -78,17 +78,41 @@ public class SettingsOverlay extends OverlayView {
     private void onOK() {
         String player1 = getPlayer1Name();
         String player2 = getPlayer2Name();
-        if (player1.isEmpty() || player2.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter names for both players.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+
+        // check for difficulty
         if (difficulty == null) {
-            JOptionPane.showMessageDialog(this, "Please select a difficulty level.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            JOptionPane.showMessageDialog(null, "Please select a difficulty.", "Error", JOptionPane.ERROR_MESSAGE);
+            return; // do not proceed if difficulty is not selected
+        }
+
+        //check for player names
+        if (player1.trim().isEmpty() || player2.trim().isEmpty()) {
+            int choice = JOptionPane.showConfirmDialog(this, nameWarning(player1, player2), "Names not chosen", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE
+            );
+            if (choice == JOptionPane.NO_OPTION) {
+                return; // do not proceed if user selects NO
+            }
+            if (player1.trim().isEmpty()) {
+                player1 = "Player 1";
+            }
+            if (player2.trim().isEmpty()) {
+                player2 = "Player 2";
+            }
         }
         GameSessionController.getInstance().setupGame(player1, player2, difficulty);
         nav.goToGame();
         close();
+    }
+
+    private String nameWarning (String player1, String player2) {
+        if (player1.trim().isEmpty() && player2.trim().isEmpty()) {
+            return "Names for both players not chosen\n Continue with default names?\n - Player 1\n - Player 2";
+        } else if (player1.trim().isEmpty()) {
+            return "Name for player 1 not chosen\nContinue with default name?\n - Player 1";
+        } else {
+            return "Name for player 2 not chosen\n Continue with default name?\n - Player 2";
+        }
+
     }
 
     private void onCancel() {
