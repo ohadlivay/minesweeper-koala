@@ -31,6 +31,7 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
 
     //Initialize the board panel
     private void initBoardPanel() {
+        setBackground(new Color(32, 32, 32));
         setLayout(new GridLayout(rows, cols));
         board.setTurnListener(this); // could this be the responsibility of the controller?
         if (board.getTurn()) {
