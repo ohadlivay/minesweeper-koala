@@ -28,21 +28,18 @@ public class GameSessionController {
         return GameSessionController.instance;
     }
 
-    // for now only hardcoded values, later will get from user input
-    // cool
-    public GameScreen startNewGame(NavigationController nav) {
-        String leftName  = "George";
-        String rightName = "Ali";
-        GameDifficulty difficulty = GameDifficulty.HARD;
-
+    // retrieves user inputs and sets up a new game session
+    public void setupGame(String leftName, String rightName, GameDifficulty difficulty) {
         session = GameSession.getInstance();
         assert session != null;
-        if( !(session.setLeftPlayerName(leftName) && session.setRightPlayerName(rightName) && session.setDifficulty(difficulty))){
+        if( !(session.setLeftPlayerName(leftName) && session.setRightPlayerName(rightName) && session.setDifficulty(difficulty))) {
             System.out.println("couldnt set either difficulty or player names");
         }
-
         session.initializeBoards();
+    }
 
+    // Creates a new GameScreen with the current session
+    public GameScreen startNewGame(NavigationController nav) {
         return new GameScreen(nav, session);
     }
 

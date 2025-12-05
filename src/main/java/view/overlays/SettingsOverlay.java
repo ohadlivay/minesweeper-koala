@@ -1,6 +1,8 @@
 package main.java.view.overlays;
 
+import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
+import main.java.model.GameDifficulty;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -24,6 +26,7 @@ public class SettingsOverlay extends OverlayView {
     private JPanel nameLabelPanel;
     private JLabel player1Label;
     private JLabel player2Label;
+    private GameDifficulty difficulty;
     private final NavigationController nav; //very good
 
 
@@ -45,14 +48,45 @@ public class SettingsOverlay extends OverlayView {
             }
         });
 
+        easy.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                difficulty = GameDifficulty.EASY;
+                System.out.println("Selected Difficulty: EASY");
+            }
+        });
+
+        medium.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                difficulty = GameDifficulty.MEDIUM;
+                System.out.println("Selected Difficulty: MEDIUM");
+            }
+        });
+
+        hard.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                difficulty = GameDifficulty.HARD;
+                System.out.println("Selected Difficulty: HARD");
+            }
+        });
+
     }
 
-    /* close the overlay and go to the game screen
-        doesn't pass user input for now
-     */
-    // tali please send the difficulty level and player names here.
-    // 29/11/25 8am ohad
+    // pass the user input, close the overlay and go to the game screen
     private void onOK() {
+        String player1 = getPlayer1Name();
+        String player2 = getPlayer2Name();
+        if (player1.isEmpty() || player2.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter names for both players.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (difficulty == null) {
+            JOptionPane.showMessageDialog(this, "Please select a difficulty level.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        GameSessionController.getInstance().setupGame(player1, player2, difficulty);
         nav.goToGame();
         close();
     }
@@ -61,7 +95,7 @@ public class SettingsOverlay extends OverlayView {
         close();
     }
 
-    /* add getters to retrieve user input
+    // add getters to retrieve user input
     public String getPlayer1Name() {
         return player1Name.getText();
     }
@@ -70,6 +104,6 @@ public class SettingsOverlay extends OverlayView {
         return player2Name.getText();
     }
 
-     */
+
 
 }
