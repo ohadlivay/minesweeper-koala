@@ -32,7 +32,7 @@ public class GameSessionController {
     public void setupGame(String leftName, String rightName, GameDifficulty difficulty) {
         session = GameSession.getInstance();
         assert session != null;
-        if( !(session.setLeftPlayerName(leftName) && session.setRightPlayerName(rightName) && session.setDifficulty(difficulty))) {
+        if( !(session.setLeftPlayerName(leftName) && session.setRightPlayerName(rightName) && session.setGameDifficulty(difficulty))) {
             System.out.println("couldnt set either difficulty or player names");
         }
         session.initializeBoards();

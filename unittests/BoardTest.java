@@ -78,12 +78,6 @@ public class BoardTest {
         assertTrue(gameSession.getLeftBoard().getTurn());
     }
 
-    public void leftPlayerTurnFirst(){
-        GameSession gameSession = GameSession.getTestInstance();
-        gameSession.initializeBoards();
-        gameSession.getHealthPool()
-    }
-
     @Test
     public void tileGridInit() {
         Board board = Board.createNewBoard(GameDifficulty.EASY);
