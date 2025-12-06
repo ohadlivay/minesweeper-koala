@@ -57,6 +57,8 @@ public class GameSession implements Testable
     private List<SpecialTileActivationListener> specialTileActivationListeners = new ArrayList<>();
     //Constructors
     private static GameSession instance;
+    private static GameSession testInstance;
+
 
 
     private GameSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
@@ -76,6 +78,14 @@ public class GameSession implements Testable
         }
         return instance;
     }
+
+    public static GameSession getTestInstance(){
+        if(testInstance==null){
+            testInstance = new GameSession("Player1", "Player2", GameDifficulty.EASY);
+        }
+        return testInstance;
+    }
+
 
     //Initialize the boards of the players involved in the game session
     public void initializeBoards()

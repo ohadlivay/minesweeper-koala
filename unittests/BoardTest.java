@@ -1,9 +1,7 @@
-import static org.junit.Assert.assertEquals;
-
-import main.java.model.Board;
-import main.java.model.GameDifficulty;
-import main.java.model.Tile;
+import main.java.model.*;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class BoardTest {
     @Test
@@ -58,5 +56,53 @@ public class BoardTest {
     public void boardMineCountHard() {
         Board board = Board.createNewBoard(GameDifficulty.HARD);
         assertEquals(44, board.getMinesLeft());
+    }
+
+    @Test
+    public void boardMineCountReduces() {
+        Board board = Board.createNewBoard(GameDifficulty.HARD);
+        Tile mineTile = getMineTileInBoard(board);
+
+        // Ensure we found a mine before trying to reveal it as we're testing specific functionality
+        if (mineTile != null) {
+            board.reveal(mineTile);
+            // Hard difficulty starts with 44 mines, so 43 is the correct expectation
+            assertEquals(43, board.getMinesLeft());
+        }
+    }
+
+    @Test
+    public void leftPlayerTurnFirst(){
+        GameSession gameSession = GameSession.getTestInstance();
+        gameSession.initializeBoards();
+        assertTrue(gameSession.getLeftBoard().getTurn());
+    }
+
+    public void leftPlayerTurnFirst(){
+        GameSession gameSession = GameSession.getTestInstance();
+        gameSession.initializeBoards();
+        gameSession.getHealthPool()
+    }
+
+    @Test
+    public void tileGridInit() {
+        Board board = Board.createNewBoard(GameDifficulty.EASY);
+        board.reveal(new MineTile());
+        assertEquals(9, board.getMinesLeft());
+    }
+
+    /*
+    helper methods
+     */
+
+    private MineTile getMineTileInBoard(Board board) {
+        for (Tile[] row : board.getTiles()) {
+            for (Tile tile : row) {
+                if (tile instanceof MineTile) {
+                    return (MineTile) tile;
+                }
+            }
+        }
+        return null;
     }
 }
