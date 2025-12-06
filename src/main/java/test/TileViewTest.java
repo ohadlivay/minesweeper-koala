@@ -1,4 +1,4 @@
-/*package main.java.test;
+package main.java.test;
 
 import main.java.model.Tile;
 import main.java.view.TileView;
@@ -12,7 +12,7 @@ public class TileViewTest {
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
             Tile tile = new Tile();// model
-            TileView tileView = new TileView(tile);  // view
+            TileView tileView = new TileView(tile, 50);  // view
 
             frame.add(tileView);
             frame.pack();
@@ -21,4 +21,3 @@ public class TileViewTest {
         });
     }
 }
-*/

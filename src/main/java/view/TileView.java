@@ -59,17 +59,17 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
     public void updateRevealed() {
         String type = tile.toString();
         if (type.equals("M")) {
-            setupIcon("/bomb.png");
+            setupIcon("/bomb.png", true);
             setEnabled(false);
         }
         else if (type.equals("S")) {
-            setupIcon("/surprise.png");
+            setupIcon("/surprise.png", false);
             setBackground(Color.YELLOW);
             setEnabled(true);
         }
 
         else if (type.equals("Q")) {
-            setupIcon("/question.png");
+            setupIcon("/question.png", false);
             setBackground(Color.GREEN);
             setEnabled(true);
         }
@@ -102,7 +102,7 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
     public void updateFlagged(boolean flagged) {
 
         if (flagged) {
-            setupIcon("/red-flag.png");
+            setupIcon("/red-flag.png", false);
             System.out.println("tileview: i got updated that tile was flagged");
         }
         else {
@@ -120,13 +120,21 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
     }
 
     //helper method for resizing icons
-    private void setupIcon(String resourcePath) {
+    private void setupIcon(String resourcePath, boolean visDisabled) {
         java.net.URL iconURL = getClass().getResource(resourcePath);
         if (iconURL != null) {
             ImageIcon icon = new ImageIcon(iconURL);
             Image scaledImage = icon.getImage().getScaledInstance(iconSize, iconSize, Image.SCALE_SMOOTH);
-            setIcon(new ImageIcon(scaledImage));
-            setDisabledIcon(new ImageIcon(scaledImage));
+            ImageIcon scaledIcon = new ImageIcon(scaledImage);
+            setIcon(scaledIcon);
+
+            //make sure only mine tile is still fully visible when the button is disabled
+            if (visDisabled) {
+                setDisabledIcon(scaledIcon);
+            }
+            else {
+                setDisabledIcon(null);
+            }
         }
     }
 }

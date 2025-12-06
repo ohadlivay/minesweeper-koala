@@ -19,10 +19,10 @@ public class GameScreen implements PointsListener, MinesLeftListener {
     private JPanel mainPanel;
     private JPanel centerPanel;
 
-    private BoardLayout leftBoard;
-    private BoardLayout rightBoard;
     private JLabel player1Label;
     private JLabel player2Label;
+    private JLabel livesLabel;
+    private JLabel pointsLabel;
 
 
     public GameScreen(NavigationController nav, GameSession session) {
@@ -34,8 +34,8 @@ public class GameScreen implements PointsListener, MinesLeftListener {
     }
 
     public void setBoards(Board left, Board right) {
-        leftBoard = new BoardLayout(left);
-        rightBoard = new BoardLayout(right);
+        BoardLayout leftBoard = new BoardLayout(left);
+        BoardLayout rightBoard = new BoardLayout(right);
         centerPanel.add(Box.createHorizontalGlue());
         centerPanel.add(leftBoard);
         centerPanel.add(Box.createHorizontalStrut(50)); // gap
@@ -83,6 +83,30 @@ public class GameScreen implements PointsListener, MinesLeftListener {
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
+        JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 0));
+        statsPanel.setOpaque(false);
+        statsPanel.setBorder(new EmptyBorder(10, 0, 10, 0));
+
+        livesLabel = new JLabel("x" + session.getHealthPool());
+        livesLabel.setForeground(Color.WHITE);
+        livesLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 16));
+        java.net.URL heartUrl = getClass().getResource("/heart.png");
+        if (heartUrl != null) {
+            ImageIcon icon = new ImageIcon(heartUrl);
+            Image scaled = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            livesLabel.setIcon(new ImageIcon(scaled));
+            livesLabel.setIconTextGap(10);
+        }
+        statsPanel.add(livesLabel);
+
+        pointsLabel = new JLabel("Score: " + session.getPoints());
+        pointsLabel.setForeground(Color.WHITE);
+        pointsLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 16));
+        pointsLabel.setOpaque(true);
+        pointsLabel.setBackground(new Color(88, 124, 196));
+        pointsLabel.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
+        statsPanel.add(pointsLabel);
+
         // bottom panel holds the home button
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setOpaque(false);
@@ -100,6 +124,15 @@ public class GameScreen implements PointsListener, MinesLeftListener {
         endGameButton.setForeground(Color.WHITE);
         bottomPanel.add(endGameButton, BorderLayout.EAST);
 
+        JPanel southContainer = new JPanel();
+        southContainer.setLayout(new BoxLayout(southContainer, BoxLayout.Y_AXIS));
+        southContainer.setOpaque(false);
+        southContainer.add(statsPanel);
+        southContainer.add(Box.createVerticalStrut(10));
+        southContainer.add(bottomPanel);
+
+        mainPanel.add(southContainer, BorderLayout.SOUTH);
+
         endGameButton.addActionListener(e -> {
             try {
                 GameSessionController.getInstance().endGame(this.session,this.nav);
@@ -113,7 +146,6 @@ public class GameScreen implements PointsListener, MinesLeftListener {
 
         });
 
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
     }
 
     private JButton createHomeButton() {
