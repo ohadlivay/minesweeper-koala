@@ -45,7 +45,7 @@ public class Board implements Testable {
     public static Board createNewBoard(GameDifficulty gameDifficulty){
         return new Board(gameDifficulty);
     }
-    protected int reveal(Tile tile) {
+    public int reveal(Tile tile) {
         if(tile.isRevealed())
             return 0;
         if(tile.isFlagged())
@@ -154,7 +154,7 @@ public class Board implements Testable {
             minesLeftListener.updateMinesLeft(getMinesLeft());
         }
     }
-    private int getMinesLeft(){
+    public int getMinesLeft(){
         return this.minesLeft;
     }
 
