@@ -12,7 +12,7 @@ import main.java.view.GameScreen;
 import javax.swing.*;
 import java.io.IOException;
 
-public class GameSessionController {
+public class GameSessionController implements DisplayQuestionListener {
     private GameSession session;
 
     private static GameSessionController instance;
@@ -36,6 +36,7 @@ public class GameSessionController {
             System.out.println("couldnt set either difficulty or player names");
         }
         session.initializeBoards();
+        session.setDisplayQuestionListener(this);
     }
 
     // Creates a new GameScreen with the current session
@@ -67,6 +68,11 @@ public class GameSessionController {
 
     public GameSession getSession() {
         return session;
+    }
+
+    @Override
+    public void displayQuestion() {
+        System.out.println("display question called in controller");
     }
 }
 

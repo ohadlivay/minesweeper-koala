@@ -2,6 +2,7 @@ package main.java.model;
 import main.java.test.Testable;
 import main.java.view.GameScreen;
 
+import java.sql.SQLOutput;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +56,7 @@ public class GameSession implements Testable
     private List<PointsListener> pointsListeners = new ArrayList<>();
     private List<HealthListener> healthListeners = new ArrayList<>();
     private List<SpecialTileActivationListener> specialTileActivationListeners = new ArrayList<>();
+    private DisplayQuestionListener displayQuestionListener;
     //Constructors
     private static GameSession instance;
 
@@ -321,7 +323,7 @@ public class GameSession implements Testable
             this.gainPoints(1);
             parentBoard.reveal(tile);
             this.changeTurn();   //revealing a mine by flagging does change a turn!
-            System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool());
+            System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
             return;
         }
 
@@ -337,7 +339,7 @@ public class GameSession implements Testable
         System.out.println("Flagging tile");
         parentBoard.flag(tile);
         this.gainPoints(-3);
-        System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool());
+        System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
         //this.changeTurn();
     }
 
@@ -387,7 +389,7 @@ public class GameSession implements Testable
                 this.gainPoints(1*tilesRevealed);
                 System.out.println("Its a number tile");
                 this.changeTurn();}
-            System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool());
+            System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
         }
 
 
@@ -426,13 +428,16 @@ public class GameSession implements Testable
     }
 
     private void activateSpecialTile(SpecialTile specialTile){
+        System.out.println("Activation cost: "+gameDifficulty.getActivationCost()+"    Current Points: "+this.getPoints());
         if (this.getPoints()<gameDifficulty.getActivationCost())
             System.out.println("Not enough points to activate special tile");
         else {
-            System.out.println("Activating special tile");
+            System.out.println("Activating special tile, costing "+gameDifficulty.getActivationCost()+" points");
             this.gainPoints(-gameDifficulty.getActivationCost());
+            System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool());
             if (specialTile instanceof SurpriseTile surpriseTile)
             {
+                System.out.println( "Surprise tile activated!");
                 Random random = new Random();
                 boolean resultOfRandom = random.nextBoolean();
                 int plusMinus  = (resultOfRandom) ? 1 : -1;
@@ -440,12 +445,24 @@ public class GameSession implements Testable
                 System.out.println(message);
                 this.gainPoints(plusMinus*gameDifficulty.getSurprisePoints());
                 this.gainHealth(plusMinus*gameDifficulty.getSurpriseHealth());
-                surpriseTile.setUsed();
-                System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool());
             }
+            if (specialTile instanceof QuestionTile questionTile)
+            {
+                System.out.println( "Question tile activated!");
+                displayQuestion();
+            }
+            specialTile.setUsed();
+            System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
             /*for (SpecialTileActivationListener listener : specialTileActivationListeners)
                 listener.onSpecialTileActivated(); // your view should implement SpecialTileActivationListener and that method onSpecialTileActivated should update the view
                 */
         }
+    }
+    private void displayQuestion(){
+        if (displayQuestionListener != null)
+            displayQuestionListener.displayQuestion();
+    }
+    public void setDisplayQuestionListener(DisplayQuestionListener displayQuestionListener) {
+        this.displayQuestionListener = displayQuestionListener;
     }
 }

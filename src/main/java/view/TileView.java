@@ -66,6 +66,11 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
             setBackground(Color.YELLOW);
             setEnabled(true);
         }
+        if (tile.toString().equals("Q"))
+        {
+            setBackground(Color.ORANGE);
+            setEnabled(true);
+        }
         setText(tile.toString());
         System.out.println("tileview: i got updated that tile was Revealed");
     }
