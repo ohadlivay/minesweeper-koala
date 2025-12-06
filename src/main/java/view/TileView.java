@@ -78,8 +78,14 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         }
 
         else if (type.equals("Q")) {
+            java.net.URL question = getClass().getResource("/question.png");
+            if (question != null) {
+                ImageIcon icon = new ImageIcon(question);
+                Image scaledImage = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+                ImageIcon questionIcon = new ImageIcon(scaledImage);
+                setIcon(questionIcon);
+            }
             setBackground(Color.GREEN);
-            setText(type);
             setEnabled(true);
         }
         else
