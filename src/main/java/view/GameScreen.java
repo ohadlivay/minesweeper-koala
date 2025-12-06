@@ -36,10 +36,11 @@ public class GameScreen implements PointsListener, MinesLeftListener {
     public void setBoards(Board left, Board right) {
         leftBoard = new BoardLayout(left);
         rightBoard = new BoardLayout(right);
-
+        centerPanel.add(Box.createHorizontalGlue());
         centerPanel.add(leftBoard);
         centerPanel.add(Box.createHorizontalStrut(50)); // gap
         centerPanel.add(rightBoard);
+        centerPanel.add(Box.createHorizontalGlue());
         centerPanel.revalidate();
         centerPanel.repaint();
     }

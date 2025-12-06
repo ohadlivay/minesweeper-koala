@@ -11,20 +11,24 @@ import java.awt.event.MouseEvent;
 public class TileView extends JButton implements RevealListener, FlagListener, SpecialTileActivationListener {
     private final Tile tile;
     private final GameSessionController gameSessionController;
+    private final double dynamicSize; //dynamic tile size per difficulty
+    private final int iconSize; //dynamic icon size per difficulty
 
-    public TileView(Tile tile) {
+
+    public TileView(Tile tile, int dynamicSize) {
         this.tile = tile;
+        this.dynamicSize = dynamicSize;
+        this.iconSize = (int) (dynamicSize * 0.75);
         this.gameSessionController = GameSessionController.getInstance();
         initTile();
         mouseClicked();
-
     }
 
     private void initTile() {
         setBackground(Color.darkGray);
-        setPreferredSize(new Dimension(30, 30));
+        setPreferredSize(new Dimension((int)dynamicSize, (int)dynamicSize));
         setFocusPainted(false);
-        setFont(new Font("Segoe UI Black", Font.BOLD, 12)); // need to change per difficulty
+        setFont(new Font("Segoe UI Black", Font.BOLD, (int) (dynamicSize/2.5)));
         setMargin(new Insets(0, 0, 0, 0));
         tile.setRevealListener(this);
         tile.setFlagListener(this);
@@ -55,36 +59,17 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
     public void updateRevealed() {
         String type = tile.toString();
         if (type.equals("M")) {
-            java.net.URL bomb = getClass().getResource("/bomb.png");
-            if (bomb != null) {
-                ImageIcon icon = new ImageIcon(bomb);
-                Image scaledImage = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
-                ImageIcon bombIcon = new ImageIcon(scaledImage);
-                setIcon(bombIcon);
-                setDisabledIcon(bombIcon);
-            }
+            setupIcon("/bomb.png");
             setEnabled(false);
         }
         else if (type.equals("S")) {
-            java.net.URL surprise = getClass().getResource("/surprise.png");
-            if (surprise != null) {
-                ImageIcon icon = new ImageIcon(surprise);
-                Image scaledImage = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
-                ImageIcon surpriseIcon = new ImageIcon(scaledImage);
-                setIcon(surpriseIcon);
-            }
+            setupIcon("/surprise.png");
             setBackground(Color.YELLOW);
             setEnabled(true);
         }
 
         else if (type.equals("Q")) {
-            java.net.URL question = getClass().getResource("/question.png");
-            if (question != null) {
-                ImageIcon icon = new ImageIcon(question);
-                Image scaledImage = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
-                ImageIcon questionIcon = new ImageIcon(scaledImage);
-                setIcon(questionIcon);
-            }
+            setupIcon("/question.png");
             setBackground(Color.GREEN);
             setEnabled(true);
         }
@@ -110,11 +95,6 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
             else if (type.equals("8")) setForeground(Color.GRAY);
             setEnabled(false);
         }
-
-
-
-
-        
         System.out.println("tileview: i got updated that tile was Revealed: " + type);
     }
 
@@ -122,12 +102,7 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
     public void updateFlagged(boolean flagged) {
 
         if (flagged) {
-            java.net.URL flag = getClass().getResource("/red-flag.png");
-            if (flag != null) {
-                ImageIcon flagIcon = new ImageIcon(flag);
-                Image scaledImage = flagIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
-                setIcon(new ImageIcon(scaledImage));
-            }
+            setupIcon("/red-flag.png");
             System.out.println("tileview: i got updated that tile was flagged");
         }
         else {
@@ -137,11 +112,21 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
 
     }
 
-
     @Override
     public void onSpecialTileActivated()
     {
         setBackground(Color.BLACK);
         setEnabled(false);
+    }
+
+    //helper method for resizing icons
+    private void setupIcon(String resourcePath) {
+        java.net.URL iconURL = getClass().getResource(resourcePath);
+        if (iconURL != null) {
+            ImageIcon icon = new ImageIcon(iconURL);
+            Image scaledImage = icon.getImage().getScaledInstance(iconSize, iconSize, Image.SCALE_SMOOTH);
+            setIcon(new ImageIcon(scaledImage));
+            setDisabledIcon(new ImageIcon(scaledImage));
+        }
     }
 }
