@@ -55,6 +55,7 @@ public class GameSession implements Testable
     private List<PointsListener> pointsListeners = new ArrayList<>();
     private List<HealthListener> healthListeners = new ArrayList<>();
     private List<SpecialTileActivationListener> specialTileActivationListeners = new ArrayList<>();
+    private DisplayQuestionListener displayQuestionListener;
     //Constructors
     private static GameSession instance;
     private static GameSession testInstance;
@@ -439,13 +440,15 @@ public class GameSession implements Testable
     }
 
     private void activateSpecialTile(SpecialTile specialTile){
+        System.out.println("Activation cost: "+getGameDifficulty().getActivationCost()+"\tPoints: "+this.getPoints());
         if (this.getPoints()<getGameDifficulty().getActivationCost())
             System.out.println("Not enough points to activate special tile");
         else {
-            System.out.println("Activating special tile");
             this.gainPoints(-getGameDifficulty().getActivationCost());
+            System.out.println("Points after activation cost: "+this.getPoints());
             if (specialTile instanceof SurpriseTile surpriseTile)
             {
+                System.out.println("Surprise tile activated");
                 Random random = new Random();
                 boolean resultOfRandom = random.nextBoolean();
                 int plusMinus  = (resultOfRandom) ? 1 : -1;
@@ -453,12 +456,20 @@ public class GameSession implements Testable
                 System.out.println(message);
                 this.gainPoints(plusMinus*getGameDifficulty().getSurprisePoints());
                 this.gainHealth(plusMinus*getGameDifficulty().getSurpriseHealth());
-                surpriseTile.setUsed();
             }
+            if (specialTile instanceof QuestionTile questionTile)
+            {
+                System.out.println("Question tile activated");
+                displayQuestionListener.displayQuestion();
+            }
+            specialTile.setUsed();
             System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
             /*for (SpecialTileActivationListener listener : specialTileActivationListeners)
                 listener.onSpecialTileActivated(); // your view should implement SpecialTileActivationListener and that method onSpecialTileActivated should update the view
                 */
         }
+    }
+    public void setDisplayQuestionListener(DisplayQuestionListener displayQuestionListener) {
+        this.displayQuestionListener = displayQuestionListener;
     }
 }

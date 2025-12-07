@@ -36,6 +36,7 @@ public class GameSessionController implements DisplayQuestionListener {
             System.out.println("couldnt set either difficulty or player names");
         }
         session.initializeBoards();
+        session.setDisplayQuestionListener(this);
     }
 
     // Creates a new GameScreen with the current session
