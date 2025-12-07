@@ -30,29 +30,66 @@ public class GameplayTests {
     }
 
     // ---------------------------------------------------------
-    // YOUR ORIGINAL TESTS (Board Structure & Basic Logic)
+    // BOARD STRUCTURE & INITIALIZATION TESTS
     // ---------------------------------------------------------
 
     @Test
-    public void boardRowsEasy() {
+    public void createBoard_EasyDifficulty_ShouldHave9Columns() {
         Board board = Board.createNewBoard(GameDifficulty.EASY);
         assertEquals(9, board.getCols());
     }
 
     @Test
-    public void boardRowsMedium() {
+    public void createBoard_MediumDifficulty_ShouldHave13Columns() {
         Board board = Board.createNewBoard(GameDifficulty.MEDIUM);
         assertEquals(13, board.getCols());
     }
 
     @Test
-    public void boardRowsHard() {
+    public void createBoard_HardDifficulty_ShouldHave16Columns() {
         Board board = Board.createNewBoard(GameDifficulty.HARD);
         assertEquals(16, board.getCols());
     }
 
     @Test
-    public void boardRevealRevealedTile() {
+    public void createBoard_EasyDifficulty_ShouldInitializeWith10Mines() {
+        Board board = Board.createNewBoard(GameDifficulty.EASY);
+        assertEquals(10, board.getMinesLeft());
+    }
+
+    @Test
+    public void createBoard_MediumDifficulty_ShouldInitializeWith26Mines() {
+        Board board = Board.createNewBoard(GameDifficulty.MEDIUM);
+        assertEquals(26, board.getMinesLeft());
+    }
+
+    @Test
+    public void createBoard_HardDifficulty_ShouldInitializeWith44Mines() {
+        Board board = Board.createNewBoard(GameDifficulty.HARD);
+        assertEquals(44, board.getMinesLeft());
+    }
+
+    @Test
+    public void initializeGame_ShouldStartWithLeftPlayerTurn() {
+        // The setUp() method already initializes this, but keeping logic explicit
+        GameSession gameSession = GameSession.getTestInstance();
+        gameSession.initializeBoards();
+        assertTrue(gameSession.getLeftBoard().getTurn());
+    }
+
+    @Test
+    public void initializeGame_EasyDifficulty_ShouldSetCorrectHealthPool() {
+        // Checks that the GameSession initialized via setUp has correct health
+        int expectedHealth = GameDifficulty.EASY.getInitialHealthPool();
+        assertEquals(expectedHealth, gameSession.getHealthPool());
+    }
+
+    // ---------------------------------------------------------
+    // BASIC BOARD MECHANICS (Without GameSession Context)
+    // ---------------------------------------------------------
+
+    @Test
+    public void reveal_AlreadyRevealedTile_ShouldReturnZeroValue() {
         Board board = Board.createNewBoard(GameDifficulty.HARD);
         Tile tile = new Tile();
         tile.setIsRevealed(true);
@@ -61,7 +98,7 @@ public class GameplayTests {
     }
 
     @Test
-    public void boardFlagFlaggedTile() {
+    public void reveal_FlaggedTile_ShouldBeBlockedAndReturnZero() {
         Board board = Board.createNewBoard(GameDifficulty.HARD);
         Tile tile = new Tile();
         tile.setIsFlagged(true);
@@ -69,25 +106,7 @@ public class GameplayTests {
     }
 
     @Test
-    public void boardMineCountEasy() {
-        Board board = Board.createNewBoard(GameDifficulty.EASY);
-        assertEquals(10, board.getMinesLeft());
-    }
-
-    @Test
-    public void boardMineCountMedium() {
-        Board board = Board.createNewBoard(GameDifficulty.MEDIUM);
-        assertEquals(26, board.getMinesLeft());
-    }
-
-    @Test
-    public void boardMineCountHard() {
-        Board board = Board.createNewBoard(GameDifficulty.HARD);
-        assertEquals(44, board.getMinesLeft());
-    }
-
-    @Test
-    public void boardMineCountReduces() {
+    public void reveal_MineTile_ShouldDecrementTotalMinesLeft() {
         Board board = Board.createNewBoard(GameDifficulty.HARD);
         Tile mineTile = getMineTileInBoard(board);
 
@@ -100,33 +119,19 @@ public class GameplayTests {
     }
 
     @Test
-    public void leftPlayerTurnFirst(){
-        // The setUp() method already initializes this, but keeping your logic is fine
-        GameSession gameSession = GameSession.getTestInstance();
-        gameSession.initializeBoards();
-        assertTrue(gameSession.getLeftBoard().getTurn());
-    }
-
-    @Test
-    public void tileGridInit() {
+    public void manualReveal_InsertedMineTile_ShouldUpdateMineCount() {
+        // Renamed from 'tileGridInit'
         Board board = Board.createNewBoard(GameDifficulty.EASY);
         board.reveal(new MineTile());
         assertEquals(9, board.getMinesLeft());
     }
 
     // ---------------------------------------------------------
-    // NEW TESTS (Economy, Turns, Interaction Logic)
+    // ECONOMY & POINTS LOGIC
     // ---------------------------------------------------------
 
     @Test
-    public void initialHealthIsCorrectForEasy() {
-        // Checks that the GameSession initialized via setUp has correct health
-        int expectedHealth = GameDifficulty.EASY.getInitialHealthPool();
-        assertEquals(expectedHealth, gameSession.getHealthPool());
-    }
-
-    @Test
-    public void pointsCannotGoBelowZero() {
+    public void rightClick_SafeTile_WithZeroPoints_ShouldFailToFlag() {
         // Try to flag a tile (costs 3 points) while having 0 points
         Tile tile = getSafeTile(gameSession.getLeftBoard());
 
@@ -141,7 +146,7 @@ public class GameplayTests {
     }
 
     @Test
-    public void rightClickFlaggingCostsPoints() throws Exception {
+    public void rightClick_SafeTile_WithPoints_ShouldCost3PointsAndFlag() throws Exception {
         // 1. Give the player some points first using Reflection
         Field pointsField = GameSession.class.getDeclaredField("points");
         pointsField.setAccessible(true);
@@ -159,7 +164,7 @@ public class GameplayTests {
     }
 
     @Test
-    public void rightClickUnflaggingDoesNotRefundPoints() throws Exception {
+    public void rightClick_FlaggedTile_ShouldUnflagButNotRefundPoints() throws Exception {
         // 1. Give points
         Field pointsField = GameSession.class.getDeclaredField("points");
         pointsField.setAccessible(true);
@@ -180,7 +185,7 @@ public class GameplayTests {
     }
 
     @Test
-    public void rightClickingMineRevealsItAndGainsPoint() {
+    public void rightClick_MineTile_ShouldRevealMineAndGainPoint() {
         // Special rule: Flagging a mine reveals it and gives +1 point
         Tile mineTile = getMineTileInBoard(gameSession.getLeftBoard());
         int initialPoints = gameSession.getPoints();
@@ -193,8 +198,12 @@ public class GameplayTests {
         assertEquals("Should gain 1 point", initialPoints + 1, gameSession.getPoints());
     }
 
+    // ---------------------------------------------------------
+    // HEALTH & TURN MANAGEMENT
+    // ---------------------------------------------------------
+
     @Test
-    public void leftClickingMineReducesHealth() {
+    public void leftClick_MineTile_ShouldReduceHealthByOne() {
         Tile mineTile = getMineTileInBoard(gameSession.getLeftBoard());
         int initialHealth = gameSession.getHealthPool();
 
@@ -206,7 +215,7 @@ public class GameplayTests {
     }
 
     @Test
-    public void turnChangesAfterRevealingNumberTile() {
+    public void leftClick_SafeTile_ShouldSwitchTurnToNextPlayer() {
         // Left board starts
         assertTrue(gameSession.getLeftBoard().getTurn());
 
@@ -222,7 +231,7 @@ public class GameplayTests {
     }
 
     @Test
-    public void turnDoesNotChangeIfWrongPlayerClicks() {
+    public void leftClick_OpponentBoard_ShouldNotRevealOrSwitchTurn() {
         // Left board starts. Try to click on Right Board.
         Tile rightBoardTile = getSafeTile(gameSession.getRightBoard());
 
@@ -234,7 +243,7 @@ public class GameplayTests {
     }
 
     @Test
-    public void rightClickingMineChangesTurn() {
+    public void rightClick_MineTile_ShouldSwitchTurnToNextPlayer() {
         // As per code: "revealing a mine by flagging does change a turn!"
         Tile mineTile = getMineTileInBoard(gameSession.getLeftBoard());
 
