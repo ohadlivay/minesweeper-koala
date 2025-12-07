@@ -16,6 +16,7 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
     private final int cols;
     private final GameSessionController gameSessionController = GameSessionController.getInstance(); //changed to singleton -ohad
     private Board board; //only use for getters
+    private static final int boardSize = 450;
 
     public BoardLayout(Board board) {
 
@@ -31,8 +32,17 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
 
     //Initialize the board panel
     private void initBoardPanel() {
+        setBackground(new Color(32, 32, 32));
         setLayout(new GridLayout(rows, cols));
         board.setTurnListener(this); // could this be the responsibility of the controller?
+
+        //calculation for the tile size to dynamically change per difficulty
+        //divide the board size by the number of rows
+        int calculatedTileSize = boardSize / rows;
+        //recalculate board size to make avoid gaps if the division output wasn't an int
+        int finalBoardSize = calculatedTileSize * rows;
+        int borderSize = 10;
+        setMaximumSize(new Dimension(finalBoardSize + borderSize, finalBoardSize + borderSize));
         if (board.getTurn()) {
             setBorder(BorderFactory.createMatteBorder(
                     5, 5, 5, 5,
@@ -51,12 +61,14 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
 
         removeAll();
 
+        int calculatedTileSize = boardSize / rows;
+
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 Tile t = null;
                 t = board.getTiles()[i][j]; //get tile from board controller
                 if (t != null) {
-                    add(new TileView(t));
+                    add(new TileView(t,calculatedTileSize));
                 } else {
                     add(new JButton()); // placeholder button for debugging
                 }
