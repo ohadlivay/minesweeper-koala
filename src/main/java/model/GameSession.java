@@ -385,6 +385,7 @@ public class GameSession implements Testable
             //in case tile is flagged (do nothing)
             if(tile.isFlagged()) {
                 System.out.println("tile is flagged and cannot be revealed");
+                return;
             }
 
             //case its a mine
