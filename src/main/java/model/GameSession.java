@@ -333,7 +333,7 @@ public class GameSession implements Testable
             this.gainPoints(1);
             parentBoard.reveal(tile);
             this.changeTurn();   //revealing a mine by flagging does change a turn!
-            System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool());
+            System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
             return;
         }
 
@@ -349,7 +349,7 @@ public class GameSession implements Testable
         System.out.println("Flagging tile");
         parentBoard.flag(tile);
         this.gainPoints(-3);
-        System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool());
+        System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
         //this.changeTurn();
     }
 
@@ -400,7 +400,7 @@ public class GameSession implements Testable
                 this.gainPoints(1*tilesRevealed);
                 System.out.println("Its a number tile");
                 this.changeTurn();}
-            System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool());
+            System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
         }
 
 
@@ -454,8 +454,8 @@ public class GameSession implements Testable
                 this.gainPoints(plusMinus*getGameDifficulty().getSurprisePoints());
                 this.gainHealth(plusMinus*getGameDifficulty().getSurpriseHealth());
                 surpriseTile.setUsed();
-                System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool());
             }
+            System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
             /*for (SpecialTileActivationListener listener : specialTileActivationListeners)
                 listener.onSpecialTileActivated(); // your view should implement SpecialTileActivationListener and that method onSpecialTileActivated should update the view
                 */
