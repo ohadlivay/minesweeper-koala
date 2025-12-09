@@ -99,7 +99,14 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
                 setTileColor(ColorsInUse.REVEALED_BG.get());
             }
 
-            setForeground(ColorsInUse.forTileType(type));
+            if (type.equals("1")) setForeground(ColorsInUse.NUMBER_1.get());
+            else if (type.equals("2")) setForeground(ColorsInUse.NUMBER_2.get());
+            else if (type.equals("3")) setForeground(ColorsInUse.NUMBER_3.get());
+            else if (type.equals("4")) setForeground(ColorsInUse.NUMBER_4.get());
+            else if (type.equals("5")) setForeground(ColorsInUse.NUMBER_5.get());
+            else if (type.equals("6")) setForeground(ColorsInUse.NUMBER_6.get());
+            else if (type.equals("7")) setForeground(ColorsInUse.NUMBER_7.get());
+            else if (type.equals("8")) setForeground(ColorsInUse.NUMBER_8.get());
             setEnabled(false);
         }
         System.out.println("tileview: i got updated that tile was Revealed: " + type);
