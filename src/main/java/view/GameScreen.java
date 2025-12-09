@@ -18,6 +18,8 @@ public class GameScreen implements PointsListener, MinesLeftListener, HealthList
 
     private JLabel player1Label;
     private JLabel player2Label;
+    private JLabel player1MinesLeftLabel;
+    private JLabel player2MinesLeftLabel;
     private JLabel healthLabel;
     private JLabel pointsLabel;
 
@@ -55,11 +57,9 @@ public class GameScreen implements PointsListener, MinesLeftListener, HealthList
         mainPanel.setBackground(new Color(20, 20, 20));
         mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        //top panel holds player names
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
-
-        Font font = new Font("Segoe UI Black", Font.BOLD, 14);
+        Font font = new Font("Segoe UI Black", Font.BOLD, 16);
 
         player1Label = new JLabel();
         player1Label.setForeground(Color.WHITE);
@@ -69,9 +69,43 @@ public class GameScreen implements PointsListener, MinesLeftListener, HealthList
         player2Label.setForeground(Color.WHITE);
         player2Label.setFont(font);
 
-        topPanel.add(player1Label, BorderLayout.WEST);
-        topPanel.add(player2Label, BorderLayout.EAST);
-        topPanel.setBorder(new EmptyBorder(20, 5, 5, 5)); // spacing under labels
+        player1MinesLeftLabel = new JLabel("x" + session.getLeftBoard().getMinesLeft());
+        player1MinesLeftLabel.setForeground(Color.WHITE);
+        player1MinesLeftLabel.setFont(font);
+        java.net.URL bombUrl = getClass().getResource("/bomb.png");
+        if (bombUrl != null) { ImageIcon icon = new ImageIcon(bombUrl);
+            Image scaled = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            player1MinesLeftLabel.setIcon(new ImageIcon(scaled));
+            player1MinesLeftLabel.setIconTextGap(10);
+        }
+
+        player2MinesLeftLabel = new JLabel("x" + session.getRightBoard().getMinesLeft());
+        player2MinesLeftLabel.setForeground(Color.WHITE);
+        player2MinesLeftLabel.setFont(font);
+        if (bombUrl != null) { ImageIcon icon = new ImageIcon(bombUrl);
+            Image scaled = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            player2MinesLeftLabel.setIcon(new ImageIcon(scaled));
+            player2MinesLeftLabel.setIconTextGap(10);
+        }
+
+        // Create panels for left player and right player
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        leftPanel.setOpaque(false);
+
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        rightPanel.setOpaque(false);
+
+        // Add items into each side panel
+        leftPanel.add(player1Label);
+        leftPanel.add(player1MinesLeftLabel, BorderLayout.EAST);
+
+        rightPanel.add(player2MinesLeftLabel, BorderLayout.WEST);
+        rightPanel.add(player2Label);
+
+        // Add those sub-panels to the topPanel
+        topPanel.add(leftPanel, BorderLayout.WEST);
+        topPanel.add(rightPanel, BorderLayout.EAST);
+        topPanel.setBorder(new EmptyBorder(20, 90, 10, 90));
 
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
