@@ -19,6 +19,7 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
     private Board board; //only use for getters
     private static final int boardSize = 450;
 
+    private Color tileColor;
 
     public BoardLayout(Board board) {
 
@@ -27,6 +28,7 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
         this.rows = board.getRows(); //changed these two to interact with model directly as a getter.
         this.cols = board.getCols();
         this.tileViewGrid = new TileView[rows][cols];
+        this.tileColor = randomColor();
 
         initBoardPanel();
         populateBoard();
@@ -61,7 +63,7 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
                 Tile t = null;
                 t = board.getTiles()[i][j]; //get tile from board controller
                 if (t != null) {
-                    tileViewGrid[i][j] = new TileView(t, calculatedTileSize);
+                    tileViewGrid[i][j] = new TileView(t, calculatedTileSize, tileColor);
                     add(tileViewGrid[i][j]);
                 } else {
                     add(new JButton()); // placeholder button for debugging
@@ -122,6 +124,24 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
         you just have to implement the gui thingies
          */
         return;
+    }
+
+    //Helper methods
+
+    //get random color
+    private Color randomColor() {
+        float r = (float) Math.random();
+        float g = (float) Math.random();
+        float b = (float) Math.random();
+        Color toReturn = new Color(r, g, b);
+
+        //make sure colors arent the ones that are used for special tiles or tiles in general
+        if (toReturn.equals(Color.BLACK) || toReturn.equals(Color.WHITE) || toReturn.equals(Color.lightGray) ||
+                toReturn.equals(Color.gray) || toReturn.equals(Color.darkGray) || toReturn.equals(Color.GREEN) ||
+                toReturn.equals(Color.YELLOW))
+            return randomColor();
+
+        return toReturn;
     }
 }
 

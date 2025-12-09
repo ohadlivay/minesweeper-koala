@@ -22,7 +22,18 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         this.dynamicSize = dynamicSize;
         this.iconSize = (int) (dynamicSize * 0.75);
         this.gameSessionController = GameSessionController.getInstance();
-        tileColor = Color.darkGray;
+        this.tileColor = Color.darkGray;
+        initTile();
+        mouseClicked();
+    }
+
+    //Tali I made the tile color random (at BoardLayout/populateBoard), don't hate me   --Liran :)
+    public TileView(Tile tile, int dynamicSize, Color tileColor) {
+        this.tile = tile;
+        this.dynamicSize = dynamicSize;
+        this.iconSize = (int) (dynamicSize * 0.75);
+        this.gameSessionController = GameSessionController.getInstance();
+        this.tileColor = tileColor;
         initTile();
         mouseClicked();
     }
@@ -67,7 +78,7 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         }
         else if (type.equals("S")) {
             setupIcon("/surprise.png", false);
-            setBackground(Color.YELLOW);
+            setTileColor(Color.YELLOW);
             setEnabled(true);
         }
 
