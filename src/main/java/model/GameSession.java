@@ -405,6 +405,7 @@ public class GameSession implements Testable
 
 
     }
+
     private boolean hisTurn(Tile tile){
         return tile.getParentBoard().getTurn();
     }
@@ -416,10 +417,10 @@ public class GameSession implements Testable
     private void setPoints(int i) {
         this.points = i;
         if (this.getPoints()<0) this.points = 0;
-        /*
+
         for (PointsListener listener : pointsListeners) {
             listener.onPointsChanged(i); // your view should implement PointsListener and that method onPointsChanged should update the view
-        }*/
+        }
     }
 
     private void gainHealth(int health) {
@@ -433,9 +434,9 @@ public class GameSession implements Testable
             this.gainPoints((i-MAX_HEALTH_POOL)*getGameDifficulty().getActivationCost());
             this.healthPool = MAX_HEALTH_POOL;
         }
-        /*
+
         for (HealthListener listener : healthListeners)
-            listener.onHealthChanged(i); // your view should implement HealthListener and that method onHealthChanged should update the view*/
+            listener.onHealthChanged(this.healthPool); // your view should implement HealthListener and that method onHealthChanged should update the view
     }
 
     private void activateSpecialTile(SpecialTile specialTile){
@@ -461,4 +462,13 @@ public class GameSession implements Testable
                 */
         }
     }
+
+    public void setPointsListener(PointsListener pointsListener) {
+        this.pointsListeners.add(pointsListener);
+    }
+
+    public void setHealthListener(HealthListener healthListener) {
+        this.healthListeners.add(healthListener);
+    }
+
 }

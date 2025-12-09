@@ -2,17 +2,14 @@ package main.java.view;
 
 import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
-import main.java.model.Board;
-import main.java.model.GameSession;
-import main.java.model.MinesLeftListener;
-import main.java.model.PointsListener;
+import main.java.model.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
 
-public class GameScreen implements PointsListener, MinesLeftListener {
+public class GameScreen implements PointsListener, MinesLeftListener, HealthListener {
     private final NavigationController nav;
     private final GameSession session; // Always holds the current game session
 
@@ -28,6 +25,8 @@ public class GameScreen implements PointsListener, MinesLeftListener {
     public GameScreen(NavigationController nav, GameSession session) {
         this.nav = nav;
         this.session = session;
+        this.session.setPointsListener(this);
+        this.session.setHealthListener(this);
         initUI();
         setBoards(session.getLeftBoard(), session.getRightBoard());
         setPlayerNames(session.getLeftPlayerName(),session.getRightPlayerName());
@@ -181,11 +180,17 @@ public class GameScreen implements PointsListener, MinesLeftListener {
 
     @Override
     public void onPointsChanged(int newPoints) {
-        //When Points are visible, implement this method
+        System.out.println("Points updated to: " + newPoints);
+        pointsLabel.setText("Score: " + newPoints);
     }
 
     @Override
     public void updateMinesLeft(int minesLeft) {
         //When mines left is visible, implement this method
+    }
+
+    @Override
+    public void onHealthChanged(int newHealth) {
+        livesLabel.setText("x" + newHealth);
     }
 }
