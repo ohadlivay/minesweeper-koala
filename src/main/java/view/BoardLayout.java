@@ -6,7 +6,6 @@ import main.java.model.Board;
 import main.java.model.MinesLeftListener;
 import main.java.model.Tile;
 import main.java.model.TurnListener;
-import main.java.view.ColorsInUse;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,7 +37,7 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
 
     //Initialize the board panel
     private void initBoardPanel() {
-        setBackground(new Color(32, 32, 32));
+        setBackground(ColorsInUse.BOARD_BACKGROUND.get());
         setLayout(new GridLayout(rows, cols));
         board.setTurnListener(this); // could this be the responsibility of the controller?
 
@@ -82,14 +81,14 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
             //This turn
             setBorder(BorderFactory.createMatteBorder(
                     5,5,5,5,
-                    new Color(255, 255, 0, 150)   // translucent yellow
-            ));
+                    ColorsInUse.BOARD_ACTIVE_BORDER.get())   // translucent yellow
+            );
             updateTileEnabledState(true);
         } else {
             //not this turn
             setBorder(BorderFactory.createMatteBorder(
                     5,5,5,5,
-                    new Color(0, 0, 0, 150)
+                    ColorsInUse.BOARD_BORDER_DEFAULT.get()
             )); // translucent black
 
             updateTileEnabledState(false);
