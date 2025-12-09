@@ -58,7 +58,7 @@ public class GameSession implements Testable
     //Constructors
     private static GameSession instance;
     private static GameSession testInstance;
-
+    private DisplayQuestionListener displayQuestionListener;
 
 
     private GameSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
