@@ -2,6 +2,7 @@ package main.java.view;
 
 import main.java.controller.GameSessionController;
 import main.java.model.*;
+import main.java.view.ColorsInUse;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +23,7 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         this.dynamicSize = dynamicSize;
         this.iconSize = (int) (dynamicSize * 0.75);
         this.gameSessionController = GameSessionController.getInstance();
-        this.tileColor = Color.darkGray;
+        this.tileColor = ColorsInUse.TILE_DEFAULT.get();
         initTile();
         mouseClicked();
     }
@@ -78,35 +79,28 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         }
         else if (type.equals("S")) {
             setupIcon("/surprise.png", false);
-            setTileColor(Color.YELLOW);
+            setTileColor(ColorsInUse.SURPRISE_TILE.get());
             setEnabled(true);
         }
 
         else if (type.equals("Q")) {
             setupIcon("/question.png", false);
-            setTileColor(Color.GREEN);
+            setTileColor(ColorsInUse.QUESTION_TILE.get());
             setEnabled(true);
         }
         else
         {
             if (type.equals("0")) {
                 setText("");
-                setTileColor(Color.black);
+                setTileColor(ColorsInUse.REVEALED_BG.get());
             }
             else
             {
                 setText(type);
-                setTileColor(Color.black);
+                setTileColor(ColorsInUse.REVEALED_BG.get());
             }
 
-            if (type.equals("1")) setForeground(Color.RED);
-            else if (type.equals("2")) setForeground(new Color(0,128,0));
-            else if (type.equals("3")) setForeground(Color.BLUE);
-            else if (type.equals("4")) setForeground(Color.MAGENTA);
-            else if (type.equals("5")) setForeground(Color.ORANGE);
-            else if (type.equals("6")) setForeground(Color.CYAN);
-            else if (type.equals("7")) setForeground(Color.PINK);
-            else if (type.equals("8")) setForeground(Color.GRAY);
+            setForeground(ColorsInUse.forTileType(type));
             setEnabled(false);
         }
         System.out.println("tileview: i got updated that tile was Revealed: " + type);

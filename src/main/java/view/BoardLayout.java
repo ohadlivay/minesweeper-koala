@@ -6,6 +6,7 @@ import main.java.model.Board;
 import main.java.model.MinesLeftListener;
 import main.java.model.Tile;
 import main.java.model.TurnListener;
+import main.java.view.ColorsInUse;
 
 import javax.swing.*;
 import java.awt.*;
@@ -136,6 +137,7 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
         Color toReturn = new Color(r, g, b);
 
         //make sure colors arent the ones that are used for special tiles or tiles in general
+        //if needed, we can add check that the generated color is also isnt too similar to either of those
         if (toReturn.equals(Color.BLACK) || toReturn.equals(Color.WHITE) || toReturn.equals(Color.lightGray) ||
                 toReturn.equals(Color.gray) || toReturn.equals(Color.darkGray) || toReturn.equals(Color.GREEN) ||
                 toReturn.equals(Color.YELLOW))
