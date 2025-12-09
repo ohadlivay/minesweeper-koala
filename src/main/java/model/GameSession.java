@@ -86,13 +86,24 @@ public class GameSession implements Testable
         return testInstance;
     }
 
+    private void initiateGameStats() {
+        this.setPoints(0);
+        this.setHealthPool(getGameDifficulty().getInitialHealthPool());
+    }
+
 
     //Initialize the boards of the players involved in the game session
-    public void initializeBoards()
+    private void initializeBoards()
     {
         this.setLeftBoard(Board.createNewBoard(this.getGameDifficulty()));
         this.setRightBoard(Board.createNewBoard(this.getGameDifficulty()));
         this.getLeftBoard().setTurn(true);
+    }
+
+    public void initGame()
+    {
+        initiateGameStats();
+        initializeBoards();
     }
 
     //Getters and setters
