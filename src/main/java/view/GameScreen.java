@@ -18,7 +18,7 @@ public class GameScreen implements PointsListener, MinesLeftListener, HealthList
 
     private JLabel player1Label;
     private JLabel player2Label;
-    private JLabel livesLabel;
+    private JLabel healthLabel;
     private JLabel pointsLabel;
 
 
@@ -86,17 +86,17 @@ public class GameScreen implements PointsListener, MinesLeftListener, HealthList
         statsPanel.setOpaque(false);
         statsPanel.setBorder(new EmptyBorder(10, 0, 10, 0));
 
-        livesLabel = new JLabel("x" + session.getHealthPool());
-        livesLabel.setForeground(Color.WHITE);
-        livesLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 16));
+        healthLabel = new JLabel("x" + session.getHealthPool());
+        healthLabel.setForeground(Color.WHITE);
+        healthLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 16));
         java.net.URL heartUrl = getClass().getResource("/heart.png");
         if (heartUrl != null) {
             ImageIcon icon = new ImageIcon(heartUrl);
             Image scaled = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-            livesLabel.setIcon(new ImageIcon(scaled));
-            livesLabel.setIconTextGap(10);
+            healthLabel.setIcon(new ImageIcon(scaled));
+            healthLabel.setIconTextGap(10);
         }
-        statsPanel.add(livesLabel);
+        statsPanel.add(healthLabel);
 
         pointsLabel = new JLabel("Score: " + session.getPoints());
         pointsLabel.setForeground(Color.WHITE);
@@ -191,6 +191,6 @@ public class GameScreen implements PointsListener, MinesLeftListener, HealthList
 
     @Override
     public void onHealthChanged(int newHealth) {
-        livesLabel.setText("x" + newHealth);
+        healthLabel.setText("x" + newHealth);
     }
 }
