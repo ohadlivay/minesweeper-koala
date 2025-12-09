@@ -129,18 +129,39 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
     //Helper methods
 
     //get random color
-    private Color randomColor() {
-        float r = (float) Math.random();
-        float g = (float) Math.random();
-        float b = (float) Math.random();
-        Color toReturn = new Color(r, g, b);
+    private boolean isTooSimilar(Color c1, Color c2) {
+        float dr = c1.getRed() / 255f - c2.getRed() / 255f;
+        float dg = c1.getGreen() / 255f - c2.getGreen() / 255f;
+        float db = c1.getBlue() / 255f - c2.getBlue() / 255f;
 
-        //make sure colors arent the ones that are used for special tiles or tiles in general
-        //if needed, we can add check that the generated color is also isnt too similar to either of those
-        if (toReturn.equals(Color.BLACK) || toReturn.equals(Color.WHITE) || toReturn.equals(Color.lightGray) ||
-                toReturn.equals(Color.gray) || toReturn.equals(Color.darkGray) || toReturn.equals(Color.GREEN) ||
-                toReturn.equals(Color.YELLOW))
-            return randomColor();
+        float distance = (float) Math.sqrt(dr*dr + dg*dg + db*db);
+        return distance < 0.40f;
+    }
+
+    private boolean isTooBrightOrDark(Color c) {
+        float r = c.getRed() / 255f;
+        float g = c.getGreen() / 255f;
+        float b = c.getBlue() / 255f;
+
+        float brightness = (r + g + b) / 3f;
+        return brightness < 0.25f || brightness > 0.80f;
+    }
+
+    private Color randomColor() {
+        Color toReturn = new Color(
+                (float) Math.random(),
+                (float) Math.random(),
+                (float) Math.random()
+        );
+
+        for (ColorsInUse color : ColorsInUse.values()) {
+            Color reserved = color.get();
+
+            // reject if EXACT match or TOO SIMILAR match or TOO BRIGHT or TOO DARK
+            if (toReturn.equals(reserved) || isTooSimilar(toReturn, reserved) || isTooBrightOrDark(toReturn)) {
+                return randomColor(); // regenerate
+            }
+        }
 
         return toReturn;
     }
