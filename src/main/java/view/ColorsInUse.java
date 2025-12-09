@@ -1,9 +1,15 @@
 package main.java.view;
 
+import javax.swing.*;
 import java.awt.Color;
 
 public enum ColorsInUse {
     BOARD_BACKGROUND(new Color(32, 32, 32)),
+
+    BOARD_BORDER_DEFAULT(new Color(0, 0, 0, 150)),
+
+    BOARD_ACTIVE_BORDER(new Color(255, 215, 0, 200)),
+
     TILE_DEFAULT(Color.DARK_GRAY),
     REVEALED_BG(Color.BLACK),
 

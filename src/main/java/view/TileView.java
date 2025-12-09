@@ -2,7 +2,6 @@ package main.java.view;
 
 import main.java.controller.GameSessionController;
 import main.java.model.*;
-import main.java.view.ColorsInUse;
 
 import javax.swing.*;
 import java.awt.*;
