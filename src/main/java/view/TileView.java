@@ -14,18 +14,21 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
     private final double dynamicSize; //dynamic tile size per difficulty
     private final int iconSize; //dynamic icon size per difficulty
 
+    private Color tileColor;
+
 
     public TileView(Tile tile, int dynamicSize) {
         this.tile = tile;
         this.dynamicSize = dynamicSize;
         this.iconSize = (int) (dynamicSize * 0.75);
         this.gameSessionController = GameSessionController.getInstance();
+        tileColor = Color.darkGray;
         initTile();
         mouseClicked();
     }
 
     private void initTile() {
-        setBackground(Color.darkGray);
+        setBackground(tileColor);
         setPreferredSize(new Dimension((int)dynamicSize, (int)dynamicSize));
         setFocusPainted(false);
         setFont(new Font("Segoe UI Black", Font.BOLD, (int) (dynamicSize/2.5)));
@@ -70,19 +73,19 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
 
         else if (type.equals("Q")) {
             setupIcon("/question.png", false);
-            setBackground(Color.GREEN);
+            setTileColor(Color.GREEN);
             setEnabled(true);
         }
         else
         {
             if (type.equals("0")) {
                 setText("");
-                setBackground(Color.black);
+                setTileColor(Color.black);
             }
             else
             {
                 setText(type);
-                setBackground(Color.black);
+                setTileColor(Color.black);
             }
 
             if (type.equals("1")) setForeground(Color.RED);
@@ -96,6 +99,21 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
             setEnabled(false);
         }
         System.out.println("tileview: i got updated that tile was Revealed: " + type);
+    }
+
+    public void setTileColor(Color color) {
+        tileColor = color;
+        setBackground(tileColor);
+    }
+
+
+    // 2 methods only used to show if board is active or not, --dont set tileColor here!--
+    public void recolorTile() {
+        setBackground(tileColor);
+    }
+
+    public void uncolorTile() {
+        setBackground(Color.black);
     }
 
     @Override
@@ -115,20 +133,20 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
     @Override
     public void onSpecialTileActivated()
     {
-        setBackground(Color.BLACK);
+        setTileColor(Color.BLACK);
         setEnabled(false);
     }
 
+    // changes on turn change to visibly show the active board
     public void setTileTurn(boolean turn) {
-        if(tile==null || !tile.isRevealed())
+        if(tile==null)
             return;
 
-        //needs better implementation
         if (turn) {
-            //this.setEnabled(true);
+            recolorTile();
         }
         else {
-            //this.setEnabled(false);
+            uncolorTile();
         }
     }
 

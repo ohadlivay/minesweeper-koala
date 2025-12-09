@@ -95,11 +95,11 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
         revalidate();
     }
 
-    private void updateTileEnabledState(boolean b) {
+    private void updateTileEnabledState(boolean turn) {
         for (TileView[] tileViews : tileViewGrid) {
             for (TileView tileView : tileViews) {
                 if (tileView == null) continue;
-                //tileView.setEnabled(b);   //
+                tileView.setTileTurn(turn);
             }
         }
     }
