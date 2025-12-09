@@ -93,7 +93,7 @@ public class GameSession implements Testable
 
 
     //Initialize the boards of the players involved in the game session
-    private void initializeBoards()
+    public void initializeBoards()
     {
         this.setLeftBoard(Board.createNewBoard(this.getGameDifficulty()));
         this.setRightBoard(Board.createNewBoard(this.getGameDifficulty()));

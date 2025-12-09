@@ -75,9 +75,10 @@ public class GameSessionController implements DisplayQuestionListener {
     public void displayQuestion() {
         System.out.println("display question called in controller");
         QuestionResult result = QuestionResult.getInstance();
-        result.setCorrect(true);
-        result.setDifficulty(QuestionDifficulty.HARD);
         /*
+        result.setCorrect(true);
+        result.setDifficulty(QuestionDifficulty.HARD);*/
+
         Random rand = new Random();
         boolean answer = rand.nextBoolean();
         result.setCorrect(answer);
@@ -85,7 +86,7 @@ public class GameSessionController implements DisplayQuestionListener {
         int randomDifficultyIndex = rand.nextInt(difficulties.length);
         result.setDifficulty(difficulties[randomDifficultyIndex]);
         String correct = answer ? "Correct" : "Incorrect";
-*/
+
         System.out.println("Your answer was: "+result.isCorrect()+ " and the difficulty was: "+result.getDifficulty());
     }
 }
