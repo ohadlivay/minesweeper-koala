@@ -119,6 +119,19 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         setEnabled(false);
     }
 
+    public void setTileTurn(boolean turn) {
+        if(tile==null || !tile.isRevealed())
+            return;
+
+        //needs better implementation
+        if (turn) {
+            //this.setEnabled(true);
+        }
+        else {
+            //this.setEnabled(false);
+        }
+    }
+
     //helper method for resizing icons
     private void setupIcon(String resourcePath, boolean visDisabled) {
         java.net.URL iconURL = getClass().getResource(resourcePath);

@@ -14,9 +14,11 @@ import java.awt.*;
 public class BoardLayout extends JPanel implements TurnListener, MinesLeftListener {
     private final int rows;
     private final int cols;
+    private final TileView[][] tileViewGrid; // to hold references to TileView components
     private final GameSessionController gameSessionController = GameSessionController.getInstance(); //changed to singleton -ohad
     private Board board; //only use for getters
     private static final int boardSize = 450;
+
 
     public BoardLayout(Board board) {
 
@@ -24,6 +26,7 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
         setBoard(board);
         this.rows = board.getRows(); //changed these two to interact with model directly as a getter.
         this.cols = board.getCols();
+        this.tileViewGrid = new TileView[rows][cols];
 
         initBoardPanel();
         populateBoard();
@@ -43,17 +46,7 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
         int finalBoardSize = calculatedTileSize * rows;
         int borderSize = 10;
         setMaximumSize(new Dimension(finalBoardSize + borderSize, finalBoardSize + borderSize));
-        if (board.getTurn()) {
-            setBorder(BorderFactory.createMatteBorder(
-                    5, 5, 5, 5,
-                    new Color(255, 255, 0, 150)   // translucent yellow
-            ));
-        } else {
-            setBorder(BorderFactory.createMatteBorder(
-                    5,5,5,5,
-                    new Color(0, 0, 0, 150)
-            )); // translucent black
-        }
+        this.updateTurn();
     }
 
     //Populate the board with the tiles,
@@ -68,7 +61,8 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
                 Tile t = null;
                 t = board.getTiles()[i][j]; //get tile from board controller
                 if (t != null) {
-                    add(new TileView(t,calculatedTileSize));
+                    tileViewGrid[i][j] = new TileView(t, calculatedTileSize);
+                    add(tileViewGrid[i][j]);
                 } else {
                     add(new JButton()); // placeholder button for debugging
                 }
@@ -82,15 +76,31 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
     @Override
     public void updateTurn() {
         if (board.getTurn()) {
+            //This turn
             setBorder(BorderFactory.createMatteBorder(
                     5,5,5,5,
                     new Color(255, 255, 0, 150)   // translucent yellow
             ));
+            updateTileEnabledState(true);
         } else {
+            //not this turn
             setBorder(BorderFactory.createMatteBorder(
                     5,5,5,5,
                     new Color(0, 0, 0, 150)
             )); // translucent black
+
+            updateTileEnabledState(false);
+        }
+        repaint();
+        revalidate();
+    }
+
+    private void updateTileEnabledState(boolean b) {
+        for (TileView[] tileViews : tileViewGrid) {
+            for (TileView tileView : tileViews) {
+                if (tileView == null) continue;
+                //tileView.setEnabled(b);   //
+            }
         }
     }
 
