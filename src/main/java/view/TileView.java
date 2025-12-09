@@ -71,7 +71,10 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
 
     @Override
     public void updateRevealed() {
+
         String type = tile.toString();
+        if (tile.getIsFlagged())
+            setupIcon(null, false);
         if (type.equals("M")) {
             setupIcon("/bomb.png", true);
             setEnabled(false);
@@ -163,6 +166,10 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
 
     //helper method for resizing icons
     private void setupIcon(String resourcePath, boolean visDisabled) {
+        if (resourcePath == null || resourcePath.isEmpty()) {
+            setIcon(null);
+            return;
+        }
         java.net.URL iconURL = getClass().getResource(resourcePath);
         if (iconURL != null) {
             ImageIcon icon = new ImageIcon(iconURL);
