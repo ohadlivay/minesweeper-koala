@@ -333,8 +333,11 @@ public class GameSession implements Testable
             this.gainPoints(1);
             parentBoard.reveal(tile);
             this.changeTurn();   //revealing a mine by flagging does change a turn!
-            System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool());
-            return;
+            System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
+            if (this.isGameOver())
+                initiateGameOver();
+            else
+                return;
         }
 
         //case tile is flagged (unflag it)
@@ -349,7 +352,7 @@ public class GameSession implements Testable
         System.out.println("Flagging tile");
         parentBoard.flag(tile);
         this.gainPoints(-3);
-        System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool());
+        System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
         //this.changeTurn();
     }
 
@@ -373,7 +376,9 @@ public class GameSession implements Testable
             {
                 if (!specialTile.isUsed())
                 {
-                    this.activateSpecialTile(specialTile);
+                    this.activateSpecialTile(specialTile,parentBoard);
+                    if (this.isGameOver())
+                        initiateGameOver();
                 }
                 else
                     System.out.println("Special tile already used");
@@ -393,14 +398,17 @@ public class GameSession implements Testable
                 System.out.println("Mine");
                 this.gainHealth(-1);
                 parentBoard.reveal(tile);
-                this.changeTurn();
+                if (this.isGameOver())
+                    initiateGameOver();
+                else
+                    this.changeTurn();
             }
             if(tile instanceof NumberTile){
                 int tilesRevealed = parentBoard.reveal(tile);
                 this.gainPoints(1*tilesRevealed);
                 System.out.println("Its a number tile");
                 this.changeTurn();}
-            System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool());
+            System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
         }
 
 
@@ -411,6 +419,7 @@ public class GameSession implements Testable
     }
 
     private void gainPoints(int points){
+        System.out.println("Points 'added': "+points);
         this.setPoints(this.getPoints() + points);
     }
 
@@ -424,6 +433,7 @@ public class GameSession implements Testable
     }
 
     private void gainHealth(int health) {
+        System.out.println("Health 'added': "+health);
         this.setHealthPool(this.getHealthPool() + health);
     }
 
@@ -439,14 +449,16 @@ public class GameSession implements Testable
             listener.onHealthChanged(this.healthPool); // your view should implement HealthListener and that method onHealthChanged should update the view
     }
 
-    private void activateSpecialTile(SpecialTile specialTile){
+    private void activateSpecialTile(SpecialTile specialTile, Board parentBoard) {
+        System.out.println("Activation cost: "+getGameDifficulty().getActivationCost()+"\tPoints: "+this.getPoints());
         if (this.getPoints()<getGameDifficulty().getActivationCost())
             System.out.println("Not enough points to activate special tile");
         else {
-            System.out.println("Activating special tile");
             this.gainPoints(-getGameDifficulty().getActivationCost());
+            System.out.println("Points after activation cost: "+this.getPoints());
             if (specialTile instanceof SurpriseTile surpriseTile)
             {
+                System.out.println("Surprise tile activated");
                 Random random = new Random();
                 boolean resultOfRandom = random.nextBoolean();
                 int plusMinus  = (resultOfRandom) ? 1 : -1;
@@ -454,12 +466,203 @@ public class GameSession implements Testable
                 System.out.println(message);
                 this.gainPoints(plusMinus*getGameDifficulty().getSurprisePoints());
                 this.gainHealth(plusMinus*getGameDifficulty().getSurpriseHealth());
-                surpriseTile.setUsed();
-                System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool());
             }
+            if (specialTile instanceof QuestionTile questionTile)
+            {
+                System.out.println("Question tile activated");
+                displayQuestionListener.displayQuestion();
+                QuestionResult result = QuestionResult.getInstance();
+                QuestionDifficulty difficulty = result.getDifficulty();
+                boolean answer = result.isCorrect();
+                updateAfterQuestionResult(difficulty, answer, parentBoard);
+
+            }
+            specialTile.setUsed();
+            System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
             /*for (SpecialTileActivationListener listener : specialTileActivationListeners)
                 listener.onSpecialTileActivated(); // your view should implement SpecialTileActivationListener and that method onSpecialTileActivated should update the view
                 */
+        }
+    }
+    public void setDisplayQuestionListener(DisplayQuestionListener displayQuestionListener) {
+        this.displayQuestionListener = displayQuestionListener;
+    }
+    private void updateAfterQuestionResult(QuestionDifficulty difficulty, boolean correctAnswer, Board parentBoard)
+    {
+        Random random = new Random();
+        boolean randomResult = random.nextBoolean();
+        switch (this.gameDifficulty)
+        {
+            case EASY:
+                updateAfterQuestionResultEasy(difficulty, correctAnswer, randomResult, parentBoard);
+                break;
+            case MEDIUM:
+                updateAfterQuestionResultMedium(difficulty,correctAnswer,randomResult);
+                break;
+            case HARD:
+                updateAfterQuestionResultHard(difficulty,correctAnswer,randomResult);
+        }
+
+    }
+
+    private void updateAfterQuestionResultHard(QuestionDifficulty difficulty, boolean correctAnswer, boolean randomResult) {
+        switch (difficulty) {
+            case EASY:
+                if (correctAnswer) {
+                    this.gainPoints(10);
+                    this.gainHealth(1);
+                } else {
+                    this.gainPoints(-10);
+                    this.gainHealth(-1);
+                }
+                break;
+            case MEDIUM:
+                System.out.println("Randomer is "+randomResult);
+                int healthChanged = (randomResult)? 2:1;
+                if (correctAnswer)
+                {
+                    this.gainPoints(15);
+                    this.gainHealth(healthChanged);
+                }
+                else
+                {
+                    this.gainPoints(-15);
+                    this.gainHealth(-healthChanged);
+                }
+                break;
+            case HARD:
+                if (correctAnswer)
+                {
+                    this.gainPoints(20);
+                    this.gainHealth(2);
+                }
+                else
+                {
+                    this.gainPoints(-20);
+                    this.gainHealth(-2);
+                }
+                break;
+            case MASTER:
+                if (correctAnswer)
+                {
+                    this.gainPoints(40);
+                    this.gainHealth(3);
+                }
+                else
+                {
+                    this.gainPoints(-40);
+                    this.gainHealth(-3);
+                }
+        }
+    }
+
+    private void updateAfterQuestionResultMedium(QuestionDifficulty difficulty, boolean correctAnswer, boolean randomResult) {
+        switch (difficulty) {
+            case EASY:
+                if (correctAnswer) {
+                    this.gainPoints(8);
+                    this.gainHealth(1);
+                } else {
+                    this.gainPoints(-8);
+                }
+                break;
+            case MEDIUM:
+                if (correctAnswer)
+                {
+                    this.gainPoints(10);
+                    this.gainHealth(1);
+                }
+                else
+                {
+                    System.out.println("Randomer is "+randomResult);
+                    if (!randomResult)
+                    {
+                        this.gainPoints(-10);
+                        this.gainHealth(-1);
+                    }
+
+                }
+                break;
+            case HARD:
+                if (correctAnswer)
+                {
+                    this.gainPoints(15);
+                    this.gainHealth(1);
+                }
+                else
+                {
+                    this.gainPoints(-15);
+                    this.gainHealth(-1);
+                }
+                break;
+            case MASTER:
+                if (correctAnswer)
+                {
+                    this.gainPoints(20);
+                    this.gainHealth(2);
+                }
+                else
+                {
+                    this.gainPoints(-20);
+                    System.out.println("Randomer is "+randomResult);
+                    int healthLost = (randomResult)? -1:-2;
+                    this.gainHealth(healthLost);
+                }
+        }
+    }
+
+    private void updateAfterQuestionResultEasy(QuestionDifficulty difficulty, boolean correctAnswer, boolean randomResult, Board parentBoard)
+    {
+        switch(difficulty){
+            case EASY:
+                if(correctAnswer)
+                {
+                    this.gainPoints(3);
+                    this.gainHealth(1);
+                }
+                else
+                {
+                    System.out.println("Randomer is "+randomResult);
+                    int pointsLost = (randomResult)? 0:-3;
+                    this.gainPoints(pointsLost);
+                }
+                break;
+            case MEDIUM:
+                if(correctAnswer)
+                {
+                    parentBoard.revealRandomMine();
+                    this.gainPoints(6);
+                }
+                else
+                {
+                    System.out.println("Randomer is "+randomResult);
+                    int pointsLost = (randomResult)? 0:-6;
+                    this.gainPoints(pointsLost);
+                }
+                break;
+            case HARD:
+                if(correctAnswer)
+                {
+                    parentBoard.revealGrid();
+                    this.gainPoints(10);
+                }
+                else
+                {
+                    this.gainPoints(-10);
+                }
+                break;
+            case MASTER:
+                if(correctAnswer)
+                {
+                    this.gainPoints(15);
+                    this.gainHealth(2);
+                }
+                else
+                {
+                    this.gainPoints(-15);
+                    this.gainHealth(-1);
+                }
+                break;
         }
     }
 

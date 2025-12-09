@@ -76,8 +76,67 @@ public class Board implements Testable {
             for (int c = 0; c < getCols(); c++) {
                 Tile tile = this.getTiles()[r][c];
                 tile.forceReveal();
+                if (tile instanceof SpecialTile specialTile) {specialTile.setUsed();}
             }
         }
+    }
+
+    protected void revealRandomMine()
+    {
+        if (getMinesLeft() == 0)
+        {
+            System.out.println("No mines left to reveal");
+            return;
+        }
+        int row,col;
+        Tile tile;
+        do {
+            row = RANDOM.nextInt(getRows());
+            col = RANDOM.nextInt(getCols());
+            tile = this.getTiles()[row][col];
+        }while (!(tile instanceof MineTile) || tile.isRevealed());
+        System.out.println("Revealing random mine at (" + (row+1) + "," + (col+1)+")");
+        reveal(tile);
+
+    }
+
+    protected void revealGrid()
+    {
+        if(this.getCols()<3||this.getRows()<3)
+        {
+            System.out.println("Cannot reveal grid, board too small");
+            return;
+        }
+        for (int k=0;k<9;k++)
+        {
+            for (int r=0;r<=this.getRows()-3;r++)
+                for (int c=0;c<=this.getCols()-3;c++)
+                {
+                    int revealedCount = 0;
+                    boolean hasUnrevealedTile = false;
+                    for (int i=0;i<3;i++)
+                        for (int j=0;j<3;j++)
+                        {
+                            Tile tile = this.getTiles()[r+i][c+j];
+                            if (tile.isRevealed()) revealedCount++;
+                            else hasUnrevealedTile = true;
+                        }
+                    if (hasUnrevealedTile && revealedCount == k)
+                    {
+                        System.out.println("Revealing "+(9-k)+" tiles in grid at ("+(r+1)+","+(c+1)+")");
+                        for (int i=0;i<3;i++)
+                            for (int j=0;j<3;j++)
+                            {
+                                Tile tile = this.getTiles()[r+i][c+j];
+                                if (tile instanceof MineTile&&!tile.isRevealed()) setMinesLeft(getMinesLeft() -1);
+                                tile.forceReveal();
+                            }
+                        return;
+                    }
+                }
+        }
+        System.out.println("No grid found");
+
     }
 
     protected void flag(Tile tile)
