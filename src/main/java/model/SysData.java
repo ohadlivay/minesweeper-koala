@@ -10,11 +10,13 @@ public class SysData
     //List of game data
     private final List<GameData> games;
     //need to add questions here??
+    private final List<Question> questions;
 
     //Private constructor
     private SysData()
     {
         games = new ArrayList<>();
+        questions = new ArrayList<>();
     }
 
     //Getter for the singleton instance
@@ -53,6 +55,31 @@ public class SysData
     public List<GameData> getGames()
     {
         return new ArrayList<>(games);
+    }
+
+    //Getter for the questions list
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    //Add a question to the list
+    public void addQuestion(Question question) {
+        questions.add(question);
+    }
+
+    //Clear the list of questions
+    public void clearQuestions() {
+        questions.clear();
+    }
+
+    //Get a question from the list
+    public void getQuestion(int index) {
+        questions.get(index);
+    }
+
+    //Get the number of questions in the list
+    public int getNumberOfQuestions() {
+        return questions.size();
     }
 
 }
