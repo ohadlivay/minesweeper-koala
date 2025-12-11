@@ -5,6 +5,7 @@ import main.java.controller.NavigationController;
 import main.java.model.GameDifficulty;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 
 public class SettingsOverlay extends OverlayView {
@@ -27,15 +28,10 @@ public class SettingsOverlay extends OverlayView {
     private JLabel player1Label;
     private JLabel player2Label;
     private GameDifficulty difficulty;
-    private final NavigationController nav; //very good
-
 
     public SettingsOverlay(NavigationController nav) {
         super(nav);
-        this.nav = nav;
         setContentPane(contentPane);
-        pack();
-        setLocationRelativeTo(nav.getVisFrame());
 
         buttonStart.addActionListener(e -> onOK());
         buttonBack.addActionListener(e -> onCancel());
@@ -51,7 +47,9 @@ public class SettingsOverlay extends OverlayView {
         easy.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                resetSelection();
                 difficulty = GameDifficulty.EASY;
+                easy.setBorder(BorderFactory.createLineBorder(Color.WHITE));
                 System.out.println("Selected Difficulty: EASY");
             }
         });
@@ -59,7 +57,9 @@ public class SettingsOverlay extends OverlayView {
         medium.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                resetSelection();
                 difficulty = GameDifficulty.MEDIUM;
+                medium.setBorder(BorderFactory.createLineBorder(Color.WHITE));
                 System.out.println("Selected Difficulty: MEDIUM");
             }
         });
@@ -67,7 +67,9 @@ public class SettingsOverlay extends OverlayView {
         hard.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                resetSelection();
                 difficulty = GameDifficulty.HARD;
+                hard.setBorder(BorderFactory.createLineBorder(Color.WHITE));
                 System.out.println("Selected Difficulty: HARD");
             }
         });
@@ -102,6 +104,12 @@ public class SettingsOverlay extends OverlayView {
         GameSessionController.getInstance().setupGame(player1, player2, difficulty);
         nav.goToGame();
         close();
+    }
+
+    private void resetSelection() {
+        easy.setBorder(null);
+        medium.setBorder(null);
+        hard.setBorder(null);
     }
 
     private String nameWarning (String player1, String player2) {
