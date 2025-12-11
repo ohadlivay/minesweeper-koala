@@ -36,7 +36,7 @@ public class QuestionManagerScreen extends JPanel {
         Font font = new Font("Segoe UI Black", Font.BOLD, 14);
 
         historyLabel = new JLabel("Question Manager (Under construction)", SwingConstants.CENTER);
-        historyLabel.setForeground(ColorsInUse.TEXT_COLOR.get());
+        historyLabel.setForeground(ColorsInUse.TEXT.get());
         historyLabel.setFont(font);
         topPanel.add(historyLabel, BorderLayout.CENTER);
         topPanel.setBorder(new EmptyBorder(10, 0, 0, 0));

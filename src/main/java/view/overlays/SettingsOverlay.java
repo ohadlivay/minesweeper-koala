@@ -3,8 +3,10 @@ package main.java.view.overlays;
 import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.model.GameDifficulty;
+import main.java.view.ColorsInUse;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -12,26 +14,19 @@ public class SettingsOverlay extends OverlayView {
     private JPanel contentPane;
     private JButton buttonStart;
     private JButton buttonBack;
-    private JPanel bottomPanel;
-    private JPanel mainPanel;
     private JLabel difficultyLabel;
-    private JPanel labelPanel;
-    private JPanel difficultyPanel;
-    private JPanel nameInputPanel;
-    private JPanel startBtnPanel;
     private JLabel easy;
     private JLabel medium;
     private JLabel hard;
     private JTextField player1Name;
     private JTextField player2Name;
-    private JPanel nameLabelPanel;
     private JLabel player1Label;
     private JLabel player2Label;
     private GameDifficulty difficulty;
 
     public SettingsOverlay(NavigationController nav) {
         super(nav);
-        setContentPane(contentPane);
+        initUI();
 
         buttonStart.addActionListener(e -> onOK());
         buttonBack.addActionListener(e -> onCancel());
@@ -49,7 +44,7 @@ public class SettingsOverlay extends OverlayView {
             public void mouseClicked(MouseEvent e) {
                 resetSelection();
                 difficulty = GameDifficulty.EASY;
-                easy.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+                easy.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2),new EmptyBorder(5,5,5,5)));
                 System.out.println("Selected Difficulty: EASY");
             }
         });
@@ -59,7 +54,7 @@ public class SettingsOverlay extends OverlayView {
             public void mouseClicked(MouseEvent e) {
                 resetSelection();
                 difficulty = GameDifficulty.MEDIUM;
-                medium.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+                medium.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2),new EmptyBorder(5,5,5,5)));
                 System.out.println("Selected Difficulty: MEDIUM");
             }
         });
@@ -69,10 +64,118 @@ public class SettingsOverlay extends OverlayView {
             public void mouseClicked(MouseEvent e) {
                 resetSelection();
                 difficulty = GameDifficulty.HARD;
-                hard.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+                hard.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2),new EmptyBorder(5,5,5,5)));
                 System.out.println("Selected Difficulty: HARD");
             }
         });
+
+    }
+
+    private void initUI() {
+        contentPane = new JPanel(new BorderLayout());
+        contentPane.setBackground(ColorsInUse.BG_COLOR.get());
+        contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
+        contentPane.setPreferredSize(new Dimension(700, 500));
+
+        JPanel titlePanel = new JPanel();
+        titlePanel.setBackground(ColorsInUse.BG_COLOR.get());
+        JLabel title = new JLabel("Choose Difficulty:");
+        title.setFont(new Font("Arial", Font.BOLD, 32));
+        title.setForeground(ColorsInUse.TEXT.get());
+        titlePanel.add(title);
+
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        centerPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.gridx = 0;
+
+        JPanel difficultyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 0));
+        difficultyPanel.setBackground(ColorsInUse.BG_COLOR.get());
+
+        easy = new JLabel("Easy", SwingConstants.CENTER);
+        easy.setPreferredSize(new Dimension(80, 80));
+        easy.setFont(new Font("Segoe UI Black", Font.BOLD, 18));
+        easy.setForeground(ColorsInUse.TEXT.get());
+        easy.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+        medium = new JLabel("Medium", SwingConstants.CENTER);
+        medium.setPreferredSize(new Dimension(80, 80));
+        medium.setFont(new Font("Segoe UI Black", Font.BOLD, 18));
+        medium.setForeground(ColorsInUse.TEXT.get());
+        medium.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+        hard = new JLabel("Hard", SwingConstants.CENTER);
+        hard.setPreferredSize(new Dimension(80, 80));
+        hard.setFont(new Font("Segoe UI Black", Font.BOLD, 18));
+        hard.setForeground(ColorsInUse.TEXT.get());
+        hard.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+        difficultyPanel.add(easy);
+        difficultyPanel.add(medium);
+        difficultyPanel.add(hard);
+        gbc.gridy = 0;
+        centerPanel.add(difficultyPanel, gbc);
+
+        JPanel namesPanel = new JPanel(new GridLayout(1, 2, 60, 0)); // 1 Row, 2 Cols, 60px gap
+        namesPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        namesPanel.setBorder(new EmptyBorder(20, 0, 20, 0));
+
+        player1Name = new JTextField();
+        player1Name.setFont(new Font("Segoe UI Black", Font.BOLD, 18));
+        player1Name.setForeground(ColorsInUse.TEXT.get());
+        player1Name.setPreferredSize(new Dimension(100, 35));
+        player1Name.setBackground(ColorsInUse.INPUT_FIELD.get());
+        player1Name.setCaretColor(ColorsInUse.TEXT.get());
+        player1Name.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+
+        player2Name = new JTextField();
+        player2Name.setFont(new Font("Segoe UI Black", Font.BOLD, 18));
+        player2Name.setForeground(ColorsInUse.TEXT.get());
+        player2Name.setPreferredSize(new Dimension(100, 35));
+        player2Name.setBackground(ColorsInUse.INPUT_FIELD.get());
+        player2Name.setCaretColor(ColorsInUse.TEXT.get());
+        player2Name.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+
+        namesPanel.add(player1Name);
+        namesPanel.add(player2Name);
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        centerPanel.add(namesPanel, gbc);
+
+        buttonStart = new JButton("START");
+        buttonStart.setPreferredSize(new Dimension(150, 45));
+        buttonStart.setBackground(ColorsInUse.BTN_COLOR.get());
+        buttonStart.setForeground(ColorsInUse.TEXT.get());
+        buttonStart.setFocusPainted(false);
+        buttonStart.setFont(new Font("Segoe UI Black", Font.BOLD, 16));
+        buttonStart.setBorder(BorderFactory.createBevelBorder(0));
+        buttonStart.addActionListener(e->onOK());
+
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(30, 0, 0, 0); // Margin top
+        centerPanel.add(buttonStart, gbc);
+
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        bottomPanel.setBackground(ColorsInUse.BG_COLOR.get());
+
+        buttonBack = new JButton("Back");
+        buttonBack.addActionListener(e -> onCancel());
+        buttonBack.setPreferredSize(new Dimension(150, 45));
+        buttonBack.setBackground(ColorsInUse.BTN_COLOR.get());
+        buttonBack.setForeground(ColorsInUse.TEXT.get());
+        buttonBack.setFocusPainted(false);
+        buttonBack.setFont(new Font("Segoe UI Black", Font.BOLD, 16));
+        buttonBack.setBorder(BorderFactory.createBevelBorder(0));
+        buttonBack.addActionListener(e->onOK());
+        bottomPanel.add(buttonBack);
+
+        contentPane.add(titlePanel, BorderLayout.NORTH);
+        contentPane.add(centerPanel, BorderLayout.CENTER);
+        contentPane.add(bottomPanel, BorderLayout.SOUTH);
+
+        this.setContentPane(contentPane);
 
     }
 

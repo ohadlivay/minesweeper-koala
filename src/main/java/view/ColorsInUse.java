@@ -1,13 +1,13 @@
 package main.java.view;
 
-import javax.swing.*;
 import java.awt.Color;
 
 public enum ColorsInUse {
 
     BG_COLOR(new Color(20, 20, 20)),
     BTN_COLOR(new Color(10, 10, 10)),
-    TEXT_COLOR(Color.WHITE),
+    TEXT(Color.WHITE),
+    INPUT_FIELD(Color.BLACK),
 
     BOARD_BACKGROUND(new Color(32, 32, 32)),
     BOARD_BORDER_DEFAULT(new Color(0, 0, 0, 150)),

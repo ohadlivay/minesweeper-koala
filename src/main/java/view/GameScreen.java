@@ -64,15 +64,15 @@ public class GameScreen extends JPanel implements PointsListener, MinesLeftListe
         Font font = new Font("Segoe UI Black", Font.BOLD, 16);
 
         player1Label = new JLabel();
-        player1Label.setForeground(ColorsInUse.TEXT_COLOR.get());
+        player1Label.setForeground(ColorsInUse.TEXT.get());
         player1Label.setFont(font);
 
         player2Label = new JLabel();
-        player2Label.setForeground(ColorsInUse.TEXT_COLOR.get());
+        player2Label.setForeground(ColorsInUse.TEXT.get());
         player2Label.setFont(font);
 
         player1MinesLeftLabel = new JLabel("x" + session.getLeftBoard().getMinesLeft());
-        player1MinesLeftLabel.setForeground(ColorsInUse.TEXT_COLOR.get());
+        player1MinesLeftLabel.setForeground(ColorsInUse.TEXT.get());
         player1MinesLeftLabel.setFont(font);
         java.net.URL bombUrl = getClass().getResource("/bomb.png");
         if (bombUrl != null) { ImageIcon icon = new ImageIcon(bombUrl);
@@ -82,7 +82,7 @@ public class GameScreen extends JPanel implements PointsListener, MinesLeftListe
         }
 
         player2MinesLeftLabel = new JLabel("x" + session.getRightBoard().getMinesLeft());
-        player2MinesLeftLabel.setForeground(ColorsInUse.TEXT_COLOR.get());
+        player2MinesLeftLabel.setForeground(ColorsInUse.TEXT.get());
         player2MinesLeftLabel.setFont(font);
         if (bombUrl != null) { ImageIcon icon = new ImageIcon(bombUrl);
             Image scaled = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
@@ -123,7 +123,7 @@ public class GameScreen extends JPanel implements PointsListener, MinesLeftListe
         statsPanel.setBorder(new EmptyBorder(10, 0, 10, 0));
 
         healthLabel = new JLabel("x" + session.getHealthPool());
-        healthLabel.setForeground(ColorsInUse.TEXT_COLOR.get());
+        healthLabel.setForeground(ColorsInUse.TEXT.get());
         healthLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 16));
         java.net.URL heartUrl = getClass().getResource("/heart.png");
         if (heartUrl != null) {
@@ -135,7 +135,7 @@ public class GameScreen extends JPanel implements PointsListener, MinesLeftListe
         statsPanel.add(healthLabel);
 
         pointsLabel = new JLabel("Score: " + session.getPoints());
-        pointsLabel.setForeground(ColorsInUse.TEXT_COLOR.get());
+        pointsLabel.setForeground(ColorsInUse.TEXT.get());
         pointsLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 16));
         pointsLabel.setOpaque(true);
         pointsLabel.setBackground(ColorsInUse.POINTS.get());
@@ -155,7 +155,7 @@ public class GameScreen extends JPanel implements PointsListener, MinesLeftListe
         endGameButton.setFocusPainted(false);
         endGameButton.setPreferredSize(new Dimension(72, 36));
         endGameButton.setContentAreaFilled(true);
-        endGameButton.setForeground(ColorsInUse.TEXT_COLOR.get());
+        endGameButton.setForeground(ColorsInUse.TEXT.get());
         bottomPanel.add(endGameButton, BorderLayout.EAST);
 
         JPanel southContainer = new JPanel();
