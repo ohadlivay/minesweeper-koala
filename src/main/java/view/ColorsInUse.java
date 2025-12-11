@@ -4,10 +4,13 @@ import javax.swing.*;
 import java.awt.Color;
 
 public enum ColorsInUse {
+
+    BG_COLOR(new Color(20, 20, 20)),
+    BTN_COLOR(new Color(10, 10, 10)),
+    TEXT_COLOR(Color.WHITE),
+
     BOARD_BACKGROUND(new Color(32, 32, 32)),
-
     BOARD_BORDER_DEFAULT(new Color(0, 0, 0, 150)),
-
     BOARD_ACTIVE_BORDER(new Color(255, 215, 0, 200)),
 
     TILE_DEFAULT(Color.DARK_GRAY),
@@ -23,7 +26,10 @@ public enum ColorsInUse {
     NUMBER_5(Color.ORANGE),
     NUMBER_6(Color.CYAN),
     NUMBER_7(Color.PINK),
-    NUMBER_8(Color.GRAY);
+    NUMBER_8(Color.GRAY),
+
+    POINTS(new Color(88, 124, 196));
+
 
     private final Color color;
 

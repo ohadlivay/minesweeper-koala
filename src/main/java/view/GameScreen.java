@@ -9,7 +9,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
 
-public class GameScreen implements PointsListener, MinesLeftListener, HealthListener {
+public class GameScreen extends JPanel implements PointsListener, MinesLeftListener, HealthListener {
     private final NavigationController nav;
     private final GameSession session; // Always holds the current game session
 
@@ -22,6 +22,8 @@ public class GameScreen implements PointsListener, MinesLeftListener, HealthList
     private JLabel player2MinesLeftLabel;
     private JLabel healthLabel;
     private JLabel pointsLabel;
+
+    private Color componentColor;
 
 
     public GameScreen(NavigationController nav, GameSession session) {
@@ -54,7 +56,7 @@ public class GameScreen implements PointsListener, MinesLeftListener, HealthList
 
     private void initUI() {
         mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(new Color(20, 20, 20));
+        mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
         mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -62,15 +64,15 @@ public class GameScreen implements PointsListener, MinesLeftListener, HealthList
         Font font = new Font("Segoe UI Black", Font.BOLD, 16);
 
         player1Label = new JLabel();
-        player1Label.setForeground(Color.WHITE);
+        player1Label.setForeground(ColorsInUse.TEXT_COLOR.get());
         player1Label.setFont(font);
 
         player2Label = new JLabel();
-        player2Label.setForeground(Color.WHITE);
+        player2Label.setForeground(ColorsInUse.TEXT_COLOR.get());
         player2Label.setFont(font);
 
         player1MinesLeftLabel = new JLabel("x" + session.getLeftBoard().getMinesLeft());
-        player1MinesLeftLabel.setForeground(Color.WHITE);
+        player1MinesLeftLabel.setForeground(ColorsInUse.TEXT_COLOR.get());
         player1MinesLeftLabel.setFont(font);
         java.net.URL bombUrl = getClass().getResource("/bomb.png");
         if (bombUrl != null) { ImageIcon icon = new ImageIcon(bombUrl);
@@ -80,7 +82,7 @@ public class GameScreen implements PointsListener, MinesLeftListener, HealthList
         }
 
         player2MinesLeftLabel = new JLabel("x" + session.getRightBoard().getMinesLeft());
-        player2MinesLeftLabel.setForeground(Color.WHITE);
+        player2MinesLeftLabel.setForeground(ColorsInUse.TEXT_COLOR.get());
         player2MinesLeftLabel.setFont(font);
         if (bombUrl != null) { ImageIcon icon = new ImageIcon(bombUrl);
             Image scaled = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
@@ -111,7 +113,7 @@ public class GameScreen implements PointsListener, MinesLeftListener, HealthList
 
         //center panel holds the boardlayouts
         centerPanel = new JPanel();
-        centerPanel.setBackground(new Color(20, 20, 20));
+        centerPanel.setBackground(ColorsInUse.BG_COLOR.get());
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.X_AXIS));
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
@@ -121,7 +123,7 @@ public class GameScreen implements PointsListener, MinesLeftListener, HealthList
         statsPanel.setBorder(new EmptyBorder(10, 0, 10, 0));
 
         healthLabel = new JLabel("x" + session.getHealthPool());
-        healthLabel.setForeground(Color.WHITE);
+        healthLabel.setForeground(ColorsInUse.TEXT_COLOR.get());
         healthLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 16));
         java.net.URL heartUrl = getClass().getResource("/heart.png");
         if (heartUrl != null) {
@@ -133,10 +135,10 @@ public class GameScreen implements PointsListener, MinesLeftListener, HealthList
         statsPanel.add(healthLabel);
 
         pointsLabel = new JLabel("Score: " + session.getPoints());
-        pointsLabel.setForeground(Color.WHITE);
+        pointsLabel.setForeground(ColorsInUse.TEXT_COLOR.get());
         pointsLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 16));
         pointsLabel.setOpaque(true);
-        pointsLabel.setBackground(new Color(88, 124, 196));
+        pointsLabel.setBackground(ColorsInUse.POINTS.get());
         pointsLabel.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
         statsPanel.add(pointsLabel);
 
@@ -149,12 +151,11 @@ public class GameScreen implements PointsListener, MinesLeftListener, HealthList
 
         // TEMP BUTTON FOR TESTING GAME SAVES
         JButton endGameButton = new JButton("End Game");
-        endGameButton.setBackground(new Color(10, 10, 10));
-        endGameButton.setBorder(BorderFactory.createLineBorder(new Color(70, 80, 100), 2));
+        endGameButton.setBackground(ColorsInUse.BTN_COLOR.get());
         endGameButton.setFocusPainted(false);
         endGameButton.setPreferredSize(new Dimension(72, 36));
         endGameButton.setContentAreaFilled(true);
-        endGameButton.setForeground(Color.WHITE);
+        endGameButton.setForeground(ColorsInUse.TEXT_COLOR.get());
         bottomPanel.add(endGameButton, BorderLayout.EAST);
 
         JPanel southContainer = new JPanel();
@@ -189,8 +190,7 @@ public class GameScreen implements PointsListener, MinesLeftListener, HealthList
             button.setIcon(new ImageIcon(icon));
         }
 
-        button.setBackground(new Color(10, 10, 10));
-        button.setBorder(BorderFactory.createLineBorder(new Color(70, 80, 100), 2));
+        button.setBackground(ColorsInUse.BTN_COLOR.get());
         button.setFocusPainted(false);
         button.setContentAreaFilled(true);
         button.addActionListener(e -> {
@@ -227,4 +227,7 @@ public class GameScreen implements PointsListener, MinesLeftListener, HealthList
     public void onHealthChanged(int newHealth) {
         healthLabel.setText("x" + newHealth);
     }
+
+
+
 }
