@@ -175,10 +175,11 @@ public class SettingsOverlay extends OverlayView {
     public String getPlayer1Name() {
         return player1Name.getText();
     }
-
     public String getPlayer2Name() {
         return player2Name.getText();
     }
+
+
 
     // HELPER METHODS //
 
@@ -258,7 +259,8 @@ public class SettingsOverlay extends OverlayView {
 
         label.setFont(new Font("Segoe UI Black", Font.BOLD, 18));
         label.setForeground(ColorsInUse.TEXT.get());
-        label.setBorder(new EmptyBorder(7, 7, 7, 7)); // Spacing
+        label.setBorder(new EmptyBorder(7, 7, 7, 7));
+        label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         return label;
     }
