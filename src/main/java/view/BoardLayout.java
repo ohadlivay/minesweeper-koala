@@ -32,6 +32,7 @@ public class BoardLayout extends JPanel implements TurnListener {
 
         initBoardPanel();
         populateBoard();
+        this.updateTurn();
     }
 
 
@@ -48,7 +49,7 @@ public class BoardLayout extends JPanel implements TurnListener {
         int finalBoardSize = calculatedTileSize * rows;
         int borderSize = 10;
         setMaximumSize(new Dimension(finalBoardSize + borderSize, finalBoardSize + borderSize));
-        this.updateTurn();
+        //this.updateTurn();
     }
 
     //Populate the board with the tiles,
