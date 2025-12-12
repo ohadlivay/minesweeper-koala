@@ -226,13 +226,18 @@ public class Board implements Testable {
             turnListener.updateTurn();
         }
     }
+
     public void setTurnListener(TurnListener turnListener) {
         this.turnListener = turnListener;
+    }
+
+    public void setMinesLeftListener(MinesLeftListener minesLeftListener) {
+        this.minesLeftListener = minesLeftListener;
     }
     private void setMinesLeft(int minesLeft){
         this.minesLeft = minesLeft;
         if(minesLeftListener  != null) {
-            minesLeftListener.updateMinesLeft(getMinesLeft());
+            minesLeftListener.updateMinesLeft(getMinesLeft(), this);
         }
     }
     public int getMinesLeft(){

@@ -9,7 +9,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
 
-public class GameScreen extends JPanel implements PointsListener, MinesLeftListener, HealthListener {
+public class GameScreen extends JPanel implements PointsListener, HealthListener, MinesLeftListener {
     private final NavigationController nav;
     private final GameSession session; // Always holds the current game session
 
@@ -31,6 +31,9 @@ public class GameScreen extends JPanel implements PointsListener, MinesLeftListe
         this.session = session;
         this.session.setPointsListener(this);
         this.session.setHealthListener(this);
+        this.session.getLeftBoard().setMinesLeftListener(this);
+        this.session.getRightBoard().setMinesLeftListener(this);
+
         initUI();
         setBoards(session.getLeftBoard(), session.getRightBoard());
         setPlayerNames(session.getLeftPlayerName(),session.getRightPlayerName());
@@ -218,9 +221,10 @@ public class GameScreen extends JPanel implements PointsListener, MinesLeftListe
         pointsLabel.setText("Score: " + newPoints);
     }
 
-    @Override
-    public void updateMinesLeft(int minesLeft) {
-        //When mines left is visible, implement this method
+    public void updateMinesLeft(int minesLeft, Board board) {
+        if(board == session.getLeftBoard()) player1MinesLeftLabel.setText("x" + minesLeft);
+        else player2MinesLeftLabel.setText("x" + minesLeft);
+
     }
 
     @Override
