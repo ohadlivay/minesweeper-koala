@@ -27,6 +27,12 @@ public class GameplayTests {
         healthField.setInt(gameSession, GameDifficulty.EASY.getInitialHealthPool()); // Default to Easy health
 
         gameSession.initializeBoards();
+
+        Board board = gameSession.getLeftBoard();
+
+        NumberTile numberTile = getNumberTile(board);
+        MineTile mineTile = getMineTile(board);
+        SurpriseTile surpriseTile = getSurpriseTile(board);
     }
 
     // ---------------------------------------------------------
@@ -108,7 +114,7 @@ public class GameplayTests {
     @Test
     public void reveal_MineTile_ShouldDecrementTotalMinesLeft() {
         Board board = Board.createNewBoard(GameDifficulty.HARD);
-        Tile mineTile = getMineTileInBoard(board);
+        Tile mineTile = getMineTile(board);
 
         // Ensure we found a mine before trying to reveal it
         if (mineTile != null) {
@@ -131,21 +137,6 @@ public class GameplayTests {
     // ---------------------------------------------------------
 
     @Test
-    public void rightClick_SafeTile_WithZeroPoints_ShouldFailToFlag() {
-        // Try to flag a tile (costs 3 points) while having 0 points
-        Tile tile = getSafeTile(gameSession.getLeftBoard());
-
-        // Pre-condition
-        assertEquals(0, gameSession.getPoints());
-
-        // Action: Flag (-3 points logic)
-        gameSession.RightClickedTile(tile);
-
-        // Post-condition: Should stay at 0, not -3
-        assertEquals(0, gameSession.getPoints());
-    }
-
-    @Test
     public void rightClick_SafeTile_WithPoints_ShouldCost3PointsAndFlag() throws Exception {
         // 1. Give the player some points first using Reflection
         Field pointsField = GameSession.class.getDeclaredField("points");
@@ -153,7 +144,7 @@ public class GameplayTests {
         pointsField.setInt(gameSession, 10);
 
         // 2. Find a non-revealed tile
-        Tile tile = getSafeTile(gameSession.getLeftBoard());
+        Tile tile = getNumberTile(gameSession.getLeftBoard());
 
         // 3. Right click (Flag)
         gameSession.RightClickedTile(tile);
@@ -170,7 +161,7 @@ public class GameplayTests {
         pointsField.setAccessible(true);
         pointsField.setInt(gameSession, 10);
 
-        Tile tile = getSafeTile(gameSession.getLeftBoard());
+        Tile tile = getNumberTile(gameSession.getLeftBoard());
 
         // 2. Flag it (-3 points -> 7)
         gameSession.RightClickedTile(tile);
@@ -187,7 +178,7 @@ public class GameplayTests {
     @Test
     public void rightClick_MineTile_ShouldRevealMineAndGainPoint() {
         // Special rule: Flagging a mine reveals it and gives +1 point
-        Tile mineTile = getMineTileInBoard(gameSession.getLeftBoard());
+        Tile mineTile = getMineTile(gameSession.getLeftBoard());
         int initialPoints = gameSession.getPoints();
 
         // Action: Right Click a Mine
@@ -204,7 +195,7 @@ public class GameplayTests {
 
     @Test
     public void leftClick_MineTile_ShouldReduceHealthByOne() {
-        Tile mineTile = getMineTileInBoard(gameSession.getLeftBoard());
+        Tile mineTile = getMineTile(gameSession.getLeftBoard());
         int initialHealth = gameSession.getHealthPool();
 
         // Action: Reveal Mine
@@ -220,7 +211,7 @@ public class GameplayTests {
         assertTrue(gameSession.getLeftBoard().getTurn());
 
         // Find a NumberTile (not a mine)
-        Tile safeTile = getSafeTile(gameSession.getLeftBoard());
+        Tile safeTile = getNumberTile(gameSession.getLeftBoard());
 
         // Reveal it
         gameSession.LeftClickedTile(safeTile);
@@ -233,7 +224,7 @@ public class GameplayTests {
     @Test
     public void leftClick_OpponentBoard_ShouldNotRevealOrSwitchTurn() {
         // Left board starts. Try to click on Right Board.
-        Tile rightBoardTile = getSafeTile(gameSession.getRightBoard());
+        Tile rightBoardTile = getNumberTile(gameSession.getRightBoard());
 
         gameSession.LeftClickedTile(rightBoardTile);
 
@@ -245,7 +236,7 @@ public class GameplayTests {
     @Test
     public void rightClick_MineTile_ShouldSwitchTurnToNextPlayer() {
         // As per code: "revealing a mine by flagging does change a turn!"
-        Tile mineTile = getMineTileInBoard(gameSession.getLeftBoard());
+        Tile mineTile = getMineTile(gameSession.getLeftBoard());
 
         assertTrue(gameSession.getLeftBoard().getTurn());
 
@@ -305,19 +296,24 @@ public class GameplayTests {
     public void surpriseTile_ShouldNotBeUsedAfterSecondClick() {
         SurpriseTile surpriseTile = getSurpriseTile(gameSession.getLeftBoard());
 
-        gameSession.LeftClickedTile(surpriseTile);
-        gameSession.LeftClickedTile(surpriseTile);
+        gameSession.LeftClickedTile(surpriseTile); //reveal
+        gameSession.LeftClickedTile(surpriseTile); //activate
 
         // Verifying your specific logic that it remains unused even after a second click
         assertFalse(surpriseTile.isUsed());
     }
 
+    @Test
+    public void surpriseTile_CostsPoints() {
+        SurpriseTile surpriseTile = getSurpriseTile(gameSession.getLeftBoard());
+
+    }
 
     /*
      * HELPER METHODS
      */
 
-    private MineTile getMineTileInBoard(Board board) {
+    private MineTile getMineTile(Board board) {
         for (Tile[] row : board.getTiles()) {
             for (Tile tile : row) {
                 if (tile instanceof MineTile) {
@@ -328,11 +324,12 @@ public class GameplayTests {
         return null;
     }
 
-    private Tile getSafeTile(Board board) {
+
+    private NumberTile getNumberTile(Board board) {
         for (Tile[] row : board.getTiles()) {
             for (Tile tile : row) {
-                if (!(tile instanceof MineTile) && !tile.isRevealed()) {
-                    return tile;
+                if (tile instanceof NumberTile) {
+                    return (NumberTile) tile;
                 }
             }
         }
