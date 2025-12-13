@@ -25,7 +25,9 @@ public abstract class SpecialTile extends NumberTile
     protected void setUsed()
     {
         isUsed = true;
-        listener.onSpecialTileActivated();
+        if(this.listener != null){
+            listener.onSpecialTileActivated();
+        }
     }
 
 

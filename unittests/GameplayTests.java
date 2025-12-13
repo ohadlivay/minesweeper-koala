@@ -304,9 +304,13 @@ public class GameplayTests {
     }
 
     @Test
-    public void surpriseTile_CostsPoints() {
+    public void activatingASurpriseTileCostsPoints() {
         SurpriseTile surpriseTile = getSurpriseTile(gameSession.getLeftBoard());
-
+        gameSession.LeftClickedTile(surpriseTile); //reveal
+        gameSession.changeTurn();
+        int currentPoints = gameSession.getPoints();
+        gameSession.LeftClickedTile(surpriseTile); //activating
+        assertNotEquals(currentPoints, gameSession.getPoints());
     }
 
     /*
