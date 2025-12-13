@@ -139,23 +139,6 @@ public class GameplayTests {
     // ECONOMY & POINTS LOGIC
     // ---------------------------------------------------------
 
-    @Test
-    public void rightClick_SafeTile_WithPoints_ShouldCost3PointsAndFlag() throws Exception {
-        // 1. Give the player some points first using Reflection
-        Field pointsField = GameSession.class.getDeclaredField("points");
-        pointsField.setAccessible(true);
-        pointsField.setInt(gameSession, 10);
-
-        // 2. Find a non-revealed tile
-        Tile tile = getNumberTile(gameSession.getLeftBoard());
-
-        // 3. Right click (Flag)
-        gameSession.RightClickedTile(tile);
-
-        // 4. Assert points decreased by 3
-        assertEquals(7, gameSession.getPoints());
-        assertTrue(tile.isFlagged());
-    }
 
     @Test
     public void rightClick_FlaggedTile_ShouldUnflagButNotRefundPoints() throws Exception {
@@ -190,6 +173,21 @@ public class GameplayTests {
         // Assertions
         assertTrue("Mine should be revealed", mineTile.isRevealed());
         assertEquals("Should gain 1 point", initialPoints + 1, gameSession.getPoints());
+    }
+
+    @Test
+    public void flaggingEmptyTileCosts3Points(){
+        Tile emptyTile = getEmptyTile(board);
+        gameSession.setPoints(10);
+        int points = gameSession.getPoints();
+        gameSession.RightClickedTile(emptyTile);
+        assertEquals(points - 3,gameSession.getPoints());
+    }
+    @Test
+    public void flaggingEmptyTileActuallyFlags(){
+        Tile emptyTile = getEmptyTile(board);
+        gameSession.RightClickedTile(emptyTile);
+        assertTrue(emptyTile.isFlagged());
     }
 
     // ---------------------------------------------------------
@@ -386,6 +384,16 @@ public class GameplayTests {
                 if (tile instanceof QuestionTile) {
                     return (QuestionTile) tile;
                 }
+            }
+        }
+        return null;
+    }
+
+    private NumberTile getEmptyTile(Board board) {
+        for (Tile[] row : board.getTiles()) {
+            for (Tile tile : row) {
+                if (tile instanceof NumberTile && ((NumberTile) tile).getAdjacentMines() == 0)
+                    return (NumberTile) tile;
             }
         }
         return null;
