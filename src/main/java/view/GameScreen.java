@@ -22,6 +22,10 @@ public class GameScreen extends JPanel implements PointsListener, HealthListener
     private JLabel player2MinesLeftLabel;
     private JLabel healthLabel;
     private JLabel pointsLabel;
+    private JLabel feedLabel;
+
+    private int lastHealth;
+    private int lastPoints;
 
     private Color componentColor;
 
@@ -33,6 +37,8 @@ public class GameScreen extends JPanel implements PointsListener, HealthListener
         this.session.setHealthListener(this);
         this.session.getLeftBoard().setMinesLeftListener(this);
         this.session.getRightBoard().setMinesLeftListener(this);
+        this.lastHealth = session.getHealthPool();
+        this.lastPoints = session.getPoints();
 
         initUI();
         setBoards(session.getLeftBoard(), session.getRightBoard());
@@ -161,11 +167,21 @@ public class GameScreen extends JPanel implements PointsListener, HealthListener
         endGameButton.setForeground(ColorsInUse.TEXT.get());
         bottomPanel.add(endGameButton, BorderLayout.EAST);
 
+        feedLabel = new JLabel("Welcome! Click a tile to start.");
+        feedLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        feedLabel.setForeground(ColorsInUse.TEXT.get());
+        feedLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         JPanel southContainer = new JPanel();
         southContainer.setLayout(new BoxLayout(southContainer, BoxLayout.Y_AXIS));
         southContainer.setOpaque(false);
+
+        southContainer.add(Box.createVerticalStrut(10));
+        southContainer.add(feedLabel);
+
         southContainer.add(statsPanel);
         southContainer.add(Box.createVerticalStrut(10));
+
         southContainer.add(bottomPanel);
 
         mainPanel.add(southContainer, BorderLayout.SOUTH);
@@ -217,6 +233,21 @@ public class GameScreen extends JPanel implements PointsListener, HealthListener
 
     @Override
     public void onPointsChanged(int newPoints) {
+        int diff = newPoints - lastPoints;
+        if (diff > 0) {
+            feedLabel.setText("Great move! You gained " + diff + " points.");
+            feedLabel.setForeground(new Color(46, 204, 113));
+        }
+        else if (diff < 0) {
+            feedLabel.setText("Oops! You lost " + Math.abs(diff) + " points.");
+            feedLabel.setForeground(new Color(231, 76, 60));
+        }
+        if(diff != 0){
+            String text = (diff > 0) ? "+" + diff : String.valueOf(diff);
+            Color color = (diff > 0) ? Color.GREEN : Color.RED;
+            floatingNumber(pointsLabel, text, color);
+        }
+        lastPoints = newPoints;
         System.out.println("Points updated to: " + newPoints);
         pointsLabel.setText("Score: " + newPoints);
     }
@@ -229,7 +260,57 @@ public class GameScreen extends JPanel implements PointsListener, HealthListener
 
     @Override
     public void onHealthChanged(int newHealth) {
+        int diff = newHealth - lastHealth;
+        if (diff < 0) {
+            feedLabel.setText("Watch out! You lost " + Math.abs(diff) + " health.");
+            feedLabel.setForeground(new Color(231, 76, 60));
+        }
+        else if (diff > 0) {
+            feedLabel.setText("Recovered " + diff + " health!");
+            feedLabel.setForeground(new Color(46, 204, 113));
+        }
+        if(diff != 0){
+            String text = (diff > 0) ? "+" + diff : String.valueOf(diff);
+            Color color = (diff > 0) ? Color.GREEN : Color.RED;
+            floatingNumber(healthLabel, text, color);
+        }
+        lastHealth = newHealth;
         healthLabel.setText("x" + newHealth);
+    }
+
+    //animation for immediate points/health feedback
+    private void floatingNumber(JComponent target, String text, Color color) {
+        JRootPane rootPane = SwingUtilities.getRootPane(target);
+        if (rootPane == null) return;
+
+        JLabel floatLabel = new JLabel(text);
+        floatLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 20));
+        floatLabel.setForeground(color);
+
+        Point screenPos = target.getLocationOnScreen();
+        Point rootPos = rootPane.getLocationOnScreen();
+        int x = screenPos.x - rootPos.x + (target.getWidth() / 2);
+        int y = screenPos.y - rootPos.y;
+
+        floatLabel.setBounds(x, y, 100, 30);
+
+        JLayeredPane layeredPane = rootPane.getLayeredPane();
+        layeredPane.add(floatLabel, JLayeredPane.POPUP_LAYER);
+
+        //animation timer
+        Timer timer = new Timer(40, null);
+        timer.addActionListener(e -> {
+            Point p = floatLabel.getLocation();
+            floatLabel.setLocation(p.x, p.y - 2);
+
+            //stop after 50 pixels
+            if (p.y < y - 50) {
+                layeredPane.remove(floatLabel);
+                layeredPane.repaint();
+                timer.stop();
+            }
+        });
+        timer.start();
     }
 
 
