@@ -255,14 +255,61 @@ public class GameplayTests {
     }
 
     // ---------------------------------------------------------
-    // SpecialTile tests
+    // SurpriseTile Initialization tests
     // ---------------------------------------------------------
     @Test
-    public void test(){
+    public void SurpriseTileExists() {
         Board board = gameSession.getLeftBoard();
         SurpriseTile surpriseTile = getSurpriseTile(board);
         assertNotNull(surpriseTile);
-        board.reveal(surpriseTile);
+    }
+
+    @Test
+    public void surpriseTile_ShouldNotBeRevealedInitially() {
+        SurpriseTile surpriseTile = getSurpriseTile(gameSession.getLeftBoard());
+        assertFalse(surpriseTile.getIsRevealed());
+    }
+
+    @Test
+    public void surpriseTile_ShouldNotBeFlaggedInitially() {
+        SurpriseTile surpriseTile = getSurpriseTile(gameSession.getLeftBoard());
+        assertFalse(surpriseTile.getIsFlagged());
+    }
+
+    @Test
+    public void surpriseTile_ShouldNotBeUsedInitially() {
+        SurpriseTile surpriseTile = getSurpriseTile(gameSession.getLeftBoard());
+        assertFalse(surpriseTile.isUsed());
+    }
+
+    @Test
+    public void surpriseTile_ShouldRevealAfterLeftClick() {
+        SurpriseTile surpriseTile = getSurpriseTile(gameSession.getLeftBoard());
+
+        gameSession.LeftClickedTile(surpriseTile);
+
+        assertTrue(surpriseTile.getIsRevealed());
+    }
+
+    @Test
+    public void surpriseTile_ShouldNotBeUsedAfterFirstClick() {
+        SurpriseTile surpriseTile = getSurpriseTile(gameSession.getLeftBoard());
+
+        gameSession.LeftClickedTile(surpriseTile);
+
+        // Verifying it is not marked 'used' immediately upon reveal
+        assertFalse(surpriseTile.isUsed());
+    }
+
+    @Test
+    public void surpriseTile_ShouldNotBeUsedAfterSecondClick() {
+        SurpriseTile surpriseTile = getSurpriseTile(gameSession.getLeftBoard());
+
+        gameSession.LeftClickedTile(surpriseTile);
+        gameSession.LeftClickedTile(surpriseTile);
+
+        // Verifying your specific logic that it remains unused even after a second click
+        assertFalse(surpriseTile.isUsed());
     }
 
 
