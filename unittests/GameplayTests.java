@@ -254,6 +254,18 @@ public class GameplayTests {
         assertFalse("Turn should switch after flagging a mine", gameSession.getLeftBoard().getTurn());
     }
 
+    // ---------------------------------------------------------
+    // SpecialTile tests
+    // ---------------------------------------------------------
+    @Test
+    public void test(){
+        Board board = gameSession.getLeftBoard();
+        SurpriseTile surpriseTile = getSurpriseTile(board);
+        assertNotNull(surpriseTile);
+        board.reveal(surpriseTile);
+    }
+
+
     /*
      * HELPER METHODS
      */
@@ -274,6 +286,27 @@ public class GameplayTests {
             for (Tile tile : row) {
                 if (!(tile instanceof MineTile) && !tile.isRevealed()) {
                     return tile;
+                }
+            }
+        }
+        return null;
+    }
+
+    private SurpriseTile getSurpriseTile(Board board) {
+        for (Tile[] row : board.getTiles()) {
+            for (Tile tile : row) {
+                if (tile instanceof SurpriseTile) {
+                    return (SurpriseTile) tile;
+                }
+            }
+        }
+        return null;
+    }
+    private QuestionTile getQuestionTile(Board board) {
+        for (Tile[] row : board.getTiles()) {
+            for (Tile tile : row) {
+                if (tile instanceof QuestionTile) {
+                    return (QuestionTile) tile;
                 }
             }
         }
