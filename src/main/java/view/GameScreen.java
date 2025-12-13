@@ -270,6 +270,7 @@ public class GameScreen extends JPanel implements PointsListener, HealthListener
 
     //method used to display points/health feedback only after accumulating all the changes after the click
     //this method is also responsible for setting the feed label messages based on the source of the click
+    // ********** WE CAN MAKE THIS METHOD MORE STUPID IF WE MAKE CHANGES IN THE MODEL THAT CALCULATE AND SEND THE POINTS THROUGH A GAMEEVENTLISTENER***********
     private void processPendingUpdates() {
         if (pendingPointChange == 0 && pendingHealthChange == 0) {
             return;
