@@ -8,6 +8,8 @@ public enum ColorsInUse {
     BTN_COLOR(new Color(10, 10, 10)),
     TEXT(Color.WHITE),
     INPUT_FIELD(Color.BLACK),
+    CONFIRM(new Color(25, 135, 84)),
+    DENY(new Color(220, 53, 69)),
 
     BOARD_BACKGROUND(new Color(32, 32, 32)),
     BOARD_BORDER_DEFAULT(new Color(0, 0, 0, 150)),

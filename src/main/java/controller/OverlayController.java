@@ -41,7 +41,7 @@ public class OverlayController {
                 overlay = new NYI_AddEditQuestionOverlay(nav);
             }
             if (type == OverlayType.VIEW_QUESTION) {
-                overlay = new NYI_ViewQuestionOverlay(nav);
+                overlay = new ViewQuestionOverlay(nav);
             }
             if (type == OverlayType.INSTRUCTIONS) {
                 overlay = new NYI_GameInstructionOverlay(nav);

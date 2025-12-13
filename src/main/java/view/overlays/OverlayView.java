@@ -3,6 +3,9 @@ package main.java.view.overlays;
 import main.java.controller.NavigationController;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 /**
  * Abstract class representing a modal overlay dialog in the application.
  * All specific overlays should extend this class.
@@ -21,6 +24,12 @@ public abstract class OverlayView extends JDialog {
     private void initBaseUI() {
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         this.setResizable(false);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                //by default, you can't close the overlay by clicking X
+            }
+        });
     }
 
     public void open() {
