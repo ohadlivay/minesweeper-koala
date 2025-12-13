@@ -8,7 +8,10 @@ import static org.junit.Assert.*;
 public class GameplayTests {
 
     private GameSession gameSession;
-
+    private Board board;
+    private NumberTile numberTile;
+    private MineTile mineTile;
+    private SurpriseTile surpriseTile;
     /*
      * SETUP: Resets the singleton instance before every test.
      * This ensures that one test changing health/points doesn't break the next test.
@@ -28,11 +31,11 @@ public class GameplayTests {
 
         gameSession.initializeBoards();
 
-        Board board = gameSession.getLeftBoard();
+        board = gameSession.getLeftBoard();
 
-        NumberTile numberTile = getNumberTile(board);
-        MineTile mineTile = getMineTile(board);
-        SurpriseTile surpriseTile = getSurpriseTile(board);
+        numberTile = getNumberTile(board);
+        mineTile = getMineTile(board);
+        surpriseTile = getSurpriseTile(board);
     }
 
     // ---------------------------------------------------------
@@ -304,13 +307,40 @@ public class GameplayTests {
     }
 
     @Test
-    public void activatingASurpriseTileCostsPoints() {
+    public void activatingASurpriseTilesChangesPoints() {
         SurpriseTile surpriseTile = getSurpriseTile(gameSession.getLeftBoard());
         gameSession.LeftClickedTile(surpriseTile); //reveal
         gameSession.changeTurn();
         int currentPoints = gameSession.getPoints();
         gameSession.LeftClickedTile(surpriseTile); //activating
         assertNotEquals(currentPoints, gameSession.getPoints());
+    }
+
+    @Test
+    public void activatingASurpriseTileChangesHealth() {
+        SurpriseTile surpriseTile = getSurpriseTile(gameSession.getLeftBoard());
+        gameSession.LeftClickedTile(surpriseTile); //reveal
+        gameSession.changeTurn();
+        int currentHealth = gameSession.getHealthPool();
+        gameSession.LeftClickedTile(surpriseTile); //activating
+        assertNotEquals(currentHealth, gameSession.getPoints());
+    }
+
+    @Test
+    public void cantActivateSurpriseIfNotEnoughPoints() {
+        SurpriseTile surpriseTile = getSurpriseTile(board);
+        gameSession.LeftClickedTile(surpriseTile); //reveal
+        gameSession.setPoints(0);
+        assertFalse(gameSession.LeftClickedTile(surpriseTile));
+    }
+
+    @Test
+    public void canActivateSurpriseIfEnoughPoints() {
+        SurpriseTile surpriseTile = getSurpriseTile(board);
+        gameSession.LeftClickedTile(surpriseTile); //reveal
+        gameSession.setPoints(100);
+        gameSession.changeTurn();
+        assertTrue(gameSession.LeftClickedTile(surpriseTile));
     }
 
     /*
