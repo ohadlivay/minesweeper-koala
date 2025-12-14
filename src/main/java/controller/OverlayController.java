@@ -1,5 +1,6 @@
 package main.java.controller;
 
+import main.java.model.Board;
 import main.java.view.overlays.*;
 
 public class OverlayController {
@@ -29,6 +30,13 @@ public class OverlayController {
         if (overlay != null) {
             overlay.open();
         }
+    }
+
+    //this overlay specifically needs the current board
+    public void showQuestionOverlay(Board board) {
+        ViewQuestionOverlay overlay = new ViewQuestionOverlay(nav);
+        overlay.displayQuestion(board);
+        overlay.open();
     }
 
     //method to choose the current overlay based on the enum types

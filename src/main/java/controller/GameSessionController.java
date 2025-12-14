@@ -13,7 +13,7 @@ import javax.swing.*;
 import java.io.IOException;
 import java.util.Random;
 
-public class GameSessionController{
+public class GameSessionController implements DisplayQuestionListener{
     private GameSession session;
 
     private static GameSessionController instance;
@@ -68,22 +68,8 @@ public class GameSessionController{
         }
 
     @Override
-    public void displayQuestion() {
-        System.out.println("display question called in controller");
-        QuestionResult result = QuestionResult.getInstance();
-        /*
-        result.setCorrect(true);
-        result.setDifficulty(QuestionDifficulty.HARD);*/
-
-        Random rand = new Random();
-        boolean answer = rand.nextBoolean();
-        result.setCorrect(answer);
-        QuestionDifficulty[] difficulties = QuestionDifficulty.values();
-        int randomDifficultyIndex = rand.nextInt(difficulties.length);
-        result.setDifficulty(difficulties[randomDifficultyIndex]);
-        String correct = answer ? "Correct" : "Incorrect";
-
-        System.out.println("Your answer was: "+result.isCorrect()+ " and the difficulty was: "+result.getDifficulty());
+    public void displayQuestion(Board board) {
+        OverlayController.getInstance().showQuestionOverlay(board);
     }
 
     public GameSession getSession() {

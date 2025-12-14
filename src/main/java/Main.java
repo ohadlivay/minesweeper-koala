@@ -5,6 +5,7 @@ import main.java.model.BoardGenerator;
 import main.java.model.GameDifficulty;
 import main.java.test.Testable;
 import main.java.util.GameDataCSVManager;
+import main.java.util.QuestionCSVManager;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -70,6 +71,7 @@ public class Main {
                     frame.setLocationRelativeTo(null);
                     frame.setVisible(true);
                     GameDataCSVManager.readGameDataListFromCSV("GameHistory.csv");
+                    QuestionCSVManager.readQuestionsFromCSV("Questions.csv");
                 } catch (Exception e) {
                     System.err.println("Error launching system: " + e.getMessage());
                 }

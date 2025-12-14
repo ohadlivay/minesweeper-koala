@@ -1,5 +1,6 @@
 package main.java.model;
 
 public interface DisplayQuestionListener {
-    void displayQuestion();
+    void displayQuestion(Board board);
+
 }

@@ -390,7 +390,7 @@ public class GameSession
             if (specialTile instanceof QuestionTile questionTile)
             {
                 System.out.println("Question tile activated");
-                displayQuestionListener.displayQuestion();
+                displayQuestionListener.displayQuestion(parentBoard); //tom i just added the arg here for the new displayQuestion method
                 QuestionResult result = QuestionResult.getInstance();
                 QuestionDifficulty difficulty = result.getDifficulty();
                 boolean answer = result.isCorrect();
@@ -596,5 +596,7 @@ public class GameSession
     public void setActionMadeListener(ActionMadeListener actionMadeListener) {
         this.actionMadeListeners.add(actionMadeListener);
     }
+
+
 
 }

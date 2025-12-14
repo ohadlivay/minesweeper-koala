@@ -1,7 +1,6 @@
 package main.java.controller;
 
-import main.java.model.Question;
-import main.java.model.SysData;
+import main.java.model.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -74,5 +73,9 @@ public class QuestionController {
             this.usedQuestions = new HashSet<>();
         }
         return true;
+    }
+
+    public void submitQuestionResult(boolean isCorrect, QuestionDifficulty difficulty, Board board) {
+        //tom you can use this method to get the result of the question into GameSession
     }
 }
