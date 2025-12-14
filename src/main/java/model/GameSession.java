@@ -57,7 +57,6 @@ public class GameSession
     private List<ActionMadeListener> actionMadeListeners = new ArrayList<>();
     private List<SpecialTileActivationListener> specialTileActivationListeners = new ArrayList<>();
     private String message = "";
-    private boolean positiveMove = true;
     private static GameSession instance;
     private static GameSession testInstance;
     private DisplayQuestionListener displayQuestionListener;
@@ -232,13 +231,11 @@ public class GameSession
         if(tile instanceof MineTile){
             System.out.println("Flagging and revealing mine");
             message = "Flagging and revealing mine";
-            positiveMove = true;
             this.gainPoints(1);
             parentBoard.reveal(tile);
             this.changeTurn();   //revealing a mine by flagging does change a turn!
             System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
-            for (ActionMadeListener listener : actionMadeListeners)
-                listener.onActionMade(message,positiveMove,0,1);
+            notifyListenersAfterAction(message,true,0,1);
             if (this.isGameOver())
                 initiateGameOver();
             else
@@ -252,10 +249,8 @@ public class GameSession
         if(tile.isFlagged()) {
             System.out.println("Unflagging tile");
             message = "Unflagging tile";
-            positiveMove = true;
             parentBoard.unflag(tile);
-            for (ActionMadeListener listener : actionMadeListeners)
-                listener.onActionMade(message,positiveMove,0,0);
+            notifyListenersAfterAction(message,true,0,0);
             //  this.changeTurn();
             return;
         }
@@ -263,11 +258,9 @@ public class GameSession
         //case tile is not flagged (flag it)
         System.out.println("Flagging tile");
         message = "Flagging tile";
-        positiveMove = false;
         parentBoard.flag(tile);
         this.gainPoints(-3);
-        for (ActionMadeListener listener : actionMadeListeners)
-            listener.onActionMade(message,positiveMove,0,-3);
+        notifyListenersAfterAction(message,false,0,-3);
         System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
         //this.changeTurn();
     }
@@ -314,11 +307,9 @@ public class GameSession
             if(tile instanceof MineTile){
                 System.out.println("Mine");
                 message = "Mine revealed, lost 1 health";
-                positiveMove = false;
                 this.gainHealth(-1);
                 parentBoard.reveal(tile);
-                for (ActionMadeListener listener : actionMadeListeners)
-                    listener.onActionMade(message,positiveMove,-1,0);
+                notifyListenersAfterAction(message,false,-1,0);
                 if (this.isGameOver())
                     initiateGameOver();
                 else
@@ -329,9 +320,7 @@ public class GameSession
                 this.gainPoints(1*tilesRevealed);
                 System.out.println("Its a number tile");
                 message = "Number tiles revealed, gained "+(1*tilesRevealed)+" points";
-                positiveMove = true;
-                for (ActionMadeListener listener : actionMadeListeners)
-                    listener.onActionMade(message,positiveMove,0,1*tilesRevealed);
+                notifyListenersAfterAction(message,true,0,1*tilesRevealed);
                 this.changeTurn();}
             System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
         }
@@ -385,9 +374,7 @@ public class GameSession
         if (this.getPoints() < getGameDifficulty().getActivationCost()){
             System.out.println("Not enough points to activate special tile");
             message = "Not enough points to activate special tile";
-            positiveMove = false;
-            for (ActionMadeListener listener : actionMadeListeners)
-                listener.onActionMade(message,positiveMove,0,0);
+            notifyListenersAfterAction(message,false,0,0);
             return false;
         }
         else {
@@ -402,11 +389,9 @@ public class GameSession
                 String message = (resultOfRandom)? "Good surprise!" : "Bad surprise!";
                 System.out.println(message);
                 this.message = message+" Points changed by: "+(plusMinus*getGameDifficulty().getSurprisePoints())+",Health changed by: "+(plusMinus*getGameDifficulty().getSurpriseHealth());
-                positiveMove = resultOfRandom;
                 this.gainPoints(plusMinus*getGameDifficulty().getSurprisePoints());
                 this.gainHealth(plusMinus*getGameDifficulty().getSurpriseHealth());
-                for (ActionMadeListener listener : actionMadeListeners)
-                    listener.onActionMade(this.message,positiveMove,plusMinus*getGameDifficulty().getSurpriseHealth(),plusMinus*getGameDifficulty().getSurprisePoints());
+                notifyListenersAfterAction(this.message,resultOfRandom,plusMinus*getGameDifficulty().getSurpriseHealth(),plusMinus*getGameDifficulty().getSurprisePoints());
             }
             if (specialTile instanceof QuestionTile questionTile)
             {
@@ -428,6 +413,11 @@ public class GameSession
     }
     public void setDisplayQuestionListener(DisplayQuestionListener displayQuestionListener) {
         this.displayQuestionListener = displayQuestionListener;
+    }
+    private void notifyListenersAfterAction(String message, boolean positiveMove, int healthChange, int pointsChange)
+    {
+        for (ActionMadeListener listener : actionMadeListeners)
+            listener.onActionMade(message,positiveMove,healthChange,pointsChange);
     }
     private void updateAfterQuestionResult(QuestionDifficulty difficulty, boolean correctAnswer, Board parentBoard)
     {
