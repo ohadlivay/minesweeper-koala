@@ -9,7 +9,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
 
-public class GameScreen extends JPanel implements PointsListener, HealthListener, MinesLeftListener {
+public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener {
     private final NavigationController nav;
     private final GameSession session; // Always holds the current game session
 
@@ -24,29 +24,12 @@ public class GameScreen extends JPanel implements PointsListener, HealthListener
     private JLabel pointsLabel;
     private JLabel feedLabel;
 
-    private int lastHealth;
-    private int lastPoints;
-    private final Timer uiUpdateTimer;
-    private int pendingPointChange = 0;
-    private int pendingHealthChange = 0;
-
-    private Color componentColor;
-
-
     public GameScreen(NavigationController nav, GameSession session) {
         this.nav = nav;
         this.session = session;
-        this.session.setPointsListener(this);
-        this.session.setHealthListener(this);
+        this.session.setActionMadeListener(this);
         this.session.getLeftBoard().setMinesLeftListener(this);
         this.session.getRightBoard().setMinesLeftListener(this);
-        this.lastHealth = session.getHealthPool();
-        this.lastPoints = session.getPoints();
-
-        //collect updates for 150ms
-        this.uiUpdateTimer = new Timer(150, e -> processPendingUpdates());
-        this.uiUpdateTimer.setRepeats(false);
-
         initUI();
         setBoards(session.getLeftBoard(), session.getRightBoard());
         setPlayerNames(session.getLeftPlayerName(),session.getRightPlayerName());
@@ -238,110 +221,36 @@ public class GameScreen extends JPanel implements PointsListener, HealthListener
         return mainPanel;
     }
 
-    @Override
-    public void onPointsChanged(int newPoints) {
-        int diff = newPoints - lastPoints;
-        if(diff != 0){
-            //accumulate change and restart the timer
-            pendingPointChange += diff;
-            uiUpdateTimer.restart();
-        }
-        lastPoints = newPoints;
-        pointsLabel.setText("Score: " + newPoints);
-    }
-
     public void updateMinesLeft(int minesLeft, Board board) {
         if(board == session.getLeftBoard()) player1MinesLeftLabel.setText("x" + minesLeft);
         else player2MinesLeftLabel.setText("x" + minesLeft);
 
     }
 
-    @Override
-    public void onHealthChanged(int newHealth) {
-        int diff = newHealth - lastHealth;
-        if(diff != 0){
-            //accumulate change and restart the timer
-            pendingHealthChange += diff;
-            uiUpdateTimer.restart();
-        }
-        lastHealth = newHealth;
-        healthLabel.setText("x" + newHealth);
+    //get the current health pool and points from the session
+    private void updateLabels() {
+        pointsLabel.setText("Score: " + session.getPoints());
+        healthLabel.setText("x" + session.getHealthPool());
     }
 
-    //method used to display points/health feedback only after accumulating all the changes after the click
-    //this method is also responsible for setting the feed label messages based on the source of the click
-    // ********** WE CAN MAKE THIS METHOD MORE STUPID IF WE MAKE CHANGES IN THE MODEL THAT CALCULATE AND SEND THE POINTS THROUGH A GAMEEVENTLISTENER***********
-    private void processPendingUpdates() {
-        if (pendingPointChange == 0 && pendingHealthChange == 0) {
-            return;
-        }
-
-        String msg = "";
-        Color msgColor = ColorsInUse.TEXT.get();
+    //this method replaces the old onPointsChange and onHealthChange, copmbining them together
+    @Override
+    public void onActionMade(String message, boolean positive, int healthChange, int pointsChange) {
+        feedLabel.setText(message);
         Color goodColor = new Color(46, 204, 113);
         Color badColor = new Color(231, 76, 60);
-
-        //handle health + points (can only be triggered by surprise/question tiles)
-        // ****** can change surprise/question messages to be more specific after we implement GameEventListener ********
-        if (pendingPointChange != 0 && pendingHealthChange != 0) {
-            boolean goodOutcome = pendingPointChange > 0;
-
-            //update feed label text
-            if (goodOutcome) {
-                msg = "Special Tile Bonus! (+" + pendingPointChange + " pts, +" + pendingHealthChange + " HP)";
-                msgColor = goodColor;
-            } else {
-                msg = "Special Tile Penalty... (" + pendingPointChange + " pts, " + pendingHealthChange + " HP)";
-                msgColor = badColor;
-            }
+        feedLabel.setForeground(positive ? goodColor : badColor);
+        updateLabels();
+        if (pointsChange!=0) {
+            String text = (pointsChange > 0 ? "+" : "") + pointsChange;
+            Color color = pointsChange > 0 ? Color.GREEN : Color.RED;
+            floatingNumber(pointsLabel, text, color, pointsChange > 0);
         }
-            //health only (can only happen from mine reveal)
-        else if (pendingHealthChange < 0 ){
-            msg = "BOOM! You hit a mine!";
-            msgColor = badColor;
+        if (healthChange!=0) {
+            String text = (healthChange > 0 ? "+" : "") + healthChange;
+            Color color = healthChange > 0 ? Color.GREEN : Color.RED;
+            floatingNumber(healthLabel, text, color, healthChange > 0);
         }
-        //only points change
-        else if (pendingPointChange !=0) {
-            if (pendingPointChange == 1) {
-                msg = "Safe move! (+1)";
-                msgColor = goodColor;
-            }
-            else if (pendingPointChange == -3) {
-                msg = "Incorrect flag! (-3)";
-                msgColor = badColor;
-            }
-            else if (pendingPointChange > 1) {
-                msg = "Great! Cleared " + pendingPointChange + " tiles.";
-                msgColor = goodColor;
-            }
-            else {
-                // Negative points (other than -3) usually means activation cost or penalty
-                msg = "Points lost (" + pendingPointChange + ")";
-                msgColor = badColor;
-            }
-        }
-        //update the feed label msg
-        feedLabel.setText(msg);
-        feedLabel.setForeground(msgColor);
-
-        //trigger floating numbers animation
-        if (pendingPointChange != 0) {
-            boolean isPositive = pendingPointChange > 0;
-            String text = (isPositive ? "+" : "") + pendingPointChange;
-            Color color = isPositive ? Color.GREEN : Color.RED;
-            floatingNumber(pointsLabel, text, color, isPositive);
-        }
-
-        if (pendingHealthChange != 0) {
-            boolean isPositive = pendingHealthChange > 0;
-            String text = (isPositive ? "+" : "") + pendingHealthChange;
-            Color color = isPositive ? Color.GREEN : Color.RED;
-            floatingNumber(healthLabel, text, color, isPositive);
-        }
-
-        //reset counters
-        pendingPointChange = 0;
-        pendingHealthChange = 0;
     }
 
     //animation for immediate points/health feedback
@@ -395,7 +304,4 @@ public class GameScreen extends JPanel implements PointsListener, HealthListener
         });
         timer.start();
     }
-
-
-
 }

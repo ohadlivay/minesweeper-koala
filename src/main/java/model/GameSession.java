@@ -52,8 +52,7 @@ public class GameSession
     //Maximum health pool for a game session
     private static final int MAX_HEALTH_POOL = 10;
 
-    private List<PointsListener> pointsListeners = new ArrayList<>();
-    private List<HealthListener> healthListeners = new ArrayList<>();
+
     private List<ActionMadeListener> actionMadeListeners = new ArrayList<>();
     private List<SpecialTileActivationListener> specialTileActivationListeners = new ArrayList<>();
     private String message = "";
@@ -230,7 +229,7 @@ public class GameSession
         //case tile is a mine
         if(tile instanceof MineTile){
             System.out.println("Flagging and revealing mine");
-            message = "Flagging and revealing mine";
+            message = "Excellend! Mine neutralized.";
             this.gainPoints(1);
             parentBoard.reveal(tile);
             this.changeTurn();   //revealing a mine by flagging does change a turn!
@@ -248,7 +247,7 @@ public class GameSession
         //case tile is flagged (unflag it)
         if(tile.isFlagged()) {
             System.out.println("Unflagging tile");
-            message = "Unflagging tile";
+            message = "Flag removed.";
             parentBoard.unflag(tile);
             notifyListenersAfterAction(message,true,0,0);
             //  this.changeTurn();
@@ -257,7 +256,7 @@ public class GameSession
 
         //case tile is not flagged (flag it)
         System.out.println("Flagging tile");
-        message = "Flagging tile";
+        message = "Mistake! False alarm.";
         parentBoard.flag(tile);
         this.gainPoints(-3);
         notifyListenersAfterAction(message,false,0,-3);
@@ -306,7 +305,7 @@ public class GameSession
             //case its a mine
             if(tile instanceof MineTile){
                 System.out.println("Mine");
-                message = "Mine revealed, lost 1 health";
+                message = "BOOM! You hit a mine! Lost 1 health";
                 this.gainHealth(-1);
                 parentBoard.reveal(tile);
                 notifyListenersAfterAction(message,false,-1,0);
@@ -340,10 +339,6 @@ public class GameSession
     public void setPoints(int i) {
         this.points = i;
         if (this.getPoints()<0) this.points = 0;
-
-        for (PointsListener listener : pointsListeners) {
-            listener.onPointsChanged(i); // your view should implement PointsListener and that method onPointsChanged should update the view
-        }
     }
 
     private void gainHealth(int health) {
@@ -364,9 +359,6 @@ public class GameSession
             this.gainPoints((i-MAX_HEALTH_POOL)*getGameDifficulty().getActivationCost());
             this.healthPool = MAX_HEALTH_POOL;
         }
-
-        for (HealthListener listener : healthListeners)
-            listener.onHealthChanged(this.healthPool); // your view should implement HealthListener and that method onHealthChanged should update the view
     }
 
     private boolean activateSpecialTile(SpecialTile specialTile, Board parentBoard) {
@@ -388,7 +380,7 @@ public class GameSession
                 int plusMinus  = (resultOfRandom) ? 1 : -1;
                 String message = (resultOfRandom)? "Good surprise!" : "Bad surprise!";
                 System.out.println(message);
-                this.message = message+" Points changed by: "+(plusMinus*getGameDifficulty().getSurprisePoints())+",Health changed by: "+(plusMinus*getGameDifficulty().getSurpriseHealth());
+                this.message = message+" Points changed by: "+(plusMinus*getGameDifficulty().getSurprisePoints())+", Health changed by: "+(plusMinus*getGameDifficulty().getSurpriseHealth());
                 this.gainPoints(plusMinus*getGameDifficulty().getSurprisePoints());
                 this.gainHealth(plusMinus*getGameDifficulty().getSurpriseHealth());
                 notifyListenersAfterAction(this.message,resultOfRandom,plusMinus*getGameDifficulty().getSurpriseHealth(),plusMinus*getGameDifficulty().getSurprisePoints());
@@ -596,14 +588,6 @@ public class GameSession
                 }
                 break;
         }
-    }
-
-    public void setPointsListener(PointsListener pointsListener) {
-        this.pointsListeners.add(pointsListener);
-    }
-
-    public void setHealthListener(HealthListener healthListener) {
-        this.healthListeners.add(healthListener);
     }
 
     public void setActionMadeListener(ActionMadeListener actionMadeListener) {
