@@ -391,11 +391,6 @@ public class GameSession
             {
                 System.out.println("Question tile activated");
                 displayQuestionListener.displayQuestion(parentBoard); //tom i just added the arg here for the new displayQuestion method
-                QuestionResult result = QuestionResult.getInstance();
-                QuestionDifficulty difficulty = result.getDifficulty();
-                boolean answer = result.isCorrect();
-                updateAfterQuestionResult(difficulty, answer, parentBoard);
-
             }
             specialTile.setUsed();
             System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
@@ -413,10 +408,12 @@ public class GameSession
         for (ActionMadeListener listener : actionMadeListeners)
             listener.onActionMade(message,positiveMove,healthChange,pointsChange);
     }
-    private void updateAfterQuestionResult(QuestionDifficulty difficulty, boolean correctAnswer, Board parentBoard)
+    public void updateAfterQuestionResult(QuestionDifficulty difficulty, boolean correctAnswer, Board parentBoard)
     {
         Random random = new Random();
         boolean randomResult = random.nextBoolean();
+        String correctly = (correctAnswer)? "correctly:)" : "incorrectly:(";
+        message = "You answered "+correctly+" The question difficulty is "+difficulty.toString();
         switch (this.gameDifficulty)
         {
             case EASY:
@@ -437,9 +434,11 @@ public class GameSession
                 if (correctAnswer) {
                     this.gainPoints(10);
                     this.gainHealth(1);
+                    notifyListenersAfterAction(message,true,1,10);
                 } else {
                     this.gainPoints(-10);
                     this.gainHealth(-1);
+                    notifyListenersAfterAction(message,false,-1,-10);
                 }
                 break;
             case MEDIUM:
@@ -449,11 +448,13 @@ public class GameSession
                 {
                     this.gainPoints(15);
                     this.gainHealth(healthChanged);
+                    notifyListenersAfterAction(message,true,healthChanged,15);
                 }
                 else
                 {
                     this.gainPoints(-15);
                     this.gainHealth(-healthChanged);
+                    notifyListenersAfterAction(message,false,-healthChanged,-15);
                 }
                 break;
             case HARD:
@@ -461,11 +462,13 @@ public class GameSession
                 {
                     this.gainPoints(20);
                     this.gainHealth(2);
+                    notifyListenersAfterAction(message,true,2,20);
                 }
                 else
                 {
                     this.gainPoints(-20);
                     this.gainHealth(-2);
+                    notifyListenersAfterAction(message,false,-2,-20);
                 }
                 break;
             case MASTER:
@@ -473,11 +476,13 @@ public class GameSession
                 {
                     this.gainPoints(40);
                     this.gainHealth(3);
+                    notifyListenersAfterAction(message,true,3,40);
                 }
                 else
                 {
                     this.gainPoints(-40);
                     this.gainHealth(-3);
+                    notifyListenersAfterAction(message,false,-3,-40);
                 }
         }
     }
@@ -488,8 +493,10 @@ public class GameSession
                 if (correctAnswer) {
                     this.gainPoints(8);
                     this.gainHealth(1);
+                    notifyListenersAfterAction(message,true,1,8);
                 } else {
                     this.gainPoints(-8);
+                    notifyListenersAfterAction(message,false,-1,-8);
                 }
                 break;
             case MEDIUM:
@@ -497,6 +504,7 @@ public class GameSession
                 {
                     this.gainPoints(10);
                     this.gainHealth(1);
+                    notifyListenersAfterAction(message,true,1,10);
                 }
                 else
                 {
@@ -505,6 +513,7 @@ public class GameSession
                     {
                         this.gainPoints(-10);
                         this.gainHealth(-1);
+                        notifyListenersAfterAction(message,false,-1,-10);
                     }
 
                 }
@@ -514,11 +523,13 @@ public class GameSession
                 {
                     this.gainPoints(15);
                     this.gainHealth(1);
+                    notifyListenersAfterAction(message,true,1,15);
                 }
                 else
                 {
                     this.gainPoints(-15);
                     this.gainHealth(-1);
+                    notifyListenersAfterAction(message,false,-1,-15);
                 }
                 break;
             case MASTER:
@@ -526,6 +537,7 @@ public class GameSession
                 {
                     this.gainPoints(20);
                     this.gainHealth(2);
+                    notifyListenersAfterAction(message,true,2,20);
                 }
                 else
                 {
@@ -533,6 +545,7 @@ public class GameSession
                     System.out.println("Randomer is "+randomResult);
                     int healthLost = (randomResult)? -1:-2;
                     this.gainHealth(healthLost);
+                    notifyListenersAfterAction(message,false,healthLost,-20);
                 }
         }
     }
@@ -545,36 +558,44 @@ public class GameSession
                 {
                     this.gainPoints(3);
                     this.gainHealth(1);
+                    notifyListenersAfterAction(message,true,1,3);
                 }
                 else
                 {
                     System.out.println("Randomer is "+randomResult);
                     int pointsLost = (randomResult)? 0:-3;
                     this.gainPoints(pointsLost);
+                    notifyListenersAfterAction(message,false,0,pointsLost);
                 }
                 break;
             case MEDIUM:
                 if(correctAnswer)
                 {
                     parentBoard.revealRandomMine();
+                    message+=" (Also Revealed a mine!)";
                     this.gainPoints(6);
+                    notifyListenersAfterAction(message,true,0,6);
                 }
                 else
                 {
                     System.out.println("Randomer is "+randomResult);
                     int pointsLost = (randomResult)? 0:-6;
                     this.gainPoints(pointsLost);
+                    notifyListenersAfterAction(message,false,0,pointsLost);
                 }
                 break;
             case HARD:
                 if(correctAnswer)
                 {
                     parentBoard.revealGrid();
+                    message+=" (Also Revealed a grid in the board!)";
                     this.gainPoints(10);
+                    notifyListenersAfterAction(message,true,0,10);
                 }
                 else
                 {
                     this.gainPoints(-10);
+                    notifyListenersAfterAction(message,false,0,-10);
                 }
                 break;
             case MASTER:
@@ -582,11 +603,13 @@ public class GameSession
                 {
                     this.gainPoints(15);
                     this.gainHealth(2);
+                    notifyListenersAfterAction(message,true,2,15);
                 }
                 else
                 {
                     this.gainPoints(-15);
                     this.gainHealth(-1);
+                    notifyListenersAfterAction(message,false,-1,-15);
                 }
                 break;
         }

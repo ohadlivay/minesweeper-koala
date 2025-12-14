@@ -77,5 +77,7 @@ public class QuestionController {
 
     public void submitQuestionResult(boolean isCorrect, QuestionDifficulty difficulty, Board board) {
         //tom you can use this method to get the result of the question into GameSession
+        GameSession session = GameSessionController.getInstance().getSession();
+        session.updateAfterQuestionResult(difficulty, isCorrect, board);
     }
 }
