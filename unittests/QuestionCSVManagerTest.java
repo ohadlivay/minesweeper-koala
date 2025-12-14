@@ -1,5 +1,3 @@
-package unittests;
-
 import main.java.model.Question;
 import main.java.model.QuestionDifficulty;
 import main.java.model.SysData;
@@ -120,5 +118,37 @@ public class QuestionCSVManagerTest {
         Question loaded = sysData.getQuestions().get(0);
         Assert.assertEquals("", loaded.getQuestionText());
         Assert.assertEquals("", loaded.getAnswer1());
+    }
+
+    @Test
+    public void testReadRealDataFormat() throws IOException {
+        // 1. Create a file mimicking REAL data (Tab-separated, Difficulty "3")
+        // Data: 1 [TAB] Question [TAB] 3 [TAB] Ans1 [TAB] Ans2 [TAB] Ans3 [TAB] Ans4 [TAB] A
+        FileWriter fw = new FileWriter(TEST_FILE_PATH);
+        fw.write("ID\tQuestion\tDifficulty\tA\tB\tC\tD\tCorrect Answer\n"); // Header with tabs
+        fw.write("1\tHow do software maintenance costs compare to development?\t3\tOften higher than development\tNegligible\tAlways equal\tAbout half\tA\n");
+        fw.close();
+
+        // 2. Read
+        QuestionCSVManager.readQuestionsFromCSV(TEST_FILE_PATH);
+
+        // 3. Verify
+        List<Question> questions = sysData.getQuestions();
+        Assert.assertEquals("Should load 1 question", 1, questions.size());
+
+        Question q = questions.get(0);
+
+        // Verify ID
+        Assert.assertEquals(1, q.getId());
+
+        // Verify Text
+        Assert.assertEquals("How do software maintenance costs compare to development?", q.getQuestionText());
+
+        // Verify Difficulty Conversion (3 -> HARD)
+        Assert.assertEquals("Difficulty '3' should be parsed as HARD", QuestionDifficulty.HARD, q.getDifficulty());
+
+        // Verify Answers
+        Assert.assertEquals("Often higher than development", q.getAnswer1()); // Answer A
+        Assert.assertEquals("Negligible", q.getAnswer2());               // Answer B
     }
 }

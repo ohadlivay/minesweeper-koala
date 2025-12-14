@@ -48,34 +48,43 @@ public class QuestionCSVManager {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
 
+            // Read first line. If it's a header, skip it.
+            // If your file DOESN'T have a header, remove this block!
             if ((line = br.readLine()) != null) {
-                // Header check (optional)
-            } else {
-                return;
+                // optional: check if line starts with "ID"
             }
 
             while ((line = br.readLine()) != null) {
-                String[] values = line.split(",", -1);
+                // FIX 1: Split by Tab (\t) OR Comma (,) to be safe
+                String[] values = line.split("[\t,]", -1);
 
-                if (values.length == 8) {
+                // We verify we have enough columns (at least 7 or 8)
+                if (values.length >= 7) {
                     try {
                         int id = Integer.parseInt(values[0].trim());
                         String text = values[1].trim();
 
-                        QuestionDifficulty difficulty = QuestionDifficulty.EASY;
-                        String diffField = values[2].trim();
-                        if (!diffField.isEmpty()) {
-                            difficulty = QuestionDifficulty.valueOf(diffField.toUpperCase());
+                        // FIX 2: Handle "1", "2", "3" for Difficulty
+                        QuestionDifficulty difficulty = QuestionDifficulty.EASY; // Default
+                        String diffStr = values[2].trim();
+
+                        if (diffStr.equals("1")) difficulty = QuestionDifficulty.EASY;
+                        else if (diffStr.equals("2")) difficulty = QuestionDifficulty.MEDIUM;
+                        else if (diffStr.equals("3")) difficulty = QuestionDifficulty.HARD;
+                        else {
+                            // Try parsing text (e.g. "HARD") if it's not a number
+                            try {
+                                difficulty = QuestionDifficulty.valueOf(diffStr.toUpperCase());
+                            } catch (IllegalArgumentException e) {
+                                System.err.println("Unknown difficulty: " + diffStr + ". Defaulting to EASY.");
+                            }
                         }
 
-                        // Map A, B, C, D directly to variables
-                        String ans1 = values[3].trim(); // A -> Answer1 (Correct)
-                        String ans2 = values[4].trim(); // B -> Answer2
-                        String ans3 = values[5].trim(); // C -> Answer3
-                        String ans4 = values[6].trim(); // D -> Answer4
-
-                        // Note: We ignore values[7] (Correct Answer column)
-                        // because logic dictates ans1 is always correct.
+                        // Map Answers
+                        String ans1 = values[3].trim(); // A
+                        String ans2 = values[4].trim(); // B
+                        String ans3 = values[5].trim(); // C
+                        String ans4 = values[6].trim(); // D
 
                         Question q = new Question(id, text, difficulty, ans1, ans2, ans3, ans4);
                         sys.addQuestion(q);

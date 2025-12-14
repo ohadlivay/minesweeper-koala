@@ -6,9 +6,7 @@ public class Question {
     private String questionText;
     private QuestionDifficulty difficulty;
 
-    // The 4 answer attributes
-    // According to your rule: answer1 is ALWAYS the correct answer
-    private String answer1;
+    private String answer1; // always correct
     private String answer2;
     private String answer3;
     private String answer4;
