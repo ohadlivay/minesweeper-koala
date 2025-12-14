@@ -413,7 +413,7 @@ public class GameSession
         Random random = new Random();
         boolean randomResult = random.nextBoolean();
         String correctly = (correctAnswer)? "correctly:)" : "incorrectly:(";
-        message = "You answered "+correctly+" The question difficulty is "+difficulty.toString();
+        message = "You answered "+correctly;
         switch (this.gameDifficulty)
         {
             case EASY:
