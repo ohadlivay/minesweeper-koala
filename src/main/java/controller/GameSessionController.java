@@ -67,10 +67,6 @@ public class GameSessionController{
         GameDataCSVManager.writeGameDataListToCSV("GameHistory.csv");
         }
 
-    public GameSession getSession() {
-        return session;
-    }
-
     @Override
     public void displayQuestion() {
         System.out.println("display question called in controller");
@@ -89,6 +85,13 @@ public class GameSessionController{
 
         System.out.println("Your answer was: "+result.isCorrect()+ " and the difficulty was: "+result.getDifficulty());
     }
+
+    public GameSession getSession() {
+        return session;
+    }
+
+
+
 }
 
 
