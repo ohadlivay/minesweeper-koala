@@ -26,6 +26,7 @@ public class QuestionController {
     /*
     Gets a question from SysData.
     Guarantees that the question was not asked in this game session.
+    this will be used by any class that implements displayQuestionListener using the method displayQuestion (for tali)
      */
     public Question pollQuestion(){
         SysData sys = SysData.getInstance();

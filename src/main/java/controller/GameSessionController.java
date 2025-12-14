@@ -13,7 +13,7 @@ import javax.swing.*;
 import java.io.IOException;
 import java.util.Random;
 
-public class GameSessionController implements DisplayQuestionListener {
+public class GameSessionController{
     private GameSession session;
 
     private static GameSessionController instance;
