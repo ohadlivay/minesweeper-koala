@@ -31,10 +31,6 @@ public class Question {
     public String getAnswer3() { return answer3; }
     public String getAnswer4() { return answer4; }
 
-    // Helper to specifically get the correct answer text
-    public String getCorrectAnswer() {
-        return answer1;
-    }
 
     // --- Setters ---
     public void setId(int id) { this.id = id; }
