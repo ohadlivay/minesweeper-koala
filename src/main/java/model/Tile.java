@@ -186,7 +186,6 @@ public class Tile implements Testable
         }
          */
     }
-//hey tom i added this for testing visually, you can remove it or change it however u want -ohad
     @Override
     public String toString(){
         return "T";
@@ -206,6 +205,7 @@ public class Tile implements Testable
         return this.isRevealed;
     }
     public boolean setIsRevealed(boolean isRevealed){
+        activate();
         this.isRevealed = isRevealed;
         if(revealListener != null) {
             revealListener.updateRevealed();
@@ -219,6 +219,7 @@ public class Tile implements Testable
     }
 
     public void setIsFlagged(boolean isFlagged){
+        activate();
         this.isFlagged = isFlagged;
 
         System.out.println("Updating flagged tile view");

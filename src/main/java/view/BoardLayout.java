@@ -11,7 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class BoardLayout extends JPanel implements TurnListener, MinesLeftListener {
+public class BoardLayout extends JPanel implements TurnListener {
     private final int rows;
     private final int cols;
     private final TileView[][] tileViewGrid; // to hold references to TileView components
@@ -32,6 +32,7 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
 
         initBoardPanel();
         populateBoard();
+        this.updateTurn();
     }
 
 
@@ -48,7 +49,7 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
         int finalBoardSize = calculatedTileSize * rows;
         int borderSize = 10;
         setMaximumSize(new Dimension(finalBoardSize + borderSize, finalBoardSize + borderSize));
-        this.updateTurn();
+        //this.updateTurn();
     }
 
     //Populate the board with the tiles,
@@ -115,16 +116,6 @@ public class BoardLayout extends JPanel implements TurnListener, MinesLeftListen
         this.board = board;
     }
 
-
-    @Override
-    public void updateMinesLeft(int minesLeft) {
-        /*
-        whoever implements the mines left in this view;
-        rest assured that this method will be used whenever minesLeft is updated.
-        you just have to implement the gui thingies
-         */
-        return;
-    }
 
     //Helper methods
 

@@ -29,7 +29,7 @@ Cheers and all the best to you and your family,
 Ohad
 */
 
-public class GameSession implements Testable
+public class GameSession
 {
     //Indicates when the game session was created
     private final LocalDateTime timeStamp;
@@ -52,15 +52,15 @@ public class GameSession implements Testable
     //Maximum health pool for a game session
     private static final int MAX_HEALTH_POOL = 10;
 
-    private List<PointsListener> pointsListeners = new ArrayList<>();
-    private List<HealthListener> healthListeners = new ArrayList<>();
+
+    private List<ActionMadeListener> actionMadeListeners = new ArrayList<>();
     private List<SpecialTileActivationListener> specialTileActivationListeners = new ArrayList<>();
-    //Constructors
+    private String message = "";
     private static GameSession instance;
     private static GameSession testInstance;
     private DisplayQuestionListener displayQuestionListener;
 
-
+    //Constructors
     private GameSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
     {
         this.timeStamp = LocalDateTime.now();
@@ -159,30 +159,6 @@ public class GameSession implements Testable
         rightBoard.setTurn(!rightBoard.getTurn());
     }
 
-    //Adds points to the players' score
-    private void addPoints(int points)
-    {
-        if (points < 0)
-            throw new IllegalArgumentException("Invalid points");
-        this.setPoints(this.getPoints() + points);
-    }
-
-    //Deducts points from the players' score
-    private void deductPoints(int points)
-    {
-        if (points < 0)
-            throw new IllegalArgumentException("Invalid points");
-        this.setPoints(this.getPoints() - points);
-    }
-
-    //Adds health to the players' health pool
-    private void addHealth(int health)
-    {
-        if (health < 0)
-            throw new IllegalArgumentException("Invalid health");
-        this.setHealthPool(this.getHealthPool() + health); // use a setter @TOM -ohad 29/11/25 8am
-    }
-
     //these have to be public since we're not using interfaces
     public boolean setLeftPlayerName(String leftPlayerName){
         this.leftPlayerName = leftPlayerName;
@@ -205,15 +181,6 @@ public class GameSession implements Testable
         return true;
     }
 
-
-    //Deducts health from the players' health pool
-    private void deductHealth(int health)
-    {
-        if (health < 0)
-            throw new IllegalArgumentException("Invalid health");
-        this.setHealthPool(this.getHealthPool() - health);
-    }
-
     /*
     I am so sorry Ohad
     I had to make this method public for scientific research (will be used in the Controller package)
@@ -234,88 +201,8 @@ public class GameSession implements Testable
         getLeftBoard().revealAll();
         getRightBoard().revealAll();
         if (getHealthPool() > 0)
-            addPoints(getHealthPool()*getGameDifficulty().getActivationCost());
+            gainPoints(getHealthPool()*getGameDifficulty().getActivationCost());
 
-    }
-
-    public void reveal(Tile tile) throws Exception
-    {
-        Board board = tile.getParentBoard();
-        board.reveal(tile);
-//
-//        boolean activated = true;
-//        try
-//        {
-//            activated = board.reveal(r, c);
-//        } catch (Exception e) {
-//            throw new Exception(e);
-//        }
-//        if (!activated)
-//        {
-//            Tile t = board.getTiles()[r][c];
-//            if (t instanceof MineTile)
-//                deductHealth(1);
-//            else if (t instanceof NumberTile nt)
-//            {
-//                addPoints(1);
-//                if (nt.getAdjacentMines()==0)
-//                    board.cascade(r, c);
-//            }
-//
-//        }
-//        if (!isGameOver(left))
-//            changeTurn();
-//        else initiateGameOver();
-
-    }
-//    public void flag(int r, int c,boolean left) throws Exception
-//    {
-//        Board board = (left) ? leftBoard : rightBoard;
-//        boolean activated = true;
-//        Tile t = board.getTiles()[r][c];
-//        if (t instanceof NumberTile)
-//        {
-//            try {
-//                activated = board.flag(r, c);
-//            } catch (Exception e) {
-//                throw new Exception(e);
-//            }
-//            if (!activated)
-//                deductPoints(3);
-//        }
-//        if (t instanceof MineTile)
-//        {
-//            try
-//            {
-//                activated = board.reveal(r, c);
-//            }catch (Exception e){
-//                throw new Exception(e);
-//            }
-//            if (!activated)
-//            {
-//                addPoints(1);
-//            }
-//        }
-//
-//        if (isGameOver(left))
-//            initiateGameOver();
-//    }
-//    public void unflag(int r, int c,boolean left) throws Exception
-//    {
-//        Board board = (left) ? leftBoard : rightBoard;
-//        try
-//        {
-//            board.unflag(r, c);
-//        } catch (Exception e) {
-//            throw new Exception(e);
-//        }
-//    }
-
-    //Tests the game session class
-    @Override
-    public boolean runClassTests()
-    {
-        return true;
     }
 
     public void RightClickedTile(Tile tile) {
@@ -323,6 +210,7 @@ public class GameSession implements Testable
         this encompasses all the logic that happens when a user tries to flag/unflag a tile
         its responsible for switching turns, gaining points and ordering board to flag/unflag
          */
+        message = "";
         System.out.println("Right clicked tile");
         Board parentBoard = tile.getParentBoard();
 
@@ -341,44 +229,56 @@ public class GameSession implements Testable
         //case tile is a mine
         if(tile instanceof MineTile){
             System.out.println("Flagging and revealing mine");
+            message = "Excellend! Mine neutralized.";
             this.gainPoints(1);
             parentBoard.reveal(tile);
             this.changeTurn();   //revealing a mine by flagging does change a turn!
             System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
+            notifyListenersAfterAction(message,true,0,1);
             if (this.isGameOver())
                 initiateGameOver();
             else
+            {
                 return;
+            }
+
         }
 
         //case tile is flagged (unflag it)
         if(tile.isFlagged()) {
             System.out.println("Unflagging tile");
+            message = "Flag removed.";
             parentBoard.unflag(tile);
+            notifyListenersAfterAction(message,true,0,0);
             //  this.changeTurn();
             return;
         }
 
         //case tile is not flagged (flag it)
-        System.out.println("Flagging tile");
-        parentBoard.flag(tile);
-        this.gainPoints(-3);
+        if(!tile.isActivated()) {
+            System.out.println("Flagging tile");
+            message = "Mistake! False alarm.";
+            parentBoard.flag(tile);
+            this.gainPoints(-3);
+            notifyListenersAfterAction(message,false,0,-3);
+    }
         System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
         //this.changeTurn();
-    }
+}
 
-    public void LeftClickedTile(Tile tile) {
+    public boolean LeftClickedTile(Tile tile) {
         /*
         this encompasses all the logic that happens when a user tries to reveal a tile
         its responsible for switching turns, gaining points and ordering board to reveal
          */
+        message = "";
         System.out.println("Left clicked tile");
         Board parentBoard = tile.getParentBoard();
 
         //turn test
         if( ! parentBoard.getTurn()){
             System.out.println("Invalid turn");
-            return; //not his turn
+            return false; //not his turn
         }
 
         //case tile was already revealed
@@ -401,14 +301,16 @@ public class GameSession implements Testable
             //in case tile is flagged (do nothing)
             if(tile.isFlagged()) {
                 System.out.println("tile is flagged and cannot be revealed");
-                return;
+                return false;
             }
 
             //case its a mine
             if(tile instanceof MineTile){
                 System.out.println("Mine");
+                message = "BOOM! You hit a mine! Lost 1 health";
                 this.gainHealth(-1);
                 parentBoard.reveal(tile);
+                notifyListenersAfterAction(message,false,-1,0);
                 if (this.isGameOver())
                     initiateGameOver();
                 else
@@ -418,11 +320,13 @@ public class GameSession implements Testable
                 int tilesRevealed = parentBoard.reveal(tile);
                 this.gainPoints(1*tilesRevealed);
                 System.out.println("Its a number tile");
+                message = "Number tiles revealed, gained "+(1*tilesRevealed)+" points";
+                notifyListenersAfterAction(message,true,0,1*tilesRevealed);
                 this.changeTurn();}
             System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
         }
 
-
+        return true;
     }
 
     private boolean hisTurn(Tile tile){
@@ -434,16 +338,18 @@ public class GameSession implements Testable
         this.setPoints(this.getPoints() + points);
     }
 
-    private void setPoints(int i) {
+    public void setPoints(int i) {
         this.points = i;
         if (this.getPoints()<0) this.points = 0;
-
-        for (PointsListener listener : pointsListeners) {
-            listener.onPointsChanged(i); // your view should implement PointsListener and that method onPointsChanged should update the view
-        }
     }
 
     private void gainHealth(int health) {
+        System.out.println("Health 'added': "+health);
+        this.setHealthPool(this.getHealthPool() + health);
+    }
+
+    // didnt want to make gainHealth public so... for now this stupid solution until we think of something smarter :(
+    public void testOnlyGainHealth(int health) {
         System.out.println("Health 'added': "+health);
         this.setHealthPool(this.getHealthPool() + health);
     }
@@ -455,15 +361,16 @@ public class GameSession implements Testable
             this.gainPoints((i-MAX_HEALTH_POOL)*getGameDifficulty().getActivationCost());
             this.healthPool = MAX_HEALTH_POOL;
         }
-
-        for (HealthListener listener : healthListeners)
-            listener.onHealthChanged(this.healthPool); // your view should implement HealthListener and that method onHealthChanged should update the view
     }
 
-    private void activateSpecialTile(SpecialTile specialTile, Board parentBoard) {
-        System.out.println("Activation cost: "+getGameDifficulty().getActivationCost()+"\tPoints: "+this.getPoints());
-        if (this.getPoints()<getGameDifficulty().getActivationCost())
+    private boolean activateSpecialTile(SpecialTile specialTile, Board parentBoard) {
+        System.out.println("Activation cost: " + getGameDifficulty().getActivationCost() + "\tPoints: " + this.getPoints());
+        if (this.getPoints() < getGameDifficulty().getActivationCost()){
             System.out.println("Not enough points to activate special tile");
+            message = "Not enough points to activate special tile";
+            notifyListenersAfterAction(message,false,0,0);
+            return false;
+        }
         else {
             this.gainPoints(-getGameDifficulty().getActivationCost());
             System.out.println("Points after activation cost: "+this.getPoints());
@@ -475,8 +382,10 @@ public class GameSession implements Testable
                 int plusMinus  = (resultOfRandom) ? 1 : -1;
                 String message = (resultOfRandom)? "Good surprise!" : "Bad surprise!";
                 System.out.println(message);
+                this.message = message+" Points changed by: "+(plusMinus*getGameDifficulty().getSurprisePoints())+", Health changed by: "+(plusMinus*getGameDifficulty().getSurpriseHealth());
                 this.gainPoints(plusMinus*getGameDifficulty().getSurprisePoints());
                 this.gainHealth(plusMinus*getGameDifficulty().getSurpriseHealth());
+                notifyListenersAfterAction(this.message,resultOfRandom,plusMinus*getGameDifficulty().getSurpriseHealth(),plusMinus*getGameDifficulty().getSurprisePoints());
             }
             if (specialTile instanceof QuestionTile questionTile)
             {
@@ -494,9 +403,15 @@ public class GameSession implements Testable
                 listener.onSpecialTileActivated(); // your view should implement SpecialTileActivationListener and that method onSpecialTileActivated should update the view
                 */
         }
+        return true;
     }
     public void setDisplayQuestionListener(DisplayQuestionListener displayQuestionListener) {
         this.displayQuestionListener = displayQuestionListener;
+    }
+    private void notifyListenersAfterAction(String message, boolean positiveMove, int healthChange, int pointsChange)
+    {
+        for (ActionMadeListener listener : actionMadeListeners)
+            listener.onActionMade(message,positiveMove,healthChange,pointsChange);
     }
     private void updateAfterQuestionResult(QuestionDifficulty difficulty, boolean correctAnswer, Board parentBoard)
     {
@@ -677,12 +592,9 @@ public class GameSession implements Testable
         }
     }
 
-    public void setPointsListener(PointsListener pointsListener) {
-        this.pointsListeners.add(pointsListener);
-    }
 
-    public void setHealthListener(HealthListener healthListener) {
-        this.healthListeners.add(healthListener);
+    public void setActionMadeListener(ActionMadeListener actionMadeListener) {
+        this.actionMadeListeners.add(actionMadeListener);
     }
 
 }

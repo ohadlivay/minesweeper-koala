@@ -9,7 +9,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
 
-public class GameScreen extends JPanel implements PointsListener, MinesLeftListener, HealthListener {
+public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener {
     private final NavigationController nav;
     private final GameSession session; // Always holds the current game session
 
@@ -22,15 +22,14 @@ public class GameScreen extends JPanel implements PointsListener, MinesLeftListe
     private JLabel player2MinesLeftLabel;
     private JLabel healthLabel;
     private JLabel pointsLabel;
-
-    private Color componentColor;
-
+    private JLabel feedLabel;
 
     public GameScreen(NavigationController nav, GameSession session) {
         this.nav = nav;
         this.session = session;
-        this.session.setPointsListener(this);
-        this.session.setHealthListener(this);
+        this.session.setActionMadeListener(this);
+        this.session.getLeftBoard().setMinesLeftListener(this);
+        this.session.getRightBoard().setMinesLeftListener(this);
         initUI();
         setBoards(session.getLeftBoard(), session.getRightBoard());
         setPlayerNames(session.getLeftPlayerName(),session.getRightPlayerName());
@@ -59,8 +58,15 @@ public class GameScreen extends JPanel implements PointsListener, MinesLeftListe
         mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
         mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
+        feedLabel = new JLabel("Welcome! Click a tile to start.", SwingConstants.CENTER);
+        feedLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 14));
+        feedLabel.setForeground(ColorsInUse.TEXT.get());
+        feedLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
+        topPanel.setBorder(new EmptyBorder(20, 20, 10, 20));
+
         Font font = new Font("Segoe UI Black", Font.BOLD, 16);
 
         player1Label = new JLabel();
@@ -105,6 +111,7 @@ public class GameScreen extends JPanel implements PointsListener, MinesLeftListe
         rightPanel.add(player2Label);
 
         // Add those sub-panels to the topPanel
+        topPanel.add(feedLabel, BorderLayout.CENTER);
         topPanel.add(leftPanel, BorderLayout.WEST);
         topPanel.add(rightPanel, BorderLayout.EAST);
         topPanel.setBorder(new EmptyBorder(20, 90, 10, 90));
@@ -161,8 +168,10 @@ public class GameScreen extends JPanel implements PointsListener, MinesLeftListe
         JPanel southContainer = new JPanel();
         southContainer.setLayout(new BoxLayout(southContainer, BoxLayout.Y_AXIS));
         southContainer.setOpaque(false);
+
         southContainer.add(statsPanel);
         southContainer.add(Box.createVerticalStrut(10));
+
         southContainer.add(bottomPanel);
 
         mainPanel.add(southContainer, BorderLayout.SOUTH);
@@ -212,22 +221,87 @@ public class GameScreen extends JPanel implements PointsListener, MinesLeftListe
         return mainPanel;
     }
 
-    @Override
-    public void onPointsChanged(int newPoints) {
-        System.out.println("Points updated to: " + newPoints);
-        pointsLabel.setText("Score: " + newPoints);
+    public void updateMinesLeft(int minesLeft, Board board) {
+        if(board == session.getLeftBoard()) player1MinesLeftLabel.setText("x" + minesLeft);
+        else player2MinesLeftLabel.setText("x" + minesLeft);
+
     }
 
-    @Override
-    public void updateMinesLeft(int minesLeft) {
-        //When mines left is visible, implement this method
+    //get the current health pool and points from the session
+    private void updateLabels() {
+        pointsLabel.setText("Score: " + session.getPoints());
+        healthLabel.setText("x" + session.getHealthPool());
     }
 
+    //this method replaces the old onPointsChange and onHealthChange, copmbining them together
     @Override
-    public void onHealthChanged(int newHealth) {
-        healthLabel.setText("x" + newHealth);
+    public void onActionMade(String message, boolean positive, int healthChange, int pointsChange) {
+        feedLabel.setText(message);
+        Color goodColor = new Color(46, 204, 113);
+        Color badColor = new Color(231, 76, 60);
+        feedLabel.setForeground(positive ? goodColor : badColor);
+        updateLabels();
+        if (pointsChange!=0) {
+            String text = (pointsChange > 0 ? "+" : "") + pointsChange;
+            Color color = pointsChange > 0 ? Color.GREEN : Color.RED;
+            floatingNumber(pointsLabel, text, color, pointsChange > 0);
+        }
+        if (healthChange!=0) {
+            String text = (healthChange > 0 ? "+" : "") + healthChange;
+            Color color = healthChange > 0 ? Color.GREEN : Color.RED;
+            floatingNumber(healthLabel, text, color, healthChange > 0);
+        }
     }
 
+    //animation for immediate points/health feedback
+    private void floatingNumber(JComponent target, String text, Color color, boolean isUp) {
+        JRootPane rootPane = SwingUtilities.getRootPane(target);
+        if (rootPane == null) return;
 
+        JLabel floatLabel = new JLabel(text);
+        floatLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 20));
+        floatLabel.setForeground(color);
 
+        Point screenPos = target.getLocationOnScreen();
+        Point rootPos = rootPane.getLocationOnScreen();
+        int x = screenPos.x - rootPos.x + (target.getWidth() / 2) - 15;
+        int y = screenPos.y - rootPos.y;
+
+        floatLabel.setBounds(x, y, 100, 30);
+
+        JLayeredPane layeredPane = rootPane.getLayeredPane();
+        layeredPane.add(floatLabel, JLayeredPane.POPUP_LAYER);
+        layeredPane.repaint();
+
+        //animation timer
+        int distance = 50;
+        int step;
+        if(!isUp) {
+            step = 2;
+        } else {
+            step = -2;
+        }
+        Timer timer = new Timer(40, null);
+        timer.addActionListener(e -> {
+            Point p = floatLabel.getLocation();
+            floatLabel.setLocation(p.x, p.y + step);
+
+            //define when to stop based on the direction
+            boolean finished;
+            if (isUp) {
+                finished = (p.y < y - distance);
+            }
+            else {
+                finished = (p.y > y + distance);
+            }
+
+            if (finished) {
+                layeredPane.remove(floatLabel);
+                layeredPane.repaint();
+                timer.stop();
+            }
+
+        });
+        timer.start();
+    }
 }
