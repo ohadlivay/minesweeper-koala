@@ -255,14 +255,16 @@ public class GameSession
         }
 
         //case tile is not flagged (flag it)
-        System.out.println("Flagging tile");
-        message = "Mistake! False alarm.";
-        parentBoard.flag(tile);
-        this.gainPoints(-3);
-        notifyListenersAfterAction(message,false,0,-3);
+        if(!tile.isActivated()) {
+            System.out.println("Flagging tile");
+            message = "Mistake! False alarm.";
+            parentBoard.flag(tile);
+            this.gainPoints(-3);
+            notifyListenersAfterAction(message,false,0,-3);
+    }
         System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
         //this.changeTurn();
-    }
+}
 
     public boolean LeftClickedTile(Tile tile) {
         /*
@@ -589,6 +591,7 @@ public class GameSession
                 break;
         }
     }
+
 
     public void setActionMadeListener(ActionMadeListener actionMadeListener) {
         this.actionMadeListeners.add(actionMadeListener);
