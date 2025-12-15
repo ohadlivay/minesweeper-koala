@@ -1,6 +1,8 @@
 package main.java;
 
-import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.*;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import main.java.controller.NavigationController;
 import main.java.model.BoardGenerator;
 import main.java.model.GameDifficulty;
@@ -17,7 +19,7 @@ public class Main {
 
         /*optional FlatLef look and feel
         try {
-            UIManager.setLookAndFeel(new FlatDarkLaf());
+            UIManager.setLookAndFeel(new FlatMacDarkLaf());
         } catch (Exception ex) {
             System.err.println("Failed to initialize LaF");
         }*/
