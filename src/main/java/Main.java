@@ -1,5 +1,6 @@
 package main.java;
 
+import com.formdev.flatlaf.FlatDarkLaf;
 import main.java.controller.NavigationController;
 import main.java.model.BoardGenerator;
 import main.java.model.GameDifficulty;
@@ -14,7 +15,14 @@ import java.awt.event.WindowEvent;
 public class Main {
     public static void main(String[] args) {
 
-        // DON'T TOUCH THIS CODE - IT SETS THE WHOLE UI THEME 
+        /*optional FlatLef look and feel
+        try {
+            UIManager.setLookAndFeel(new FlatDarkLaf());
+        } catch (Exception ex) {
+            System.err.println("Failed to initialize LaF");
+        }*/
+
+        //DON'T TOUCH THIS CODE - IT SETS THE WHOLE UI THEME
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
