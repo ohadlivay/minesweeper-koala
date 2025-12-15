@@ -71,6 +71,7 @@ public class QuestionCSVManager {
                         if (diffStr.equals("1")) difficulty = QuestionDifficulty.EASY;
                         else if (diffStr.equals("2")) difficulty = QuestionDifficulty.MEDIUM;
                         else if (diffStr.equals("3")) difficulty = QuestionDifficulty.HARD;
+                        else if (diffStr.equals("4")) difficulty = QuestionDifficulty.MASTER;
                         else {
                             // Try parsing text (e.g. "HARD") if it's not a number
                             try {
