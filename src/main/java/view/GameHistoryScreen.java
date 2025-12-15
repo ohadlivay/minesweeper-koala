@@ -6,6 +6,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+import static java.awt.Font.BOLD;
+
 
 public class GameHistoryScreen extends JPanel{
 
@@ -33,7 +35,7 @@ public class GameHistoryScreen extends JPanel{
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
 
-        Font font = new Font("Segoe UI Black", Font.BOLD, 14);
+        Font font = FontsInUse.PIXEL2.getSize(30f);
 
         historyLabel = new JLabel("Game History (Under construction)", SwingConstants.CENTER);
         historyLabel.setForeground(ColorsInUse.TEXT.get());
