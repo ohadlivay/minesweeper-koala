@@ -33,6 +33,7 @@ public class Question {
 
 
     // --- Setters ---
+    // these will need to update the csv aswell, so changes are permanent and not just in RAM
     public void setId(int id) { this.id = id; }
     public void setQuestionText(String questionText) { this.questionText = questionText; }
     public void setDifficulty(QuestionDifficulty difficulty) { this.difficulty = difficulty; }
