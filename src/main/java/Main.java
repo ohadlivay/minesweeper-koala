@@ -6,7 +6,6 @@ import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import main.java.controller.NavigationController;
 import main.java.model.BoardGenerator;
 import main.java.model.GameDifficulty;
-import main.java.test.Testable;
 import main.java.util.GameDataCSVManager;
 import main.java.util.QuestionCSVManager;
 
