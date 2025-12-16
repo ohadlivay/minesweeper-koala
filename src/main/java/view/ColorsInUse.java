@@ -7,6 +7,7 @@ public enum ColorsInUse {
     BG_COLOR(new Color(20, 20, 20)),
     BTN_COLOR(new Color(10, 10, 10)),
     TEXT(Color.WHITE),
+    ALT_TEXT(Color.BLACK),
     INPUT_FIELD(Color.BLACK),
     CONFIRM(new Color(25, 135, 84)),
     DENY(new Color(220, 53, 69)),
