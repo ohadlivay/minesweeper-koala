@@ -5,19 +5,16 @@ NYI = NOT YET IMPLEMENTED
 package main.java.controller;
 
 import main.java.model.Question;
+import main.java.model.SysData;
 import main.java.view.QuestionManagerScreen;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class QuestionManagerController {
-    private QuestionManagerScreen qms;
-    private ArrayList<Question> questions;
     private static QuestionManagerController instance;
+    private QuestionManagerScreen view;
 
-    private QuestionManagerController()
-    {
-
-    }
 
     public static QuestionManagerController getInstance()
     {
@@ -27,9 +24,17 @@ public class QuestionManagerController {
         return instance;
     }
 
-    public void refreshQuestionTable() {
-        //Ohad please implement this method and send a list of questions to the view -Tali
+    public void setView(QuestionManagerScreen view) {
+        this.view = view;
     }
+
+    public void refreshQuestionList() {
+        if (view == null)
+            return;
+        List<Question> questions = SysData.getInstance().getQuestions();
+        view.populateTable(questions);
+    }
+
 
 
 }

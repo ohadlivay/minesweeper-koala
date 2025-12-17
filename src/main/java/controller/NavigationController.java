@@ -51,6 +51,9 @@ public class NavigationController {
 
     public void goToQuestionManager() {
         QuestionManagerScreen questionManager = new QuestionManagerScreen(this);
+        QuestionManagerController qmc = QuestionManagerController.getInstance();
+        qmc.setView(questionManager);
+        qmc.refreshQuestionList();
         visFrame.setContentPane(questionManager.getMainPanel());
         refresh();
     }

@@ -1,6 +1,7 @@
 package main.java.view;
 
 import main.java.controller.NavigationController;
+import main.java.controller.QuestionManagerController;
 import main.java.model.Question;
 import main.java.model.SysData;
 
