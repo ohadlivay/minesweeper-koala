@@ -15,17 +15,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-// מבחן אינטגרציה לבדיקת תהליך שמירת המשחק המלא
 public class GameSaveFlowTest {
 
     private SysData sys;
     private GameSessionController controller;
-    private NavigationController navStub; // נשאר דמה, נמנע מתלויות ב-UI
-    private GameSession initializedSession; // GameSession מאותחל מראש
+    private NavigationController navStub;
+    private GameSession initializedSession;
     private final String path = "GameHistory.csv";
 
     /**
-     * @Before: מכין את סביבת הבדיקה לפני כל מבחן.
+     * @Before
      */
     @Before
     public void setUp() {
@@ -59,7 +58,7 @@ public class GameSaveFlowTest {
     }
 
     /**
-     * @After: מנקה את סביבת הבדיקה לאחר כל מבחן.
+     * @After
      */
     @After
     public void tearDown() {
@@ -68,8 +67,6 @@ public class GameSaveFlowTest {
         if (tempFile.exists()) {
             tempFile.delete();
         }
-        // אין צורך לנקות את ה-Singletons של GameSession ו-GameSessionController
-        // אלא אם כן יש בעיות עקביות בין מבחנים, אבל נסמוך על ה-setUp שיאתחל נכון.
     }
 
     // ---------------------------------------------------------
