@@ -237,18 +237,17 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     @Override
     public void onActionMade(String message, boolean positive, int healthChange, int pointsChange) {
         feedLabel.setText(message);
-        Color goodColor = new Color(46, 204, 113);
-        Color badColor = new Color(231, 76, 60);
-        feedLabel.setForeground(positive ? goodColor : badColor);
+
+        feedLabel.setForeground(positive ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get());
         updateLabels();
         if (pointsChange!=0) {
             String text = (pointsChange > 0 ? "+" : "") + pointsChange;
-            Color color = pointsChange > 0 ? Color.GREEN : Color.RED;
+            Color color = pointsChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
             floatingNumber(pointsLabel, text, color, pointsChange > 0);
         }
         if (healthChange!=0) {
             String text = (healthChange > 0 ? "+" : "") + healthChange;
-            Color color = healthChange > 0 ? Color.GREEN : Color.RED;
+            Color color = healthChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
             floatingNumber(healthLabel, text, color, healthChange > 0);
         }
     }
