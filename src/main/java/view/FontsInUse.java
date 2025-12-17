@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public enum FontsInUse {
-    PIXEL("/fonts/pixel-font.ttf"),
-    PIXEL2("/fonts/slkscreb.ttf");
+    PIXEL("/fonts/ByteBounce.ttf"),
+    PIXEL2("/fonts/BoldPixels.ttf");
     private Font baseFont;
 
 

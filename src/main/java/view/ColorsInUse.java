@@ -15,6 +15,7 @@ public enum ColorsInUse {
     BOARD_BACKGROUND(new Color(32, 32, 32)),
     BOARD_BORDER_DEFAULT(new Color(0, 0, 0, 150)),
     BOARD_ACTIVE_BORDER(new Color(255, 215, 0, 200)),
+    BOARD_ACTIVE_BORDER2(new Color(133,235,217)),
 
     TILE_DEFAULT(Color.DARK_GRAY),
     REVEALED_BG(Color.BLACK),

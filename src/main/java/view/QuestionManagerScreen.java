@@ -7,10 +7,8 @@ import main.java.model.SysData;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.util.List;
 
@@ -29,7 +27,7 @@ public class QuestionManagerScreen extends JPanel {
     public QuestionManagerScreen(NavigationController navigationController) {
         this.nav = navigationController;
         initUI();
-        populateTable(); // Load data when screen is created
+        populateTable();
     }
 
     private void initUI() {
@@ -38,8 +36,8 @@ public class QuestionManagerScreen extends JPanel {
         mainPanel = new JPanel(new BorderLayout(15, 15));
         mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        JLabel titleLabel = new JLabel("Question Manager", SwingConstants.CENTER);
-        titleLabel.setFont(FontsInUse.PIXEL2.getSize(32f));
+        JLabel titleLabel = new JLabel("QUESTION MANAGER", SwingConstants.CENTER);
+        titleLabel.setFont(FontsInUse.PIXEL.getSize(62f));
         titleLabel.setForeground(ColorsInUse.TEXT.get());
         titleLabel.setBorder(new EmptyBorder(0, 0, 10, 0));
         mainPanel.add(titleLabel, BorderLayout.NORTH);
@@ -109,23 +107,24 @@ public class QuestionManagerScreen extends JPanel {
     private void styleTable(JTable table) {
         table.setBackground(ColorsInUse.BTN_COLOR.get());
         table.setForeground(ColorsInUse.TEXT.get());
-        table.setSelectionBackground(ColorsInUse.BOARD_ACTIVE_BORDER.get());
+        table.setSelectionBackground(ColorsInUse.BOARD_ACTIVE_BORDER2.get());
         table.setSelectionForeground(Color.BLACK);
         table.setGridColor(Color.DARK_GRAY);
         table.setRowHeight(45);
-        table.setFont(FontsInUse.PIXEL.getSize(12f));
+        table.setFont(FontsInUse.PIXEL.getSize(20f));
         table.setShowGrid(true);
         table.setFillsViewportHeight(true);
 
         JTableHeader header = table.getTableHeader();
         header.setBackground(new Color(30, 30, 30));
         header.setForeground(ColorsInUse.ALT_TEXT.get());
-        header.setFont(FontsInUse.PIXEL.getSize(14f));
+        header.setFont(FontsInUse.PIXEL.getSize(20f));
         header.setBorder(new LineBorder(Color.DARK_GRAY));
         header.setReorderingAllowed(false);
 
         table.getColumnModel().getColumn(0).setMaxWidth(50);
         table.getColumnModel().getColumn(2).setMaxWidth(100);
+        table.getColumnModel().getColumn(2).setMinWidth(100);
         table.getColumnModel().getColumn(4).setMinWidth(160);
         table.getColumnModel().getColumn(4).setMaxWidth(180);
         table.setFocusable(false);
@@ -135,8 +134,7 @@ public class QuestionManagerScreen extends JPanel {
         JButton btn = new JButton(text);
         btn.setBackground(bg);
         btn.setForeground(ColorsInUse.TEXT.get());
-        btn.setFont(FontsInUse.PIXEL.getSize(14f));
-        btn.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(70, 80, 100), 2),BorderFactory.createEmptyBorder(5, 10, 5, 10)));
+        btn.setFont(FontsInUse.PIXEL.getSize(20f));
         btn.setFocusPainted(false);
         btn.setContentAreaFilled(true);
 
@@ -160,8 +158,7 @@ public class QuestionManagerScreen extends JPanel {
             homeButton.setIcon(new ImageIcon(icon));
         }
 
-        homeButton.setBackground(new Color(10, 10, 10));
-        homeButton.setBorder(BorderFactory.createLineBorder(new Color(70, 80, 100), 2));
+        homeButton.setBackground(ColorsInUse.BTN_COLOR.get());
         homeButton.setFocusPainted(false);
         homeButton.setContentAreaFilled(true);
 
