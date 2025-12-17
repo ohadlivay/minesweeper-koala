@@ -27,7 +27,6 @@ public class QuestionManagerScreen extends JPanel {
     public QuestionManagerScreen(NavigationController navigationController) {
         this.nav = navigationController;
         initUI();
-        populateTable();
     }
 
     private void initUI() {
@@ -92,13 +91,12 @@ public class QuestionManagerScreen extends JPanel {
         add(mainPanel, BorderLayout.CENTER);
     }
 
-    //fetch questions from SysData
-    public void populateTable() {
+    //fetch questions from SysData with the help of the controller
+    public void populateTable(List<Question> questions) {
         tableModel.setRowCount(0);
-        List<Question> questions = SysData.getInstance().getQuestions();
         if (questions != null) {
             for (Question q : questions) {
-                Object[] rowData = {q.getId(), q.getQuestionText(), q.getDifficulty(), q.getAnswer1(),""};
+                Object[] rowData = {q.getId(), q.getQuestionText(), q.getDifficulty(), q.getAnswer1(), ""};
                 tableModel.addRow(rowData);
             }
         }
@@ -146,7 +144,6 @@ public class QuestionManagerScreen extends JPanel {
                 if (btn.isEnabled()) btn.setBackground(bg);
             }
         });
-
         return btn;
     }
 
@@ -165,9 +162,6 @@ public class QuestionManagerScreen extends JPanel {
         return homeButton;
     }
 
-    public void setTableActionListener(TableActionListener listener) {
-        this.tableActionListener = listener;
-    }
 
 
     // --- getters ---
