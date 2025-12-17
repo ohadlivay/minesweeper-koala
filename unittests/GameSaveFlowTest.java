@@ -1,5 +1,3 @@
-package unittests;
-
 import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.model.GameData;
@@ -41,7 +39,7 @@ public class GameSaveFlowTest {
             // מאתחל את פרטי המשחק כמו ש-startNewGame עושה
             initializedSession.setLeftPlayerName("George");
             initializedSession.setRightPlayerName("Ali");
-            initializedSession.setDifficulty(GameDifficulty.HARD);
+            initializedSession.setGameDifficulty(GameDifficulty.HARD);
             initializedSession.initializeBoards(); // מאתחל את leftBoard ו-rightBoard
 
             controller = GameSessionController.getInstance();
@@ -74,46 +72,61 @@ public class GameSaveFlowTest {
         // אלא אם כן יש בעיות עקביות בין מבחנים, אבל נסמוך על ה-setUp שיאתחל נכון.
     }
 
-    /**
-     * בודק את זרימת סיום המשחק ושמירת הנתונים.
-     * אנו משתמשים ב-GameSession שכבר אומת ואותחל ב-setUp כדי לעקוף את תלות ה-UI.
-     */
+    // ---------------------------------------------------------
+    // Tests split into focused methods (format like GameplayTests)
+    // ---------------------------------------------------------
+
     @Test
-    public void testEndGameAndSaveFlow() throws IOException {
-        // ARRANGE - נתונים צפויים
+    public void endGame_ShouldIncreaseSysDataGameCount() throws IOException {
+        int initialGameCount = sys.getNumberOfGames();
+
+        // ACT
+        controller.endGame(initializedSession, navStub);
+
+        // ASSERT
+        Assert.assertEquals("Game count in SysData should have increased by one.",
+                initialGameCount + 1, sys.getNumberOfGames());
+    }
+
+    @Test
+    public void endGame_SavedGameInSysData_ShouldHaveCorrectFields() throws IOException {
+        // ARRANGE expected values
         String expectedLeftName = "George";
         String expectedRightName = "Ali";
         GameDifficulty expectedDifficulty = GameDifficulty.HARD;
-        int initialGameCount = sys.getNumberOfGames();
 
-        // ACT 1 - סיום המשחק ושמירת הנתונים
-        // אנו משתמשים ב-initializedSession שיצרנו ב-setUp, המהווה את המודל האמיתי.
+        // ACT
         controller.endGame(initializedSession, navStub);
 
-        // ASSERT 1 - אימות הנתונים ב-SysData
-        Assert.assertEquals("Game count in SysData should have increased by one.", initialGameCount + 1, sys.getNumberOfGames());
-
+        // ASSERT - verify SysData contains the saved game with correct fields
         List<GameData> savedGames = sys.getGames();
+        Assert.assertFalse("SysData should contain at least one saved game.", savedGames.isEmpty());
         GameData savedGame = savedGames.get(0);
 
-        // אימות שפרטי המשחק נשמרו נכון
         Assert.assertEquals("Saved game - Left player name mismatch.", expectedLeftName, savedGame.getLeftPlayerName());
         Assert.assertEquals("Saved game - Right player name mismatch.", expectedRightName, savedGame.getRightPlayerName());
         Assert.assertEquals("Saved game - Difficulty mismatch.", expectedDifficulty, savedGame.getGameDifficulty());
-        // הנקודות הסופיות הן 0 לאחר forceGameOver
+        // The test setup expects points to be 0 after forceGameOver in endGame flow
         Assert.assertEquals("Saved game - Points mismatch (should be 0 after forceGameOver).", 0, savedGame.getPoints());
+    }
 
-        // ASSERT 2 - אימות שהנתונים נכתבו לקובץ (ע"י קריאה חוזרת)
+    @Test
+    public void csvWriteAndRead_ShouldRestoreSavedGame() throws IOException {
+        // ARRANGE
+        String expectedLeftName = "George";
+        int expectedPoints = 0;
 
-        // נקה את SysData ובצע קריאה חוזרת מהקובץ
+        // ACT - end game which should write to CSV
+        controller.endGame(initializedSession, navStub);
+
+        // Clear in-memory SysData then read back from CSV
         sys.clearGames();
         GameDataCSVManager.readGameDataListFromCSV(path);
 
-        // אימות שהקריאה מהקובץ החזירה נתונים
+        // ASSERT - CSV read restored one game with correct fields
         Assert.assertEquals("Game count after reading from CSV should be 1.", 1, sys.getNumberOfGames());
-
         GameData readGame = sys.getGame(0);
         Assert.assertEquals("Read game - Left player name mismatch.", expectedLeftName, readGame.getLeftPlayerName());
-        Assert.assertEquals("Read game - Points mismatch.", 0, readGame.getPoints());
+        Assert.assertEquals("Read game - Points mismatch.", expectedPoints, readGame.getPoints());
     }
 }
