@@ -17,19 +17,22 @@ public enum ColorsInUse {
     BOARD_ACTIVE_BORDER(new Color(255, 215, 0, 200)),
     BOARD_ACTIVE_BORDER2(new Color(133,235,217)),
 
+    FEEDBACK_GOOD_COLOR(new Color(46, 204, 113)),
+    FEEDBACK_BAD_COLOR(new Color(231, 76, 60)),
+
     TILE_DEFAULT(Color.DARK_GRAY),
     REVEALED_BG(Color.BLACK),
 
     SURPRISE_TILE(Color.YELLOW), // 'S' tile
     QUESTION_TILE(Color.GREEN),  // 'Q' tile
 
-    NUMBER_1(Color.RED),
+    NUMBER_1(Color.BLUE),
     NUMBER_2(new Color(0, 128, 0)),
-    NUMBER_3(Color.BLUE),
-    NUMBER_4(Color.MAGENTA),
-    NUMBER_5(Color.ORANGE),
+    NUMBER_3(Color.RED),
+    NUMBER_4(new Color(0, 0, 128)),
+    NUMBER_5(new Color(128, 0, 0)),
     NUMBER_6(Color.CYAN),
-    NUMBER_7(Color.PINK),
+    NUMBER_7(Color.BLACK),
     NUMBER_8(Color.GRAY),
 
     POINTS(new Color(88, 124, 196));
