@@ -11,8 +11,9 @@ import main.java.view.GameScreen;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.util.Random;
 
-public class GameSessionController {
+public class GameSessionController implements DisplayQuestionListener{
     private GameSession session;
 
     private static GameSessionController instance;
@@ -32,10 +33,11 @@ public class GameSessionController {
     public void setupGame(String leftName, String rightName, GameDifficulty difficulty) {
         session = GameSession.getInstance();
         assert session != null;
-        if( !(session.setLeftPlayerName(leftName) && session.setRightPlayerName(rightName) && session.setDifficulty(difficulty))) {
+        if( !(session.setLeftPlayerName(leftName) && session.setRightPlayerName(rightName) && session.setGameDifficulty(difficulty))) {
             System.out.println("couldnt set either difficulty or player names");
         }
-        session.initializeBoards();
+        session.initGame();
+        session.setDisplayQuestionListener(this);
     }
 
     // Creates a new GameScreen with the current session
@@ -65,9 +67,17 @@ public class GameSessionController {
         GameDataCSVManager.writeGameDataListToCSV("GameHistory.csv");
         }
 
+    @Override
+    public void displayQuestion(Board board) {
+        OverlayController.getInstance().showQuestionOverlay(board);
+    }
+
     public GameSession getSession() {
         return session;
     }
+
+
+
 }
 
 

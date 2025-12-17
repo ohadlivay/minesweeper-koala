@@ -26,7 +26,7 @@ public class QuestionManagerScreen extends JPanel {
 
     private void initUI() {
         mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(Color.BLACK);
+        mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
         mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         //top panel holds Label
@@ -36,7 +36,7 @@ public class QuestionManagerScreen extends JPanel {
         Font font = new Font("Segoe UI Black", Font.BOLD, 14);
 
         historyLabel = new JLabel("Question Manager (Under construction)", SwingConstants.CENTER);
-        historyLabel.setForeground(Color.WHITE);
+        historyLabel.setForeground(ColorsInUse.TEXT.get());
         historyLabel.setFont(font);
         topPanel.add(historyLabel, BorderLayout.CENTER);
         topPanel.setBorder(new EmptyBorder(10, 0, 0, 0));

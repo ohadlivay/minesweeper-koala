@@ -11,8 +11,8 @@ public class TileViewTest {
             JFrame frame = new JFrame("TileView Test");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            Tile tile = new Tile();          // model
-            TileView tileView = new TileView(tile);  // view
+            Tile tile = new Tile();// model
+            TileView tileView = new TileView(tile, 50);  // view
 
             frame.add(tileView);
             frame.pack();

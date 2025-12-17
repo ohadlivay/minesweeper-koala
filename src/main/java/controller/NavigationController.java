@@ -15,6 +15,7 @@ public class NavigationController {
     public static NavigationController getInstance(JFrame frame) {
         if (instance == null) {
             instance = new NavigationController(frame);
+            OverlayController.getInstance(instance);
         }
         else if (instance.getVisFrame() != frame) {
 

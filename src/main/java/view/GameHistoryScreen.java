@@ -6,6 +6,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+import static java.awt.Font.BOLD;
+
 
 public class GameHistoryScreen extends JPanel{
 
@@ -26,17 +28,17 @@ public class GameHistoryScreen extends JPanel{
 
     private void initUI() {
         mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(Color.BLACK);
+        mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
         mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         //top panel holds Label
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
 
-        Font font = new Font("Segoe UI Black", Font.BOLD, 14);
+        Font font = FontsInUse.PIXEL2.getSize(30f);
 
         historyLabel = new JLabel("Game History (Under construction)", SwingConstants.CENTER);
-        historyLabel.setForeground(Color.WHITE);
+        historyLabel.setForeground(ColorsInUse.TEXT.get());
         historyLabel.setFont(font);
         topPanel.add(historyLabel, BorderLayout.CENTER);
         topPanel.setBorder(new EmptyBorder(10, 0, 0, 0));

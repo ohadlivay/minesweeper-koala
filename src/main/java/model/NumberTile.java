@@ -16,7 +16,7 @@ public class NumberTile extends Tile
 
 
     //Getters and setters for the NumberTile class
-    int getAdjacentMines()
+    public int getAdjacentMines()
     {
         return adjacentMines;
     }

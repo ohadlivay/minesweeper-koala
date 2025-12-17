@@ -1,7 +1,6 @@
 package main.java.model;
 
 import main.java.test.Testable;
-import main.java.view.TileView;
 
 /*
 tom i think might want to reconsider the access modifiers of the setters here (true for GameSession too)
@@ -74,9 +73,9 @@ public class Tile implements Testable
     //Flags the tile if it is not flagged already
     public void flag()
     {
-        if (!isFlagged&&!isRevealed)
+        if (! (isFlagged || isRevealed) )
         {
-            isFlagged = true;
+            this.setIsFlagged(true);
             activate();
         }
         else
@@ -88,7 +87,7 @@ public class Tile implements Testable
     {
         if (isFlagged&&!isRevealed)
         {
-            isFlagged = false;
+            setIsFlagged(false);
         }
 
         else
@@ -187,7 +186,6 @@ public class Tile implements Testable
         }
          */
     }
-//hey tom i added this for testing visually, you can remove it or change it however u want -ohad
     @Override
     public String toString(){
         return "T";
@@ -207,6 +205,7 @@ public class Tile implements Testable
         return this.isRevealed;
     }
     public boolean setIsRevealed(boolean isRevealed){
+        activate();
         this.isRevealed = isRevealed;
         if(revealListener != null) {
             revealListener.updateRevealed();
@@ -220,11 +219,13 @@ public class Tile implements Testable
     }
 
     public void setIsFlagged(boolean isFlagged){
+        activate();
         this.isFlagged = isFlagged;
 
         System.out.println("Updating flagged tile view");
-        flagListener.updateFlagged(isFlagged);
-        return;
+        if(flagListener != null) {
+            flagListener.updateFlagged(isFlagged);
+        }
     }
 
     public void setFlagListener(FlagListener flagListener) {

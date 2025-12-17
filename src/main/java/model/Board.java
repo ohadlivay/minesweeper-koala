@@ -3,6 +3,8 @@ package main.java.model;
 
 import main.java.test.Testable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Board implements Testable {
@@ -45,7 +47,7 @@ public class Board implements Testable {
     public static Board createNewBoard(GameDifficulty gameDifficulty){
         return new Board(gameDifficulty);
     }
-    protected int reveal(Tile tile) {
+    public int reveal(Tile tile) {
         if(tile.isRevealed())
             return 0;
         if(tile.isFlagged())
@@ -76,8 +78,87 @@ public class Board implements Testable {
             for (int c = 0; c < getCols(); c++) {
                 Tile tile = this.getTiles()[r][c];
                 tile.forceReveal();
+                if (tile instanceof SpecialTile specialTile) {specialTile.setUsed();}
             }
         }
+    }
+
+    protected void revealRandomMine()
+    {
+        if (getMinesLeft() == 0)
+        {
+            System.out.println("No mines left to reveal");
+            return;
+        }
+        int row,col;
+        Tile tile;
+        do {
+            row = RANDOM.nextInt(getRows());
+            col = RANDOM.nextInt(getCols());
+            tile = this.getTiles()[row][col];
+        }while (!(tile instanceof MineTile) || tile.isRevealed());
+        System.out.println("Revealing random mine at (" + (row+1) + "," + (col+1)+")");
+        reveal(tile);
+
+    }
+
+    protected void revealGrid()
+    {
+        if(this.getCols()<3||this.getRows()<3)
+        {
+            System.out.println("Cannot reveal grid, board too small");
+            return;
+        }
+        List<int[]> candidates = new ArrayList<>();
+        int minUnrevealedCount = 0;
+        for (int r=0;r<=this.getRows()-3;r++)
+            for (int c=0;c<=this.getCols()-3;c++)
+            {
+                int unRevealedCount = 0;
+                boolean hasRevealedTile = false;
+                for (int i=0;i<3;i++)
+                    for (int j=0;j<3;j++)
+                    {
+                        Tile tile = this.getTiles()[r+i][c+j];
+                        if (!tile.isRevealed())
+                        {
+                            unRevealedCount++;
+                            hasRevealedTile = true;
+                        }
+                    }
+                if (hasRevealedTile)
+                {
+                    candidates.add(new int[]{r,c,unRevealedCount});
+                    minUnrevealedCount = Math.max(minUnrevealedCount,unRevealedCount);
+                }
+            }
+        if (candidates.isEmpty())
+        {
+            System.out.println("No grid found");
+            return;
+        }
+        List<int[]> optimalCandidates = new ArrayList<>();
+        for (int[] candidate:candidates)
+        {
+            int unrevealed = candidate[2];
+            if (unrevealed == minUnrevealedCount) optimalCandidates.add(candidate);
+        }
+        if (optimalCandidates.isEmpty())
+            optimalCandidates = candidates;
+        int randomIndex = RANDOM.nextInt(optimalCandidates.size());
+        int[] optimalCandidate = optimalCandidates.get(randomIndex);
+        int r = optimalCandidate[0];
+        int c = optimalCandidate[1];
+        System.out.println("Revealing "+minUnrevealedCount+" tiles in grid at ("+(r+1)+","+(c+1)+")");
+        for (int i=0;i<3;i++)
+            for (int j=0;j<3;j++)
+            {
+                Tile tile = this.getTiles()[r+i][c+j];
+                if (tile instanceof MineTile&&!tile.isRevealed()) setMinesLeft(getMinesLeft() -1);
+                tile.forceReveal();
+            }
+
+
     }
 
     protected void flag(Tile tile)
@@ -145,16 +226,21 @@ public class Board implements Testable {
             turnListener.updateTurn();
         }
     }
+
     public void setTurnListener(TurnListener turnListener) {
         this.turnListener = turnListener;
+    }
+
+    public void setMinesLeftListener(MinesLeftListener minesLeftListener) {
+        this.minesLeftListener = minesLeftListener;
     }
     private void setMinesLeft(int minesLeft){
         this.minesLeft = minesLeft;
         if(minesLeftListener  != null) {
-            minesLeftListener.updateMinesLeft(getMinesLeft());
+            minesLeftListener.updateMinesLeft(getMinesLeft(), this);
         }
     }
-    private int getMinesLeft(){
+    public int getMinesLeft(){
         return this.minesLeft;
     }
 
