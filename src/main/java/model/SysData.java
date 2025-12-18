@@ -30,6 +30,16 @@ public class SysData
         return instance;
     }
 
+    public int getMaxId() {
+        int max = -1;
+        for(Question q : this.questions){
+            if( max < q.getId()){
+                max=q.getId();
+            }
+        }
+        return max;
+    }
+
     //Method to add a game to the list
     public void addGame(GameData game)
     {

@@ -38,7 +38,7 @@ public class QuestionManagerController {
 /*
 tali's delete/edit/add questions.
  */
-    public boolean deleteQuestion(Question question) {
+    public boolean userDeletedQuestion(Question question) {
         try {
             // attempt to delete (this calls the list removal and CSV update)
             boolean wasRemoved = SysData.getInstance().deleteQuestion(question);
@@ -56,5 +56,12 @@ tali's delete/edit/add questions.
         }
     }
 
-
+    /*s
+    im assuming when a user presses 'Add new question', a new empty line will be shown to him and a new Question object
+    will be created (and returned by this method)
+    the user will then edit the Question and save it, changing the Question object.
+     */
+    public Question userAddedQuestion() {
+        return Question.generateBlankQuestion();
+    }
 }

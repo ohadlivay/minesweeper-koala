@@ -21,6 +21,20 @@ public class Question {
         this.answer4 = answer4;
     }
 
+    private Question(){
+        this.id = SysData.getInstance().getMaxId() + 1; //id will be = max of all ids, +1.
+        this.questionText = "Question Text"; // default
+        this.difficulty = QuestionDifficulty.EASY; //default
+        this.answer1 = "Correct answer";
+        this.answer2 = "Wrong answer";
+        this.answer3 = "Wrong answer";
+        this.answer4 = "Wrong answer";
+    }
+
+    public static Question generateBlankQuestion() {
+        return new Question();
+    }
+
     // --- Getters ---
     public int getId() { return id; }
     public String getQuestionText() { return questionText; }
