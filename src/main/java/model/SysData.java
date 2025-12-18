@@ -1,5 +1,8 @@
 package main.java.model;
 
+import main.java.util.QuestionCSVManager;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +28,16 @@ public class SysData
         if (instance == null)
             instance = new SysData();
         return instance;
+    }
+
+    public int getMaxId() {
+        int max = -1;
+        for(Question q : this.questions){
+            if( max < q.getId()){
+                max=q.getId();
+            }
+        }
+        return max;
     }
 
     //Method to add a game to the list
@@ -80,6 +93,36 @@ public class SysData
     //Get the number of questions in the list
     public int getNumberOfQuestions() {
         return questions.size();
+    }
+
+    public boolean deleteQuestion(Question question) {
+        try {
+            // 1. Attempt to remove from the local list
+            boolean removed = questions.remove(question);
+
+            if (!removed) {
+                System.err.println("Delete failed: Question not found in the list.");
+                return false;
+            }
+            QuestionCSVManager.rewriteQuestionsToCSVFromSysData();
+            System.out.println("Question deleted successfully and CSV updated.");
+            return true;
+
+        } catch (Exception e) {
+            // 3. Catch any IO errors or null pointers
+            System.err.println("An error occurred while deleting the question: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public Question getQuestionByID(int id)
+    {
+        for(Question q : questions){
+            if(q.getId() == id){
+                return q;
+            }
+        }
+        return null;
     }
 
 }
