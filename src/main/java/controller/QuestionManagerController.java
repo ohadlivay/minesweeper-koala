@@ -5,7 +5,9 @@ NYI = NOT YET IMPLEMENTED
 package main.java.controller;
 
 import main.java.model.Question;
+import main.java.model.QuestionDifficulty;
 import main.java.model.SysData;
+import main.java.util.QuestionCSVManager;
 import main.java.view.QuestionManagerScreen;
 
 import java.util.ArrayList;
@@ -56,12 +58,30 @@ tali's delete/edit/add questions.
         }
     }
 
-    /*s
+    /*
     im assuming when a user presses 'Add new question', a new empty line will be shown to him and a new Question object
     will be created (and returned by this method)
-    the user will then edit the Question and save it, changing the Question object.
+    the user can then edit the Question and save it, changing the Question object.
      */
     public Question userAddedQuestion() {
         return Question.generateBlankQuestion();
+    }
+
+    public boolean userSavedEditedQuestion(int id, String questionText, QuestionDifficulty difficulty, String answer1, String answer2, String answer3, String answer4) {
+        /*
+        im assuming the user pressed 'Edit', a window to edit has opened, user edited the fields to his liking, pressed 'Save' and then this was activated.
+        so this will take the user input, delete the old question, create a new Question (same id) and save it to csv.
+         */
+        SysData sys = SysData.getInstance();
+        boolean success = sys.deleteQuestion(sys.getQuestionByID(id));
+        if(!success) {return false;}
+
+        sys.addQuestion(new Question(id,  questionText, difficulty, answer1, answer2, answer3, answer4));
+        try{
+            QuestionCSVManager.rewriteQuestionsToCSVFromSysData();
+        } catch(Exception e){
+            System.err.println("Error while rewriting questions to csv: " + e.getMessage());
+        }
+        return true;
     }
 }

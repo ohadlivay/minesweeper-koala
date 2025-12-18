@@ -12,6 +12,10 @@ public class QuestionCSVManager {
     // WRITING LOGIC
     // ==========================================
 
+    /*
+    this is sort of a 'refresh' method.
+    it will fetch all current questions from SysData and write them into a fresh csv (clean slate).
+     */
     public static void rewriteQuestionsToCSVFromSysData() throws IOException {
         writeQuestionsToCSV(FILE_PATH);
     }

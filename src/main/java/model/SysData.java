@@ -115,4 +115,14 @@ public class SysData
         }
     }
 
+    public Question getQuestionByID(int id)
+    {
+        for(Question q : questions){
+            if(q.getId() == id){
+                return q;
+            }
+        }
+        return null;
+    }
+
 }
