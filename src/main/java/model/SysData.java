@@ -1,5 +1,8 @@
 package main.java.model;
 
+import main.java.util.QuestionCSVManager;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,6 +83,26 @@ public class SysData
     //Get the number of questions in the list
     public int getNumberOfQuestions() {
         return questions.size();
+    }
+
+    public boolean deleteQuestion(Question question) {
+        try {
+            // 1. Attempt to remove from the local list
+            boolean removed = questions.remove(question);
+
+            if (!removed) {
+                System.err.println("Delete failed: Question not found in the list.");
+                return false;
+            }
+            QuestionCSVManager.rewriteQuestionsToCSVFromSysData();
+            System.out.println("Question deleted successfully and CSV updated.");
+            return true;
+
+        } catch (Exception e) {
+            // 3. Catch any IO errors or null pointers
+            System.err.println("An error occurred while deleting the question: " + e.getMessage());
+            return false;
+        }
     }
 
 }

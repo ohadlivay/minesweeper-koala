@@ -7,10 +7,14 @@ import java.util.List;
 public class QuestionCSVManager {
 
     private static final String CSV_HEADER = "ID,Question,Difficulty,A,B,C,D,Correct Answer";
-
+    private static final String FILE_PATH = "Questions.csv";
     // ==========================================
     // WRITING LOGIC
     // ==========================================
+
+    public static void rewriteQuestionsToCSVFromSysData() throws IOException {
+        writeQuestionsToCSV(FILE_PATH);
+    }
 
     public static void writeQuestionsToCSV(String filePath) throws IOException {
         SysData sys = SysData.getInstance();

@@ -99,6 +99,8 @@ public class QuestionManagerScreen extends JPanel {
             for (Question q : questions) {
                 Object[] rowData = {q.getId(), q.getQuestionText(), q.getDifficulty(), q.getAnswer1(), ""};
                 tableModel.addRow(rowData);
+                // hey tali should you save the questions at this point? or some PK? so when user deletes, my controller can know which
+                //question he meant to delete. can be done using Question object (easiest) or ID
             }
         }
     }
