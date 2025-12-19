@@ -21,14 +21,14 @@ public class BoardLayout extends JPanel implements TurnListener {
 
     private Color tileColor;
 
-    public BoardLayout(Board board) {
+    public BoardLayout(Board board, Color color) {
 
         //using setter for input checks
         setBoard(board);
         this.rows = board.getRows(); //changed these two to interact with model directly as a getter.
         this.cols = board.getCols();
         this.tileViewGrid = new TileView[rows][cols];
-        this.tileColor = randomColor();
+        this.tileColor = color;
 
         initBoardPanel();
         populateBoard();
@@ -120,7 +120,7 @@ public class BoardLayout extends JPanel implements TurnListener {
     //Helper methods
 
     //get random color
-    private boolean isTooSimilar(Color c1, Color c2) {
+ /*   private boolean isTooSimilar(Color c1, Color c2) {
         float dr = c1.getRed() / 255f - c2.getRed() / 255f;
         float dg = c1.getGreen() / 255f - c2.getGreen() / 255f;
         float db = c1.getBlue() / 255f - c2.getBlue() / 255f;
@@ -155,6 +155,6 @@ public class BoardLayout extends JPanel implements TurnListener {
         }
 
         return toReturn;
-    }
+    } */
 }
 

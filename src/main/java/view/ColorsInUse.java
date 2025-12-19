@@ -35,8 +35,53 @@ public enum ColorsInUse {
     NUMBER_7(Color.BLACK),
     NUMBER_8(Color.GRAY),
 
-    POINTS(new Color(88, 124, 196));
+    POINTS(new Color(88, 124, 196)),
 
+    // Board colors
+    SLATE_BLUE      (new Color(90, 110, 160)),
+    STEEL_TEAL      (new Color(70, 140, 135)),
+    DUSTY_PURPLE    (new Color(140, 110, 155)),
+    MUTED_CYAN      (new Color(80, 150, 170)),
+    OLIVE_GREEN     (new Color(125, 150, 85)),
+    SOFT_MAROON     (new Color(150, 85, 95)),
+    WARM_TAUPE      (new Color(150, 130, 110)),
+    DENIM_BLUE      (new Color(75, 120, 180)),
+    SAGE_GREEN      (new Color(140, 170, 130)),
+    CLAY_ORANGE     (new Color(190, 135, 85)),
+
+    DESAT_TEAL      (new Color(90, 160, 150)),
+    ASH_PURPLE      (new Color(155, 140, 170)),
+    SMOKY_BLUE      (new Color(110, 135, 170)),
+    MOSS_GREEN      (new Color(115, 155, 100)),
+    COPPER_RED      (new Color(180, 105, 85)),
+    SANDSTONE       (new Color(189, 160, 100)),
+    BLUE_GRAY       (new Color(110, 130, 150)),
+    ROSEWOOD        (new Color(165, 100, 110)),
+    MUTED_INDIGO    (new Color(100, 110, 165)),
+    PINE_TEAL       (new Color(80, 130, 120));
+
+    private static final ColorsInUse[] BOARD_COLORS = {
+            SLATE_BLUE,
+            STEEL_TEAL,
+            DUSTY_PURPLE,
+            MUTED_CYAN,
+            OLIVE_GREEN,
+            SOFT_MAROON,
+            WARM_TAUPE,
+            DENIM_BLUE,
+            SAGE_GREEN,
+            CLAY_ORANGE,
+            DESAT_TEAL,
+            ASH_PURPLE,
+            SMOKY_BLUE,
+            MOSS_GREEN,
+            COPPER_RED,
+            SANDSTONE,
+            BLUE_GRAY,
+            ROSEWOOD,
+            MUTED_INDIGO,
+            PINE_TEAL
+    };
 
     private final Color color;
 
@@ -46,6 +91,11 @@ public enum ColorsInUse {
 
     public Color get() {
         return color;
+    }
+
+    public static Color randomBoardColor() {
+        int i = (int) (Math.random() * BOARD_COLORS.length);
+        return BOARD_COLORS[i].get();
     }
 
     public static Color numberColor(String n) {
