@@ -36,8 +36,14 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     }
 
     public void setBoards(Board left, Board right) {
-        BoardLayout leftBoard = new BoardLayout(left);
-        BoardLayout rightBoard = new BoardLayout(right);
+        Color leftColor = ColorsInUse.randomBoardColor();
+        Color rightColor;
+        do {
+            rightColor = ColorsInUse.randomBoardColor();
+        }
+        while (leftColor.equals(rightColor));
+        BoardLayout leftBoard = new BoardLayout(left, leftColor);
+        BoardLayout rightBoard = new BoardLayout(right, rightColor);
         centerPanel.add(Box.createHorizontalGlue());
         centerPanel.add(leftBoard);
         centerPanel.add(Box.createHorizontalStrut(50)); // gap
