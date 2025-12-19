@@ -1,6 +1,7 @@
 package main.java.controller;
 
 import main.java.model.Board;
+import main.java.model.Question;
 import main.java.view.overlays.*;
 
 public class OverlayController {
@@ -39,6 +40,11 @@ public class OverlayController {
         overlay.open();
     }
 
+    public void showAddEditOverlay(Question question) {
+        AddEditQuestionOverlay overlay = new AddEditQuestionOverlay(nav, question);
+        overlay.open();
+    }
+
     //method to choose the current overlay based on the enum types
         private OverlayView getOverlay(OverlayType type) {
             OverlayView overlay = null;
@@ -46,7 +52,7 @@ public class OverlayController {
                 overlay = new SettingsOverlay(nav);
             }
             if (type == OverlayType.ADD_EDIT_QUESTION) {
-                overlay = new NYI_AddEditQuestionOverlay(nav);
+                overlay = new AddEditQuestionOverlay(nav, null); //if this is called through generic showOverlay, we assume it's for adding a new question
             }
             if (type == OverlayType.VIEW_QUESTION) {
                 overlay = new ViewQuestionOverlay(nav);

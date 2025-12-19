@@ -1,6 +1,7 @@
 package main.java.view;
 
 import main.java.controller.NavigationController;
+import main.java.controller.OverlayController;
 import main.java.controller.QuestionManagerController;
 import main.java.model.Question;
 import main.java.model.SysData;
@@ -57,8 +58,13 @@ public class QuestionManagerScreen extends JPanel {
         //these 2 classes need to be created to handle the buttons in the table (this is the standard way to do it in swing)
         questionsTable.getColumnModel().getColumn(4).setCellRenderer(new TblBtnRenderer());
         questionsTable.getColumnModel().getColumn(4).setCellEditor(new TblBtnEditor(questionsTable, new TableActionListener() {
+
+            // when edit button is clicked, open the overlay with the question data
             @Override
             public void onEdit(int row) {
+                int id = (int) tableModel.getValueAt(row, 0);
+                Question q = SysData.getInstance().getQuestionByID(id);
+                OverlayController.getInstance().showAddEditOverlay(q);
                 if (tableActionListener != null) {
                     tableActionListener.onEdit(row);
                 }
@@ -85,6 +91,9 @@ public class QuestionManagerScreen extends JPanel {
         bottomPanel.add(homeButton, BorderLayout.WEST);
         btnAdd = createStyledButton("Add New Question", ColorsInUse.BTN_COLOR.get());
         btnAdd.setPreferredSize(new Dimension(200, 36));
+        btnAdd.addActionListener(e -> {
+            OverlayController.getInstance().showAddEditOverlay(null);
+        });
         bottomPanel.add(btnAdd, BorderLayout.EAST);
 
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
