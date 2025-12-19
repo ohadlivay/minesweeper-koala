@@ -389,6 +389,8 @@ public class GameSession
             }
             if (specialTile instanceof QuestionTile questionTile)
             {
+                message = "Question tile activated and it costed you "+getGameDifficulty().getActivationCost()+" points";
+                notifyListenersAfterAction(message,true,0,getGameDifficulty().getActivationCost());
                 System.out.println("Question tile activated");
                 displayQuestionListener.displayQuestion(parentBoard); //tom i just added the arg here for the new displayQuestion method
             }
