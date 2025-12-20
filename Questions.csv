@@ -1,22 +1,20 @@
-﻿ID,Question,Difficulty,A,B,C,D,Correct Answer
-1,What is the capital of France?,3,Paris,London,Rome,Berlin,A
-2,How many days are in a week?,2,Seven,Five,Ten,Three,A
-3,What color is a primary stop sign?,3,Red,Blue,Green,Yellow,A
-4,Which planet is known as the Red Planet?,4,Mars,Jupiter,Venus,Earth,A
-5,What animal barks?,3,Dog,Cat,Bird,Fish,A
-6,How many sides does a triangle have?,1,Three,Four,Two,One,A
-7,What is 2 + 2?,2,Four,Three,Five,Six,A
-8,Which season follows Spring?,2,Summer,Winter,Autumn,Rainy,A
-9,What do bees produce?,3,Honey,Milk,Eggs,Wool,A
-10,What is the largest ocean?,1,Pacific Ocean,Atlantic Ocean,Indian Ocean,Arctic Ocean,A
-11,What is the opposite of 'hot'?,1,Cold,Warm,Wet,Dry,A
-12,Which finger is usually the longest?,1,Middle,Index,Thumb,Pinky,A
-13,Who wrote Romeo and Juliet?,2,William Shakespeare,Charles Dickens,Jane Austen,Mark Twain,A
-14,Which geometric shape has four equal sides?,2,Square,Circle,Triangle,Oval,A
-15,What is the main source of light for Earth?,1,Sun,Moon,Stars,Electric Lamp,A
-16,What do you use to write with?,2,Pen/Pencil,Eraser,Ruler,Calculator,A
-17,Which bird is a symbol of peace?,3,Dove,Eagle,Crow,Sparrow,A
-18,What is the color of the sky on a clear day?,4,Blue,Green,Black,White,A
-19,What is the largest continent?,3,Asia,Africa,Europe,North America,A
-20,What do you wear on your feet?,2,Shoes,Hat,Gloves,Scarf,A
-,Who abuses the janitors at the university?,1,Tom,Tali,Liran,Ohad,A
+ID,Question,Difficulty,A,B,C,D,Correct Answer
+1,What is the capital of France?,HARD,Paris,London,Rome,Berlin,1
+2,How many days are in a week?,MEDIUM,Seven,Five,Ten,Three,1
+3,What color is a primary stop sign?,HARD,Red,Blue,Green,Yellow,1
+4,Which planet is known as the Red Planet?,MASTER,Mars,Jupiter,Venus,Earth,1
+5,What animal barks?,HARD,Dog,Cat,Bird,Fish,1
+8,Which season follows Spring?,MEDIUM,Summer,Winter,Autumn,Rainy,1
+9,What do bees produce?,HARD,Honey,Milk,Eggs,Wool,1
+10,What is the largest ocean?,EASY,Pacific Ocean,Atlantic Ocean,Indian Ocean,Arctic Ocean,1
+11,What is the opposite of 'hot'?,EASY,Cold,Warm,Wet,Dry,1
+12,Which finger is usually the longest?,EASY,Middle,Index,Thumb,Pinky,1
+13,Who wrote Romeo and Juliet?,MEDIUM,William Shakespeare,Charles Dickens,Jane Austen,Mark Twain,1
+14,Which geometric shape has four equal sides?,MEDIUM,Square,Circle,Triangle,Oval,1
+15,What is the main source of light for Earth?,EASY,Sun,Moon,Stars,Electric Lamp,1
+16,What do you use to write with?,MEDIUM,Pen/Pencil,Eraser,Ruler,Calculator,1
+17,Which bird is a symbol of peace?,HARD,Dove,Eagle,Crow,Sparrow,1
+18,What is the color of the sky on a clear day?,MASTER,Blue,Green,Black,White,1
+19,What is the largest continent?,HARD,Asia,Africa,Europe,North America,1
+20,What do you wear on your feet?,MEDIUM,Shoes,Hat,Gloves,Scarf,1
+21,dfdsdsf,EASY,dsfsdf,dsf,dsf,dsf,1

@@ -45,6 +45,11 @@ public class OverlayController {
         overlay.open();
     }
 
+    public void showDeleteQuestionOverlay(Question question) {
+        DeleteQuestionOverlay overlay = new DeleteQuestionOverlay(nav, question);
+        overlay.open();
+    }
+
     //method to choose the current overlay based on the enum types
         private OverlayView getOverlay(OverlayType type) {
             OverlayView overlay = null;

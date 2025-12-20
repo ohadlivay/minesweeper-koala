@@ -18,8 +18,6 @@ public class QuestionManagerScreen extends JPanel {
 
     private final NavigationController nav;
     private TableActionListener tableActionListener;
-
-
     private JPanel mainPanel;
     private JTable questionsTable;
     private DefaultTableModel tableModel;
@@ -72,6 +70,13 @@ public class QuestionManagerScreen extends JPanel {
 
             @Override
             public void onDelete(int row) {
+                int id = (int) tableModel.getValueAt(row, 0);
+                Question q = SysData.getInstance().getQuestionByID(id);
+                if (q != null) {
+                    OverlayController.getInstance().showDeleteQuestionOverlay(q);
+                } else {
+                    System.err.println("Could not find question with ID: " + id);
+                }
                 if (tableActionListener != null) {
                     tableActionListener.onDelete(row);
                 }
