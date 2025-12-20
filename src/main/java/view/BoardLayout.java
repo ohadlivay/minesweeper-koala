@@ -76,28 +76,21 @@ public class BoardLayout extends JPanel implements TurnListener {
         repaint();
     }
 
+    //Update the board based on turn changes
     @Override
     public void updateTurn() {
-        if (board.getTurn()) {
-            //This turn
-            setBorder(BorderFactory.createMatteBorder(
-                    5,5,5,5,
-                    ColorsInUse.BOARD_ACTIVE_BORDER.get())   // translucent yellow
-            );
-            updateTileEnabledState(true);
-        } else {
-            //not this turn
-            setBorder(BorderFactory.createMatteBorder(
-                    5,5,5,5,
-                    ColorsInUse.BOARD_BORDER_DEFAULT.get()
-            )); // translucent black
+        boolean turn = board.getTurn();
 
-            updateTileEnabledState(false);
-        }
+        setBorder(BorderFactory.createMatteBorder(
+                5,5,5,5,
+                ColorsInUse.getBoardBorderColor(turn))
+        );
+        updateTileEnabledState(turn);
         repaint();
         revalidate();
     }
 
+    //Enable or disable tiles based on turn
     private void updateTileEnabledState(boolean turn) {
         for (TileView[] tileViews : tileViewGrid) {
             for (TileView tileView : tileViews) {

@@ -3,7 +3,7 @@ import org.junit.Test;
 import main.java.model.Tile;
 
 
-public class TileViewTest {
+public class TileViewTurnTest {
 
     // Test if the setTileTurn method calls the correct methods:
     // Check if the recolorTile and uncolorTile methods are called correctly

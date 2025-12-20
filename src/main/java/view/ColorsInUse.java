@@ -2,6 +2,8 @@ package main.java.view;
 
 import java.awt.Color;
 
+
+//color handling is done here
 public enum ColorsInUse {
 
     BG_COLOR(new Color(20, 20, 20)),
@@ -96,6 +98,13 @@ public enum ColorsInUse {
     public static Color randomBoardColor() {
         int i = (int) (Math.random() * BOARD_COLORS.length);
         return BOARD_COLORS[i].get();
+    }
+
+    public static Color getBoardBorderColor(boolean turn) {
+        if (turn)
+            return BOARD_ACTIVE_BORDER.get();
+        else
+            return BOARD_BORDER_DEFAULT.get();
     }
 
     public static Color numberColor(String n) {
