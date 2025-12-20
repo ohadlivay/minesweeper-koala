@@ -42,7 +42,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         contentPanel.setBackground(ColorsInUse.BG_COLOR.get());
         contentPanel.setPreferredSize(new Dimension(800, 550));
 
-        String titleText = isEditing ? "Editing Question " + existingQuestion.getId() : "Adding Question " + SysData.getInstance().getMaxId() + 1;
+        String titleText = isEditing ? "Editing Question " + existingQuestion.getId() : "Adding Question " + ((int)SysData.getInstance().getMaxId() + 1);
         JLabel titleLabel = new JLabel(titleText, SwingConstants.CENTER);
         titleLabel.setFont(FontsInUse.PIXEL.getSize(40f));
         titleLabel.setForeground(ColorsInUse.TEXT.get());
@@ -70,7 +70,6 @@ public class AddEditQuestionOverlay extends OverlayView {
         questionArea.setForeground(ColorsInUse.TEXT.get());
         questionArea.setCaretColor(ColorsInUse.TEXT.get());
         questionArea.setBorder(new EmptyBorder(5, 5, 5, 5));
-        questionArea.setBorder(new LineBorder(ColorsInUse.TEXT.get(), 1));
         questionArea.setPreferredSize(new Dimension(600, 400));
 
         JScrollPane scrollPane = new JScrollPane(questionArea);
@@ -131,9 +130,9 @@ public class AddEditQuestionOverlay extends OverlayView {
         //bottom save and delete buttons
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 0));
         btnPanel.setOpaque(false);
-        JButton saveBtn = createActionButton("SAVE", new Color(50, 150, 50));
+        JButton saveBtn = createActionButton("SAVE", ColorsInUse.CONFIRM.get());
         saveBtn.addActionListener(e -> onSave());
-        JButton cancelBtn = createActionButton("CANCEL", new Color(150, 50, 50));
+        JButton cancelBtn = createActionButton("CANCEL", ColorsInUse.DENY.get());
         cancelBtn.addActionListener(e -> close());
         btnPanel.add(cancelBtn);
         btnPanel.add(saveBtn);
