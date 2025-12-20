@@ -2,6 +2,7 @@ package main.java.view;
 
 import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
+import main.java.controller.OverlayController;
 import main.java.model.*;
 
 import javax.swing.*;
@@ -216,8 +217,10 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
                     JOptionPane.YES_NO_OPTION
             );
             if (option == JOptionPane.YES_OPTION) {
+                OverlayController.getInstance().closeCurrentOverlay();
                 nav.goToHome();
-        }
+            }
+
         });
 
         return button;

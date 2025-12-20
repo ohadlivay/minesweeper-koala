@@ -7,6 +7,7 @@ import main.java.view.overlays.*;
 public class OverlayController {
     private static OverlayController instance;
     private final NavigationController nav;
+    private OverlayView currentOverlay;
 
     private OverlayController(NavigationController nav) {
         this.nav = nav;
@@ -26,27 +27,42 @@ public class OverlayController {
         return instance;
     }
 
+    public void closeCurrentOverlay() {
+        if (currentOverlay != null) {
+            currentOverlay.close(); //triggers the unlocking of the main screen
+            currentOverlay = null;
+        }
+    }
+
     public void showOverlay(OverlayType type) {
+        closeCurrentOverlay(); //closes the previous overlay if its still open
         OverlayView overlay = getOverlay(type);
         if (overlay != null) {
+            this.currentOverlay = overlay;
             overlay.open();
         }
     }
 
     //this overlay specifically needs the current board
     public void showQuestionOverlay(Board board) {
+        closeCurrentOverlay();
         ViewQuestionOverlay overlay = new ViewQuestionOverlay(nav);
+        this.currentOverlay = overlay;
         overlay.displayQuestion(board);
         overlay.open();
     }
 
     public void showAddEditOverlay(Question question) {
+        closeCurrentOverlay();
         AddEditQuestionOverlay overlay = new AddEditQuestionOverlay(nav, question);
+        this.currentOverlay = overlay;
         overlay.open();
     }
 
     public void showDeleteQuestionOverlay(Question question) {
+        closeCurrentOverlay();
         DeleteQuestionOverlay overlay = new DeleteQuestionOverlay(nav, question);
+        this.currentOverlay = overlay;
         overlay.open();
     }
 
