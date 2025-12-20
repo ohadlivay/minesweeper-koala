@@ -229,7 +229,7 @@ public class GameSession
         //case tile is a mine
         if(tile instanceof MineTile){
             System.out.println("Flagging and revealing mine");
-            message = "Excellend! Mine neutralized.";
+            message = "Excellent! Mine neutralized.";
             this.gainPoints(1);
             parentBoard.reveal(tile);
             this.changeTurn();   //revealing a mine by flagging does change a turn!
