@@ -11,12 +11,13 @@ import main.java.view.GameScreen;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Random;
 
-public class GameSessionController implements DisplayQuestionListener{
+public class GameSessionController implements DisplayQuestionListener, InputBlockListener{
     private GameSession session;
     private boolean isBlocked = false;
-
+    private ArrayList<InputBlockListener> blockListeners = new ArrayList<>();
     private static GameSessionController instance;
 
     private GameSessionController() {
@@ -32,11 +33,20 @@ public class GameSessionController implements DisplayQuestionListener{
 
     public void setBlocked(boolean blocked) {
         this.isBlocked = blocked;
+        for (InputBlockListener listener : blockListeners) {
+            listener.onInputBlock(blocked);
+        }
+    }
+
+    public void addInputBlockListener(InputBlockListener listener) {
+        this.blockListeners.add(listener);
     }
 
     // retrieves user inputs and sets up a new game session
     public void setupGame(String leftName, String rightName, GameDifficulty difficulty) {
+        this.blockListeners.clear();
         session = GameSession.getInstance();
+        this.isBlocked = false;
         assert session != null;
         if( !(session.setLeftPlayerName(leftName) && session.setRightPlayerName(rightName) && session.setGameDifficulty(difficulty))) {
             System.out.println("couldnt set either difficulty or player names");
@@ -88,7 +98,10 @@ public class GameSessionController implements DisplayQuestionListener{
     }
 
 
+    @Override
+    public void onInputBlock(boolean isBlocked) {
 
+    }
 }
 
 

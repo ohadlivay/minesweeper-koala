@@ -25,6 +25,8 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     private JLabel pointsLabel;
     private JLabel feedLabel;
 
+    private JButton endGameButton;
+
     public GameScreen(NavigationController nav, GameSession session) {
         this.nav = nav;
         this.session = session;
@@ -164,12 +166,19 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         bottomPanel.add(homeButton, BorderLayout.WEST);
 
         // TEMP BUTTON FOR TESTING GAME SAVES
-        JButton endGameButton = new JButton("End Game");
+        endGameButton = new JButton("End Game");
         endGameButton.setBackground(ColorsInUse.BTN_COLOR.get());
         endGameButton.setFocusPainted(false);
         endGameButton.setPreferredSize(new Dimension(72, 36));
         endGameButton.setContentAreaFilled(true);
         endGameButton.setForeground(ColorsInUse.TEXT.get());
+
+        GameSessionController.getInstance().addInputBlockListener(isBlocked -> {
+            if (endGameButton != null) {
+                endGameButton.setEnabled(!isBlocked);
+            }
+        });
+
         bottomPanel.add(endGameButton, BorderLayout.EAST);
 
         JPanel southContainer = new JPanel();
