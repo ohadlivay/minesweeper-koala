@@ -1,5 +1,6 @@
 package main.java.view.overlays;
 
+import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.controller.QuestionController;
 import main.java.model.*;
@@ -33,9 +34,16 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
 
     public ViewQuestionOverlay(NavigationController navigationController) {
         super(navigationController, false);
+        GameSessionController.getInstance().setBlocked(true); //blocks board interaction
         initUI();
         displayQuestion(activeBoard);
         buttonSubmit.addActionListener(e -> onSubmit());
+    }
+
+    @Override
+    public void close() {
+        GameSessionController.getInstance().setBlocked(false);
+        super.close();
     }
 
     public void setBoard(Board board) {

@@ -15,6 +15,7 @@ import java.util.Random;
 
 public class GameSessionController implements DisplayQuestionListener{
     private GameSession session;
+    private boolean isBlocked = false;
 
     private static GameSessionController instance;
 
@@ -27,6 +28,10 @@ public class GameSessionController implements DisplayQuestionListener{
             GameSessionController.instance = new GameSessionController();
         }
         return GameSessionController.instance;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.isBlocked = blocked;
     }
 
     // retrieves user inputs and sets up a new game session
@@ -46,6 +51,9 @@ public class GameSessionController implements DisplayQuestionListener{
     }
 
     public void tileRightClick(Tile tile) {
+        if(isBlocked) {
+            return;
+        }
 
         if(!tile.getParentBoard().getTurn()){
             return;
@@ -54,6 +62,9 @@ public class GameSessionController implements DisplayQuestionListener{
     }
 
     public void tileLeftClick(Tile tile) {
+        if(isBlocked) {
+            return;
+        }
         if(!tile.getParentBoard().getTurn()){
             return;
         }
