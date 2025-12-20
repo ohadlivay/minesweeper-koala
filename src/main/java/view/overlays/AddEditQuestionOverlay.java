@@ -92,7 +92,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         btnEasy = createKoalaButton("/green-koala.png", "Easy", QuestionDifficulty.EASY);
         btnMedium = createKoalaButton("/yellow-koala.png", "Medium", QuestionDifficulty.MEDIUM);
         btnHard = createKoalaButton("/red-koala.png", "Hard", QuestionDifficulty.HARD);
-        btnMaster = createKoalaButton("/red-koala.png", "Master", QuestionDifficulty.MASTER);
+        btnMaster = createKoalaButton("/master-koala.png", "Master", QuestionDifficulty.MASTER);
         difficultyPanel.add(btnEasy);
         difficultyPanel.add(btnMedium);
         difficultyPanel.add(btnHard);
@@ -182,6 +182,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         btnEasy.setBorder(new LineBorder(selectedDifficulty == QuestionDifficulty.EASY ? selectedColor : unselectedColor, 3));
         btnMedium.setBorder(new LineBorder(selectedDifficulty == QuestionDifficulty.MEDIUM ? selectedColor : unselectedColor, 3));
         btnHard.setBorder(new LineBorder(selectedDifficulty == QuestionDifficulty.HARD ? selectedColor : unselectedColor, 3));
+        btnMaster.setBorder(new LineBorder(selectedDifficulty == QuestionDifficulty.MASTER ? selectedColor : unselectedColor, 3));
     }
 
     private void populateFields() {
