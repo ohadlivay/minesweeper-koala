@@ -29,25 +29,22 @@ public class GameSaveFlowTest {
     @Before
     public void setUp() {
         try {
-            // 1. קבלת מופעי סינגלטון ואיפוס
+            // Clear SysData and GameSession
             sys = SysData.getInstance();
             sys.clearGames();
 
-            // 2. אתחול GameSession בצורה מבוקרת
+            // Create a GameSession instance
             initializedSession = GameSession.getInstance();
-            // מאתחל את פרטי המשחק כמו ש-startNewGame עושה
+            // Set up a game session with known parameters
             initializedSession.setLeftPlayerName("George");
             initializedSession.setRightPlayerName("Ali");
             initializedSession.setGameDifficulty(GameDifficulty.HARD);
-            initializedSession.initializeBoards(); // מאתחל את leftBoard ו-rightBoard
+            initializedSession.initializeBoards();// Initialize boards
 
             controller = GameSessionController.getInstance();
-
-            // 3. יצירת NavigationController דמה (Stub)
-            // יצירת JFrame דמה היא הכרחית לאתחול תקין של NavigationController Singleton
+            // Create a stub NavigationController
             navStub = NavigationController.getInstance(new JFrame());
-
-            // 4. ניקוי קובץ ה-CSV מהרצות קודמות
+            // Ensure no pre-existing CSV file
             File tempFile = new File(path);
             if (tempFile.exists()) {
                 tempFile.delete();
