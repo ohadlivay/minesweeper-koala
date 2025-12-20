@@ -213,8 +213,13 @@ public class AddEditQuestionOverlay extends OverlayView {
         }
         else
         {
-            int newId = SysData.getInstance().getMaxId() + 1;
-            Question newQ = new Question(newId, qText, selectedDifficulty, a1, a2, a3, a4);
+            Question newQ = qmc.userAddedQuestion();
+            newQ.setQuestionText(qText);
+            newQ.setDifficulty(selectedDifficulty);
+            newQ.setAnswer1(a1);
+            newQ.setAnswer2(a2);
+            newQ.setAnswer3(a3);
+            newQ.setAnswer4(a4);
             SysData.getInstance().addQuestion(newQ);
             try {
                 QuestionCSVManager.rewriteQuestionsToCSVFromSysData();
