@@ -2,9 +2,7 @@ package main.java.controller;
 
 import main.java.model.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class QuestionController {
     private static QuestionController instance;
@@ -27,31 +25,29 @@ public class QuestionController {
     Guarantees that the question was not asked in this game session.
     this will be used by any class that implements displayQuestionListener using the method displayQuestion (for tali)
      */
-    public Question pollQuestion(){
+    public Question pollQuestion() {
         SysData sys = SysData.getInstance();
-        ArrayList<Question> questions = (ArrayList<Question>) sys.getQuestions();
+        List<Question> questions = sys.getQuestions();
 
-        // Safety check: Avoid crash if SysData is empty
-        if (questions == null || questions.isEmpty()) {
-            return null;
+        if (questions == null || questions.isEmpty()) return null;
+
+        // Check if we need to reset first
+        if (usedQuestions.size() >= questions.size()) {
+            restartUsedQuestions();
         }
 
-        // Iterate to find the first question NOT in the used set
-        for (Question question : questions){
-            // FIX: Java uses .contains(), not "not in"
-            if(!usedQuestions.contains(question)){
-                usedQuestions.add(question);
-                return question;
+        // Create a list of available indices
+        List<Integer> availableIndices = new ArrayList<>();
+        for (int i = 0; i < questions.size(); i++) {
+            if (!usedQuestions.contains(questions.get(i))) {
+                availableIndices.add(i);
             }
         }
 
-        /* If loop finishes, all questions were used.
-        Refresh and repeat!
-         */
-        restartUsedQuestions();
+        // Pick a random index from the available ones
+        int randomIndex = availableIndices.get(new Random().nextInt(availableIndices.size()));
+        Question q = questions.get(randomIndex);
 
-        // FIX: Use .get(0) to grab the first question after reset
-        Question q = questions.get(0);
         usedQuestions.add(q);
         return q;
     }
