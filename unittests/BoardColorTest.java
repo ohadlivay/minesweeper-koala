@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 
 /*
 this test checks the following:
-- that the randomBoardColor() method returns a Color
 - that the returned Color is from the predefined set of board colors
 - that multiple calls to randomBoardColor produce different colors, indicating randomness
  */
@@ -34,7 +33,6 @@ public class BoardColorTest {
         //we run the method multiple times to ensure randomness
         for (int i = 0; i < 50; i++) {
             Color color = ColorsInUse.randomBoardColor();
-            assertNotNull("Color should not be null", color);
             assertTrue("Color should be from the allowed set", allowedColors.contains(color));
             returnedColors.add(color);
         }
