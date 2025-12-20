@@ -27,7 +27,7 @@ public class AddEditQuestionOverlay extends OverlayView {
     private JTextField answer4;
 
     public AddEditQuestionOverlay(NavigationController navigationController, Question q) {
-        super(navigationController);
+        super(navigationController, true);
         this.existingQuestion = q;
         this.isEditing = (q != null);
         if (isEditing){

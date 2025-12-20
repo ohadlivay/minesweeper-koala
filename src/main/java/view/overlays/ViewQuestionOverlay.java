@@ -32,7 +32,7 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
     private Question currentQuestion;
 
     public ViewQuestionOverlay(NavigationController navigationController) {
-        super(navigationController);
+        super(navigationController, false);
         initUI();
         displayQuestion(activeBoard);
         buttonSubmit.addActionListener(e -> onSubmit());

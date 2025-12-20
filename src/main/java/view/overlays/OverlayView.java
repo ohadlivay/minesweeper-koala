@@ -15,8 +15,8 @@ public abstract class OverlayView extends JDialog {
 
     protected final NavigationController nav;
 
-    public OverlayView(NavigationController nav) {
-        super(nav.getVisFrame(), true); //sets the overlay to always be modal
+    public OverlayView(NavigationController nav, boolean isModal) {
+        super(nav.getVisFrame(), isModal); // we don't want all overlays to be modals
         this.nav = nav;
         initBaseUI();
     }

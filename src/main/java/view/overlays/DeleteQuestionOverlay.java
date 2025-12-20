@@ -16,7 +16,7 @@ import java.awt.*;
 public class DeleteQuestionOverlay extends OverlayView {
     private final Question question;
     public DeleteQuestionOverlay(NavigationController navigationController, Question question) {
-        super(navigationController);
+        super(navigationController, true);
         this.question = question;
         initUI();
     }

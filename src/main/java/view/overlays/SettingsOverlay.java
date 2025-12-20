@@ -26,7 +26,7 @@ public class SettingsOverlay extends OverlayView {
     private GameDifficulty difficulty;
 
     public SettingsOverlay(NavigationController nav) {
-        super(nav);
+        super(nav, true);
         initUI();
 
         buttonStart.addActionListener(e -> onOK());
