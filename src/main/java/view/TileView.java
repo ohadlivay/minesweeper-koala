@@ -17,6 +17,7 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
     private Color tileColor;
 
 
+
     public TileView(Tile tile, int dynamicSize) {
         this.tile = tile;
         this.dynamicSize = dynamicSize;
@@ -27,7 +28,6 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         mouseClicked();
     }
 
-    //Tali I made the tile color random (at BoardLayout/populateBoard), don't hate me   --Liran :)
     public TileView(Tile tile, int dynamicSize, Color tileColor) {
         this.tile = tile;
         this.dynamicSize = dynamicSize;
@@ -122,11 +122,11 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
 
 
     // 2 methods only used to show if board is active or not, --dont set tileColor here!--
-    public void recolorTile() {
+    protected void recolorTile() {
         setBackground(tileColor);
     }
 
-    public void uncolorTile() {
+    protected void uncolorTile() {
         setBackground(Color.black);
     }
 

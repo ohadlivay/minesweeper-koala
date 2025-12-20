@@ -73,10 +73,20 @@ tali's delete/edit/add questions.
         so this will take the user input, delete the old question, create a new Question (same id) and save it to csv.
          */
         SysData sys = SysData.getInstance();
+        Question ogQuestion = sys.getQuestionByID(id);
+        int ogId = sys.getQuestions().indexOf(ogQuestion);
+
         boolean success = sys.deleteQuestion(sys.getQuestionByID(id));
         if(!success) {return false;}
 
-        sys.addQuestion(new Question(id,  questionText, difficulty, answer1, answer2, answer3, answer4));
+        Question newQuestion = new Question(id,  questionText, difficulty, answer1, answer2, answer3, answer4);
+        if (ogId!=-1 && ogId <= sys.getQuestions().size()) {
+            sys.getQuestions().add(ogId, newQuestion);
+        }
+        else
+        {
+            sys.addQuestion(newQuestion);
+        }
         try{
             QuestionCSVManager.rewriteQuestionsToCSVFromSysData();
         } catch(Exception e){

@@ -7,7 +7,7 @@ import java.awt.*;
 public class TblBtnEditor extends AbstractCellEditor implements TableCellEditor {
     private final TblBtnPanel panel;
     private final JTable table;
-    private final TableActionListener listener; // or move interface out
+    private final TableActionListener listener;
 
     private int editingModelRow = -1;
 
@@ -19,6 +19,10 @@ public class TblBtnEditor extends AbstractCellEditor implements TableCellEditor 
         JButton del  = new JButton("Del");
         edit.setFocusable(false);
         del.setFocusable(false);
+        del.setBackground(ColorsInUse.DENY.get());
+        del.setFont(FontsInUse.PIXEL.getSize(18f));
+        del.setForeground(ColorsInUse.TEXT.get());
+        edit.setFont(FontsInUse.PIXEL.getSize(18f));
 
         panel = new TblBtnPanel(edit, del);
 
@@ -36,7 +40,6 @@ public class TblBtnEditor extends AbstractCellEditor implements TableCellEditor 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value,
                                                  boolean isSelected, int row, int column) {
-        // Convert view row -> model row (important if you later add sorting/filtering)
         editingModelRow = table.convertRowIndexToModel(row);
         panel.updateColors(true, table, table.getBackground());
         return panel;

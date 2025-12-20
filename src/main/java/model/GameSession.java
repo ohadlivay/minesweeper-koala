@@ -194,7 +194,7 @@ public class GameSession
     //Methods for the gameplay
     private boolean isGameOver()
     {
-        return getLeftBoard().allMinesRevealed() || getRightBoard().allMinesRevealed() || getHealthPool() <= 0;
+        return getHealthPool() <= 0||getLeftBoard().allMinesRevealed() || getRightBoard().allMinesRevealed();
     }
     private void initiateGameOver()
     {
@@ -390,7 +390,7 @@ public class GameSession
             if (specialTile instanceof QuestionTile questionTile)
             {
                 message = "Question tile activated and it costed you "+getGameDifficulty().getActivationCost()+" points";
-                notifyListenersAfterAction(message,true,0,getGameDifficulty().getActivationCost());
+                notifyListenersAfterAction(message,true,0,-getGameDifficulty().getActivationCost());
                 System.out.println("Question tile activated");
                 displayQuestionListener.displayQuestion(parentBoard); //tom i just added the arg here for the new displayQuestion method
             }

@@ -1,6 +1,7 @@
 package main.java.view;
 
 import main.java.controller.NavigationController;
+import main.java.controller.OverlayController;
 import main.java.controller.QuestionManagerController;
 import main.java.model.Question;
 import main.java.model.SysData;
@@ -11,19 +12,25 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class QuestionManagerScreen extends JPanel {
 
     private final NavigationController nav;
     private TableActionListener tableActionListener;
-
-
     private JPanel mainPanel;
     private JTable questionsTable;
     private DefaultTableModel tableModel;
     private JButton btnAdd;
     private JButton homeButton;
+
+    //fields required for page navigation
+    private List<Question> allQuestions = new ArrayList<>();
+    private int currentPage = 1;
+    private final int rowsPerPage = 10;
+    private JLabel pageLabel;
+    private JButton btnPrev, btnNext;
 
     public QuestionManagerScreen(NavigationController navigationController) {
         this.nav = navigationController;
@@ -57,8 +64,13 @@ public class QuestionManagerScreen extends JPanel {
         //these 2 classes need to be created to handle the buttons in the table (this is the standard way to do it in swing)
         questionsTable.getColumnModel().getColumn(4).setCellRenderer(new TblBtnRenderer());
         questionsTable.getColumnModel().getColumn(4).setCellEditor(new TblBtnEditor(questionsTable, new TableActionListener() {
+
+            // when edit button is clicked, open the overlay with the question data
             @Override
             public void onEdit(int row) {
+                int id = (int) tableModel.getValueAt(row, 0);
+                Question q = SysData.getInstance().getQuestionByID(id);
+                OverlayController.getInstance().showAddEditOverlay(q);
                 if (tableActionListener != null) {
                     tableActionListener.onEdit(row);
                 }
@@ -66,16 +78,32 @@ public class QuestionManagerScreen extends JPanel {
 
             @Override
             public void onDelete(int row) {
+                int id = (int) tableModel.getValueAt(row, 0);
+                Question q = SysData.getInstance().getQuestionByID(id);
+                if (q != null) {
+                    OverlayController.getInstance().showDeleteQuestionOverlay(q);
+                } else {
+                    System.err.println("Could not find question with ID: " + id);
+                }
                 if (tableActionListener != null) {
                     tableActionListener.onDelete(row);
                 }
             }
         }));
 
+        JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
+        centerPanel.setOpaque(false);
+
         JScrollPane scrollPane = new JScrollPane(questionsTable);
         scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR.get());
         scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
+
+        //pages navigation panel
+        JPanel pagesPanel = createPagesPanel();
+        centerPanel.add(pagesPanel, BorderLayout.SOUTH);
+
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setOpaque(false);
@@ -85,6 +113,9 @@ public class QuestionManagerScreen extends JPanel {
         bottomPanel.add(homeButton, BorderLayout.WEST);
         btnAdd = createStyledButton("Add New Question", ColorsInUse.BTN_COLOR.get());
         btnAdd.setPreferredSize(new Dimension(200, 36));
+        btnAdd.addActionListener(e -> {
+            OverlayController.getInstance().showAddEditOverlay(null);
+        });
         bottomPanel.add(btnAdd, BorderLayout.EAST);
 
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
@@ -92,18 +123,80 @@ public class QuestionManagerScreen extends JPanel {
         add(mainPanel, BorderLayout.CENTER);
     }
 
-    //fetch questions from SysData with the help of the controller
+    //store all questions and refresh the table to show the first page
     public void populateTable(List<Question> questions) {
-        tableModel.setRowCount(0);
-        if (questions != null) {
-            for (Question q : questions) {
-                Object[] rowData = {q.getId(), q.getQuestionText(), q.getDifficulty(), q.getAnswer1(), ""};
-                tableModel.addRow(rowData);
-                // hey tali should you save the questions at this point? or some PK?
-                // so when user deletes, my controller can know which question he meant to delete
-                // for now, use QuestionManagerController's userDeletedQuestion(Question)
-            }
+        if (questions == null) {
+            this.allQuestions = new ArrayList<>();
+        } else {
+            this.allQuestions = new ArrayList<>(questions);
         }
+        this.currentPage = 1;
+        refreshPage();
+    }
+
+    private JPanel createPagesPanel() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        panel.setOpaque(false);
+
+        btnPrev = createStyledButton("<", ColorsInUse.BTN_COLOR.get());
+        btnPrev.setPreferredSize(new Dimension(50, 36));
+        btnPrev.addActionListener(e -> {
+            if (currentPage > 1) {
+                currentPage--;
+                refreshPage();
+            }
+        });
+
+        pageLabel = new JLabel("Page 1 of 1");
+        pageLabel.setFont(FontsInUse.PIXEL.getSize(20f));
+        pageLabel.setForeground(ColorsInUse.TEXT.get());
+
+        btnNext = createStyledButton(">", ColorsInUse.BTN_COLOR.get());
+        btnNext.setPreferredSize(new Dimension(50, 36));
+        btnNext.addActionListener(e -> {
+            int maxPage = (int) Math.ceil((double) allQuestions.size() / rowsPerPage);
+            if (currentPage < maxPage) {
+                currentPage++;
+                refreshPage();
+            }
+        });
+        panel.add(btnPrev);
+        panel.add(pageLabel);
+        panel.add(btnNext);
+
+        return panel;
+    }
+
+    private void refreshPage() {
+        tableModel.setRowCount(0);
+        if (allQuestions.isEmpty()) {
+            pageLabel.setText("Page 0 of 0");
+            btnPrev.setEnabled(false);
+            btnNext.setEnabled(false);
+            return;
+        }
+
+        int totalQuestions = allQuestions.size();
+        int maxPage = (int) Math.ceil((double) totalQuestions / rowsPerPage);
+
+        //ensure current page is valid
+        if (currentPage > maxPage) currentPage = maxPage;
+        if (currentPage < 1) currentPage = 1;
+
+        int start = (currentPage - 1) * rowsPerPage;
+        int end = Math.min(start + rowsPerPage, totalQuestions);
+
+        //add rows for the current page
+        for (int i = start; i < end; i++) {
+            Question q = allQuestions.get(i);
+            Object[] rowData = {q.getId(), q.getQuestionText(), q.getDifficulty(), q.getAnswer1(), ""};
+            tableModel.addRow(rowData);
+        }
+
+        //update page label and button states
+        pageLabel.setText("Page " + currentPage + " of " + maxPage);
+        btnPrev.setEnabled(currentPage > 1);
+        btnNext.setEnabled(currentPage < maxPage);
     }
 
     private void styleTable(JTable table) {
@@ -115,7 +208,7 @@ public class QuestionManagerScreen extends JPanel {
         table.setRowHeight(45);
         table.setFont(FontsInUse.PIXEL.getSize(20f));
         table.setShowGrid(true);
-        table.setFillsViewportHeight(true);
+        table.setFillsViewportHeight(false);
 
         JTableHeader header = table.getTableHeader();
         header.setBackground(new Color(30, 30, 30));

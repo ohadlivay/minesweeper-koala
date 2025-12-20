@@ -12,6 +12,10 @@ public class TblBtnRenderer implements TableCellRenderer {
         JButton del  = new JButton("Del");
         edit.setFocusable(false);
         del.setFocusable(false);
+        del.setBackground(ColorsInUse.DENY.get());
+        del.setFont(FontsInUse.PIXEL.getSize(18f));
+        del.setForeground(ColorsInUse.TEXT.get());
+        edit.setFont(FontsInUse.PIXEL.getSize(18f));
 
         panel = new TblBtnPanel(edit, del);
     }
