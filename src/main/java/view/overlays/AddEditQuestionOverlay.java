@@ -268,7 +268,12 @@ public class AddEditQuestionOverlay extends OverlayView {
         if (a4.equals(WrongAnswerPlaceholder)) a4 = "";
 
         if (qText.isEmpty() || a1.isEmpty() || a2.isEmpty() || a3.isEmpty() || a4.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "All fields must be filled!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "All text fields must be filled!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (selectedDifficulty == null) {
+            JOptionPane.showMessageDialog(this, "Please select a difficulty!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -292,6 +297,7 @@ public class AddEditQuestionOverlay extends OverlayView {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            qmc.refreshAndJumpToLastPage();
         }
 
         qmc.refreshQuestionList();

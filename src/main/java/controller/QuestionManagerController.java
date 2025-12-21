@@ -34,8 +34,16 @@ public class QuestionManagerController {
         if (view == null)
             return;
         List<Question> questions = SysData.getInstance().getQuestions();
-        assert questions != null;
         view.populateTable(questions);
+    }
+
+    // jumps to last page after refresh
+    public void refreshAndJumpToLastPage() {
+        if (view == null)
+            return;
+        List<Question> questions = SysData.getInstance().getQuestions();
+        view.populateTable(questions);
+        view.jumpToLastPageAndPopulate(questions);
     }
 /*
 tali's delete/edit/add questions.

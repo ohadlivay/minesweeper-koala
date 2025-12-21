@@ -130,7 +130,25 @@ public class QuestionManagerScreen extends JPanel {
         } else {
             this.allQuestions = new ArrayList<>(questions);
         }
-        this.currentPage = 1;
+        //make sure the current page isnt out of bounds after changes (like delete)
+        int maxPage = (int) Math.ceil((double) allQuestions.size() / rowsPerPage);
+        if (currentPage > maxPage) {
+            currentPage = Math.max(1, maxPage);
+        }
+        refreshPage();
+    }
+
+    //for jumping to last page after adding a question
+    public void jumpToLastPageAndPopulate(List<Question> questions) {
+        if (questions == null) {
+            this.allQuestions = new ArrayList<>();
+        } else {
+            this.allQuestions = new ArrayList<>(questions);
+        }
+        this.currentPage = (int) Math.ceil((double) allQuestions.size() / rowsPerPage);
+        if (this.currentPage < 1) {
+            this.currentPage = 1;
+        }
         refreshPage();
     }
 
@@ -141,10 +159,15 @@ public class QuestionManagerScreen extends JPanel {
         btnPrev = createStyledButton("<", ColorsInUse.BTN_COLOR.get());
         btnPrev.setPreferredSize(new Dimension(50, 36));
         btnPrev.addActionListener(e -> {
+            int maxPage = (int) Math.ceil((double) allQuestions.size() / rowsPerPage);
             if (currentPage > 1) {
                 currentPage--;
-                refreshPage();
             }
+            else
+            {
+                currentPage = Math.max(1, maxPage); // if this is the first page, go to last page (carousel)
+            }
+            refreshPage();
         });
 
         pageLabel = new JLabel("Page 1 of 1");
@@ -157,8 +180,12 @@ public class QuestionManagerScreen extends JPanel {
             int maxPage = (int) Math.ceil((double) allQuestions.size() / rowsPerPage);
             if (currentPage < maxPage) {
                 currentPage++;
-                refreshPage();
             }
+            else
+            {
+                currentPage = 1; //if this is the last page, go back to first page (carousel)
+            }
+            refreshPage();
         });
         panel.add(btnPrev);
         panel.add(pageLabel);
@@ -193,10 +220,11 @@ public class QuestionManagerScreen extends JPanel {
             tableModel.addRow(rowData);
         }
 
-        //update page label and button states
+        //buttons are only enabled if there is only 1 page
         pageLabel.setText("Page " + currentPage + " of " + maxPage);
-        btnPrev.setEnabled(currentPage > 1);
-        btnNext.setEnabled(currentPage < maxPage);
+        boolean canScroll = maxPage > 1;
+        btnPrev.setEnabled(canScroll);
+        btnNext.setEnabled(canScroll);
     }
 
     private void styleTable(JTable table) {
