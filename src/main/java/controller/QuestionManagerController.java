@@ -1,7 +1,3 @@
-/*
-NYI = NOT YET IMPLEMENTED
- */
-
 package main.java.controller;
 
 import main.java.model.Question;
