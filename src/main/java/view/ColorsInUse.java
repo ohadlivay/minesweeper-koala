@@ -13,6 +13,8 @@ public enum ColorsInUse {
     INPUT_FIELD(Color.BLACK),
     CONFIRM(new Color(25, 135, 84)),
     DENY(new Color(220, 53, 69)),
+    TEXT_BOX_BORDER(new Color(91, 90, 90, 200)),
+    PLACEHOLDER_TEXT(new Color(255, 255, 255, 137)),
 
     BOARD_BACKGROUND(new Color(32, 32, 32)),
     BOARD_BORDER_DEFAULT(new Color(0, 0, 0, 150)),

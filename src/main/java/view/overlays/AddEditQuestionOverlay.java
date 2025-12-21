@@ -11,6 +11,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class AddEditQuestionOverlay extends OverlayView {
     private final Question existingQuestion;
@@ -25,6 +27,10 @@ public class AddEditQuestionOverlay extends OverlayView {
     private JTextField answer2;
     private JTextField answer3;
     private JTextField answer4;
+    private JTextField [] wrongAnswers;
+    private String QuestionPlaceholder;
+    private String CorrectAnswerPlaceholder;
+    private String WrongAnswerPlaceholder;
 
     public AddEditQuestionOverlay(NavigationController navigationController, Question q) {
         super(navigationController, true);
@@ -59,6 +65,10 @@ public class AddEditQuestionOverlay extends OverlayView {
         gbc.gridx = 0;
         gbc.gridy = 0;
 
+        QuestionPlaceholder = "Write your question here...";
+        CorrectAnswerPlaceholder = "Correct Answer...";
+        WrongAnswerPlaceholder = "Wrong Answer...";
+
         //question textbox is here
         formPanel.add(createLabel("Question Text:"), gbc);
         gbc.gridy++;
@@ -69,8 +79,12 @@ public class AddEditQuestionOverlay extends OverlayView {
         questionArea.setBackground(ColorsInUse.BTN_COLOR.get());
         questionArea.setForeground(ColorsInUse.TEXT.get());
         questionArea.setCaretColor(ColorsInUse.TEXT.get());
-        questionArea.setBorder(new EmptyBorder(5, 5, 5, 5));
         questionArea.setPreferredSize(new Dimension(600, 400));
+        questionArea.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1),
+                new EmptyBorder(5, 5, 5, 5)
+        ));
+
 
         JScrollPane scrollPane = new JScrollPane(questionArea);
         scrollPane.setPreferredSize(new Dimension(10, 160));
@@ -98,32 +112,73 @@ public class AddEditQuestionOverlay extends OverlayView {
         difficultyPanel.add(btnHard);
         difficultyPanel.add(btnMaster);
 
-        gbc.insets = new Insets(15, 0, 15, 0);
+        gbc.insets = new Insets(5, 0, 5, 0);
         formPanel.add(difficultyPanel, gbc);
         gbc.gridy++;
 
-        gbc.insets = new Insets(5, 0, 5, 0);
+        gbc.insets = new Insets(4, 0, 4, 0);
         formPanel.add(createLabel("Answers:"), gbc);
         gbc.gridy++;
+
         //answers textboxes are here
         answer1 = createStyledTextField();
         answer1.setBackground(ColorsInUse.CONFIRM.get());
+        answer1.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1),
+                new EmptyBorder(5, 5, 5, 5)
+        ));
+
         formPanel.add(answer1,gbc);
         gbc.gridy++;
 
         answer2 = createStyledTextField();
-        answer2.setBackground(ColorsInUse.DENY.get());
-        formPanel.add(answer2,gbc);
-        gbc.gridy++;
-
         answer3 = createStyledTextField();
-        answer3.setBackground(ColorsInUse.DENY.get());
-        formPanel.add(answer3,gbc);
-        gbc.gridy++;
-
         answer4 = createStyledTextField();
-        answer4.setBackground(ColorsInUse.DENY.get());
-        formPanel.add(answer4,gbc);
+
+        // wrong answers in array for easier styling
+        wrongAnswers = new JTextField[] {answer2, answer3, answer4};
+
+        for (JTextField tf : wrongAnswers) {
+            tf.setBackground(ColorsInUse.DENY.get());
+            tf.setBorder(BorderFactory.createCompoundBorder(
+                    new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1),
+                    new EmptyBorder(5, 5, 5, 5)
+            ));
+
+            formPanel.add(tf,gbc);
+            gbc.gridy++;
+        }
+
+        //I put all wrong answers in an array for easier styling, the comment below can be deleted when confirmed
+//        answer2 = createStyledTextField();
+//        answer2.setBackground(ColorsInUse.DENY.get());
+//        answer2.setBorder(new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1));
+//        formPanel.add(answer2,gbc);
+//        gbc.gridy++;
+//
+//        answer3 = createStyledTextField();
+//        answer3.setBackground(ColorsInUse.DENY.get());
+//        answer3.setBorder(new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1));
+//        formPanel.add(answer3,gbc);
+//        gbc.gridy++;
+//
+//        answer4 = createStyledTextField();
+//        answer4.setBackground(ColorsInUse.DENY.get());
+//        answer4.setBorder(new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1));
+//        formPanel.add(answer4,gbc);
+
+
+        questionArea.setText(QuestionPlaceholder);
+        questionArea.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
+        questionArea.addFocusListener(placeholderListener);
+        answer1.setText(CorrectAnswerPlaceholder);
+        answer1.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
+        answer1.addFocusListener(placeholderListener);
+        for (JTextField tf : wrongAnswers) {
+            tf.setText(WrongAnswerPlaceholder);
+            tf.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
+            tf.addFocusListener(placeholderListener);
+        }
 
         contentPanel.add(formPanel, BorderLayout.CENTER);
 
@@ -187,10 +242,15 @@ public class AddEditQuestionOverlay extends OverlayView {
 
     private void populateFields() {
         questionArea.setText(existingQuestion.getQuestionText());
+        questionArea.setForeground(ColorsInUse.TEXT.get());
         answer1.setText(existingQuestion.getAnswer1());
+        answer1.setForeground(ColorsInUse.TEXT.get());
         answer2.setText(existingQuestion.getAnswer2());
+        answer2.setForeground(ColorsInUse.TEXT.get());
         answer3.setText(existingQuestion.getAnswer3());
+        answer3.setForeground(ColorsInUse.TEXT.get());
         answer4.setText(existingQuestion.getAnswer4());
+        answer4.setForeground(ColorsInUse.TEXT.get());
         updateSelection();
     }
 
@@ -200,6 +260,12 @@ public class AddEditQuestionOverlay extends OverlayView {
         String a2 = answer2.getText().trim();
         String a3 = answer3.getText().trim();
         String a4 = answer4.getText().trim();
+
+        if (qText.equals(QuestionPlaceholder)) qText = "";
+        if (a1.equals(CorrectAnswerPlaceholder)) a1 = "";
+        if (a2.equals(WrongAnswerPlaceholder)) a2 = "";
+        if (a3.equals(WrongAnswerPlaceholder)) a3 = "";
+        if (a4.equals(WrongAnswerPlaceholder)) a4 = "";
 
         if (qText.isEmpty() || a1.isEmpty() || a2.isEmpty() || a3.isEmpty() || a4.isEmpty()) {
             JOptionPane.showMessageDialog(this, "All fields must be filled!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -264,5 +330,49 @@ public class AddEditQuestionOverlay extends OverlayView {
         return btn;
     }
 
+    FocusAdapter placeholderListener = new FocusAdapter() {
+
+        @Override
+        public void focusGained(FocusEvent e) {
+            Object src = e.getComponent();
+
+            if (src == questionArea && questionArea.getText().equals(QuestionPlaceholder)) {
+                questionArea.setText("");
+                questionArea.setForeground(ColorsInUse.TEXT.get());
+            } else if (src == answer1 && answer1.getText().equals(CorrectAnswerPlaceholder)) {
+                answer1.setText("");
+                answer1.setForeground(ColorsInUse.TEXT.get());
+            } else {
+                for (JTextField tf : wrongAnswers) {
+                    if (src == tf && tf.getText().equals(WrongAnswerPlaceholder)) {
+                        tf.setText("");
+                        tf.setForeground(ColorsInUse.TEXT.get());
+                        break;
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            Object src = e.getComponent();
+
+            if (src == questionArea && questionArea.getText().trim().isEmpty()) {
+                questionArea.setText(QuestionPlaceholder);
+                questionArea.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
+            } else if (src == answer1 && answer1.getText().trim().isEmpty()) {
+                answer1.setText(CorrectAnswerPlaceholder);
+                answer1.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
+            } else {
+                for (JTextField tf : wrongAnswers) {
+                    if (src == tf && tf.getText().trim().isEmpty()) {
+                        tf.setText(WrongAnswerPlaceholder);
+                        tf.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
+                        break;
+                    }
+                }
+            }
+        }
+    };
 }
 
