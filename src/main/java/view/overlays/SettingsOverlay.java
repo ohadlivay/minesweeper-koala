@@ -3,10 +3,13 @@ package main.java.view.overlays;
 import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.model.GameDifficulty;
+import main.java.model.QuestionDifficulty;
 import main.java.view.ColorsInUse;
+import main.java.view.FontsInUse;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
@@ -16,14 +19,14 @@ public class SettingsOverlay extends OverlayView {
     private JButton buttonStart;
     private JButton buttonBack;
     private JLabel difficultyLabel;
-    private JLabel easy;
-    private JLabel medium;
-    private JLabel hard;
+    private JButton btnEasy;
+    private JButton btnMedium;
+    private JButton btnHard;
     private JTextField player1Name;
     private JTextField player2Name;
     private JLabel player1Label;
     private JLabel player2Label;
-    private GameDifficulty difficulty;
+    private GameDifficulty selectedDifficulty;
 
     public SettingsOverlay(NavigationController nav) {
         super(nav, true);
@@ -39,32 +42,32 @@ public class SettingsOverlay extends OverlayView {
             }
         });
 
-        easy.addMouseListener(new MouseAdapter() {
+        btnEasy.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 resetSelection();
-                difficulty = GameDifficulty.EASY;
-                easy.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2),new EmptyBorder(5,5,5,5)));
+                selectedDifficulty = GameDifficulty.EASY;
+                btnEasy.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2),new EmptyBorder(5,5,5,5)));
                 System.out.println("Selected Difficulty: EASY");
             }
         });
 
-        medium.addMouseListener(new MouseAdapter() {
+        btnMedium.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 resetSelection();
-                difficulty = GameDifficulty.MEDIUM;
-                medium.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2),new EmptyBorder(5,5,5,5)));
+                selectedDifficulty = GameDifficulty.MEDIUM;
+                btnMedium.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2),new EmptyBorder(5,5,5,5)));
                 System.out.println("Selected Difficulty: MEDIUM");
             }
         });
 
-        hard.addMouseListener(new MouseAdapter() {
+        btnHard.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 resetSelection();
-                difficulty = GameDifficulty.HARD;
-                hard.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2),new EmptyBorder(5,5,5,5)));
+                selectedDifficulty = GameDifficulty.HARD;
+                btnHard.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2),new EmptyBorder(5,5,5,5)));
                 System.out.println("Selected Difficulty: HARD");
             }
         });
@@ -93,13 +96,13 @@ public class SettingsOverlay extends OverlayView {
         JPanel difficultyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 0));
         difficultyPanel.setBackground(ColorsInUse.BG_COLOR.get());
 
-        easy = createDifficultyLabel("Easy", "/green-koala.png");
-        medium = createDifficultyLabel("Medium", "/yellow-koala.png");
-        hard = createDifficultyLabel("Hard", "/red-koala.png");
+        btnEasy = createKoalaButton("/green-koala.png", "Easy", "9x9", GameDifficulty.EASY);
+        btnMedium = createKoalaButton("/yellow-koala.png", "Medium", "13x13", GameDifficulty.MEDIUM);
+        btnHard = createKoalaButton("/red-koala.png", "Hard", "16x16", GameDifficulty.HARD);
 
-        difficultyPanel.add(easy);
-        difficultyPanel.add(medium);
-        difficultyPanel.add(hard);
+        difficultyPanel.add(btnEasy);
+        difficultyPanel.add(btnMedium);
+        difficultyPanel.add(btnHard);
         gbc.gridy = 0;
         centerPanel.add(difficultyPanel, gbc);
 
@@ -142,7 +145,7 @@ public class SettingsOverlay extends OverlayView {
         String player2 = getPlayer2Name();
 
         // check for difficulty
-        if (difficulty == null) {
+        if (selectedDifficulty == null) {
             JOptionPane.showMessageDialog(null, "Please select a difficulty.", "Error", JOptionPane.ERROR_MESSAGE);
             return; // do not proceed if difficulty is not selected
         }
@@ -161,7 +164,7 @@ public class SettingsOverlay extends OverlayView {
                 player2 = "Player 2";
             }
         }
-        GameSessionController.getInstance().setupGame(player1, player2, difficulty);
+        GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty);
         nav.goToGame();
         close();
     }
@@ -183,9 +186,9 @@ public class SettingsOverlay extends OverlayView {
     // HELPER METHODS //
 
     private void resetSelection() {
-        easy.setBorder(new EmptyBorder(7, 7, 7, 7));
-        medium.setBorder(new EmptyBorder(7, 7, 7, 7));
-        hard.setBorder(new EmptyBorder(7, 7, 7, 7));
+        btnEasy.setBorder(new EmptyBorder(7, 7, 7, 7));
+        btnMedium.setBorder(new EmptyBorder(7, 7, 7, 7));
+        btnHard.setBorder(new EmptyBorder(7, 7, 7, 7));
     }
 
     private String nameWarning (String player1, String player2) {
@@ -239,29 +242,45 @@ public class SettingsOverlay extends OverlayView {
         return btn;
     }
 
-    private JLabel createDifficultyLabel(String text, String resourcePath) {
-        JLabel label = new JLabel(text);
-
-        // Load and Scale Image
-        URL imageUrl = getClass().getResource(resourcePath);
-        if (imageUrl != null) {
-            ImageIcon originalIcon = new ImageIcon(imageUrl);
-            Image scaledImage = originalIcon.getImage().getScaledInstance(70, 70, Image.SCALE_SMOOTH);
-            label.setIcon(new ImageIcon(scaledImage));
-        } else {
-            System.err.println("Could not find image at: " + resourcePath);
+    private JButton createKoalaButton(String resourcePath, String text, String tooltip, GameDifficulty difficulty) {
+        JButton btn = new JButton(text);
+        btn.setToolTipText(tooltip);
+        btn.setVerticalTextPosition(SwingConstants.BOTTOM);
+        btn.setHorizontalTextPosition(SwingConstants.CENTER);
+        Dimension size = new Dimension(100, 120);
+        btn.setPreferredSize(size);
+        btn.setMinimumSize(size);
+        btn.setMaximumSize(size);
+        btn.setFocusPainted(false);
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(true);
+        btn.setFont(FontsInUse.PIXEL.getSize(24f));
+        btn.setForeground(ColorsInUse.TEXT.get());
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        try {
+            java.net.URL url = getClass().getResource(resourcePath);
+            if (url != null) {
+                ImageIcon icon = new ImageIcon(url);
+                Image img = icon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+                btn.setIcon(new ImageIcon(img));
+            }
+        } catch (Exception e) {
+            btn.setText(tooltip);
         }
+        btn.addActionListener(e -> {
+            this.selectedDifficulty = difficulty;
+            updateSelection();
+        });
+        return btn;
+    }
 
-        label.setHorizontalTextPosition(SwingConstants.CENTER);
-        label.setVerticalTextPosition(SwingConstants.BOTTOM);
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-
-        label.setFont(new Font("Segoe UI Black", Font.BOLD, 18));
-        label.setForeground(ColorsInUse.TEXT.get());
-        label.setBorder(new EmptyBorder(7, 7, 7, 7));
-        label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-        return label;
+    //visual indication for difficulty selected
+    private void updateSelection() {
+        Color selectedColor = ColorsInUse.TEXT.get();
+        Color unselectedColor = new Color(0,0,0,0);
+        btnEasy.setBorder(new LineBorder(selectedDifficulty == GameDifficulty.EASY ? selectedColor : unselectedColor, 3));
+        btnMedium.setBorder(new LineBorder(selectedDifficulty == GameDifficulty.MEDIUM ? selectedColor : unselectedColor, 3));
+        btnHard.setBorder(new LineBorder(selectedDifficulty == GameDifficulty.HARD ? selectedColor : unselectedColor, 3));
     }
 
 
