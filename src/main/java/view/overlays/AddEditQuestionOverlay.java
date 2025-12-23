@@ -13,6 +13,8 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class AddEditQuestionOverlay extends OverlayView {
     private final Question existingQuestion;
@@ -85,8 +87,39 @@ public class AddEditQuestionOverlay extends OverlayView {
                 new EmptyBorder(5, 5, 5, 5)
         ));
 
+        // listener to make sure the question's text is not more than 100 chars
+        questionArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (questionArea.getText().length() > 100) {
+                    e.consume();
+                    questionArea.setText(questionArea.getText().substring(0, 100));
+                }
+            }
+        });
 
-        JScrollPane scrollPane = new JScrollPane(questionArea);
+        // label to show text limit
+        JLabel textLimitLabel = new JLabel("0/100");
+        textLimitLabel.setFont(FontsInUse.PIXEL.getSize(14f));
+        textLimitLabel.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
+
+        // listener to update text limit label
+        questionArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                textLimitLabel.setText((questionArea.getText().length()) + "/100");
+            }
+        });
+
+        gbc.gridy++;
+        gbc.weighty = 0.0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        formPanel.add(textLimitLabel, gbc);
+        gbc.gridy++;
+
+
+        JScrollPane scrollPane = new JScrollPane(questionArea);     // why?
         scrollPane.setPreferredSize(new Dimension(10, 160));
         scrollPane.setBorder(new LineBorder(ColorsInUse.TEXT.get(), 1));
 
@@ -149,25 +182,6 @@ public class AddEditQuestionOverlay extends OverlayView {
             gbc.gridy++;
         }
 
-        //I put all wrong answers in an array for easier styling, the comment below can be deleted when confirmed
-//        answer2 = createStyledTextField();
-//        answer2.setBackground(ColorsInUse.DENY.get());
-//        answer2.setBorder(new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1));
-//        formPanel.add(answer2,gbc);
-//        gbc.gridy++;
-//
-//        answer3 = createStyledTextField();
-//        answer3.setBackground(ColorsInUse.DENY.get());
-//        answer3.setBorder(new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1));
-//        formPanel.add(answer3,gbc);
-//        gbc.gridy++;
-//
-//        answer4 = createStyledTextField();
-//        answer4.setBackground(ColorsInUse.DENY.get());
-//        answer4.setBorder(new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1));
-//        formPanel.add(answer4,gbc);
-
-
         questionArea.setText(QuestionPlaceholder);
         questionArea.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
         questionArea.addFocusListener(placeholderListener);
@@ -201,7 +215,6 @@ public class AddEditQuestionOverlay extends OverlayView {
             populateFields();
         }
     }
-
 
     private JButton createKoalaButton(String resourcePath, String tooltip, QuestionDifficulty difficulty) {
         JButton btn = new JButton();
