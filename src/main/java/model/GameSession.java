@@ -1,7 +1,9 @@
 package main.java.model;
 import main.java.test.Testable;
+import main.java.util.GameDataCSVManager;
 import main.java.view.GameScreen;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +53,14 @@ public class GameSession
 
     //Maximum health pool for a game session
     private static final int MAX_HEALTH_POOL = 10;
+    // Points given after flagging a mine
+    private static final int pointsForFlaggingMine = 1;
+    // Health lost after revealing a mine
+    private static final int healthForRevealingMine = -1;
+    // Points lost after flagging a number tile
+    private static final int pointsForFlaggingNumber = -3;
+    // Points gained after revealing a number tile
+    private static final int pointsForRevealingNumber = 1;
 
 
     private List<ActionMadeListener> actionMadeListeners = new ArrayList<>();
@@ -59,6 +69,7 @@ public class GameSession
     private static GameSession instance;
     private static GameSession testInstance;
     private DisplayQuestionListener displayQuestionListener;
+    private GameOverListener gameOverListener;
 
     //Constructors
     private GameSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
@@ -162,17 +173,11 @@ public class GameSession
     //these have to be public since we're not using interfaces
     public boolean setLeftPlayerName(String leftPlayerName){
         this.leftPlayerName = leftPlayerName;
-        if(this.getLeftPlayerName().equals("tom")){
-//            this.setGameDifficulty(GameDifficulty.INSANE);
-        }
         return true;
     }
 
     public boolean setRightPlayerName(String rightPlayerName){
         this.rightPlayerName = rightPlayerName;
-        if(this.getRightPlayerName().equals("tom")){
-//            this.setGameDifficulty(GameDifficulty.INSANE);
-        }
         return true;
     }
 
@@ -200,9 +205,27 @@ public class GameSession
     {
         getLeftBoard().revealAll();
         getRightBoard().revealAll();
-        if (getHealthPool() > 0)
+        if (getHealthPool() > 0) {
             gainPoints(getHealthPool()*getGameDifficulty().getActivationCost());
+            int healthBefore = getHealthPool();
+            setHealthPool(0);
+            notifyListenersAfterAction("Game over! You won!",true,-healthBefore,healthBefore*getGameDifficulty().getActivationCost());
+        }
+        else
+            notifyListenersAfterAction("Game over! You lost!",false,0,0);
+        try{
+            saveGame();
+            gameOverListener.onGameOver(true);
+        }catch (Exception e){
+            gameOverListener.onGameOver(false);
+        }
 
+    }
+
+    private void saveGame() throws IOException{
+        GameData gameData = new GameData(this);
+        SysData.getInstance().addGame(gameData);
+        GameDataCSVManager.writeGameDataListToCSV("GameHistory.csv");
     }
 
     public void RightClickedTile(Tile tile) {
@@ -230,7 +253,7 @@ public class GameSession
         if(tile instanceof MineTile){
             System.out.println("Flagging and revealing mine");
             message = "Excellent! Mine neutralized.";
-            this.gainPoints(1);
+            this.gainPoints(pointsForFlaggingMine);
             parentBoard.reveal(tile);
             this.changeTurn();   //revealing a mine by flagging does change a turn!
             System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
@@ -259,7 +282,7 @@ public class GameSession
             System.out.println("Flagging tile");
             message = "Mistake! False alarm.";
             parentBoard.flag(tile);
-            this.gainPoints(-3);
+            this.gainPoints(pointsForFlaggingNumber);
             notifyListenersAfterAction(message,false,0,-3);
     }
         System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
@@ -308,7 +331,7 @@ public class GameSession
             if(tile instanceof MineTile){
                 System.out.println("Mine");
                 message = "BOOM! You hit a mine! Lost 1 health";
-                this.gainHealth(-1);
+                this.gainHealth(healthForRevealingMine);
                 parentBoard.reveal(tile);
                 notifyListenersAfterAction(message,false,-1,0);
                 if (this.isGameOver())
@@ -318,10 +341,10 @@ public class GameSession
             }
             if(tile instanceof NumberTile){
                 int tilesRevealed = parentBoard.reveal(tile);
-                this.gainPoints(1*tilesRevealed);
+                this.gainPoints(pointsForRevealingNumber*tilesRevealed);
                 System.out.println("Its a number tile");
-                message = "Number tiles revealed, gained "+(1*tilesRevealed)+" points";
-                notifyListenersAfterAction(message,true,0,1*tilesRevealed);
+                message = "Number tiles revealed, gained "+(pointsForRevealingNumber*tilesRevealed)+" points";
+                notifyListenersAfterAction(message,true,0,pointsForRevealingNumber*tilesRevealed);
                 this.changeTurn();}
             System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
         }
@@ -384,8 +407,16 @@ public class GameSession
                 System.out.println(message);
                 this.message = message+" Points changed by: "+(plusMinus*getGameDifficulty().getSurprisePoints())+", Health changed by: "+(plusMinus*getGameDifficulty().getSurpriseHealth());
                 this.gainPoints(plusMinus*getGameDifficulty().getSurprisePoints());
+                boolean healthMaxedOut = this.getHealthPool()==10;
                 this.gainHealth(plusMinus*getGameDifficulty().getSurpriseHealth());
-                notifyListenersAfterAction(this.message,resultOfRandom,plusMinus*getGameDifficulty().getSurpriseHealth(),plusMinus*getGameDifficulty().getSurprisePoints());
+                if (!healthMaxedOut||!resultOfRandom)
+                    notifyListenersAfterAction(this.message,resultOfRandom,plusMinus*getGameDifficulty().getSurpriseHealth(),plusMinus*getGameDifficulty().getSurprisePoints());
+                else
+                {
+                    this.message+= " (Health is already maxed out)";
+                    notifyListenersAfterAction(this.message,resultOfRandom,0,plusMinus*getGameDifficulty().getSurprisePoints());
+                }
+
             }
             if (specialTile instanceof QuestionTile questionTile)
             {
@@ -405,6 +436,8 @@ public class GameSession
     public void setDisplayQuestionListener(DisplayQuestionListener displayQuestionListener) {
         this.displayQuestionListener = displayQuestionListener;
     }
+    public void setGameOverListener(GameOverListener gameOverListener) {
+        this.gameOverListener = gameOverListener;}
     private void notifyListenersAfterAction(String message, boolean positiveMove, int healthChange, int pointsChange)
     {
         for (ActionMadeListener listener : actionMadeListeners)
