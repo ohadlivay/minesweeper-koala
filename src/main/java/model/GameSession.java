@@ -1,7 +1,9 @@
 package main.java.model;
 import main.java.test.Testable;
+import main.java.util.GameDataCSVManager;
 import main.java.view.GameScreen;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +61,7 @@ public class GameSession
     private static GameSession instance;
     private static GameSession testInstance;
     private DisplayQuestionListener displayQuestionListener;
+    private GameOverListener gameOverListener;
 
     //Constructors
     private GameSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty)
@@ -200,9 +203,27 @@ public class GameSession
     {
         getLeftBoard().revealAll();
         getRightBoard().revealAll();
-        if (getHealthPool() > 0)
+        if (getHealthPool() > 0) {
             gainPoints(getHealthPool()*getGameDifficulty().getActivationCost());
+            int healthBefore = getHealthPool();
+            setHealthPool(0);
+            notifyListenersAfterAction("Game over! You won!",true,-healthBefore,healthBefore*getGameDifficulty().getActivationCost());
+        }
+        else
+            notifyListenersAfterAction("Game over! You lost!",false,0,0);
+        try{
+            saveGame();
+            gameOverListener.onGameOver(true);
+        }catch (Exception e){
+            gameOverListener.onGameOver(false);
+        }
 
+    }
+
+    private void saveGame() throws IOException{
+        GameData gameData = new GameData(this);
+        SysData.getInstance().addGame(gameData);
+        GameDataCSVManager.writeGameDataListToCSV("GameHistory.csv");
     }
 
     public void RightClickedTile(Tile tile) {
@@ -384,8 +405,16 @@ public class GameSession
                 System.out.println(message);
                 this.message = message+" Points changed by: "+(plusMinus*getGameDifficulty().getSurprisePoints())+", Health changed by: "+(plusMinus*getGameDifficulty().getSurpriseHealth());
                 this.gainPoints(plusMinus*getGameDifficulty().getSurprisePoints());
+                boolean healthMaxedOut = this.getHealthPool()==10;
                 this.gainHealth(plusMinus*getGameDifficulty().getSurpriseHealth());
-                notifyListenersAfterAction(this.message,resultOfRandom,plusMinus*getGameDifficulty().getSurpriseHealth(),plusMinus*getGameDifficulty().getSurprisePoints());
+                if (!healthMaxedOut||!resultOfRandom)
+                    notifyListenersAfterAction(this.message,resultOfRandom,plusMinus*getGameDifficulty().getSurpriseHealth(),plusMinus*getGameDifficulty().getSurprisePoints());
+                else
+                {
+                    this.message+= " (Health is already maxed out)";
+                    notifyListenersAfterAction(this.message,resultOfRandom,0,plusMinus*getGameDifficulty().getSurprisePoints());
+                }
+
             }
             if (specialTile instanceof QuestionTile questionTile)
             {
@@ -405,6 +434,8 @@ public class GameSession
     public void setDisplayQuestionListener(DisplayQuestionListener displayQuestionListener) {
         this.displayQuestionListener = displayQuestionListener;
     }
+    public void setGameOverListener(GameOverListener gameOverListener) {
+        this.gameOverListener = gameOverListener;}
     private void notifyListenersAfterAction(String message, boolean positiveMove, int healthChange, int pointsChange)
     {
         for (ActionMadeListener listener : actionMadeListeners)

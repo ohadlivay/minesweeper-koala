@@ -10,7 +10,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
 
-public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener {
+public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener, GameOverListener {
     private final NavigationController nav;
     private final GameSession session; // Always holds the current game session
 
@@ -31,6 +31,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         this.nav = nav;
         this.session = session;
         this.session.setActionMadeListener(this);
+        this.session.setGameOverListener(this);
         this.session.getLeftBoard().setMinesLeftListener(this);
         this.session.getRightBoard().setMinesLeftListener(this);
         initUI();
@@ -268,6 +269,17 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
             Color color = healthChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
             floatingNumber(healthLabel, text, color, healthChange > 0);
         }
+    }
+
+    //this method shows the end game screen when the game is over
+    @Override
+    public void onGameOver(boolean saved) {
+        JOptionPane savedWindow = new JOptionPane();
+        endGameButton.setEnabled(false);
+        if (saved)
+            JOptionPane.showMessageDialog(mainPanel, "Game Over! Game data saved.", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+        else
+            JOptionPane.showMessageDialog(mainPanel, "Error, could not save the game!", "Game Over", JOptionPane.ERROR_MESSAGE);
     }
 
     //animation for immediate points/health feedback
