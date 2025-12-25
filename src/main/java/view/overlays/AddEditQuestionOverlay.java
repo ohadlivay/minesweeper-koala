@@ -87,19 +87,19 @@ public class AddEditQuestionOverlay extends OverlayView {
                 new EmptyBorder(5, 5, 5, 5)
         ));
 
-        // listener to make sure the question's text is not more than 100 chars
+        // listener to make sure the question's text is not more than 200 chars
         questionArea.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if (questionArea.getText().length() > 100) {
+                if (questionArea.getText().length() > 200) {
                     e.consume();
-                    questionArea.setText(questionArea.getText().substring(0, 100));
+                    questionArea.setText(questionArea.getText().substring(0, 200));
                 }
             }
         });
 
         // label to show text limit
-        JLabel textLimitLabel = new JLabel("0/100");
+        JLabel textLimitLabel = new JLabel("0/200");
         textLimitLabel.setFont(FontsInUse.PIXEL.getSize(14f));
         textLimitLabel.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
 
@@ -107,7 +107,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         questionArea.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                textLimitLabel.setText((questionArea.getText().length()) + "/100");
+                textLimitLabel.setText((questionArea.getText().length()) + "/200");
             }
         });
 
