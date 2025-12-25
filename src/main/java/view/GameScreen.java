@@ -4,6 +4,7 @@ import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.controller.OverlayController;
 import main.java.model.*;
+import main.java.view.overlays.OverlayType;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -78,6 +79,19 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         topPanel.setBorder(new EmptyBorder(20, 20, 10, 20));
 
         Font font = new Font("Segoe UI Black", Font.BOLD, 16);
+
+        JButton infoIcon = new JButton(new ImageIcon(getClass().getResource("/info.png")));
+        infoIcon.setBorder(new EmptyBorder(0, 0, 10, 0));
+        infoIcon.setHorizontalAlignment(SwingConstants.RIGHT);;
+
+        infoIcon.setBackground(ColorsInUse.BG_COLOR.get());
+        infoIcon.setFocusPainted(false);
+        infoIcon.setContentAreaFilled(false);
+        infoIcon.addActionListener(e -> {
+            OverlayController.getInstance().showOverlay(OverlayType.INSTRUCTIONS);
+        });
+
+        topPanel.add(infoIcon, BorderLayout.NORTH);
 
         player1Label = new JLabel();
         player1Label.setForeground(ColorsInUse.TEXT.get());
