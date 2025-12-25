@@ -82,6 +82,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
 
         JButton infoIcon = new JButton(new ImageIcon(getClass().getResource("/info.png")));
         infoIcon.setBorder(new EmptyBorder(0, 0, 10, 0));
+        infoIcon.setToolTipText("How to play");
         infoIcon.setHorizontalAlignment(SwingConstants.RIGHT);;
 
         infoIcon.setBackground(ColorsInUse.BG_COLOR.get());
