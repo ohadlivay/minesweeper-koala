@@ -33,9 +33,10 @@ public class GameOverOverlay extends OverlayView {
 
 
     private void initUI() {
-        String bgPath = isWin ? "/win-bg.png" : "/lose-bg.png";
+        String bgPath = isWin ? "/win-bg.png" : "/loss-bg.png";
         BackgroundPanel contentPane = new BackgroundPanel(bgPath);
         contentPane.setLayout(new BorderLayout());
+        contentPane.setPreferredSize(new Dimension(400,446));
         contentPane.setBorder(new EmptyBorder(30, 40, 30, 40));
 
         String titleText = isWin ? "YOU WIN!" : "GAME OVER";
@@ -52,13 +53,13 @@ public class GameOverOverlay extends OverlayView {
         centerPanel.setOpaque(false);
         centerPanel.setBorder(new EmptyBorder(20, 0, 20, 0));
 
-        String iconPath = isWin ? "/green-koala.png" : "/red-koala.png";
+        String iconPath = isWin ? "/game-won-koala.png" : "/game-over-koala.png";
         JLabel iconLabel = new JLabel();
         try {
             java.net.URL url = getClass().getResource(iconPath);
             if (url != null) {
                 ImageIcon icon = new ImageIcon(url);
-                Image img = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                Image img = icon.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
                 iconLabel.setIcon(new ImageIcon(img));
             }
         } catch (Exception ignored) {}
