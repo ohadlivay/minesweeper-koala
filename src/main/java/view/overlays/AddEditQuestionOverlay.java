@@ -11,10 +11,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
 public class AddEditQuestionOverlay extends OverlayView {
     private final Question existingQuestion;
@@ -33,6 +30,7 @@ public class AddEditQuestionOverlay extends OverlayView {
     private String QuestionPlaceholder;
     private String CorrectAnswerPlaceholder;
     private String WrongAnswerPlaceholder;
+    private JLabel textLimitLabel;
 
     public AddEditQuestionOverlay(NavigationController navigationController, Question q) {
         super(navigationController, true);
@@ -87,8 +85,13 @@ public class AddEditQuestionOverlay extends OverlayView {
                 new EmptyBorder(5, 5, 5, 5)
         ));
 
+        //placeholder text when empty
+        questionArea.setText(QuestionPlaceholder);
+        questionArea.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
+        questionArea.addFocusListener(placeholderListener);
+
         // label to show text limit
-        JLabel textLimitLabel = new JLabel("0/" + Question.getMaxQuestionLength());
+        textLimitLabel = new JLabel("0/" + Question.getMaxQuestionLength());
         textLimitLabel.setFont(FontsInUse.PIXEL.getSize(14f));
         textLimitLabel.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
 
@@ -100,8 +103,9 @@ public class AddEditQuestionOverlay extends OverlayView {
                 if (questionArea.getText().length() >= Question.getMaxQuestionLength()) {
                     e.consume();
                     questionArea.setText(questionArea.getText().substring(0, Question.getMaxQuestionLength()));
-                    textLimitLabel.setText((questionArea.getText().length()) + "/" + Question.getMaxQuestionLength());
                 }
+                textLimitLabel.setText((questionArea.getText().length()) + "/" + Question.getMaxQuestionLength());
+
             }
         });
 
@@ -111,6 +115,8 @@ public class AddEditQuestionOverlay extends OverlayView {
         gbc.insets = new Insets(0, 0, 0, 0);
         formPanel.add(textLimitLabel, gbc);
         gbc.gridy++;
+
+
 
 
         JScrollPane scrollPane = new JScrollPane(questionArea);     // why?
@@ -148,116 +154,21 @@ public class AddEditQuestionOverlay extends OverlayView {
         gbc.gridy++;
 
         //answers textboxes are here
+        // Initialize the text fields
         answer1 = createStyledTextField();
-        answer1.setBackground(ColorsInUse.CONFIRM.get());
-        answer1.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1),
-                new EmptyBorder(5, 5, 5, 5)
-        ));
-
-        // create an error icon label (initially hidden)
-        final JLabel answer1ErrorLabel = new JLabel();
-        java.net.URL errUrl = getClass().getResource("/error.png");
-        if (errUrl != null) {
-            ImageIcon icon = new ImageIcon(errUrl);
-            Image img = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
-            answer1ErrorLabel.setIcon(new ImageIcon(img));
-        }
-        answer1ErrorLabel.setVisible(false);
-        answer1ErrorLabel.setToolTipText("Answer must be less than " + Question.getMaxAnswerLength() + " characters.");
-
-        // wrapper panel to hold the field + icon on the right
-        JPanel answer1Wrapper = new JPanel(new BorderLayout());
-        answer1Wrapper.setOpaque(false);
-        answer1Wrapper.add(answer1, BorderLayout.CENTER);
-        answer1Wrapper.add(answer1ErrorLabel, BorderLayout.EAST);
-
-        // update listener shows/hides the error icon label instead of calling add(Icon)
-        answer1.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                if (answer1.getText().length() >= (int)(Question.getMaxAnswerLength() * 0.7)) {
-                    answer1ErrorLabel.setVisible(true);
-                } else {
-                    answer1ErrorLabel.setVisible(false);
-                }
-                if (answer1.getText().length() >= Question.getMaxAnswerLength()) {
-                    e.consume();
-                    answer1.setText(answer1.getText().substring(0, Question.getMaxAnswerLength()));
-                }
-            }
-        });
-
-        formPanel.add(answer1Wrapper, gbc);
-        gbc.gridy++;
-
         answer2 = createStyledTextField();
         answer3 = createStyledTextField();
         answer4 = createStyledTextField();
-
-        // wrong answers in array for easier styling
         wrongAnswers = new JTextField[] {answer2, answer3, answer4};
 
-        ImageIcon scaledErrorIcon = null;
-        java.net.URL errUrlAll = getClass().getResource("/error.png");
-        if (errUrlAll != null) {
-            ImageIcon icon = new ImageIcon(errUrlAll);
-            Image img = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
-            scaledErrorIcon = new ImageIcon(img);
-        }
+        // correct answer
+        formPanel.add(createAnswerFieldWrapper(answer1, ColorsInUse.CONFIRM.get(), CorrectAnswerPlaceholder, gbc), gbc);
+        gbc.gridy++;
 
-        // create answers 2-4 textboxes
+        // wrong answers
         for (JTextField tf : wrongAnswers) {
-            tf.setBackground(ColorsInUse.DENY.get());
-            tf.setBorder(BorderFactory.createCompoundBorder(
-                    new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1),
-                    new EmptyBorder(5, 5, 5, 5)
-            ));
-
-            // create an error icon label (initially hidden)
-            final JLabel errorLabel = new JLabel();
-            if (scaledErrorIcon != null) {
-                errorLabel.setIcon(scaledErrorIcon);
-            }
-            errorLabel.setVisible(false);
-            errorLabel.setToolTipText("Answer must be less than " + Question.getMaxAnswerLength() + " characters.");
-
-            // wrapper panel to hold the field + icon on the right
-            JPanel wrapper = new JPanel(new BorderLayout());
-            wrapper.setOpaque(false);
-            wrapper.add(tf, BorderLayout.CENTER);
-            wrapper.add(errorLabel, BorderLayout.EAST);
-
-            // key listener to show/hide icon and enforce max length
-            tf.addKeyListener(new KeyAdapter() {
-                @Override
-                public void keyTyped(KeyEvent e) {
-                    if (tf.getText().length() >= (int)(Question.getMaxAnswerLength() * 0.7)) {
-                        errorLabel.setVisible(true);
-                    } else {
-                        errorLabel.setVisible(false);
-                    }
-                    if (tf.getText().length() >= Question.getMaxAnswerLength()) {
-                        e.consume();
-                        tf.setText(tf.getText().substring(0, Question.getMaxAnswerLength()));
-                    }
-                }
-            });
-
-            formPanel.add(wrapper, gbc);
+            formPanel.add(createAnswerFieldWrapper(tf, ColorsInUse.DENY.get(), WrongAnswerPlaceholder, gbc), gbc);
             gbc.gridy++;
-        }
-
-        questionArea.setText(QuestionPlaceholder);
-        questionArea.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
-        questionArea.addFocusListener(placeholderListener);
-        answer1.setText(CorrectAnswerPlaceholder);
-        answer1.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
-        answer1.addFocusListener(placeholderListener);
-        for (JTextField tf : wrongAnswers) {
-            tf.setText(WrongAnswerPlaceholder);
-            tf.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
-            tf.addFocusListener(placeholderListener);
         }
 
         contentPanel.add(formPanel, BorderLayout.CENTER);
@@ -322,14 +233,21 @@ public class AddEditQuestionOverlay extends OverlayView {
     private void populateFields() {
         questionArea.setText(existingQuestion.getQuestionText());
         questionArea.setForeground(ColorsInUse.TEXT.get());
+        textLimitLabel.setText((questionArea.getText().length()) + "/" + Question.getMaxQuestionLength());
+
         answer1.setText(existingQuestion.getAnswer1());
         answer1.setForeground(ColorsInUse.TEXT.get());
+
+
         answer2.setText(existingQuestion.getAnswer2());
         answer2.setForeground(ColorsInUse.TEXT.get());
+
         answer3.setText(existingQuestion.getAnswer3());
         answer3.setForeground(ColorsInUse.TEXT.get());
+
         answer4.setText(existingQuestion.getAnswer4());
         answer4.setForeground(ColorsInUse.TEXT.get());
+
         updateSelection();
     }
 
@@ -469,5 +387,62 @@ public class AddEditQuestionOverlay extends OverlayView {
             }
         }
     };
+
+    private JPanel createAnswerFieldWrapper(JTextField field, Color bgColor, String placeholder, GridBagConstraints gbc) {
+        // Style the field
+        field.setBackground(bgColor);
+        field.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1),
+                new EmptyBorder(5, 5, 5, 5)
+        ));
+        field.setText(placeholder);
+        field.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
+        field.addFocusListener(placeholderListener);
+
+        // Create error label
+        JLabel errorLabel = new JLabel();
+        ImageIcon icon = getScaledErrorIcon(); // Helper for the icon
+        if (icon != null) errorLabel.setIcon(icon);
+
+        errorLabel.setVisible(false);
+        errorLabel.setToolTipText("Answer must be less than " + Question.getMaxAnswerLength() + " characters.");
+
+        // Enforce logic and update icon visibility
+        field.addKeyListener(answerKeyListener(field, errorLabel));
+
+        // Wrap and return
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.setOpaque(false);
+        wrapper.add(field, BorderLayout.CENTER);
+        wrapper.add(errorLabel, BorderLayout.EAST);
+
+        return wrapper;
+    }
+
+    // Utility to load the icon once
+    private ImageIcon getScaledErrorIcon() {
+        java.net.URL errUrl = getClass().getResource("/error.png");
+        if (errUrl == null) return null;
+        ImageIcon icon = new ImageIcon(errUrl);
+        Image img = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+        return new ImageIcon(img);
+    }
+
+    public KeyListener answerKeyListener(JTextField tf, JLabel errorLabel) {
+        return new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (tf.getText().length() >= (int)(Question.getMaxAnswerLength() * 0.7)) {
+                    errorLabel.setVisible(true);
+                } else {
+                    errorLabel.setVisible(false);
+                }
+                if (tf.getText().length() >= Question.getMaxAnswerLength()) {
+                    e.consume();
+                    tf.setText(tf.getText().substring(0, Question.getMaxAnswerLength()));
+                }
+            }
+        };
+    }
 }
 
