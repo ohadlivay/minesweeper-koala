@@ -1,8 +1,8 @@
 package main.java.view;
 
 import main.java.controller.NavigationController;
+import main.java.model.GameData;
 import main.java.model.GameSession;
-import main.java.model.Question;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -10,7 +10,9 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class GameHistoryScreen extends JPanel{
@@ -24,7 +26,7 @@ public class GameHistoryScreen extends JPanel{
     private JLabel historyLabel;
     private DefaultTableModel tableModel;
     private JTable historyTable;
-    private ArrayList<GameSession> allSessions = new ArrayList<>();
+    private List<GameData> allSessions = new ArrayList<>();
     private int currentPage = 1;
     private final int rowsPerPage = 10;
     private JLabel pageLabel;
@@ -95,12 +97,13 @@ public class GameHistoryScreen extends JPanel{
         add(mainPanel, BorderLayout.CENTER);
     }
 
-    public void populateHistoryTable(ArrayList<GameSession> allSessions) {
-        if (allSessions == null) {
+    public void populateHistoryTable(List<GameData> games) {
+        if (games == null) {
             this.allSessions = new ArrayList<>();
         } else {
-            this.allSessions = new ArrayList<>(allSessions);
+            this.allSessions = new ArrayList<>(games);
         }
+        this.currentPage = 1;
         refreshPage();
     }
 
@@ -147,6 +150,7 @@ public class GameHistoryScreen extends JPanel{
     }
 
     private void refreshPage() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         tableModel.setRowCount(0);
         if (allSessions.isEmpty()) {
             pageLabel.setText("Page 0 of 0");
@@ -167,8 +171,9 @@ public class GameHistoryScreen extends JPanel{
 
         //add rows for the current page
         for (int i = start; i < end; i++) {
-            GameSession s = allSessions.get(i);
-            Object[] rowData = {s.getTimeStamp(), s.getLeftPlayerName(), s.getRightPlayerName(), s.getPoints(), s.getGameDifficulty()};
+            GameData s = allSessions.get(i);
+            String formattedDate = s.getTimeStamp().format(formatter);
+            Object[] rowData = {i+1, formattedDate, s.getLeftPlayerName(), s.getRightPlayerName(), s.getPoints(), s.getGameDifficulty()};
             tableModel.addRow(rowData);
         }
 

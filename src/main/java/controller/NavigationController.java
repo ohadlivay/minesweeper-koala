@@ -44,8 +44,11 @@ public class NavigationController {
 
 
     public void goToHistory() {
-        GameHistoryScreen gameHistoryScreen = new GameHistoryScreen(this);
-        visFrame.setContentPane(gameHistoryScreen.getMainPanel());
+        HistoryController hsc = HistoryController.getInstance();
+        GameHistoryScreen historyScreen = new GameHistoryScreen(this);
+        hsc.setView(historyScreen);
+        hsc.refreshGamesList();
+        visFrame.setContentPane(historyScreen.getMainPanel());
         refresh();
     }
 

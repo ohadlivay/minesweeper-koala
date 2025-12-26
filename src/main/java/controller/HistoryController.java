@@ -28,6 +28,6 @@ public class HistoryController {
     {
         if (view == null) return;
         List<GameData> games = SysData.getInstance().getGames();
-        //view.populateTable(games);//A method for you to implement
+        view.populateHistoryTable(games);
     }
 }

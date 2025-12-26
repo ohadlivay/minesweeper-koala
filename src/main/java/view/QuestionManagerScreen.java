@@ -249,7 +249,7 @@ public class QuestionManagerScreen extends JPanel {
         table.getColumnModel().getColumn(2).setMaxWidth(100);
         table.getColumnModel().getColumn(2).setMinWidth(100);
         table.getColumnModel().getColumn(4).setMinWidth(160);
-        table.getColumnModel().getColumn(4).setMaxWidth(180);
+        table.getColumnModel().getColumn(4).setMaxWidth(160);
         table.setFocusable(false);
     }
 
