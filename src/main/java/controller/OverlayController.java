@@ -43,6 +43,13 @@ public class OverlayController {
         }
     }
 
+    public void showGameOverOverlay(boolean isWin, int score) {
+        closeCurrentOverlay();
+        GameOverOverlay overlay = new GameOverOverlay(nav, isWin, score);
+        this.currentOverlay = overlay;
+        overlay.open();
+    }
+
     //this overlay specifically needs the current board
     public void showQuestionOverlay(Board board) {
         closeCurrentOverlay();
@@ -81,6 +88,7 @@ public class OverlayController {
             if (type == OverlayType.INSTRUCTIONS) {
                 overlay = new GameInstructionOverlay(nav);
             }
+
             return overlay;
         }
 

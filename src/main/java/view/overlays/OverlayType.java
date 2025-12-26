@@ -5,5 +5,6 @@ public enum OverlayType {
     ADD_EDIT_QUESTION,
     VIEW_QUESTION,
     DELETE_QUESTION,
-    INSTRUCTIONS
+    INSTRUCTIONS,
+    GAME_OVER
 }
