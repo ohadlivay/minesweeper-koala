@@ -31,7 +31,7 @@ public class GameInstructionOverlay extends OverlayView {
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBackground(ColorsInUse.BG_COLOR.get());
         contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
-        contentPane.setPreferredSize(new Dimension(700, 420));
+        //contentPane.setPreferredSize(new Dimension(760, 460));
 
         // Title
         JLabel titleLabel = new JLabel("How to Play");
@@ -50,14 +50,16 @@ public class GameInstructionOverlay extends OverlayView {
         instructionsPanel.setBorder(new EmptyBorder(20, 10, 10, 10));
 
         // Add instruction rows using resource icons (png files in resources)
-        instructionsPanel.add(createInstructionRow("/left-click.png", "Left click to reveal a tile."));
+        instructionsPanel.add(createInstructionRow("/left-click.png", "Left click to Uncover a tile to find numbers or special items."));
         instructionsPanel.add(createInstructionRow("/red-flag.png", "Right click to place or remove a flag."));
-        instructionsPanel.add(createInstructionRow("/bomb.png", "Avoid mines! revealing one ends the game. Flagging a mine reveals it."));
-        instructionsPanel.add(createInstructionRow("/question.png", "Answer question tiles to gain bonus points."));
-        instructionsPanel.add(createInstructionRow("/surprise.png", "Activate surprise ang get a reward or penalty."));
-        // we could write how many points for this specific game if we pass on here the session
-        instructionsPanel.add(createInstructionRow("/plus-minus.png", "Activation of special costs points."));
-        instructionsPanel.add(createInstructionRow("/home.png", "Use the Home button to quit game and return to main menu."));
+        instructionsPanel.add(createInstructionRow("/bomb.png", "Avoid mines! revealing one deducts life. the game ends if health hits zero or all mines are revealed."));
+        instructionsPanel.add(createInstructionRow("/heart.png", "Health pool indicates how many turns you have left.")); //improve this
+        instructionsPanel.add(createInstructionRow("/tile-one.png", "A tile's number tells you exactly how many mines are in the 8 surrounding squares."));
+        instructionsPanel.add(createInstructionRow("/question.png", "Answer question tiles to gain a reward."));
+        instructionsPanel.add(createInstructionRow("/surprise.png", "Activate surprise and get a reward or penalty."));
+        instructionsPanel.add(createInstructionRow("/plus-minus.png", "Activation of special tiles (Q/S) costs points, so manage your score wisely."));
+        instructionsPanel.add(createInstructionRow("/target.png", "Maximize your score by revealing tiles and neutralizing mines while protecting your health."));
+        instructionsPanel.add(createInstructionRow("/home.png", "Exit the current session and return to the main menu at any time."));
         instructionsPanel.add(Box.createVerticalGlue());
         instructionsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -86,6 +88,8 @@ public class GameInstructionOverlay extends OverlayView {
         contentPane.add(bottomPanel, BorderLayout.SOUTH);
 
         this.setContentPane(contentPane);
+
+        pack();
     }
 
     // helper to create a row with an icon and text
