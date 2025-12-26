@@ -181,6 +181,37 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         JButton homeButton = createHomeButton();
         bottomPanel.add(homeButton, BorderLayout.WEST);
 
+        JPanel southContainer = new JPanel();
+        southContainer.setLayout(new BoxLayout(southContainer, BoxLayout.Y_AXIS));
+        southContainer.setOpaque(false);
+
+        southContainer.add(statsPanel);
+        southContainer.add(Box.createVerticalStrut(10));
+
+        southContainer.add(bottomPanel);
+
+        mainPanel.add(southContainer, BorderLayout.SOUTH);
+
+        // ******TEMP BUTTONS FOR SHOWING WIN/LOSE OVERLAYS******** //
+        JPanel testButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        testButtonPanel.setOpaque(false);
+
+        JButton testWinButton = new JButton("Test Win");
+        testWinButton.setBackground(new Color(46, 204, 113)); // Green
+        testWinButton.setForeground(Color.WHITE);
+        testWinButton.addActionListener(e -> {
+            // For direct UI testing:
+            OverlayController.getInstance().showGameOverOverlay(true, session.getPoints());
+        });
+
+        JButton testLossButton = new JButton("Test Loss");
+        testLossButton.setBackground(new Color(231, 76, 60)); // Red
+        testLossButton.setForeground(Color.WHITE);
+        testLossButton.addActionListener(e -> {
+            OverlayController.getInstance().showGameOverOverlay(false, session.getPoints());
+        });
+
+
         // TEMP BUTTON FOR TESTING GAME SAVES
         endGameButton = new JButton("End Game");
         endGameButton.setBackground(ColorsInUse.BTN_COLOR.get());
@@ -195,19 +226,6 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
             }
         });
 
-        bottomPanel.add(endGameButton, BorderLayout.EAST);
-
-        JPanel southContainer = new JPanel();
-        southContainer.setLayout(new BoxLayout(southContainer, BoxLayout.Y_AXIS));
-        southContainer.setOpaque(false);
-
-        southContainer.add(statsPanel);
-        southContainer.add(Box.createVerticalStrut(10));
-
-        southContainer.add(bottomPanel);
-
-        mainPanel.add(southContainer, BorderLayout.SOUTH);
-
         endGameButton.addActionListener(e -> {
             try {
                 GameSessionController.getInstance().endGame(this.session,this.nav);
@@ -220,6 +238,15 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
             }
 
         });
+
+        testButtonPanel.add(testWinButton);
+        testButtonPanel.add(testLossButton);
+        testButtonPanel.add(endGameButton);
+        bottomPanel.add(testButtonPanel, BorderLayout.EAST);
+
+        //********//
+
+
 
 
     }
@@ -290,12 +317,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     //this method shows the end game screen when the game is over
     @Override
     public void onGameOver(boolean saved) {
-        JOptionPane savedWindow = new JOptionPane();
         endGameButton.setEnabled(false);
-        if (saved)
-            JOptionPane.showMessageDialog(mainPanel, "Game Over! Game data saved.", "Game Over", JOptionPane.INFORMATION_MESSAGE);
-        else
-            JOptionPane.showMessageDialog(mainPanel, "Error, could not save the game!", "Game Over", JOptionPane.ERROR_MESSAGE);
     }
 
     //animation for immediate points/health feedback
