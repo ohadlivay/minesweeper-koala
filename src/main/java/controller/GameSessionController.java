@@ -19,7 +19,6 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
     private boolean isBlocked = false;
     private ArrayList<InputBlockListener> blockListeners = new ArrayList<>();
     private static GameSessionController instance;
-    private NavigationController currentNav;
     private GameSessionController() {
 
     }
@@ -57,7 +56,6 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
 
     // Creates a new GameScreen with the current session
     public GameScreen startNewGame(NavigationController nav) {
-        this.currentNav = nav;
         return new GameScreen(nav, session);
     }
 
@@ -104,28 +102,7 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
 
     }
 
-    // TESTS FOR GAME OVER OVERLAY
 
-    public void testShowWinUI() {
-        if (currentNav == null) {
-            System.err.println("NavigationController not set! Start a game first.");
-            return;
-        }
-        // Parameters: isWin = true, score = 999
-        OverlayController.getInstance().showGameOverOverlay(true, 999);
-    }
-
-    /**
-     * Force shows the Loss Overlay for UI testing.
-     */
-    public void testShowLossUI() {
-        if (currentNav == null) {
-            System.err.println("NavigationController not set! Start a game first.");
-            return;
-        }
-        // Parameters: isWin = false, score = 0
-        OverlayController.getInstance().showGameOverOverlay(false, 0);
-    }
 }
 
 

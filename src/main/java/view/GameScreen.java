@@ -69,18 +69,6 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
         mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // Example button implementation in GameScreen
-        JButton winTestBtn = new JButton("Test Win UI");
-        winTestBtn.addActionListener(e -> {
-            GameSessionController.getInstance().testShowWinUI();
-        });
-
-        JButton lossTestBtn = new JButton("Test Loss UI");
-        lossTestBtn.addActionListener(e -> {
-            GameSessionController.getInstance().testShowLossUI();
-        });
-        mainPanel.add(winTestBtn, BorderLayout.EAST);
-        mainPanel.add(lossTestBtn, BorderLayout.WEST);
         feedLabel = new JLabel("Welcome! Click a tile to start.", SwingConstants.CENTER);
         feedLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 14));
         feedLabel.setForeground(ColorsInUse.TEXT.get());
