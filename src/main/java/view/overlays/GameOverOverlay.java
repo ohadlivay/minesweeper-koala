@@ -1,7 +1,6 @@
 package main.java.view.overlays;
 
 import main.java.controller.NavigationController;
-import main.java.model.GameSession;
 import main.java.view.BackgroundPanel;
 import main.java.view.ColorsInUse;
 import main.java.view.FontsInUse;
@@ -68,7 +67,7 @@ public class GameOverOverlay extends OverlayView {
         centerPanel.add(Box.createVerticalStrut(20));
 
         OutlinedLabel scoreLabel = new OutlinedLabel(" FINAL SCORE: " + finalScore, Color.BLACK, 3f);
-        scoreLabel.setFont(FontsInUse.PIXEL.getSize(36f));
+        scoreLabel.setFont(FontsInUse.PIXEL.getSize(40f));
         scoreLabel.setForeground(ColorsInUse.TEXT.get());
         scoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         centerPanel.add(scoreLabel);
