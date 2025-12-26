@@ -316,7 +316,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
 
     //this method shows the end game screen when the game is over
     @Override
-    public void onGameOver(boolean saved) {
+    public void onGameOver(boolean saved, boolean winOrLose, int score) {
         endGameButton.setEnabled(false);
     }
 

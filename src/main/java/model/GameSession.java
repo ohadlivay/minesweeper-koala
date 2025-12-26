@@ -203,6 +203,7 @@ public class GameSession
     }
     private void initiateGameOver()
     {
+        boolean winOrLose = getHealthPool() > 0;
         getLeftBoard().revealAll();
         getRightBoard().revealAll();
         if (getHealthPool() > 0) {
@@ -215,9 +216,9 @@ public class GameSession
             notifyListenersAfterAction("Game over! You lost!",false,0,0);
         try{
             saveGame();
-            gameOverListener.onGameOver(true);
+            gameOverListener.onGameOver(true,winOrLose,getPoints());
         }catch (Exception e){
-            gameOverListener.onGameOver(false);
+            gameOverListener.onGameOver(false,winOrLose,getPoints());
         }
 
     }
