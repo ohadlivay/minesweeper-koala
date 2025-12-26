@@ -221,6 +221,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
 
         });
 
+
     }
 
     private JButton createHomeButton() {

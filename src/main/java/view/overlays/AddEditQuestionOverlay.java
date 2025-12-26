@@ -87,27 +87,21 @@ public class AddEditQuestionOverlay extends OverlayView {
                 new EmptyBorder(5, 5, 5, 5)
         ));
 
-        // listener to make sure the question's text is not more than 200 chars
-        questionArea.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                if (questionArea.getText().length() > 200) {
-                    e.consume();
-                    questionArea.setText(questionArea.getText().substring(0, 200));
-                }
-            }
-        });
-
         // label to show text limit
-        JLabel textLimitLabel = new JLabel("0/200");
+        JLabel textLimitLabel = new JLabel("0/" + Question.getMaxQuestionLength());
         textLimitLabel.setFont(FontsInUse.PIXEL.getSize(14f));
         textLimitLabel.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
 
-        // listener to update text limit label
+        // listener to make sure the question's text is not more than 200 chars
+        // to change length, go to Question/MaxQuestionLength
         questionArea.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                textLimitLabel.setText((questionArea.getText().length()) + "/200");
+                if (questionArea.getText().length() >= Question.getMaxQuestionLength()) {
+                    e.consume();
+                    questionArea.setText(questionArea.getText().substring(0, Question.getMaxQuestionLength()));
+                    textLimitLabel.setText((questionArea.getText().length()) + "/" + Question.getMaxQuestionLength());
+                }
             }
         });
 
@@ -161,7 +155,40 @@ public class AddEditQuestionOverlay extends OverlayView {
                 new EmptyBorder(5, 5, 5, 5)
         ));
 
-        formPanel.add(answer1,gbc);
+        // create an error icon label (initially hidden)
+        final JLabel answer1ErrorLabel = new JLabel();
+        java.net.URL errUrl = getClass().getResource("/error.png");
+        if (errUrl != null) {
+            ImageIcon icon = new ImageIcon(errUrl);
+            Image img = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+            answer1ErrorLabel.setIcon(new ImageIcon(img));
+        }
+        answer1ErrorLabel.setVisible(false);
+        answer1ErrorLabel.setToolTipText("Answer must be less than " + Question.getMaxAnswerLength() + " characters.");
+
+        // wrapper panel to hold the field + icon on the right
+        JPanel answer1Wrapper = new JPanel(new BorderLayout());
+        answer1Wrapper.setOpaque(false);
+        answer1Wrapper.add(answer1, BorderLayout.CENTER);
+        answer1Wrapper.add(answer1ErrorLabel, BorderLayout.EAST);
+
+        // update listener shows/hides the error icon label instead of calling add(Icon)
+        answer1.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (answer1.getText().length() >= (int)(Question.getMaxAnswerLength() * 0.7)) {
+                    answer1ErrorLabel.setVisible(true);
+                } else {
+                    answer1ErrorLabel.setVisible(false);
+                }
+                if (answer1.getText().length() >= Question.getMaxAnswerLength()) {
+                    e.consume();
+                    answer1.setText(answer1.getText().substring(0, Question.getMaxAnswerLength()));
+                }
+            }
+        });
+
+        formPanel.add(answer1Wrapper, gbc);
         gbc.gridy++;
 
         answer2 = createStyledTextField();
@@ -171,6 +198,15 @@ public class AddEditQuestionOverlay extends OverlayView {
         // wrong answers in array for easier styling
         wrongAnswers = new JTextField[] {answer2, answer3, answer4};
 
+        ImageIcon scaledErrorIcon = null;
+        java.net.URL errUrlAll = getClass().getResource("/error.png");
+        if (errUrlAll != null) {
+            ImageIcon icon = new ImageIcon(errUrlAll);
+            Image img = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+            scaledErrorIcon = new ImageIcon(img);
+        }
+
+        // create answers 2-4 textboxes
         for (JTextField tf : wrongAnswers) {
             tf.setBackground(ColorsInUse.DENY.get());
             tf.setBorder(BorderFactory.createCompoundBorder(
@@ -178,7 +214,37 @@ public class AddEditQuestionOverlay extends OverlayView {
                     new EmptyBorder(5, 5, 5, 5)
             ));
 
-            formPanel.add(tf,gbc);
+            // create an error icon label (initially hidden)
+            final JLabel errorLabel = new JLabel();
+            if (scaledErrorIcon != null) {
+                errorLabel.setIcon(scaledErrorIcon);
+            }
+            errorLabel.setVisible(false);
+            errorLabel.setToolTipText("Answer must be less than " + Question.getMaxAnswerLength() + " characters.");
+
+            // wrapper panel to hold the field + icon on the right
+            JPanel wrapper = new JPanel(new BorderLayout());
+            wrapper.setOpaque(false);
+            wrapper.add(tf, BorderLayout.CENTER);
+            wrapper.add(errorLabel, BorderLayout.EAST);
+
+            // key listener to show/hide icon and enforce max length
+            tf.addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyTyped(KeyEvent e) {
+                    if (tf.getText().length() >= (int)(Question.getMaxAnswerLength() * 0.7)) {
+                        errorLabel.setVisible(true);
+                    } else {
+                        errorLabel.setVisible(false);
+                    }
+                    if (tf.getText().length() >= Question.getMaxAnswerLength()) {
+                        e.consume();
+                        tf.setText(tf.getText().substring(0, Question.getMaxAnswerLength()));
+                    }
+                }
+            });
+
+            formPanel.add(wrapper, gbc);
             gbc.gridy++;
         }
 
@@ -298,12 +364,22 @@ public class AddEditQuestionOverlay extends OverlayView {
         else
         {
             Question newQ = qmc.userAddedQuestion();
-            newQ.setQuestionText(qText);
+            try {
+                newQ.setQuestionText(qText);
+            } catch (IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(this, "Question text too long! Max "+Question.getMaxQuestionLength()+" characters.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             newQ.setDifficulty(selectedDifficulty);
-            newQ.setAnswer1(a1);
-            newQ.setAnswer2(a2);
-            newQ.setAnswer3(a3);
-            newQ.setAnswer4(a4);
+            try {
+                newQ.setAnswer1(a1);
+                newQ.setAnswer2(a2);
+                newQ.setAnswer3(a3);
+                newQ.setAnswer4(a4);
+            } catch (IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(this, "One of the answers is too long! Max "+Question.getMaxAnswerLength()+" characters.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             SysData.getInstance().addQuestion(newQ);
             try {
                 QuestionCSVManager.rewriteQuestionsToCSVFromSysData();

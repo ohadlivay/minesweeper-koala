@@ -11,6 +11,9 @@ public class Question {
     private String answer3;
     private String answer4;
 
+    private static int maxQuestionLength = 200; //in chars
+    private static int maxAnswerLength = 50;
+
     public Question(int id, String questionText, QuestionDifficulty difficulty, String answer1, String answer2, String answer3, String answer4) {
         this.id = id;
         this.questionText = questionText;
@@ -35,6 +38,7 @@ public class Question {
         return new Question();
     }
 
+
     // --- Getters ---
     public int getId() { return id; }
     public String getQuestionText() { return questionText; }
@@ -45,14 +49,35 @@ public class Question {
     public String getAnswer3() { return answer3; }
     public String getAnswer4() { return answer4; }
 
+    public static int getMaxQuestionLength() { return maxQuestionLength; }
+    public static int getMaxAnswerLength() { return maxAnswerLength; }
+
 
     // --- Setters ---
     // these will need to update the csv aswell, so changes are permanent and not just in RAM
     public void setId(int id) { this.id = id; }
-    public void setQuestionText(String questionText) { this.questionText = questionText; }
+    public void setQuestionText(String questionText) {
+        if (questionText.length() > maxQuestionLength) throw new IllegalArgumentException("Question text too long");
+        this.questionText = questionText;
+    }
+
     public void setDifficulty(QuestionDifficulty difficulty) { this.difficulty = difficulty; }
-    public void setAnswer1(String answer1) { this.answer1 = answer1; }
-    public void setAnswer2(String answer2) { this.answer2 = answer2; }
-    public void setAnswer3(String answer3) { this.answer3 = answer3; }
-    public void setAnswer4(String answer4) { this.answer4 = answer4; }
+    public void setAnswer1(String answer1) {
+        if (answer1.length() > maxAnswerLength) throw new IllegalArgumentException("Answer 1 text too long");
+        this.answer1 = answer1;
+    }
+
+    public void setAnswer2(String answer2) {
+        if (answer2.length() > maxAnswerLength) throw new IllegalArgumentException("Answer 2 text too long");
+        this.answer2 = answer2;
+    }
+
+    public void setAnswer3(String answer3) {
+        if (answer3.length() > maxAnswerLength) throw new IllegalArgumentException("Answer 3 text too long");
+        this.answer3 = answer3;
+    }
+    public void setAnswer4(String answer4) {
+        if (answer4.length() > maxAnswerLength) throw new IllegalArgumentException("Answer 4 text too long");
+        this.answer4 = answer4;
+    }
 }
