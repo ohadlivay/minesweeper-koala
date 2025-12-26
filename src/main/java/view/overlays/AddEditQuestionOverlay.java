@@ -11,8 +11,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.awt.event.*;
 
 public class AddEditQuestionOverlay extends OverlayView {
     private final Question existingQuestion;
@@ -31,6 +30,7 @@ public class AddEditQuestionOverlay extends OverlayView {
     private String QuestionPlaceholder;
     private String CorrectAnswerPlaceholder;
     private String WrongAnswerPlaceholder;
+    private JLabel textLimitLabel;
 
     public AddEditQuestionOverlay(NavigationController navigationController, Question q) {
         super(navigationController, true);
@@ -85,8 +85,41 @@ public class AddEditQuestionOverlay extends OverlayView {
                 new EmptyBorder(5, 5, 5, 5)
         ));
 
+        //placeholder text when empty
+        questionArea.setText(QuestionPlaceholder);
+        questionArea.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
+        questionArea.addFocusListener(placeholderListener);
 
-        JScrollPane scrollPane = new JScrollPane(questionArea);
+        // label to show text limit
+        textLimitLabel = new JLabel("0/" + Question.getMaxQuestionLength());
+        textLimitLabel.setFont(FontsInUse.PIXEL.getSize(14f));
+        textLimitLabel.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
+
+        // listener to make sure the question's text is not more than 200 chars
+        // to change length, go to Question/MaxQuestionLength
+        questionArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (questionArea.getText().length() >= Question.getMaxQuestionLength()) {
+                    e.consume();
+                    questionArea.setText(questionArea.getText().substring(0, Question.getMaxQuestionLength()));
+                }
+                textLimitLabel.setText((questionArea.getText().length()) + "/" + Question.getMaxQuestionLength());
+
+            }
+        });
+
+        gbc.gridy++;
+        gbc.weighty = 0.0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        formPanel.add(textLimitLabel, gbc);
+        gbc.gridy++;
+
+
+
+
+        JScrollPane scrollPane = new JScrollPane(questionArea);     // why?
         scrollPane.setPreferredSize(new Dimension(10, 160));
         scrollPane.setBorder(new LineBorder(ColorsInUse.TEXT.get(), 1));
 
@@ -121,63 +154,21 @@ public class AddEditQuestionOverlay extends OverlayView {
         gbc.gridy++;
 
         //answers textboxes are here
+        // Initialize the text fields
         answer1 = createStyledTextField();
-        answer1.setBackground(ColorsInUse.CONFIRM.get());
-        answer1.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1),
-                new EmptyBorder(5, 5, 5, 5)
-        ));
-
-        formPanel.add(answer1,gbc);
-        gbc.gridy++;
-
         answer2 = createStyledTextField();
         answer3 = createStyledTextField();
         answer4 = createStyledTextField();
-
-        // wrong answers in array for easier styling
         wrongAnswers = new JTextField[] {answer2, answer3, answer4};
 
-        for (JTextField tf : wrongAnswers) {
-            tf.setBackground(ColorsInUse.DENY.get());
-            tf.setBorder(BorderFactory.createCompoundBorder(
-                    new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1),
-                    new EmptyBorder(5, 5, 5, 5)
-            ));
+        // correct answer
+        formPanel.add(createAnswerFieldWrapper(answer1, ColorsInUse.CONFIRM.get(), CorrectAnswerPlaceholder, gbc), gbc);
+        gbc.gridy++;
 
-            formPanel.add(tf,gbc);
+        // wrong answers
+        for (JTextField tf : wrongAnswers) {
+            formPanel.add(createAnswerFieldWrapper(tf, ColorsInUse.DENY.get(), WrongAnswerPlaceholder, gbc), gbc);
             gbc.gridy++;
-        }
-
-        //I put all wrong answers in an array for easier styling, the comment below can be deleted when confirmed
-//        answer2 = createStyledTextField();
-//        answer2.setBackground(ColorsInUse.DENY.get());
-//        answer2.setBorder(new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1));
-//        formPanel.add(answer2,gbc);
-//        gbc.gridy++;
-//
-//        answer3 = createStyledTextField();
-//        answer3.setBackground(ColorsInUse.DENY.get());
-//        answer3.setBorder(new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1));
-//        formPanel.add(answer3,gbc);
-//        gbc.gridy++;
-//
-//        answer4 = createStyledTextField();
-//        answer4.setBackground(ColorsInUse.DENY.get());
-//        answer4.setBorder(new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1));
-//        formPanel.add(answer4,gbc);
-
-
-        questionArea.setText(QuestionPlaceholder);
-        questionArea.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
-        questionArea.addFocusListener(placeholderListener);
-        answer1.setText(CorrectAnswerPlaceholder);
-        answer1.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
-        answer1.addFocusListener(placeholderListener);
-        for (JTextField tf : wrongAnswers) {
-            tf.setText(WrongAnswerPlaceholder);
-            tf.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
-            tf.addFocusListener(placeholderListener);
         }
 
         contentPanel.add(formPanel, BorderLayout.CENTER);
@@ -201,7 +192,6 @@ public class AddEditQuestionOverlay extends OverlayView {
             populateFields();
         }
     }
-
 
     private JButton createKoalaButton(String resourcePath, String tooltip, QuestionDifficulty difficulty) {
         JButton btn = new JButton();
@@ -243,14 +233,21 @@ public class AddEditQuestionOverlay extends OverlayView {
     private void populateFields() {
         questionArea.setText(existingQuestion.getQuestionText());
         questionArea.setForeground(ColorsInUse.TEXT.get());
+        textLimitLabel.setText((questionArea.getText().length()) + "/" + Question.getMaxQuestionLength());
+
         answer1.setText(existingQuestion.getAnswer1());
         answer1.setForeground(ColorsInUse.TEXT.get());
+
+
         answer2.setText(existingQuestion.getAnswer2());
         answer2.setForeground(ColorsInUse.TEXT.get());
+
         answer3.setText(existingQuestion.getAnswer3());
         answer3.setForeground(ColorsInUse.TEXT.get());
+
         answer4.setText(existingQuestion.getAnswer4());
         answer4.setForeground(ColorsInUse.TEXT.get());
+
         updateSelection();
     }
 
@@ -285,12 +282,22 @@ public class AddEditQuestionOverlay extends OverlayView {
         else
         {
             Question newQ = qmc.userAddedQuestion();
-            newQ.setQuestionText(qText);
+            try {
+                newQ.setQuestionText(qText);
+            } catch (IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(this, "Question text too long! Max "+Question.getMaxQuestionLength()+" characters.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             newQ.setDifficulty(selectedDifficulty);
-            newQ.setAnswer1(a1);
-            newQ.setAnswer2(a2);
-            newQ.setAnswer3(a3);
-            newQ.setAnswer4(a4);
+            try {
+                newQ.setAnswer1(a1);
+                newQ.setAnswer2(a2);
+                newQ.setAnswer3(a3);
+                newQ.setAnswer4(a4);
+            } catch (IllegalArgumentException e) {
+                JOptionPane.showMessageDialog(this, "One of the answers is too long! Max "+Question.getMaxAnswerLength()+" characters.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             SysData.getInstance().addQuestion(newQ);
             try {
                 QuestionCSVManager.rewriteQuestionsToCSVFromSysData();
@@ -380,5 +387,62 @@ public class AddEditQuestionOverlay extends OverlayView {
             }
         }
     };
+
+    private JPanel createAnswerFieldWrapper(JTextField field, Color bgColor, String placeholder, GridBagConstraints gbc) {
+        // Style the field
+        field.setBackground(bgColor);
+        field.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1),
+                new EmptyBorder(5, 5, 5, 5)
+        ));
+        field.setText(placeholder);
+        field.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
+        field.addFocusListener(placeholderListener);
+
+        // Create error label
+        JLabel errorLabel = new JLabel();
+        ImageIcon icon = getScaledErrorIcon(); // Helper for the icon
+        if (icon != null) errorLabel.setIcon(icon);
+
+        errorLabel.setVisible(false);
+        errorLabel.setToolTipText("Answer must be less than " + Question.getMaxAnswerLength() + " characters.");
+
+        // Enforce logic and update icon visibility
+        field.addKeyListener(answerKeyListener(field, errorLabel));
+
+        // Wrap and return
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.setOpaque(false);
+        wrapper.add(field, BorderLayout.CENTER);
+        wrapper.add(errorLabel, BorderLayout.EAST);
+
+        return wrapper;
+    }
+
+    // Utility to load the icon once
+    private ImageIcon getScaledErrorIcon() {
+        java.net.URL errUrl = getClass().getResource("/error.png");
+        if (errUrl == null) return null;
+        ImageIcon icon = new ImageIcon(errUrl);
+        Image img = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+        return new ImageIcon(img);
+    }
+
+    public KeyListener answerKeyListener(JTextField tf, JLabel errorLabel) {
+        return new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (tf.getText().length() >= (int)(Question.getMaxAnswerLength() * 0.7)) {
+                    errorLabel.setVisible(true);
+                } else {
+                    errorLabel.setVisible(false);
+                }
+                if (tf.getText().length() >= Question.getMaxAnswerLength()) {
+                    e.consume();
+                    tf.setText(tf.getText().substring(0, Question.getMaxAnswerLength()));
+                }
+            }
+        };
+    }
 }
 

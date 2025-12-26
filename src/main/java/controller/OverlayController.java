@@ -79,7 +79,7 @@ public class OverlayController {
                 overlay = new ViewQuestionOverlay(nav);
             }
             if (type == OverlayType.INSTRUCTIONS) {
-                overlay = new NYI_GameInstructionOverlay(nav);
+                overlay = new GameInstructionOverlay(nav);
             }
             return overlay;
         }

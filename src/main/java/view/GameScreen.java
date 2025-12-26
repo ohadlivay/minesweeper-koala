@@ -4,13 +4,14 @@ import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.controller.OverlayController;
 import main.java.model.*;
+import main.java.view.overlays.OverlayType;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
 
-public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener {
+public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener, GameOverListener {
     private final NavigationController nav;
     private final GameSession session; // Always holds the current game session
 
@@ -31,6 +32,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         this.nav = nav;
         this.session = session;
         this.session.setActionMadeListener(this);
+        this.session.setGameOverListener(this);
         this.session.getLeftBoard().setMinesLeftListener(this);
         this.session.getRightBoard().setMinesLeftListener(this);
         initUI();
@@ -77,6 +79,20 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         topPanel.setBorder(new EmptyBorder(20, 20, 10, 20));
 
         Font font = new Font("Segoe UI Black", Font.BOLD, 16);
+
+        JButton infoIcon = new JButton(new ImageIcon(getClass().getResource("/info.png")));
+        infoIcon.setBorder(new EmptyBorder(0, 0, 10, 0));
+        infoIcon.setToolTipText("How to play");
+        infoIcon.setHorizontalAlignment(SwingConstants.RIGHT);;
+
+        infoIcon.setBackground(ColorsInUse.BG_COLOR.get());
+        infoIcon.setFocusPainted(false);
+        infoIcon.setContentAreaFilled(false);
+        infoIcon.addActionListener(e -> {
+            OverlayController.getInstance().showOverlay(OverlayType.INSTRUCTIONS);
+        });
+
+        topPanel.add(infoIcon, BorderLayout.NORTH);
 
         player1Label = new JLabel();
         player1Label.setForeground(ColorsInUse.TEXT.get());
@@ -205,6 +221,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
 
         });
 
+
     }
 
     private JButton createHomeButton() {
@@ -268,6 +285,17 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
             Color color = healthChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
             floatingNumber(healthLabel, text, color, healthChange > 0);
         }
+    }
+
+    //this method shows the end game screen when the game is over
+    @Override
+    public void onGameOver(boolean saved) {
+        JOptionPane savedWindow = new JOptionPane();
+        endGameButton.setEnabled(false);
+        if (saved)
+            JOptionPane.showMessageDialog(mainPanel, "Game Over! Game data saved.", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+        else
+            JOptionPane.showMessageDialog(mainPanel, "Error, could not save the game!", "Game Over", JOptionPane.ERROR_MESSAGE);
     }
 
     //animation for immediate points/health feedback
