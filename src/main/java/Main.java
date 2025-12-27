@@ -58,7 +58,7 @@ public class Main {
 
                 JFrame frame = new JFrame("Koala Minesweeper");
                 frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-                frame.setSize(1200, 680);
+                frame.setSize(1200, 690);
                 frame.setResizable(false);
                 frame.addWindowListener(new WindowAdapter() {
                     @Override
