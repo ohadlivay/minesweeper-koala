@@ -96,9 +96,9 @@ public class SettingsOverlay extends OverlayView {
         JPanel difficultyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 0));
         difficultyPanel.setBackground(ColorsInUse.BG_COLOR.get());
 
-        btnEasy = createKoalaButton("/green-koala.png", "Easy", "9x9", GameDifficulty.EASY);
-        btnMedium = createKoalaButton("/yellow-koala.png", "Medium", "13x13", GameDifficulty.MEDIUM);
-        btnHard = createKoalaButton("/red-koala.png", "Hard", "16x16", GameDifficulty.HARD);
+        btnEasy = createKoalaButton("/green-koala-pixel.png", "Easy", "9x9", GameDifficulty.EASY);
+        btnMedium = createKoalaButton("/yellow-koala-pixel.png", "Medium", "13x13", GameDifficulty.MEDIUM);
+        btnHard = createKoalaButton("/red-koala-pixel.png", "Hard", "16x16", GameDifficulty.HARD);
 
         difficultyPanel.add(btnEasy);
         difficultyPanel.add(btnMedium);
