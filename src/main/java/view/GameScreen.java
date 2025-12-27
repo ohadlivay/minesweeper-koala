@@ -41,14 +41,15 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     }
 
     public void setBoards(Board left, Board right) {
-        Color leftColor = ColorsInUse.randomBoardColor();
-        Color rightColor;
-        do {
-            rightColor = ColorsInUse.randomBoardColor();
-        }
-        while (leftColor.equals(rightColor));
+        Color leftColor = ColorsInUse.getRandomWarmBoardColor().get();
+        Color rightColor = ColorsInUse.getRandomColdBoardColor().get();
+
         BoardLayout leftBoard = new BoardLayout(left, leftColor);
         BoardLayout rightBoard = new BoardLayout(right, rightColor);
+        leftBoard.revalidate();
+        rightBoard.revalidate();
+        leftBoard.repaint();
+        rightBoard.repaint();
         centerPanel.add(Box.createHorizontalGlue());
         centerPanel.add(leftBoard);
         centerPanel.add(Box.createHorizontalStrut(50)); // gap
@@ -69,19 +70,20 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
         mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
+        Font font = new Font("Segoe UI Black", Font.BOLD, 16);
+
+
         feedLabel = new JLabel("Welcome! Click a tile to start.", SwingConstants.CENTER);
-        feedLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 14));
+        feedLabel.setFont(font);
         feedLabel.setForeground(ColorsInUse.TEXT.get());
         feedLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
-        topPanel.setBorder(new EmptyBorder(20, 20, 10, 20));
-
-        Font font = new Font("Segoe UI Black", Font.BOLD, 16);
+        topPanel.setBorder(new EmptyBorder(20, 20, 5, 20));
 
         JButton infoIcon = new JButton(new ImageIcon(getClass().getResource("/info.png")));
-        infoIcon.setBorder(new EmptyBorder(0, 0, 10, 0));
+        infoIcon.setBorder(new EmptyBorder(0, 0, 5, 0));
         infoIcon.setToolTipText("How to play");
         infoIcon.setHorizontalAlignment(SwingConstants.RIGHT);;
 
@@ -156,7 +158,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
 
         healthLabel = new JLabel("x" + session.getHealthPool());
         healthLabel.setForeground(ColorsInUse.TEXT.get());
-        healthLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 16));
+        healthLabel.setFont(font);
         java.net.URL heartUrl = getClass().getResource("/heart.png");
         if (heartUrl != null) {
             ImageIcon icon = new ImageIcon(heartUrl);
@@ -243,12 +245,6 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         testButtonPanel.add(testLossButton);
         testButtonPanel.add(endGameButton);
         bottomPanel.add(testButtonPanel, BorderLayout.EAST);
-
-        //********//
-
-
-
-
     }
 
     private JButton createHomeButton() {

@@ -1,6 +1,7 @@
 package main.java.view;
 
 import java.awt.Color;
+import java.util.Random;
 
 
 //color handling is done here
@@ -64,25 +65,29 @@ public enum ColorsInUse {
     MUTED_INDIGO    (new Color(100, 110, 165)),
     PINE_TEAL       (new Color(80, 130, 120));
 
-    private static final ColorsInUse[] BOARD_COLORS = {
-            SLATE_BLUE,
-            STEEL_TEAL,
-            DUSTY_PURPLE,
-            MUTED_CYAN,
-            OLIVE_GREEN,
+    // Warm colors – Board 1
+    private static final ColorsInUse[] BOARD_COLORS_WARM = {
             SOFT_MAROON,
             WARM_TAUPE,
+            CLAY_ORANGE,
+            COPPER_RED,
+            SANDSTONE,
+            ROSEWOOD,
+            OLIVE_GREEN,
+            MOSS_GREEN
+    };
+
+    // Cold colors – Board 2
+    private static final ColorsInUse[] BOARD_COLORS_COLD = {
+            SLATE_BLUE,
+            STEEL_TEAL,
+            MUTED_CYAN,
             DENIM_BLUE,
             SAGE_GREEN,
-            CLAY_ORANGE,
             DESAT_TEAL,
             ASH_PURPLE,
             SMOKY_BLUE,
-            MOSS_GREEN,
-            COPPER_RED,
-            SANDSTONE,
             BLUE_GRAY,
-            ROSEWOOD,
             MUTED_INDIGO,
             PINE_TEAL
     };
@@ -97,10 +102,18 @@ public enum ColorsInUse {
         return color;
     }
 
-    public static Color randomBoardColor() {
-        int i = (int) (Math.random() * BOARD_COLORS.length);
-        return BOARD_COLORS[i].get();
+    public static ColorsInUse getRandomWarmBoardColor() {
+        return BOARD_COLORS_WARM[
+                new Random().nextInt(BOARD_COLORS_WARM.length)
+                ];
     }
+
+    public static ColorsInUse getRandomColdBoardColor() {
+        return BOARD_COLORS_COLD[
+                new Random().nextInt(BOARD_COLORS_COLD.length)
+                ];
+    }
+
 
     public static Color getBoardBorderColor(boolean turn) {
         if (turn)
