@@ -1,6 +1,7 @@
 package main.java.view.overlays;
 
 import main.java.controller.NavigationController;
+import main.java.util.SoundManager;
 import main.java.view.BackgroundPanel;
 import main.java.view.ColorsInUse;
 import main.java.view.FontsInUse;
@@ -28,6 +29,7 @@ public class GameOverOverlay extends OverlayView {
         });
 
         initUI();
+        playMusic();
     }
 
 
@@ -98,5 +100,9 @@ public class GameOverOverlay extends OverlayView {
 
     }
 
+    private void playMusic() {
+        SoundManager.getInstance().playOnce(isWin ? SoundManager.SoundId.WIN : SoundManager.SoundId.LOSE);
+        System.out.println(isWin ? SoundManager.SoundId.WIN.toString() : SoundManager.SoundId.LOSE.toString());
+    }
 
 }

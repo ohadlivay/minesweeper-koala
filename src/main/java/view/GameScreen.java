@@ -4,6 +4,7 @@ import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.controller.OverlayController;
 import main.java.model.*;
+import main.java.util.SoundManager;
 import main.java.view.overlays.OverlayType;
 
 import javax.swing.*;
@@ -302,6 +303,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
             String text = (pointsChange > 0 ? "+" : "") + pointsChange;
             Color color = pointsChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
             floatingNumber(pointsLabel, text, color, pointsChange > 0);
+          //  SoundManager.getInstance().playOnce(pointsChange > 0 ? SoundManager.SoundId.POINTS_WIN : SoundManager.SoundId.POINTS_LOSE);
         }
         if (healthChange!=0) {
             String text = (healthChange > 0 ? "+" : "") + healthChange;
@@ -313,10 +315,10 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     //this method shows the end game screen when the game is over
     @Override
     public void onGameOver(boolean saved, boolean winOrLose, int score) {
-        OverlayController.getInstance().showGameOverOverlay(winOrLose,score);
         endGameButton.setEnabled(false);
         if (!saved)
             JOptionPane.showMessageDialog(mainPanel, "Error, could not save the game!", "Game Over", JOptionPane.ERROR_MESSAGE);
+        OverlayController.getInstance().showGameOverOverlay(winOrLose,score);
     }
 
     //animation for immediate points/health feedback

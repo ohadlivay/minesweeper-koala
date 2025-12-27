@@ -1,6 +1,7 @@
 package main.java.model;
 import main.java.test.Testable;
 import main.java.util.GameDataCSVManager;
+import main.java.util.SoundManager;
 import main.java.view.GameScreen;
 
 import java.io.IOException;
@@ -256,6 +257,7 @@ public class GameSession
             message = "Excellent! Mine neutralized.";
             this.gainPoints(pointsForFlaggingMine);
             parentBoard.reveal(tile);
+            SoundManager.getInstance().playOnce(SoundManager.SoundId.REVEAL);
             this.changeTurn();   //revealing a mine by flagging does change a turn!
             System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
             notifyListenersAfterAction(message,true,0,1);
@@ -334,6 +336,7 @@ public class GameSession
                 message = "BOOM! You hit a mine! Lost 1 health";
                 this.gainHealth(healthForRevealingMine);
                 parentBoard.reveal(tile);
+                SoundManager.getInstance().playOnce(SoundManager.SoundId.MINE);
                 notifyListenersAfterAction(message,false,-1,0);
                 if (this.isGameOver())
                     initiateGameOver();
@@ -359,6 +362,7 @@ public class GameSession
 
     private void gainPoints(int points){
         System.out.println("Points 'added': "+points);
+        SoundManager.getInstance().playOnce((points>0)? SoundManager.SoundId.POINTS_WIN : SoundManager.SoundId.POINTS_LOSE);
         this.setPoints(this.getPoints() + points);
     }
 

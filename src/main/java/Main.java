@@ -8,6 +8,7 @@ import main.java.model.BoardGenerator;
 import main.java.model.GameDifficulty;
 import main.java.util.GameDataCSVManager;
 import main.java.util.QuestionCSVManager;
+import main.java.util.SoundManager;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -84,7 +85,11 @@ public class Main {
                 } catch (Exception e) {
                     System.err.println("Error launching system: " + e.getMessage());
                 }
-
+                try {
+                    SoundManager.getInstance().preload();
+                } catch (Exception e) {
+                    System.err.println("Error preloading sounds: " + e.getMessage());
+                }
             });
         }
 
