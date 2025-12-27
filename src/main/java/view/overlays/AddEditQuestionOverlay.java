@@ -39,6 +39,15 @@ public class AddEditQuestionOverlay extends OverlayView {
         if (isEditing){
             this.selectedDifficulty = q.getDifficulty();
         }
+
+        //we enable closing the overlay when the user clicks the X button
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                close();
+            }
+        });
+
         initUI();
     }
 
@@ -136,10 +145,10 @@ public class AddEditQuestionOverlay extends OverlayView {
         JPanel difficultyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));
         difficultyPanel.setOpaque(false);
         difficultyPanel.add(createLabel("Select Difficulty:"), BorderLayout.WEST);
-        btnEasy = createKoalaButton("/green-koala.png", "Easy", QuestionDifficulty.EASY);
-        btnMedium = createKoalaButton("/yellow-koala.png", "Medium", QuestionDifficulty.MEDIUM);
-        btnHard = createKoalaButton("/red-koala.png", "Hard", QuestionDifficulty.HARD);
-        btnMaster = createKoalaButton("/master-koala.png", "Master", QuestionDifficulty.MASTER);
+        btnEasy = createKoalaButton("/green-koala-pixel.png", "Easy", QuestionDifficulty.EASY);
+        btnMedium = createKoalaButton("/yellow-koala-pixel.png", "Medium", QuestionDifficulty.MEDIUM);
+        btnHard = createKoalaButton("/red-koala-pixel.png", "Hard", QuestionDifficulty.HARD);
+        btnMaster = createKoalaButton("/master-koala-pixel.png", "Master", QuestionDifficulty.MASTER);
         difficultyPanel.add(btnEasy);
         difficultyPanel.add(btnMedium);
         difficultyPanel.add(btnHard);
