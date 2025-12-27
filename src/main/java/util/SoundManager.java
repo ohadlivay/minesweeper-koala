@@ -6,7 +6,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public class SoundManager {
-    public enum SoundId { REVEAL, FLAG, MINE, WIN, LOSE, BG, POINTS_WIN, POINTS_LOSE }
+    public enum SoundId { REVEAL, FLAG, MINE, WIN, LOSE, BLOCK, POINTS_WIN, POINTS_LOSE }
 
     private static final SoundManager INSTANCE = new SoundManager();
     public static SoundManager getInstance() { return INSTANCE; }
@@ -21,7 +21,7 @@ public class SoundManager {
         load(SoundId.MINE, "/sounds/mine.wav");
         load(SoundId.WIN, "/sounds/win.wav");
         load(SoundId.LOSE, "/sounds/lose.wav");
-        load(SoundId.BG, "/sounds/bg.wav");
+        load(SoundId.BLOCK, "/sounds/block.wav");
         load(SoundId.POINTS_WIN, "/sounds/points-win.wav");
         load(SoundId.POINTS_LOSE, "/sounds/points-lose.wav");
     }

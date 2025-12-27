@@ -285,6 +285,7 @@ public class GameSession
             System.out.println("Flagging tile");
             message = "Mistake! False alarm.";
             parentBoard.flag(tile);
+            SoundManager.getInstance().playOnce(SoundManager.SoundId.POINTS_LOSE);
             this.gainPoints(pointsForFlaggingNumber);
             notifyListenersAfterAction(message,false,0,-3);
     }
@@ -327,6 +328,7 @@ public class GameSession
             //in case tile is flagged (do nothing)
             if(tile.isFlagged()) {
                 System.out.println("tile is flagged and cannot be revealed");
+                SoundManager.getInstance().playOnce(SoundManager.SoundId.BLOCK);
                 return false;
             }
 
@@ -346,6 +348,7 @@ public class GameSession
             if(tile instanceof NumberTile){
                 int tilesRevealed = parentBoard.reveal(tile);
                 this.gainPoints(pointsForRevealingNumber*tilesRevealed);
+                SoundManager.getInstance().playOnce(SoundManager.SoundId.REVEAL);
                 System.out.println("Its a number tile");
                 message = "Number tiles revealed, gained "+(pointsForRevealingNumber*tilesRevealed)+" points";
                 notifyListenersAfterAction(message,true,0,pointsForRevealingNumber*tilesRevealed);
@@ -362,7 +365,6 @@ public class GameSession
 
     private void gainPoints(int points){
         System.out.println("Points 'added': "+points);
-        SoundManager.getInstance().playOnce((points>0)? SoundManager.SoundId.POINTS_WIN : SoundManager.SoundId.POINTS_LOSE);
         this.setPoints(this.getPoints() + points);
     }
 
@@ -396,6 +398,7 @@ public class GameSession
         if (this.getPoints() < getGameDifficulty().getActivationCost()){
             System.out.println("Not enough points to activate special tile");
             message = "Not enough points to activate special tile";
+            SoundManager.getInstance().playOnce(SoundManager.SoundId.BLOCK);
             notifyListenersAfterAction(message,false,0,0);
             return false;
         }
@@ -414,6 +417,7 @@ public class GameSession
                 this.gainPoints(plusMinus*getGameDifficulty().getSurprisePoints());
                 boolean healthMaxedOut = this.getHealthPool()==10;
                 this.gainHealth(plusMinus*getGameDifficulty().getSurpriseHealth());
+                SoundManager.getInstance().playOnce(resultOfRandom ? SoundManager.SoundId.POINTS_WIN : SoundManager.SoundId.POINTS_LOSE);
                 if (!healthMaxedOut||!resultOfRandom)
                     notifyListenersAfterAction(this.message,resultOfRandom,plusMinus*getGameDifficulty().getSurpriseHealth(),plusMinus*getGameDifficulty().getSurprisePoints());
                 else
@@ -454,6 +458,7 @@ public class GameSession
         boolean randomResult = random.nextBoolean();
         String correctly = (correctAnswer)? "correctly:)" : "incorrectly:(";
         message = "You answered "+correctly;
+        SoundManager.getInstance().playOnce(correctAnswer ? SoundManager.SoundId.POINTS_WIN : SoundManager.SoundId.POINTS_LOSE);
         switch (this.gameDifficulty)
         {
             case EASY:
