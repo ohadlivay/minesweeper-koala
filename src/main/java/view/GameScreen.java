@@ -71,7 +71,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
         mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        Font font = new Font("Segoe UI Black", Font.BOLD, 16);
+        Font font = FontsInUse.PIXEL.getSize(28f);
 
 
         feedLabel = new JLabel("Welcome! Click a tile to start.", SwingConstants.CENTER);
@@ -86,7 +86,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         JButton infoIcon = new JButton(new ImageIcon(getClass().getResource("/info.png")));
         infoIcon.setBorder(new EmptyBorder(0, 0, 5, 0));
         infoIcon.setToolTipText("How to play");
-        infoIcon.setHorizontalAlignment(SwingConstants.RIGHT);;
+        infoIcon.setHorizontalAlignment(SwingConstants.RIGHT);
 
         infoIcon.setBackground(ColorsInUse.BG_COLOR.get());
         infoIcon.setFocusPainted(false);
