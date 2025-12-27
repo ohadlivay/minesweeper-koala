@@ -319,6 +319,8 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     public void onGameOver(boolean saved, boolean winOrLose, int score) {
         OverlayController.getInstance().showGameOverOverlay(winOrLose,score);
         endGameButton.setEnabled(false);
+        if (!saved)
+            JOptionPane.showMessageDialog(mainPanel, "Error, could not save the game!", "Game Over", JOptionPane.ERROR_MESSAGE);
     }
 
     //animation for immediate points/health feedback
