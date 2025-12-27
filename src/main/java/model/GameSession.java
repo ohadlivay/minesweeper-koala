@@ -281,7 +281,7 @@ public class GameSession
         }
 
         //case tile is not flagged (flag it)
-        if(!tile.isActivated()) {
+        if(!tile.isActivated()&&!tile.isFlagged()) {
             System.out.println("Flagging tile");
             message = "Mistake! False alarm.";
             parentBoard.flag(tile);
@@ -289,6 +289,11 @@ public class GameSession
             this.gainPoints(pointsForFlaggingNumber);
             notifyListenersAfterAction(message,false,0,-3);
     }
+        else {
+            message = "You already unflagged this tile!";
+            parentBoard.flag(tile);
+            notifyListenersAfterAction(message,false,0,0);
+        }
         System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
         //this.changeTurn();
 }
