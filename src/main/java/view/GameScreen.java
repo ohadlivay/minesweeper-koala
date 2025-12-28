@@ -303,7 +303,6 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
             String text = (pointsChange > 0 ? "+" : "") + pointsChange;
             Color color = pointsChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
             floatingNumber(pointsLabel, text, color, pointsChange > 0);
-          //  SoundManager.getInstance().playOnce(pointsChange > 0 ? SoundManager.SoundId.POINTS_WIN : SoundManager.SoundId.POINTS_LOSE);
         }
         if (healthChange!=0) {
             String text = (healthChange > 0 ? "+" : "") + healthChange;

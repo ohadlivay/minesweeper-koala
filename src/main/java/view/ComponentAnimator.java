@@ -1,0 +1,171 @@
+package main.java.view;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+
+public class ComponentAnimator {
+
+    // Optional: keep last timer per component so you can cancel/replace animations cleanly
+    // (prevents double-shakes etc.)
+    private final java.util.Map<JComponent, Timer> active = new java.util.WeakHashMap<>();
+
+    private void replaceTimer(JComponent c, Timer next) {
+        Timer prev = active.put(c, next);
+        if (prev != null && prev.isRunning()) prev.stop();
+    }
+
+    public void shake(JComponent c) {
+        Point base = c.getLocation();
+        int frames = 10;
+        int[] i = {0};
+
+        Timer t = new Timer(15, e -> {
+            i[0]++;
+            int dx = (i[0] % 2 == 0) ? 6 : -6;
+            c.setLocation(base.x + dx, base.y);
+
+            if (i[0] >= frames) {
+                c.setLocation(base);
+                ((Timer) e.getSource()).stop();
+            }
+        });
+
+        replaceTimer(c, t);
+        t.start();
+    }
+
+    public void pulseBorder(JComponent c, int maxGrowPx) {
+        Border originalBorder = c.getBorder();
+        Insets baseInsets = (originalBorder instanceof EmptyBorder eb)
+                ? eb.getBorderInsets()
+                : new Insets(5, 10, 5, 10);
+
+        int frames = 16;
+        int[] i = {0};
+
+        Timer t = new Timer(15, e -> {
+            i[0]++;
+            int half = frames / 2;
+            int k = (i[0] <= half) ? i[0] : (frames - i[0]); // up then down
+
+            int grow = (int) Math.round((k / (double) half) * maxGrowPx);
+
+            c.setBorder(BorderFactory.createEmptyBorder(
+                    Math.max(0, baseInsets.top - grow / 2),
+                    Math.max(0, baseInsets.left - grow),
+                    Math.max(0, baseInsets.bottom - grow / 2),
+                    Math.max(0, baseInsets.right - grow)
+            ));
+            c.revalidate();
+            c.repaint();
+
+            if (i[0] >= frames) {
+                c.setBorder(originalBorder);
+                ((Timer) e.getSource()).stop();
+            }
+        });
+
+        replaceTimer(c, t);
+        t.start();
+    }
+
+    public void flashForeground(JLabel label, Color flashColor, Color baseColor) {
+        int frames = 18;
+        int[] i = {0};
+
+        Timer t = new Timer(20, e -> {
+            i[0]++;
+            float a = i[0] / (float) frames; // 0..1
+
+            int r = (int) (flashColor.getRed()   * (1 - a) + baseColor.getRed()   * a);
+            int g = (int) (flashColor.getGreen() * (1 - a) + baseColor.getGreen() * a);
+            int b = (int) (flashColor.getBlue()  * (1 - a) + baseColor.getBlue()  * a);
+
+            label.setForeground(new Color(r, g, b));
+
+            if (i[0] >= frames) ((Timer) e.getSource()).stop();
+        });
+
+        // For label flashes you may want to allow overlaps; if not, use replaceTimer(label, t)
+        replaceTimer(label, t);
+        t.start();
+    }
+
+    private void floatingNumber(JComponent target, String text, Color color, boolean isUp) {
+        JRootPane rootPane = SwingUtilities.getRootPane(target);
+        if (rootPane == null) return;
+
+        JLabel floatLabel = new JLabel(text);
+        floatLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 20));
+        floatLabel.setForeground(color);
+
+        Point screenPos = target.getLocationOnScreen();
+        Point rootPos = rootPane.getLocationOnScreen();
+        int x = screenPos.x - rootPos.x + (target.getWidth() / 2) - 15;
+        int y = screenPos.y - rootPos.y;
+
+        floatLabel.setBounds(x, y, 100, 30);
+
+        JLayeredPane layeredPane = rootPane.getLayeredPane();
+        layeredPane.add(floatLabel, JLayeredPane.POPUP_LAYER);
+        layeredPane.repaint();
+
+        //animation timer
+        int distance = 50;
+        int step;
+        if(!isUp) {
+            step = 2;
+        } else {
+            step = -2;
+        }
+        Timer timer = new Timer(40, null);
+        timer.addActionListener(e -> {
+            Point p = floatLabel.getLocation();
+            floatLabel.setLocation(p.x, p.y + step);
+
+            //define when to stop based on the direction
+            boolean finished;
+            if (isUp) {
+                finished = (p.y < y - distance);
+            }
+            else {
+                finished = (p.y > y + distance);
+            }
+
+            if (finished) {
+                layeredPane.remove(floatLabel);
+                layeredPane.repaint();
+                timer.stop();
+            }
+
+        });
+        timer.start();
+    }
+
+    private void pulse(JComponent c) {
+        Insets original = c.getBorder() instanceof EmptyBorder eb ? eb.getBorderInsets() : new Insets(5, 20, 5, 20);
+        int max = 8;
+        int[] t = {0};
+
+        Timer timer = new Timer(15, e -> {
+            t[0] += 1;
+            int k = (t[0] <= max) ? t[0] : (2 * max - t[0]); // up then down
+            c.setBorder(BorderFactory.createEmptyBorder(
+                    original.top - k/2,
+                    original.left - k,
+                    original.bottom - k/2,
+                    original.right - k
+            ));
+            c.revalidate();
+            c.repaint();
+
+            if (t[0] >= 2 * max) {
+                c.setBorder(BorderFactory.createEmptyBorder(original.top, original.left, original.bottom, original.right));
+                ((Timer) e.getSource()).stop();
+            }
+        });
+        timer.start();
+    }
+}
