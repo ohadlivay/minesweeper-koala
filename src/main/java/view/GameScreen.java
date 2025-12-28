@@ -108,7 +108,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         player1MinesLeftLabel = new JLabel("x" + session.getLeftBoard().getMinesLeft());
         player1MinesLeftLabel.setForeground(ColorsInUse.TEXT.get());
         player1MinesLeftLabel.setFont(font);
-        java.net.URL bombUrl = getClass().getResource("/bomb.png");
+        java.net.URL bombUrl = getClass().getResource("/bomb-pixel.png");
         if (bombUrl != null) { ImageIcon icon = new ImageIcon(bombUrl);
             Image scaled = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
             player1MinesLeftLabel.setIcon(new ImageIcon(scaled));
@@ -156,6 +156,36 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 0));
         statsPanel.setOpaque(false);
         statsPanel.setBorder(new EmptyBorder(10, 0, 10, 0));
+        GameDifficulty currentDifficulty = session.getGameDifficulty();
+        String koalaPath = switch (currentDifficulty) {
+            case EASY -> "/green-koala-pixel.png";
+            case MEDIUM -> "/yellow-koala-pixel.png";
+            case HARD -> "/red-koala-pixel.png";
+        };
+
+        JLabel difficultyLabel = new JLabel(currentDifficulty.toString());
+        difficultyLabel.setForeground(ColorsInUse.TEXT.get());
+        difficultyLabel.setFont(font);
+        java.net.URL koalaUrl = getClass().getResource(koalaPath);
+        if (koalaUrl != null) {
+            ImageIcon icon = new ImageIcon(koalaUrl);
+            Image scaled = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            difficultyLabel.setIcon(new ImageIcon(scaled));
+            difficultyLabel.setIconTextGap(10);
+        }
+        statsPanel.add(difficultyLabel);
+
+        JLabel costLabel = new JLabel("Activation Cost: " + currentDifficulty.getActivationCost());
+        costLabel.setForeground(ColorsInUse.TEXT.get());
+        costLabel.setFont(font);
+        java.net.URL targetUrl = getClass().getResource("/plus-minus.png");
+        if (targetUrl != null) {
+            ImageIcon icon = new ImageIcon(targetUrl);
+            Image scaled = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            costLabel.setIcon(new ImageIcon(scaled));
+            costLabel.setIconTextGap(10);
+        }
+        statsPanel.add(costLabel);
 
         healthLabel = new JLabel("x" + session.getHealthPool());
         healthLabel.setForeground(ColorsInUse.TEXT.get());
@@ -176,6 +206,8 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         pointsLabel.setBackground(ColorsInUse.POINTS.get());
         pointsLabel.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
         statsPanel.add(pointsLabel);
+
+
 
         // bottom panel holds the home button
         JPanel bottomPanel = new JPanel(new BorderLayout());

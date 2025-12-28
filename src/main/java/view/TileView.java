@@ -77,17 +77,17 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         if (tile.getIsFlagged())
             setupIcon(null, false);
         if (type.equals("M")) {
-            setupIcon("/bomb.png", true);
+            setupIcon("/bomb-pixel.png", true);
             setEnabled(false);
         }
         else if (type.equals("S")) {
-            setupIcon("/surprise.png", false);
+            setupIcon("/pixel-gift.png", false);
             setTileColor(ColorsInUse.SURPRISE_TILE.get());
             setEnabled(true);
         }
 
         else if (type.equals("Q")) {
-            setupIcon("/question.png", false);
+            setupIcon("/pixel-question.png", false);
             setTileColor(ColorsInUse.QUESTION_TILE.get());
             setEnabled(true);
         }
@@ -135,7 +135,7 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
     public void updateFlagged(boolean flagged) {
 
         if (flagged) {
-            setupIcon("/red-flag.png", false);
+            setupIcon("/pixel-flag.png", false);
             System.out.println("tileview: i got updated that tile was flagged");
         }
         else {
