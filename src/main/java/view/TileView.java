@@ -77,11 +77,11 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         if (tile.getIsFlagged())
             setupIcon(null, false);
         if (type.equals("M")) {
-            setupIcon("/bomb-pixel.png", true);
+            setupIcon("/pixel-mine.png", true);
             setEnabled(false);
         }
         else if (type.equals("S")) {
-            setupIcon("/pixel-gift.png", false);
+            setupIcon("/gift-pixel.png", false);
             setTileColor(ColorsInUse.SURPRISE_TILE.get());
             setEnabled(true);
         }

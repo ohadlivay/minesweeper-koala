@@ -108,7 +108,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         player1MinesLeftLabel = new JLabel("x" + session.getLeftBoard().getMinesLeft());
         player1MinesLeftLabel.setForeground(ColorsInUse.TEXT.get());
         player1MinesLeftLabel.setFont(font);
-        java.net.URL bombUrl = getClass().getResource("/bomb-pixel.png");
+        java.net.URL bombUrl = getClass().getResource("/pixel-mine.png");
         if (bombUrl != null) { ImageIcon icon = new ImageIcon(bombUrl);
             Image scaled = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
             player1MinesLeftLabel.setIcon(new ImageIcon(scaled));
@@ -169,7 +169,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         java.net.URL koalaUrl = getClass().getResource(koalaPath);
         if (koalaUrl != null) {
             ImageIcon icon = new ImageIcon(koalaUrl);
-            Image scaled = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            Image scaled = icon.getImage().getScaledInstance(42, 42, Image.SCALE_SMOOTH);
             difficultyLabel.setIcon(new ImageIcon(scaled));
             difficultyLabel.setIconTextGap(10);
         }
