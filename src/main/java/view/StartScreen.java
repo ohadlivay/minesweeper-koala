@@ -41,11 +41,19 @@ public class StartScreen {
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
 
-        startScreenLabel = new JLabel("KOALA MINESWEEPER");
-        startScreenLabel.setForeground(java.awt.Color.WHITE);
-        startScreenLabel.setFont(FontsInUse.PIXEL2.getSize(60f));
+        java.net.URL imageURL = getClass().getResource("/start-title.png");
+
+        if (imageURL != null) {
+            ImageIcon startTitle = new ImageIcon(imageURL);
+            startScreenLabel = new JLabel(startTitle);
+        } else {
+            System.err.println("Could not find image resource: /images/title_banner.png");
+            startScreenLabel = new JLabel("KOALA MINESWEEPER (Image Missing)");
+            startScreenLabel.setForeground(Color.RED);
+        }
+
         startScreenLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        startScreenLabel.setBorder(BorderFactory.createEmptyBorder(80, 0, 0, 0));
+        startScreenLabel.setBorder(BorderFactory.createEmptyBorder(60, 0, 0, 0));
         mainPanel.add(startScreenLabel, BorderLayout.NORTH);
 
         startGameBtn = new JButton("START GAME");
