@@ -110,9 +110,9 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         player1MinesLeftLabel = new JLabel("x" + session.getLeftBoard().getMinesLeft());
         player1MinesLeftLabel.setForeground(ColorsInUse.TEXT.get());
         player1MinesLeftLabel.setFont(font);
-        java.net.URL bombUrl = getClass().getResource("/pixel-mine.png");
+        java.net.URL bombUrl = getClass().getResource("/white-outline-mine.png");
         if (bombUrl != null) { ImageIcon icon = new ImageIcon(bombUrl);
-            Image scaled = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            Image scaled = icon.getImage().getScaledInstance(42, 42, Image.SCALE_SMOOTH);
             player1MinesLeftLabel.setIcon(new ImageIcon(scaled));
             player1MinesLeftLabel.setIconTextGap(10);
         }
@@ -121,7 +121,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         player2MinesLeftLabel.setForeground(ColorsInUse.TEXT.get());
         player2MinesLeftLabel.setFont(font);
         if (bombUrl != null) { ImageIcon icon = new ImageIcon(bombUrl);
-            Image scaled = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            Image scaled = icon.getImage().getScaledInstance(42, 42, Image.SCALE_SMOOTH);
             player2MinesLeftLabel.setIcon(new ImageIcon(scaled));
             player2MinesLeftLabel.setIconTextGap(10);
         }
@@ -201,12 +201,23 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         }
         statsPanel.add(healthLabel);
 
-        pointsLabel = new JLabel("Score: " + session.getPoints());
+        java.net.URL scoreBgUrl = getClass().getResource("/score-bg.png");
+        final Image scoreBgImage = (scoreBgUrl != null) ? new ImageIcon(scoreBgUrl).getImage() : null;
+
+        pointsLabel = new OutlinedLabel("Score: " + session.getPoints(), Color.BLACK, 3f) {
+            protected void paintComponent(Graphics g) {
+                if (scoreBgImage != null) {
+                    g.drawImage(scoreBgImage, 0, 0, getWidth(), getHeight(), this);
+                }
+                super.paintComponent(g);
+            }
+        };
+
+
         pointsLabel.setForeground(ColorsInUse.TEXT.get());
-        pointsLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 16));
-        pointsLabel.setOpaque(true);
-        pointsLabel.setBackground(ColorsInUse.POINTS.get());
-        pointsLabel.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
+        pointsLabel.setFont(FontsInUse.PIXEL.getSize(24f));
+        pointsLabel.setOpaque(false);
+        pointsLabel.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25));
         statsPanel.add(pointsLabel);
 
 

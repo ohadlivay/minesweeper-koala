@@ -97,8 +97,8 @@ public class ComponentAnimator {
         JRootPane rootPane = SwingUtilities.getRootPane(target);
         if (rootPane == null) return;
 
-        JLabel floatLabel = new JLabel(text);
-        floatLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 20));
+        OutlinedLabel floatLabel = new OutlinedLabel(text, Color.BLACK, 2.5f);
+        floatLabel.setFont(FontsInUse.PIXEL.getSize(30f));
         floatLabel.setForeground(color);
 
         Point screenPos = target.getLocationOnScreen();

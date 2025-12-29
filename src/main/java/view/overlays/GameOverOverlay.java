@@ -43,7 +43,8 @@ public class GameOverOverlay extends OverlayView {
         String titleText = isWin ? "YOU WIN!" : "GAME OVER";
         Color titleColor = ColorsInUse.TEXT.get();
 
-        OutlinedLabel titleLabel = new OutlinedLabel(titleText, Color.BLACK, 4f);        titleLabel.setFont(FontsInUse.PIXEL2.getSize(48f));
+        OutlinedLabel titleLabel = new OutlinedLabel(titleText, Color.BLACK, 4f);
+        titleLabel.setFont(FontsInUse.PIXEL2.getSize(48f));
         titleLabel.setForeground(titleColor);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));

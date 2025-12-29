@@ -126,12 +126,6 @@ public class AddEditQuestionOverlay extends OverlayView {
         gbc.gridy++;
 
 
-
-
-        JScrollPane scrollPane = new JScrollPane(questionArea);     // why?
-        scrollPane.setPreferredSize(new Dimension(10, 160));
-        scrollPane.setBorder(new LineBorder(ColorsInUse.TEXT.get(), 1));
-
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         formPanel.add(questionArea, gbc);
