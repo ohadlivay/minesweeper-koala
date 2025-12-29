@@ -201,7 +201,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         }
         statsPanel.add(healthLabel);
 
-        java.net.URL scoreBgUrl = getClass().getResource("/score-bg.png");
+        java.net.URL scoreBgUrl = getClass().getResource("/metal-score-bg.png");
         final Image scoreBgImage = (scoreBgUrl != null) ? new ImageIcon(scoreBgUrl).getImage() : null;
 
         pointsLabel = new OutlinedLabel("Score: " + session.getPoints(), Color.BLACK, 3f) {

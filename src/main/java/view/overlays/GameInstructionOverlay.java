@@ -51,12 +51,12 @@ public class GameInstructionOverlay extends OverlayView {
 
         // Add instruction rows using resource icons (png files in resources)
         instructionsPanel.add(createInstructionRow("/left-click.png", "Left click to Uncover a tile to find numbers or special items."));
-        instructionsPanel.add(createInstructionRow("/red-flag.png", "Right click to place or remove a flag."));
-        instructionsPanel.add(createInstructionRow("/bomb.png", "Avoid mines! revealing one deducts life. the game ends if health hits zero or all mines are revealed."));
+        instructionsPanel.add(createInstructionRow("/pixel-flag.png", "Right click to place or remove a flag."));
+        instructionsPanel.add(createInstructionRow("/white-outline-mine.png", "Avoid mines! revealing one deducts life. the game ends if health hits zero or all mines are revealed."));
         instructionsPanel.add(createInstructionRow("/heart.png", "Health pool indicates how many turns you have left.")); //improve this
         instructionsPanel.add(createInstructionRow("/tile-one.png", "A tile's number tells you exactly how many mines are in the 8 surrounding squares."));
-        instructionsPanel.add(createInstructionRow("/question.png", "Answer question tiles to gain a reward."));
-        instructionsPanel.add(createInstructionRow("/surprise.png", "Activate surprise and get a reward or penalty."));
+        instructionsPanel.add(createInstructionRow("/pixel-question.png", "Answer question tiles to gain a reward."));
+        instructionsPanel.add(createInstructionRow("/gift-pixel.png", "Activate surprise and get a reward or penalty."));
         instructionsPanel.add(createInstructionRow("/plus-minus.png", "Activation of special tiles (Q/S) costs points, so manage your score wisely."));
         instructionsPanel.add(createInstructionRow("/target.png", "Maximize your score by revealing tiles and neutralizing mines while protecting your health."));
         instructionsPanel.add(createInstructionRow("/home.png", "Exit the current session and return to the main menu at any time."));
