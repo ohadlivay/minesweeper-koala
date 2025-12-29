@@ -15,6 +15,7 @@ import java.io.IOException;
 public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener, GameOverListener {
     private final NavigationController nav;
     private final GameSession session; // Always holds the current game session
+    private ComponentAnimator animator;
 
     private JPanel mainPanel;
     private JPanel centerPanel;
@@ -36,6 +37,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         this.session.setGameOverListener(this);
         this.session.getLeftBoard().setMinesLeftListener(this);
         this.session.getRightBoard().setMinesLeftListener(this);
+        animator = new ComponentAnimator();
         initUI();
         setBoards(session.getLeftBoard(), session.getRightBoard());
         setPlayerNames(session.getLeftPlayerName(),session.getRightPlayerName());
@@ -302,12 +304,14 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         if (pointsChange!=0) {
             String text = (pointsChange > 0 ? "+" : "") + pointsChange;
             Color color = pointsChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
-            floatingNumber(pointsLabel, text, color, pointsChange > 0);
+            animator.pulseBorder(pointsLabel,6);
+            animator.floatingNumber(pointsLabel, text, color, pointsChange > 0);
         }
         if (healthChange!=0) {
             String text = (healthChange > 0 ? "+" : "") + healthChange;
             Color color = healthChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
-            floatingNumber(healthLabel, text, color, healthChange > 0);
+            animator.floatingNumber(healthLabel, text, color, healthChange > 0);
+            if (healthChange < 0) animator.shake(healthLabel);
         }
     }
 
@@ -318,57 +322,5 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         if (!saved)
             JOptionPane.showMessageDialog(mainPanel, "Error, could not save the game!", "Game Over", JOptionPane.ERROR_MESSAGE);
         OverlayController.getInstance().showGameOverOverlay(winOrLose,score);
-    }
-
-    //animation for immediate points/health feedback
-    private void floatingNumber(JComponent target, String text, Color color, boolean isUp) {
-        JRootPane rootPane = SwingUtilities.getRootPane(target);
-        if (rootPane == null) return;
-
-        JLabel floatLabel = new JLabel(text);
-        floatLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 20));
-        floatLabel.setForeground(color);
-
-        Point screenPos = target.getLocationOnScreen();
-        Point rootPos = rootPane.getLocationOnScreen();
-        int x = screenPos.x - rootPos.x + (target.getWidth() / 2) - 15;
-        int y = screenPos.y - rootPos.y;
-
-        floatLabel.setBounds(x, y, 100, 30);
-
-        JLayeredPane layeredPane = rootPane.getLayeredPane();
-        layeredPane.add(floatLabel, JLayeredPane.POPUP_LAYER);
-        layeredPane.repaint();
-
-        //animation timer
-        int distance = 50;
-        int step;
-        if(!isUp) {
-            step = 2;
-        } else {
-            step = -2;
-        }
-        Timer timer = new Timer(40, null);
-        timer.addActionListener(e -> {
-            Point p = floatLabel.getLocation();
-            floatLabel.setLocation(p.x, p.y + step);
-
-            //define when to stop based on the direction
-            boolean finished;
-            if (isUp) {
-                finished = (p.y < y - distance);
-            }
-            else {
-                finished = (p.y > y + distance);
-            }
-
-            if (finished) {
-                layeredPane.remove(floatLabel);
-                layeredPane.repaint();
-                timer.stop();
-            }
-
-        });
-        timer.start();
     }
 }
