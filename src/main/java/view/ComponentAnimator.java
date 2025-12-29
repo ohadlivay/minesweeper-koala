@@ -93,7 +93,7 @@ public class ComponentAnimator {
         t.start();
     }
 
-    private void floatingNumber(JComponent target, String text, Color color, boolean isUp) {
+    public void floatingNumber(JComponent target, String text, Color color, boolean isUp) {
         JRootPane rootPane = SwingUtilities.getRootPane(target);
         if (rootPane == null) return;
 
