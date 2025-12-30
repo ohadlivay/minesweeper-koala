@@ -11,11 +11,15 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener, GameOverListener {
     private final NavigationController nav;
     private final GameSession session; // Always holds the current game session
     private ComponentAnimator animator;
+    private final Queue<ActionData> messageQueue = new LinkedList<>();
+    private Timer displayTimer;
 
     private JPanel mainPanel;
     private JPanel centerPanel;
@@ -127,20 +131,24 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         }
 
         // Create panels for left player and right player
-        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.setOpaque(false);
 
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        leftPanel.add(Box.createVerticalGlue());
+        leftPanel.add(player1Label);
+        leftPanel.add(player1MinesLeftLabel);
+
+
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         rightPanel.setOpaque(false);
 
-        // Add items into each side panel
-        leftPanel.add(player1Label);
-        leftPanel.add(player1MinesLeftLabel, BorderLayout.EAST);
-
-        rightPanel.add(player2MinesLeftLabel, BorderLayout.WEST);
+        rightPanel.add(Box.createVerticalGlue());
         rightPanel.add(player2Label);
+        rightPanel.add(player2MinesLeftLabel);
 
-        // Add those sub-panels to the topPanel
+        // Add sub-panels to the topPanel
         topPanel.add(feedLabel, BorderLayout.CENTER);
         topPanel.add(leftPanel, BorderLayout.WEST);
         topPanel.add(rightPanel, BorderLayout.EAST);
@@ -340,22 +348,46 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     //this method replaces the old onPointsChange and onHealthChange, copmbining them together
     @Override
     public void onActionMade(String message, boolean positive, int healthChange, int pointsChange) {
-        feedLabel.setText(message);
+        messageQueue.add(new ActionData(message, positive, healthChange, pointsChange));
 
-        feedLabel.setForeground(positive ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get());
+        if (displayTimer == null || !displayTimer.isRunning()) {
+            showNextActionFromQueue();
+        }
+    }
+
+    private void showNextActionFromQueue() {
+        if (messageQueue.isEmpty()) return;
+
+        ActionData data = messageQueue.poll();
+
+        feedLabel.setText("<html><div style='text-align:center;'>" + data.message + "</div></html>");
+        feedLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        feedLabel.setVerticalAlignment(SwingConstants.NORTH);
+
+
+        feedLabel.setForeground(data.positive ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get());
+
         updateLabels();
-        if (pointsChange!=0) {
-            String text = (pointsChange > 0 ? "+" : "") + pointsChange;
-            Color color = pointsChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
-            animator.pulseBorder(pointsLabel,6);
-            animator.floatingNumber(pointsLabel, text, color, pointsChange > 0);
+
+        if (data.pointsChange != 0) {
+            String text = (data.pointsChange > 0 ? "+" : "") + data.pointsChange;
+            Color color = data.pointsChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
+            animator.pulseBorder(pointsLabel, 6);
+            animator.floatingNumber(pointsLabel, text, color, data.pointsChange > 0);
+            SoundManager.getInstance().playOnce(data.pointsChange>0 ? SoundManager.SoundId.POINTS_WIN : SoundManager.SoundId.POINTS_LOSE);
         }
-        if (healthChange!=0) {
-            String text = (healthChange > 0 ? "+" : "") + healthChange;
-            Color color = healthChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
-            animator.floatingNumber(healthLabel, text, color, healthChange > 0);
-            if (healthChange < 0) animator.shake(healthLabel);
+
+        if (data.healthChange != 0) {
+            String text = (data.healthChange > 0 ? "+" : "") + data.healthChange;
+            Color color = data.healthChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
+            animator.floatingNumber(healthLabel, text, color, data.healthChange > 0);
+            if (data.healthChange < 0) animator.shake(healthLabel);
         }
+
+        // delay only when surprise tile is activated
+        displayTimer = new Timer(data.message.equals("Surprise tile activated") ? 1500 : 0, e -> showNextActionFromQueue());
+        displayTimer.setRepeats(false);
+        displayTimer.start();
     }
 
     //this method shows the end game screen when the game is over
@@ -366,4 +398,20 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
             JOptionPane.showMessageDialog(mainPanel, "Error, could not save the game!", "Game Over", JOptionPane.ERROR_MESSAGE);
         OverlayController.getInstance().showGameOverOverlay(winOrLose,score);
     }
+
+    //helper class to save feedback queue
+    private static class ActionData {
+        String message;
+        boolean positive;
+        int healthChange;
+        int pointsChange;
+
+        ActionData(String message, boolean positive, int healthChange, int pointsChange) {
+            this.message = message;
+            this.positive = positive;
+            this.healthChange = healthChange;
+            this.pointsChange = pointsChange;
+        }
+    }
 }
+

@@ -413,21 +413,21 @@ public class GameSession
             if (specialTile instanceof SurpriseTile surpriseTile)
             {
                 System.out.println("Surprise tile activated");
+                notifyListenersAfterAction("Surprise tile activated",false,0,-getGameDifficulty().getActivationCost());
                 Random random = new Random();
                 boolean resultOfRandom = random.nextBoolean();
                 int plusMinus  = (resultOfRandom) ? 1 : -1;
                 String message = (resultOfRandom)? "Good surprise!" : "Bad surprise!";
                 System.out.println(message);
-                this.message = message+" Points changed by: "+(plusMinus*getGameDifficulty().getSurprisePoints())+", Health changed by: "+(plusMinus*getGameDifficulty().getSurpriseHealth());
+                this.message = message+"<br>Points changed by: "+(plusMinus*getGameDifficulty().getSurprisePoints())+", Health changed by: "+(plusMinus*getGameDifficulty().getSurpriseHealth());
                 this.gainPoints(plusMinus*getGameDifficulty().getSurprisePoints());
                 boolean healthMaxedOut = this.getHealthPool()==10;
                 this.gainHealth(plusMinus*getGameDifficulty().getSurpriseHealth());
-                SoundManager.getInstance().playOnce(resultOfRandom ? SoundManager.SoundId.POINTS_WIN : SoundManager.SoundId.POINTS_LOSE);
                 if (!healthMaxedOut||!resultOfRandom)
                     notifyListenersAfterAction(this.message,resultOfRandom,plusMinus*getGameDifficulty().getSurpriseHealth(),plusMinus*getGameDifficulty().getSurprisePoints());
                 else
                 {
-                    this.message+= " (Health is already maxed out)";
+                    this.message+= "<br>(Health is already maxed out)";
                     notifyListenersAfterAction(this.message,resultOfRandom,0,plusMinus*getGameDifficulty().getSurprisePoints());
                 }
 
