@@ -76,6 +76,13 @@ tali's delete/edit/add questions.
         im assuming the user pressed 'Edit', a window to edit has opened, user edited the fields to his liking, pressed 'Save' and then this was activated.
         so this will take the user input, delete the old question, create a new Question (same id) and save it to csv.
          */
+        try
+        {
+            Question temp = new Question(id, questionText, difficulty, answer1, answer2, answer3, answer4);
+        }catch(IllegalArgumentException e)
+        {
+            return false;
+        }
         SysData sys = SysData.getInstance();
         Question ogQuestion = sys.getQuestionByID(id);
         int ogId = sys.getQuestions().indexOf(ogQuestion);

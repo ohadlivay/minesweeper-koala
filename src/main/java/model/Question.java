@@ -22,6 +22,7 @@ public class Question {
         this.answer2 = answer2;
         this.answer3 = answer3;
         this.answer4 = answer4;
+        validateUniqueAnswers(answer1, answer2, answer3, answer4);
     }
 
     private Question(){
@@ -32,6 +33,7 @@ public class Question {
         this.answer2 = "Wrong answer";
         this.answer3 = "Wrong answer";
         this.answer4 = "Wrong answer";
+        validateUniqueAnswers(answer1, answer2, answer3, answer4);
     }
 
     public static Question generateBlankQuestion() {
@@ -79,5 +81,15 @@ public class Question {
     public void setAnswer4(String answer4) {
         if (answer4.length() > maxAnswerLength) throw new IllegalArgumentException("Answer 4 text too long");
         this.answer4 = answer4;
+    }
+
+    private void validateUniqueAnswers(String a1, String a2, String a3, String a4)
+    {
+        java.util.Set<String> uniqueAnswers = new java.util.HashSet<>();
+        uniqueAnswers.add(a1.trim().toLowerCase());
+        uniqueAnswers.add(a2.trim().toLowerCase());
+        uniqueAnswers.add(a3.trim().toLowerCase());
+        uniqueAnswers.add(a4.trim().toLowerCase());
+        if (uniqueAnswers.size() != 4) throw new IllegalArgumentException("Answers must be unique");
     }
 }
