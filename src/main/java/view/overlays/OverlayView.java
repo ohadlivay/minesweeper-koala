@@ -1,6 +1,8 @@
 package main.java.view.overlays;
 
 import main.java.controller.NavigationController;
+import main.java.util.SoundManager;
+import main.java.view.ComponentAnimator;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -14,10 +16,14 @@ import java.awt.event.WindowEvent;
 public abstract class OverlayView extends JDialog {
 
     protected final NavigationController nav;
+    protected ComponentAnimator animator;
+    protected SoundManager soundManager;
 
     public OverlayView(NavigationController nav, boolean isModal) {
         super(nav.getVisFrame(), isModal); // we don't want all overlays to be modals
         this.nav = nav;
+        animator = new ComponentAnimator();
+        soundManager = SoundManager.getInstance();
         initBaseUI();
     }
 

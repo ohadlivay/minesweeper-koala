@@ -5,6 +5,7 @@ import main.java.model.Question;
 import main.java.model.QuestionDifficulty;
 import main.java.model.SysData;
 import main.java.util.QuestionCSVManager;
+import main.java.util.SoundManager;
 import main.java.view.ColorsInUse;
 import main.java.view.FontsInUse;
 import javax.swing.*;
@@ -112,9 +113,9 @@ public class AddEditQuestionOverlay extends OverlayView {
                 if (questionArea.getText().length() >= Question.getMaxQuestionLength()) {
                     e.consume();
                     questionArea.setText(questionArea.getText().substring(0, Question.getMaxQuestionLength()));
+                    animator.flashForeground(textLimitLabel, ColorsInUse.DENY.get(), ColorsInUse.TEXT.get());
                 }
                 textLimitLabel.setText((questionArea.getText().length()) + "/" + Question.getMaxQuestionLength());
-
             }
         });
 
@@ -409,6 +410,7 @@ public class AddEditQuestionOverlay extends OverlayView {
 
         errorLabel.setVisible(false);
         errorLabel.setToolTipText("Answer must be less than " + Question.getMaxAnswerLength() + " characters.");
+        errorLabel.setBorder(new EmptyBorder(0, 5, 0, 0));
 
         // Enforce logic and update icon visibility
         field.addKeyListener(answerKeyListener(field, errorLabel));
@@ -443,6 +445,7 @@ public class AddEditQuestionOverlay extends OverlayView {
                 if (tf.getText().length() >= Question.getMaxAnswerLength()) {
                     e.consume();
                     tf.setText(tf.getText().substring(0, Question.getMaxAnswerLength()));
+                    soundManager.playOnce(SoundManager.SoundId.BLOCK);
                 }
             }
         };

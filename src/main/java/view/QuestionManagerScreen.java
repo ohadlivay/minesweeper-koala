@@ -32,8 +32,11 @@ public class QuestionManagerScreen extends JPanel {
     private JLabel pageLabel;
     private JButton btnPrev, btnNext;
 
+    private ComponentAnimator animator;
+
     public QuestionManagerScreen(NavigationController navigationController) {
         this.nav = navigationController;
+        animator = new ComponentAnimator();
         initUI();
     }
 
@@ -150,6 +153,8 @@ public class QuestionManagerScreen extends JPanel {
             this.currentPage = 1;
         }
         refreshPage();
+
+        animator.flashForeground(questionsTable, ColorsInUse.CONFIRM.get(), ColorsInUse.TEXT.get());
     }
 
     private JPanel createPagesPanel() {

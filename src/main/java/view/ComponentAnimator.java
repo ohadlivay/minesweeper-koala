@@ -71,7 +71,7 @@ public class ComponentAnimator {
         t.start();
     }
 
-    public void flashForeground(JLabel label, Color flashColor, Color baseColor) {
+    public void flashForeground(JComponent label, Color flashColor, Color baseColor) {
         int frames = 18;
         int[] i = {0};
 
@@ -144,7 +144,7 @@ public class ComponentAnimator {
         timer.start();
     }
 
-    private void pulse(JComponent c) {
+    public void pulse(JComponent c) {
         Insets original = c.getBorder() instanceof EmptyBorder eb ? eb.getBorderInsets() : new Insets(5, 20, 5, 20);
         int max = 8;
         int[] t = {0};
