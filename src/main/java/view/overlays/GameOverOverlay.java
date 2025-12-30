@@ -92,18 +92,21 @@ public class GameOverOverlay extends OverlayView {
         btnPlayAgain.setFocusPainted(false);
 
         btnPlayAgain.addActionListener(e -> {
-            // Assuming we want this to restart a game with the same difficulty and names?
             String player1 = GameSessionController.getInstance().getSession().getLeftPlayerName();
             String player2 = GameSessionController.getInstance().getSession().getRightPlayerName();
             GameDifficulty selectedDifficulty = GameSessionController.getInstance().getSession().getGameDifficulty();
+
+            //option 1: restart a game with the same difficulty and names
             GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty);
             nav.goToGame();
 
-            //Assuming we want to go back to settings
+            // option 2: go back to settings
             //OverlayController.getInstance().showOverlay(OverlayType.SETTINGS);
+
+            //option 3: settings screen but with the current game's details already selected
+            //OverlayController.getInstance().showSettingsOverlay(player1, player2, selectedDifficulty);
             close();
         });
-
 
         //Home button
         JButton btnHome = new JButton();

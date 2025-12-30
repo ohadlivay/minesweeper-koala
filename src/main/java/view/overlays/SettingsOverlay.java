@@ -72,7 +72,19 @@ public class SettingsOverlay extends OverlayView {
                 System.out.println("Selected Difficulty: HARD");
             }
         });
+    }
 
+    public SettingsOverlay(NavigationController nav, String player1, String player2, GameDifficulty difficulty) {
+        this(nav);
+        player1Name.setText(player1);
+        player2Name.setText(player2);
+        if (difficulty != null) {
+            this.selectedDifficulty = difficulty;
+            updateSelection();
+        }
+        else {
+            resetSelection();
+        }
     }
 
     private void initUI() {
