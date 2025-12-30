@@ -1,6 +1,9 @@
 package main.java.view.overlays;
 
+import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
+import main.java.controller.OverlayController;
+import main.java.model.GameDifficulty;
 import main.java.util.SoundManager;
 import main.java.view.BackgroundPanel;
 import main.java.view.ColorsInUse;
@@ -34,7 +37,7 @@ public class GameOverOverlay extends OverlayView {
 
 
     private void initUI() {
-        String bgPath = isWin ? "/win-bg.png" : "/loss-bg.png";
+        String bgPath = isWin ? "/win-bg-gif.gif" : "/loss-bg-gif.gif";
         BackgroundPanel contentPane = new BackgroundPanel(bgPath);
         contentPane.setLayout(new BorderLayout());
         contentPane.setPreferredSize(new Dimension(400,446));
@@ -87,12 +90,40 @@ public class GameOverOverlay extends OverlayView {
         btnPlayAgain.setForeground(ColorsInUse.TEXT.get());
         btnPlayAgain.setFont(FontsInUse.PIXEL.getSize(24f));
         btnPlayAgain.setFocusPainted(false);
+
         btnPlayAgain.addActionListener(e -> {
+            // Assuming we want this to restart a game with the same difficulty and names?
+            String player1 = GameSessionController.getInstance().getSession().getLeftPlayerName();
+            String player2 = GameSessionController.getInstance().getSession().getRightPlayerName();
+            GameDifficulty selectedDifficulty = GameSessionController.getInstance().getSession().getGameDifficulty();
+            GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty);
+            nav.goToGame();
+
+            //Assuming we want to go back to settings
+            //OverlayController.getInstance().showOverlay(OverlayType.SETTINGS);
             close();
-            //need to add logic to start a new game
         });
 
-        bottomPanel.add(btnPlayAgain);
+
+        //Home button
+        JButton btnHome = new JButton();
+        btnHome.setPreferredSize(new Dimension(72, 50));
+        java.net.URL icon = getClass().getResource("/home.png");
+        if (icon != null) {
+            btnHome.setIcon(new ImageIcon(icon));
+        }
+
+        btnHome.setBackground(new Color(10, 10, 10));
+        btnHome.setFocusPainted(false);
+        btnHome.setContentAreaFilled(true);
+        btnHome.addActionListener(e -> {
+            nav.goToHome();
+            close();
+        });
+
+        bottomPanel.add(btnHome, BorderLayout.WEST);
+        bottomPanel.add(btnPlayAgain, BorderLayout.EAST);
+
         contentPane.add(bottomPanel, BorderLayout.SOUTH);
 
         this.setContentPane(contentPane);
