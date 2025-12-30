@@ -206,6 +206,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         btn.setFocusPainted(false);
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(true);
+        btn.setBackground(ColorsInUse.BG_COLOR.get());
 
         try {
             java.net.URL url = getClass().getResource(resourcePath);
@@ -232,6 +233,35 @@ public class AddEditQuestionOverlay extends OverlayView {
         btnMedium.setBorder(new LineBorder(selectedDifficulty == QuestionDifficulty.MEDIUM ? selectedColor : unselectedColor, 3));
         btnHard.setBorder(new LineBorder(selectedDifficulty == QuestionDifficulty.HARD ? selectedColor : unselectedColor, 3));
         btnMaster.setBorder(new LineBorder(selectedDifficulty == QuestionDifficulty.MASTER ? selectedColor : unselectedColor, 3));
+        repaintKoalaButtons();
+        if (selectedDifficulty != null) {
+            soundManager.playOnce(SoundManager.SoundId.SELECTION);
+            // Flashes background of button matching selected difficulty
+            switch (selectedDifficulty) {
+                case EASY:
+                    animator.flashBackground(btnEasy, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), btnEasy.getBackground());
+                    break;
+                case MEDIUM:
+                    animator.flashBackground(btnMedium, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), btnMedium.getBackground());
+                    break;
+                case HARD:
+                    animator.flashBackground(btnHard, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), btnHard.getBackground());
+                    break;
+                case MASTER:
+                    animator.flashBackground(btnMaster, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), btnMaster.getBackground());
+            }
+        }
+    }
+
+    private void repaintKoalaButtons() {
+        btnEasy.setBackground(ColorsInUse.BG_COLOR.get());
+        btnMedium.setBackground(ColorsInUse.BG_COLOR.get());
+        btnHard.setBackground(ColorsInUse.BG_COLOR.get());
+        btnMaster.setBackground(ColorsInUse.BG_COLOR.get());
+        btnEasy.repaint();
+        btnMedium.repaint();
+        btnHard.repaint();
+        btnMaster.repaint();
     }
 
     private void populateFields() {

@@ -4,6 +4,7 @@ import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.model.GameDifficulty;
 import main.java.model.QuestionDifficulty;
+import main.java.util.SoundManager;
 import main.java.view.ColorsInUse;
 import main.java.view.FontsInUse;
 
@@ -277,10 +278,22 @@ public class SettingsOverlay extends OverlayView {
     //visual indication for difficulty selected
     private void updateSelection() {
         Color selectedColor = ColorsInUse.TEXT.get();
-        Color unselectedColor = new Color(0,0,0,0);
-        btnEasy.setBorder(new LineBorder(selectedDifficulty == GameDifficulty.EASY ? selectedColor : unselectedColor, 3));
-        btnMedium.setBorder(new LineBorder(selectedDifficulty == GameDifficulty.MEDIUM ? selectedColor : unselectedColor, 3));
-        btnHard.setBorder(new LineBorder(selectedDifficulty == GameDifficulty.HARD ? selectedColor : unselectedColor, 3));
+        resetSelection();
+        soundManager.playOnce(SoundManager.SoundId.SELECTION);
+        switch (selectedDifficulty) {
+            case EASY:
+                btnEasy.setBorder(new LineBorder(selectedColor, 3));
+                animator.flashForeground(btnEasy, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), ColorsInUse.TEXT.get());
+                break;
+            case MEDIUM:
+                btnMedium.setBorder(new LineBorder(selectedColor, 3));
+                animator.flashForeground(btnMedium, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), ColorsInUse.TEXT.get());
+                break;
+            case HARD:
+                btnHard.setBorder(new LineBorder(selectedColor, 3));
+                animator.flashForeground(btnHard, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), ColorsInUse.TEXT.get());
+                break;
+        }
     }
 
 

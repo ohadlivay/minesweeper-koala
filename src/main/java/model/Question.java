@@ -12,7 +12,7 @@ public class Question {
     private String answer4;
 
     private static int maxQuestionLength = 200; //in chars
-    private static int maxAnswerLength = 50;
+    private static int maxAnswerLength = 70;
 
     public Question(int id, String questionText, QuestionDifficulty difficulty, String answer1, String answer2, String answer3, String answer4) {
         this.id = id;

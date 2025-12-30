@@ -88,10 +88,39 @@ public class ComponentAnimator {
             if (i[0] >= frames) ((Timer) e.getSource()).stop();
         });
 
-        // For label flashes you may want to allow overlaps; if not, use replaceTimer(label, t)
         replaceTimer(label, t);
         t.start();
     }
+
+    public void flashBackground(JComponent c, Color flashColor, Color base) {
+        c.setOpaque(true);
+
+        int frames = 18;
+        int[] i = {0};
+
+        Timer t = new Timer(20, e -> {
+            i[0]++;
+            float a = i[0] / (float) frames;
+
+            int r = (int) (flashColor.getRed()   * (1 - a) + base.getRed()   * a);
+            int g = (int) (flashColor.getGreen() * (1 - a) + base.getGreen() * a);
+            int b = (int) (flashColor.getBlue()  * (1 - a) + base.getBlue()  * a);
+
+            c.setBackground(new Color(r, g, b));
+
+            if (i[0] >= frames) {
+                c.setBackground(base);
+                c.setOpaque(false);
+                ((Timer) e.getSource()).stop();
+            }
+        });
+
+        c.setBackground(base);
+
+        replaceTimer(c, t);
+        t.start();
+    }
+
 
     public void floatingNumber(JComponent target, String text, Color color, boolean isUp) {
         JRootPane rootPane = SwingUtilities.getRootPane(target);
