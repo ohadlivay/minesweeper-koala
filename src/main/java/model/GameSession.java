@@ -114,6 +114,9 @@ public class GameSession
 
     public void initGame()
     {
+        SysData sysData = SysData.getInstance();
+        if (sysData.getQuestions().size()<20)
+            throw new IllegalStateException("Not enough questions in the system to start a game. Please add more questions.");
         initiateGameStats();
         initializeBoards();
     }

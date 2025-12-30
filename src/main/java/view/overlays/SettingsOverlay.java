@@ -177,7 +177,12 @@ public class SettingsOverlay extends OverlayView {
                 player2 = "Player 2";
             }
         }
-        GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty);
+        try{
+            //check to see if the system has enough questions to start a game
+            GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty);}catch (IllegalStateException e){
+            JOptionPane.showMessageDialog(this, "Not enough questions in the system to start a game. Please add more questions.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         nav.goToGame();
         close();
     }
