@@ -33,7 +33,6 @@ public class Question {
         this.answer2 = "Wrong answer";
         this.answer3 = "Wrong answer";
         this.answer4 = "Wrong answer";
-        validateUniqueAnswers(answer1, answer2, answer3, answer4);
     }
 
     public static Question generateBlankQuestion() {
