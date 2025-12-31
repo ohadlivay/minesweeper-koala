@@ -79,6 +79,7 @@ tali's delete/edit/add questions.
         try
         {
             Question temp = new Question(id, questionText, difficulty, answer1, answer2, answer3, answer4);
+            Question.validateUniqueQuestionText(questionText, id);
         }catch(IllegalArgumentException e)
         {
             return false;

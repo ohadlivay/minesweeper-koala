@@ -321,6 +321,16 @@ public class AddEditQuestionOverlay extends OverlayView {
 
         }
 
+        int currentId = isEditing ? existingQuestion.getId() : -1;
+        for (Question q : SysData.getInstance().getQuestions()) {
+            if (q.getId() != currentId && q.getQuestionText().equalsIgnoreCase(qText)) {
+                JOptionPane.showMessageDialog(this,
+                        "This question already exists in the system!",
+                        "Duplicate Question", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
         QuestionManagerController qmc = QuestionManagerController.getInstance();
 
         if (isEditing) {

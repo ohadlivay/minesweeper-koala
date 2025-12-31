@@ -91,4 +91,13 @@ public class Question {
         uniqueAnswers.add(a4.trim().toLowerCase());
         if (uniqueAnswers.size() != 4) throw new IllegalArgumentException("Answers must be unique");
     }
+
+    public static void validateUniqueQuestionText(String text, int id)
+    {
+        String trimmedText = text.trim().toLowerCase();
+        for (Question q : SysData.getInstance().getQuestions()) {
+            if (q.getQuestionText().trim().toLowerCase().equals(trimmedText) && q.getId() != id)
+                throw new IllegalArgumentException("Question text must be unique");
+        }
+    }
 }
