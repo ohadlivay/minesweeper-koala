@@ -37,6 +37,7 @@ public class NumberTile extends Tile
             throw new IllegalArgumentException("Invalid number of adjacent mines");
     }
 
+    // toString method
     @Override
     public String toString()
     {

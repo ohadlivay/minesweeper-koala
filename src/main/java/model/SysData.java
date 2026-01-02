@@ -5,7 +5,7 @@ import main.java.util.QuestionCSVManager;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
+// Singleton class to manage system data
 public class SysData
 {
     //Singleton instance
@@ -30,6 +30,7 @@ public class SysData
         return instance;
     }
 
+    // Method to get the maximum question ID existing in the system
     public int getMaxId() {
         int max = -1;
         for(Question q : this.questions){
@@ -95,6 +96,7 @@ public class SysData
         return questions.size();
     }
 
+    // Delete a question from the list and update the CSV file
     public boolean deleteQuestion(Question question) {
         try {
             // 1. Attempt to remove from the local list
@@ -115,6 +117,7 @@ public class SysData
         }
     }
 
+    // Get a question by its ID
     public Question getQuestionByID(int id)
     {
         for(Question q : questions){

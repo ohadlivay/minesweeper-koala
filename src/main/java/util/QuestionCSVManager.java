@@ -4,6 +4,7 @@ import main.java.model.*;
 import java.io.*;
 import java.util.List;
 
+// Class that handles the CSV file for storing the questions
 public class QuestionCSVManager {
 
     private static final String CSV_HEADER = "ID,Question,Difficulty,A,B,C,D,Correct Answer";

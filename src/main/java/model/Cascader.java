@@ -6,15 +6,19 @@ import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
 
+// Class to handle cascading reveal of tiles in Minesweeper
 public class Cascader {
+    // === Fields ===
     private Tile head;
     private final Tile[][] grid;
 
+    // Constructor
     public Cascader(Tile head, Tile[][] grid) {
         this.head = head;
         this.grid = grid;
     }
 
+    // Getters
     public Tile getHead() {
         return head;
     }
@@ -81,6 +85,7 @@ public class Cascader {
         return -1;
     }
 
+    // Returns all non-mine neighbors of a tile
     private ArrayList<Tile> getNonMineNeighbors(Tile tile) {
         ArrayList<Tile> neighbors = new ArrayList<>();
 

@@ -9,6 +9,7 @@ public class QuestionTile extends SpecialTile
         super();
     }
 
+    // toString method
     @Override
     public String toString() {
         return "Q";

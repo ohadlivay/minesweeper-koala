@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 // GameData class to store the game data after the game is over
 public class GameData
 {
+    // Attributes
     private final LocalDateTime timeStamp;
     private final String leftPlayerName;
     private final String rightPlayerName;
