@@ -8,9 +8,12 @@ import main.java.util.QuestionCSVManager;
 import main.java.util.SoundManager;
 import main.java.view.ColorsInUse;
 import main.java.view.FontsInUse;
+import main.java.view.OutlinedLabel;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -41,7 +44,10 @@ public class AddEditQuestionOverlay extends OverlayView {
             this.selectedDifficulty = q.getDifficulty();
         }
 
-        //we enable closing the overlay when the user clicks the X button
+        // Configure ToolTip duration (stay longer)
+        ToolTipManager.sharedInstance().setDismissDelay(15000); // 15 seconds
+        ToolTipManager.sharedInstance().setInitialDelay(500);
+
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {
@@ -56,10 +62,10 @@ public class AddEditQuestionOverlay extends OverlayView {
         JPanel contentPanel = new JPanel(new BorderLayout(20, 20));
         contentPanel.setBorder(new EmptyBorder(20, 50, 20, 50));
         contentPanel.setBackground(ColorsInUse.BG_COLOR.get());
-        contentPanel.setPreferredSize(new Dimension(800, 550));
+        contentPanel.setPreferredSize(new Dimension(800, 600));
 
-        String titleText = isEditing ? "Editing Question " + existingQuestion.getId() : "Adding Question " + ((int)SysData.getInstance().getMaxId() + 1);
-        JLabel titleLabel = new JLabel(titleText, SwingConstants.CENTER);
+        String titleText = isEditing ? "EDITING QUESTION " + existingQuestion.getId() : "ADDING QUESTION " + ((int)SysData.getInstance().getMaxId() + 1);
+        OutlinedLabel titleLabel = new OutlinedLabel(titleText, Color.BLACK, 5f);
         titleLabel.setFont(FontsInUse.PIXEL.getSize(40f));
         titleLabel.setForeground(ColorsInUse.TEXT.get());
         titleLabel.setBorder(new EmptyBorder(0, 0, 5, 0));
@@ -79,34 +85,28 @@ public class AddEditQuestionOverlay extends OverlayView {
         CorrectAnswerPlaceholder = "Correct Answer...";
         WrongAnswerPlaceholder = "Wrong Answer...";
 
-        //question textbox is here
         formPanel.add(createLabel("Question Text:"), gbc);
         gbc.gridy++;
-        questionArea = new JTextArea(8, 20); // more rows
+        questionArea = new JTextArea(6, 20);
         questionArea.setLineWrap(true);
         questionArea.setWrapStyleWord(true);
         questionArea.setFont(FontsInUse.PIXEL.getSize(22f));
         questionArea.setBackground(ColorsInUse.BTN_COLOR.get());
         questionArea.setForeground(ColorsInUse.TEXT.get());
         questionArea.setCaretColor(ColorsInUse.TEXT.get());
-        questionArea.setPreferredSize(new Dimension(600, 400));
         questionArea.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1),
                 new EmptyBorder(5, 5, 5, 5)
         ));
 
-        //placeholder text when empty
         questionArea.setText(QuestionPlaceholder);
         questionArea.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
         questionArea.addFocusListener(placeholderListener);
 
-        // label to show text limit
         textLimitLabel = new JLabel("0/" + Question.getMaxQuestionLength());
         textLimitLabel.setFont(FontsInUse.PIXEL.getSize(14f));
         textLimitLabel.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
 
-        // listener to make sure the question's text is not more than 200 chars
-        // to change length, go to Question/MaxQuestionLength
         questionArea.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -120,39 +120,38 @@ public class AddEditQuestionOverlay extends OverlayView {
         });
 
         gbc.gridy++;
-        gbc.weighty = 0.0;
         gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = new Insets(0, 0, 0, 0);
         formPanel.add(textLimitLabel, gbc);
         gbc.gridy++;
 
-
-        gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
+        gbc.weighty = 0.5;
         formPanel.add(questionArea, gbc);
         gbc.gridy++;
 
         gbc.weighty = 0.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-
-        //difficulty row
-        JPanel difficultyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));
+        JPanel difficultyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 5));
         difficultyPanel.setOpaque(false);
         difficultyPanel.add(createLabel("Select Difficulty:"));
 
-        btnEasy = createKoalaButton("/green-koala-pixel.png", "Easy", QuestionDifficulty.EASY);
-        btnMedium = createKoalaButton("/yellow-koala-pixel.png", "Medium", QuestionDifficulty.MEDIUM);
-        btnHard = createKoalaButton("/red-koala-pixel.png", "Hard", QuestionDifficulty.HARD);
-        btnMaster = createKoalaButton("/master-koala-pixel.png", "Master", QuestionDifficulty.MASTER);
+        String easyTip = "<html><b>Easy</b><br/>Correct: +3 to +10 pts & +1 Life<br/>Incorrect: -3 to -10 pts or nothing</html>";
+        String medTip = "<html><b>Medium</b><br/>Correct: Reveal Mine or 3x3 Area, +6 to +15 pts<br/>Incorrect: -6 to -15 pts, possible Life loss</html>";
+        String hardTip = "<html><b>Hard</b><br/>Correct: +15 to +20 pts & +1-2 Lives<br/>Incorrect: -15 to -20 pts & -1 Life loss</html>";
+        String expertTip = "<html><b>Expert</b><br/>Correct: +15 to +40 pts & +2-3 Lives<br/>Incorrect: -15 to -40 pts & up to -3 Lives loss</html>";
 
-        //add difficulty labels to buttons
+        btnEasy = createKoalaButton("/green-koala-pixel.png", easyTip, QuestionDifficulty.EASY);
+        btnMedium = createKoalaButton("/yellow-koala-pixel.png", medTip, QuestionDifficulty.MEDIUM);
+        btnHard = createKoalaButton("/red-koala-pixel.png", hardTip, QuestionDifficulty.HARD);
+        btnMaster = createKoalaButton("/master-koala-pixel.png", expertTip, QuestionDifficulty.MASTER);
+
         difficultyPanel.add(createLabeledDifficultyPanel(btnEasy, "Easy"));
         difficultyPanel.add(createLabeledDifficultyPanel(btnMedium, "Medium"));
         difficultyPanel.add(createLabeledDifficultyPanel(btnHard, "Hard"));
-        difficultyPanel.add(createLabeledDifficultyPanel(btnMaster, "Master"));
+        difficultyPanel.add(createLabeledDifficultyPanel(btnMaster, "Expert"));
 
-        gbc.insets = new Insets(5, 0, 5, 0);
+        gbc.insets = new Insets(10, 0, 10, 0);
         formPanel.add(difficultyPanel, gbc);
         gbc.gridy++;
 
@@ -160,19 +159,15 @@ public class AddEditQuestionOverlay extends OverlayView {
         formPanel.add(createLabel("Answers:"), gbc);
         gbc.gridy++;
 
-        //answers textboxes are here
-        // Initialize the text fields
         answer1 = createStyledTextField();
         answer2 = createStyledTextField();
         answer3 = createStyledTextField();
         answer4 = createStyledTextField();
         wrongAnswers = new JTextField[] {answer2, answer3, answer4};
 
-        // correct answer
         formPanel.add(createAnswerFieldWrapper(answer1, ColorsInUse.CONFIRM.get(), CorrectAnswerPlaceholder, gbc), gbc);
         gbc.gridy++;
 
-        // wrong answers
         for (JTextField tf : wrongAnswers) {
             formPanel.add(createAnswerFieldWrapper(tf, ColorsInUse.DENY.get(), WrongAnswerPlaceholder, gbc), gbc);
             gbc.gridy++;
@@ -180,32 +175,51 @@ public class AddEditQuestionOverlay extends OverlayView {
 
         contentPanel.add(formPanel, BorderLayout.CENTER);
 
-        //bottom save and delete buttons
+        //save and cancel buttons
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 0));
         btnPanel.setOpaque(false);
-        JButton saveBtn = createActionButton("SAVE", ColorsInUse.CONFIRM.get());
-        saveBtn.addActionListener(e -> onSave());
-        JButton cancelBtn = createActionButton("CANCEL", ColorsInUse.DENY.get());
+
+        JButton cancelBtn = createIconButton("/x-pixel.png", "Cancel");
         cancelBtn.addActionListener(e -> close());
+
+        JButton saveBtn = createIconButton("/v-pixel.png", "Save");
+        saveBtn.addActionListener(e -> onSave());
+
         btnPanel.add(cancelBtn);
         btnPanel.add(saveBtn);
         contentPanel.add(btnPanel, BorderLayout.SOUTH);
 
         getContentPane().add(contentPanel);
 
-        //for initialization
         updateSelection();
         if (isEditing) {
             populateFields();
         }
     }
 
+    private JPanel createLabeledDifficultyPanel(JButton btn, String labelText) {
+        JPanel wrapper = new JPanel();
+        wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
+        wrapper.setOpaque(false);
+
+        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        wrapper.add(btn);
+
+        wrapper.add(Box.createVerticalStrut(5));
+
+        JLabel lbl = new JLabel(labelText);
+        lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lbl.setFont(FontsInUse.PIXEL.getSize(20f));
+        lbl.setForeground(ColorsInUse.TEXT.get());
+        wrapper.add(lbl);
+
+        return wrapper;
+    }
+
     private JButton createKoalaButton(String resourcePath, String tooltip, QuestionDifficulty difficulty) {
         JButton btn = new JButton();
         btn.setToolTipText(tooltip);
         btn.setPreferredSize(new Dimension(80, 80));
-        btn.setMinimumSize(new Dimension(80, 80));
-        btn.setMaximumSize(new Dimension(80, 80));
         btn.setFocusPainted(false);
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(true);
@@ -219,7 +233,7 @@ public class AddEditQuestionOverlay extends OverlayView {
                 btn.setIcon(new ImageIcon(img));
             }
         } catch (Exception e) {
-            btn.setText(tooltip);
+            btn.setText(difficulty.name());
         }
         btn.addActionListener(e -> {
             this.selectedDifficulty = difficulty;
@@ -228,7 +242,39 @@ public class AddEditQuestionOverlay extends OverlayView {
         return btn;
     }
 
-    //visual indication for difficulty selected
+    private JButton createIconButton(String resourcePath, String tooltip) {
+        JButton btn = new JButton();
+        btn.setToolTipText(tooltip);
+        btn.setBackground(ColorsInUse.BTN_COLOR.get());
+        btn.setPreferredSize(new Dimension(100, 50));
+        btn.setFocusPainted(false);
+
+        try {
+            java.net.URL url = getClass().getResource(resourcePath);
+            if (url != null) {
+                ImageIcon icon = new ImageIcon(url);
+                Image img = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+                btn.setIcon(new ImageIcon(img));
+            } else {
+                btn.setText(tooltip);
+            }
+        } catch (Exception e) {
+            btn.setText(tooltip);
+        }
+
+        //hover animation for buttons
+        btn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btn.setBackground(ColorsInUse.BTN_COLOR.get().brighter());
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btn.setBackground(ColorsInUse.BTN_COLOR.get());
+            }
+        });
+
+        return btn;
+    }
+
     private void updateSelection() {
         Color selectedColor = ColorsInUse.TEXT.get();
         Color unselectedColor = new Color(0,0,0,0);
@@ -236,55 +282,31 @@ public class AddEditQuestionOverlay extends OverlayView {
         btnMedium.setBorder(new LineBorder(selectedDifficulty == QuestionDifficulty.MEDIUM ? selectedColor : unselectedColor, 3));
         btnHard.setBorder(new LineBorder(selectedDifficulty == QuestionDifficulty.HARD ? selectedColor : unselectedColor, 3));
         btnMaster.setBorder(new LineBorder(selectedDifficulty == QuestionDifficulty.MASTER ? selectedColor : unselectedColor, 3));
-        repaintKoalaButtons();
+
         if (selectedDifficulty != null) {
             soundManager.playOnce(SoundManager.SoundId.SELECTION);
-            // Flashes background of button matching selected difficulty
-            switch (selectedDifficulty) {
-                case EASY:
-                    animator.flashBackground(btnEasy, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), btnEasy.getBackground());
-                    break;
-                case MEDIUM:
-                    animator.flashBackground(btnMedium, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), btnMedium.getBackground());
-                    break;
-                case HARD:
-                    animator.flashBackground(btnHard, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), btnHard.getBackground());
-                    break;
-                case MASTER:
-                    animator.flashBackground(btnMaster, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), btnMaster.getBackground());
-            }
+            JButton target = switch (selectedDifficulty) {
+                case EASY -> btnEasy;
+                case MEDIUM -> btnMedium;
+                case HARD -> btnHard;
+                case MASTER -> btnMaster;
+            };
+            animator.flashBackground(target, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), ColorsInUse.BG_COLOR.get());
         }
-    }
-
-    private void repaintKoalaButtons() {
-        btnEasy.setBackground(ColorsInUse.BG_COLOR.get());
-        btnMedium.setBackground(ColorsInUse.BG_COLOR.get());
-        btnHard.setBackground(ColorsInUse.BG_COLOR.get());
-        btnMaster.setBackground(ColorsInUse.BG_COLOR.get());
-        btnEasy.repaint();
-        btnMedium.repaint();
-        btnHard.repaint();
-        btnMaster.repaint();
     }
 
     private void populateFields() {
         questionArea.setText(existingQuestion.getQuestionText());
         questionArea.setForeground(ColorsInUse.TEXT.get());
         textLimitLabel.setText((questionArea.getText().length()) + "/" + Question.getMaxQuestionLength());
-
         answer1.setText(existingQuestion.getAnswer1());
         answer1.setForeground(ColorsInUse.TEXT.get());
-
-
         answer2.setText(existingQuestion.getAnswer2());
         answer2.setForeground(ColorsInUse.TEXT.get());
-
         answer3.setText(existingQuestion.getAnswer3());
         answer3.setForeground(ColorsInUse.TEXT.get());
-
         answer4.setText(existingQuestion.getAnswer4());
         answer4.setForeground(ColorsInUse.TEXT.get());
-
         updateSelection();
     }
 
@@ -295,13 +317,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         String a3 = answer3.getText().trim();
         String a4 = answer4.getText().trim();
 
-        if (qText.equals(QuestionPlaceholder)) qText = "";
-        if (a1.equals(CorrectAnswerPlaceholder)) a1 = "";
-        if (a2.equals(WrongAnswerPlaceholder)) a2 = "";
-        if (a3.equals(WrongAnswerPlaceholder)) a3 = "";
-        if (a4.equals(WrongAnswerPlaceholder)) a4 = "";
-
-        if (qText.isEmpty() || a1.isEmpty() || a2.isEmpty() || a3.isEmpty() || a4.isEmpty()) {
+        if (qText.isEmpty() || qText.equals(QuestionPlaceholder) || a1.isEmpty() || a1.equals(CorrectAnswerPlaceholder)) {
             JOptionPane.showMessageDialog(this, "All text fields must be filled!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -312,61 +328,34 @@ public class AddEditQuestionOverlay extends OverlayView {
         }
 
         QuestionManagerController qmc = QuestionManagerController.getInstance();
-
         if (isEditing) {
             qmc.userSavedEditedQuestion(existingQuestion.getId(), qText, selectedDifficulty, a1, a2, a3, a4);
-        }
-        else
-        {
+        } else {
             Question newQ = qmc.userAddedQuestion();
             try {
                 newQ.setQuestionText(qText);
-            } catch (IllegalArgumentException e) {
-                JOptionPane.showMessageDialog(this, "Question text too long! Max "+Question.getMaxQuestionLength()+" characters.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            newQ.setDifficulty(selectedDifficulty);
-            try {
+                newQ.setDifficulty(selectedDifficulty);
                 newQ.setAnswer1(a1);
                 newQ.setAnswer2(a2);
                 newQ.setAnswer3(a3);
                 newQ.setAnswer4(a4);
             } catch (IllegalArgumentException e) {
-                JOptionPane.showMessageDialog(this, "One of the answers is too long! Max "+Question.getMaxAnswerLength()+" characters.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             SysData.getInstance().addQuestion(newQ);
-            try {
-                QuestionCSVManager.rewriteQuestionsToCSVFromSysData();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            try { QuestionCSVManager.rewriteQuestionsToCSVFromSysData(); } catch (Exception ignored) {}
             qmc.refreshAndJumpToLastPage();
         }
-
         qmc.refreshQuestionList();
         close();
     }
-
-    // --- helper methods ---
 
     private JLabel createLabel(String text) {
         JLabel lbl = new JLabel(text);
         lbl.setFont(FontsInUse.PIXEL.getSize(24f));
         lbl.setForeground(ColorsInUse.TEXT.get());
-        lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
         return lbl;
-    }
-
-    private JPanel createLabeledDifficultyPanel(JButton btn, String labelText) {
-        JPanel p = new JPanel(new BorderLayout(0, 5));
-        p.setOpaque(false);
-        p.add(btn, BorderLayout.CENTER);
-        JLabel lbl = new JLabel(labelText, SwingConstants.CENTER);
-        lbl.setFont(FontsInUse.PIXEL.getSize(20f));
-        lbl.setForeground(ColorsInUse.TEXT.get());
-        p.add(lbl, BorderLayout.SOUTH);
-        return p;
     }
 
     private JTextField createStyledTextField() {
@@ -375,105 +364,56 @@ public class AddEditQuestionOverlay extends OverlayView {
         tf.setBackground(ColorsInUse.BTN_COLOR.get());
         tf.setForeground(ColorsInUse.TEXT.get());
         tf.setCaretColor(ColorsInUse.TEXT.get());
-        tf.setBorder(new LineBorder(ColorsInUse.TEXT.get(), 1));
         tf.setBorder(new EmptyBorder(5,5,5,5));
         tf.setPreferredSize(new Dimension(200, 45));
         return tf;
     }
 
-    private JButton createActionButton(String text, Color bg) {
-        JButton btn = new JButton(text);
-        btn.setFont(FontsInUse.PIXEL.getSize(24f));
-        btn.setForeground(Color.WHITE);
-        btn.setBackground(bg);
-        btn.setFocusPainted(false);
-        btn.setPreferredSize(new Dimension(160, 50));
-        return btn;
-    }
-
     FocusAdapter placeholderListener = new FocusAdapter() {
-
         @Override
         public void focusGained(FocusEvent e) {
-            Object src = e.getComponent();
-
-            if (src == questionArea && questionArea.getText().equals(QuestionPlaceholder)) {
-                questionArea.setText("");
-                questionArea.setForeground(ColorsInUse.TEXT.get());
-            } else if (src == answer1 && answer1.getText().equals(CorrectAnswerPlaceholder)) {
-                answer1.setText("");
-                answer1.setForeground(ColorsInUse.TEXT.get());
-            } else {
-                for (JTextField tf : wrongAnswers) {
-                    if (src == tf && tf.getText().equals(WrongAnswerPlaceholder)) {
-                        tf.setText("");
-                        tf.setForeground(ColorsInUse.TEXT.get());
-                        break;
-                    }
-                }
+            if (e.getComponent() instanceof JTextComponent tc &&
+                    (tc.getText().equals(QuestionPlaceholder) || tc.getText().equals(CorrectAnswerPlaceholder) || tc.getText().equals(WrongAnswerPlaceholder))) {
+                tc.setText("");
+                tc.setForeground(ColorsInUse.TEXT.get());
             }
         }
-
         @Override
         public void focusLost(FocusEvent e) {
-            Object src = e.getComponent();
-
-            if (src == questionArea && questionArea.getText().trim().isEmpty()) {
-                questionArea.setText(QuestionPlaceholder);
-                questionArea.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
-            } else if (src == answer1 && answer1.getText().trim().isEmpty()) {
-                answer1.setText(CorrectAnswerPlaceholder);
-                answer1.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
-            } else {
-                for (JTextField tf : wrongAnswers) {
-                    if (src == tf && tf.getText().trim().isEmpty()) {
-                        tf.setText(WrongAnswerPlaceholder);
-                        tf.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
-                        break;
-                    }
-                }
+            if (e.getComponent() instanceof JTextComponent tc && tc.getText().trim().isEmpty()) {
+                if (tc == questionArea) tc.setText(QuestionPlaceholder);
+                else if (tc == answer1) tc.setText(CorrectAnswerPlaceholder);
+                else tc.setText(WrongAnswerPlaceholder);
+                tc.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
             }
         }
     };
 
     private JPanel createAnswerFieldWrapper(JTextField field, Color bgColor, String placeholder, GridBagConstraints gbc) {
-        // Style the field
         field.setBackground(bgColor);
-        field.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1),
-                new EmptyBorder(5, 5, 5, 5)
-        ));
+        field.setBorder(BorderFactory.createCompoundBorder(new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1), new EmptyBorder(5, 5, 5, 5)));
         field.setText(placeholder);
         field.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
         field.addFocusListener(placeholderListener);
 
-        // Create error label
         JLabel errorLabel = new JLabel();
-        ImageIcon icon = getScaledErrorIcon(); // Helper for the icon
+        ImageIcon icon = getScaledErrorIcon();
         if (icon != null) errorLabel.setIcon(icon);
-
         errorLabel.setVisible(false);
-        errorLabel.setToolTipText("Answer must be less than " + Question.getMaxAnswerLength() + " characters.");
-        errorLabel.setBorder(new EmptyBorder(0, 5, 0, 0));
-
-        // Enforce logic and update icon visibility
+        errorLabel.setToolTipText("Max " + Question.getMaxAnswerLength() + " chars.");
         field.addKeyListener(answerKeyListener(field, errorLabel));
 
-        // Wrap and return
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.setOpaque(false);
         wrapper.add(field, BorderLayout.CENTER);
         wrapper.add(errorLabel, BorderLayout.EAST);
-
         return wrapper;
     }
 
-    // Utility to load the icon once
     private ImageIcon getScaledErrorIcon() {
         java.net.URL errUrl = getClass().getResource("/error.png");
         if (errUrl == null) return null;
-        ImageIcon icon = new ImageIcon(errUrl);
-        Image img = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+        Image img = new ImageIcon(errUrl).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         return new ImageIcon(img);
     }
 
@@ -481,11 +421,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         return new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if (tf.getText().length() >= (int)(Question.getMaxAnswerLength() * 0.7)) {
-                    errorLabel.setVisible(true);
-                } else {
-                    errorLabel.setVisible(false);
-                }
+                errorLabel.setVisible(tf.getText().length() >= Question.getMaxAnswerLength() * 0.7);
                 if (tf.getText().length() >= Question.getMaxAnswerLength()) {
                     e.consume();
                     tf.setText(tf.getText().substring(0, Question.getMaxAnswerLength()));

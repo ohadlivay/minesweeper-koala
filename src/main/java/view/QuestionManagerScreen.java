@@ -29,7 +29,7 @@ public class QuestionManagerScreen extends JPanel {
     private List<Question> allQuestions = new ArrayList<>();
     private int currentPage = 1;
     private final int rowsPerPage = 10;
-    private JLabel pageLabel;
+    private OutlinedLabel pageLabel;
     private JButton btnPrev, btnNext;
 
     private ComponentAnimator animator;
@@ -46,7 +46,7 @@ public class QuestionManagerScreen extends JPanel {
         mainPanel = new JPanel(new BorderLayout(15, 15));
         mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        JLabel titleLabel = new JLabel("QUESTION MANAGER", SwingConstants.CENTER);
+        OutlinedLabel titleLabel = new OutlinedLabel("QUESTION MANAGER", Color.BLACK, 6f);
         titleLabel.setFont(FontsInUse.PIXEL.getSize(62f));
         titleLabel.setForeground(ColorsInUse.TEXT.get());
         titleLabel.setBorder(new EmptyBorder(0, 0, 10, 0));
@@ -175,8 +175,8 @@ public class QuestionManagerScreen extends JPanel {
             refreshPage();
         });
 
-        pageLabel = new JLabel("Page 1 of 1");
-        pageLabel.setFont(FontsInUse.PIXEL.getSize(20f));
+        pageLabel = new OutlinedLabel("PAGE 1 OF 1", Color.BLACK, 4f);
+        pageLabel.setFont(FontsInUse.PIXEL.getSize(28f));
         pageLabel.setForeground(ColorsInUse.TEXT.get());
 
         btnNext = createStyledButton(">", ColorsInUse.BTN_COLOR.get());
@@ -202,7 +202,7 @@ public class QuestionManagerScreen extends JPanel {
     private void refreshPage() {
         tableModel.setRowCount(0);
         if (allQuestions.isEmpty()) {
-            pageLabel.setText("Page 0 of 0");
+            pageLabel.setText("PAGE 0 OF 0");
             btnPrev.setEnabled(false);
             btnNext.setEnabled(false);
             return;
@@ -226,7 +226,7 @@ public class QuestionManagerScreen extends JPanel {
         }
 
         //buttons are only enabled if there is only 1 page
-        pageLabel.setText("Page " + currentPage + " of " + maxPage);
+        pageLabel.setText("PAGE " + currentPage + " OF " + maxPage);
         boolean canScroll = maxPage > 1;
         btnPrev.setEnabled(canScroll);
         btnNext.setEnabled(canScroll);
