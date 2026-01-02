@@ -72,10 +72,14 @@ public class GameHistoryScreen extends JPanel{
         JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
         centerPanel.setOpaque(false);
 
-        JScrollPane scrollPane = new JScrollPane(historyTable);
-        scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR.get());
-        scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
-        centerPanel.add(scrollPane, BorderLayout.CENTER);
+        JPanel tableContainer = new JPanel(new BorderLayout());
+        tableContainer.setBackground(ColorsInUse.BG_COLOR.get());
+        tableContainer.setBorder(new LineBorder(new Color(70, 80, 100), 1));
+
+        tableContainer.add(historyTable.getTableHeader(), BorderLayout.NORTH);
+        tableContainer.add(historyTable, BorderLayout.CENTER);
+
+        centerPanel.add(tableContainer, BorderLayout.CENTER);
 
         //pages navigation panel
         JPanel pagesPanel = createPagesPanel();
@@ -188,7 +192,7 @@ public class GameHistoryScreen extends JPanel{
         table.setSelectionBackground(ColorsInUse.BOARD_ACTIVE_BORDER2.get());
         table.setSelectionForeground(Color.BLACK);
         table.setGridColor(Color.DARK_GRAY);
-        table.setRowHeight(45);
+        table.setRowHeight(44);
         table.setFont(FontsInUse.PIXEL.getSize(20f));
         table.setShowGrid(true);
         table.setFillsViewportHeight(false);
@@ -214,7 +218,7 @@ public class GameHistoryScreen extends JPanel{
         JButton btn = new JButton(text);
         btn.setBackground(bg);
         btn.setForeground(ColorsInUse.TEXT.get());
-        btn.setFont(FontsInUse.PIXEL.getSize(20f));
+        btn.setFont(FontsInUse.PIXEL.getSize(24f));
         btn.setFocusPainted(false);
         btn.setContentAreaFilled(true);
 
@@ -232,13 +236,15 @@ public class GameHistoryScreen extends JPanel{
     private JButton createHomeButton() {
         homeButton = new JButton();
         homeButton.setPreferredSize(new Dimension(72, 36));
-        java.net.URL icon = getClass().getResource("/home.png");
-        if (icon != null) {
-            homeButton.setIcon(new ImageIcon(icon));
+
+        java.net.URL iconUrl = getClass().getResource("/home-pixel.png");
+        if (iconUrl != null) {
+            ImageIcon icon = new ImageIcon(iconUrl);
+            Image img = icon.getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT);
+            homeButton.setIcon(new ImageIcon(img));
         }
 
-        homeButton.setBackground(new Color(10, 10, 10));
-        homeButton.setBorder(BorderFactory.createLineBorder(new Color(70, 80, 100), 2));
+        homeButton.setBackground(ColorsInUse.BTN_COLOR.get());
         homeButton.setFocusPainted(false);
         homeButton.setContentAreaFilled(true);
 
