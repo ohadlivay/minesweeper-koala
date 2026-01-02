@@ -139,15 +139,18 @@ public class AddEditQuestionOverlay extends OverlayView {
         //difficulty row
         JPanel difficultyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));
         difficultyPanel.setOpaque(false);
-        difficultyPanel.add(createLabel("Select Difficulty:"), BorderLayout.WEST);
+        difficultyPanel.add(createLabel("Select Difficulty:"));
+
         btnEasy = createKoalaButton("/green-koala-pixel.png", "Easy", QuestionDifficulty.EASY);
         btnMedium = createKoalaButton("/yellow-koala-pixel.png", "Medium", QuestionDifficulty.MEDIUM);
         btnHard = createKoalaButton("/red-koala-pixel.png", "Hard", QuestionDifficulty.HARD);
         btnMaster = createKoalaButton("/master-koala-pixel.png", "Master", QuestionDifficulty.MASTER);
-        difficultyPanel.add(btnEasy);
-        difficultyPanel.add(btnMedium);
-        difficultyPanel.add(btnHard);
-        difficultyPanel.add(btnMaster);
+
+        //add difficulty labels to buttons
+        difficultyPanel.add(createLabeledDifficultyPanel(btnEasy, "Easy"));
+        difficultyPanel.add(createLabeledDifficultyPanel(btnMedium, "Medium"));
+        difficultyPanel.add(createLabeledDifficultyPanel(btnHard, "Hard"));
+        difficultyPanel.add(createLabeledDifficultyPanel(btnMaster, "Master"));
 
         gbc.insets = new Insets(5, 0, 5, 0);
         formPanel.add(difficultyPanel, gbc);
@@ -355,6 +358,17 @@ public class AddEditQuestionOverlay extends OverlayView {
         return lbl;
     }
 
+    private JPanel createLabeledDifficultyPanel(JButton btn, String labelText) {
+        JPanel p = new JPanel(new BorderLayout(0, 5));
+        p.setOpaque(false);
+        p.add(btn, BorderLayout.CENTER);
+        JLabel lbl = new JLabel(labelText, SwingConstants.CENTER);
+        lbl.setFont(FontsInUse.PIXEL.getSize(20f));
+        lbl.setForeground(ColorsInUse.TEXT.get());
+        p.add(lbl, BorderLayout.SOUTH);
+        return p;
+    }
+
     private JTextField createStyledTextField() {
         JTextField tf = new JTextField();
         tf.setFont(FontsInUse.PIXEL.getSize(22f));
@@ -481,4 +495,3 @@ public class AddEditQuestionOverlay extends OverlayView {
         };
     }
 }
-
