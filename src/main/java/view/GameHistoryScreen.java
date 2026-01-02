@@ -20,16 +20,14 @@ public class GameHistoryScreen extends JPanel{
     private final NavigationController nav;
 
     private JPanel mainPanel;
-    private JPanel centerPanel;
     private JPanel bottomPanel;
     private JButton homeButton;
-    private JLabel historyLabel;
     private DefaultTableModel tableModel;
     private JTable historyTable;
     private List<GameData> allSessions = new ArrayList<>();
     private int currentPage = 1;
     private final int rowsPerPage = 10;
-    private JLabel pageLabel;
+    private OutlinedLabel pageLabel;
     private JButton btnPrev, btnNext;
 
 
@@ -45,7 +43,7 @@ public class GameHistoryScreen extends JPanel{
         mainPanel = new JPanel(new BorderLayout(15, 15));
         mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        JLabel titleLabel = new JLabel("GAME HISTORY", SwingConstants.CENTER);
+        OutlinedLabel titleLabel = new OutlinedLabel("GAME HISTORY", Color.BLACK, 6f);
         titleLabel.setFont(FontsInUse.PIXEL.getSize(62f));
         titleLabel.setForeground(ColorsInUse.TEXT.get());
         titleLabel.setBorder(new EmptyBorder(0, 0, 10, 0));
@@ -125,8 +123,8 @@ public class GameHistoryScreen extends JPanel{
             refreshPage();
         });
 
-        pageLabel = new JLabel("Page 1 of 1");
-        pageLabel.setFont(FontsInUse.PIXEL.getSize(20f));
+        pageLabel = new OutlinedLabel("PAGE 1 OF 1", Color.BLACK, 4f);
+        pageLabel.setFont(FontsInUse.PIXEL.getSize(28f));
         pageLabel.setForeground(ColorsInUse.TEXT.get());
 
         btnNext = createStyledButton(">", ColorsInUse.BTN_COLOR.get());
@@ -153,7 +151,7 @@ public class GameHistoryScreen extends JPanel{
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         tableModel.setRowCount(0);
         if (allSessions.isEmpty()) {
-            pageLabel.setText("Page 0 of 0");
+            pageLabel.setText("PAGE 0 OF 0");
             btnPrev.setEnabled(false);
             btnNext.setEnabled(false);
             return;
@@ -178,7 +176,7 @@ public class GameHistoryScreen extends JPanel{
         }
 
         //buttons are only enabled if there is only 1 page
-        pageLabel.setText("Page " + currentPage + " of " + maxPage);
+        pageLabel.setText("PAGE " + currentPage + " OF " + maxPage);
         boolean canScroll = maxPage > 1;
         btnPrev.setEnabled(canScroll);
         btnNext.setEnabled(canScroll);
