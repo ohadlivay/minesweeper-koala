@@ -33,7 +33,7 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
     private Question currentQuestion;
 
     public ViewQuestionOverlay(NavigationController navigationController) {
-        super(navigationController, true);
+        super(navigationController, false); //LIRAN KEEP YOUR DIRTY HANDS OFF OF THIS LINE
         GameSessionController.getInstance().setBlocked(true); //blocks board interaction
         initUI();
         displayQuestion(activeBoard);
