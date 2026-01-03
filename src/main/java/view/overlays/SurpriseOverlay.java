@@ -2,6 +2,7 @@ package main.java.view.overlays;
 
 import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
+import main.java.util.SoundManager;
 import main.java.view.BackgroundPanel;
 import main.java.view.ColorsInUse;
 import main.java.view.FontsInUse;
@@ -15,12 +16,24 @@ public class SurpriseOverlay extends OverlayView {
 
     private final int healthChange;
     private final int pointsChange;
+    private boolean isClosed = false;
 
-    private OutlinedLabel pointsValueLabel;
     private OutlinedLabel healthValueLabel;
+    private OutlinedLabel pointsValueLabel;
     private JButton closeButton;
 
-    private static final Dimension OVERLAY_SIZE = new Dimension(520, 360);
+    private JPanel leftCardPanel;
+    private JPanel rightCardPanel;
+
+    private Timer closeTimer;
+
+    private static final Dimension OVERLAY_SIZE = new Dimension(520, 520);
+
+    private static final String BG = "/surprise-bg.png";
+    private static final String SELECTED_CARD = "/surprise-card-selected.png";
+    private static final String UNSELECTED_CARD = "/surprise-card.png";
+    private static final String GOOD_CARD = "/good-surprise-card.png";
+    private static final String BAD_CARD = "/bad-surprise-card.png";
 
     public SurpriseOverlay(NavigationController nav, int health, int points) {
         super(nav, false);
@@ -28,8 +41,9 @@ public class SurpriseOverlay extends OverlayView {
 
         this.healthChange = health;
         this.pointsChange = points;
+        this.closeButton = new JButton("CLOSE");
+        this.isClosed = false;
 
-        // allow closing via X
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {
@@ -42,157 +56,229 @@ public class SurpriseOverlay extends OverlayView {
     }
 
     private void initUI() {
-        BackgroundPanel contentPane = new BackgroundPanel("/surprise-overlay.png");
+        BackgroundPanel contentPane = new BackgroundPanel(BG);
         contentPane.setLayout(new BorderLayout());
         contentPane.setPreferredSize(OVERLAY_SIZE);
-        contentPane.setBorder(new EmptyBorder(24, 28, 24, 28));
+        contentPane.setBorder(new EmptyBorder(18, 18, 18, 18));
 
-        // ===== Title =====
+        // ===== TOP: title centered inside the top bar area =====
+        JPanel top = new JPanel(new GridBagLayout());
+        top.setOpaque(false);
+        top.setBorder(new EmptyBorder(22, 10, 0, 10));
+
         OutlinedLabel title = new OutlinedLabel("SURPRISE!", Color.BLACK, 4f);
-        title.setFont(FontsInUse.PIXEL2.getSize(52f));
+        title.setFont(FontsInUse.PIXEL2.getSize(44f));
         title.setForeground(ColorsInUse.TEXT.get());
         title.setHorizontalAlignment(SwingConstants.CENTER);
-        title.setBorder(new EmptyBorder(6, 6, 6, 6));
-        contentPane.add(title, BorderLayout.NORTH);
+        top.add(title);
 
-        // ===== Center stats panel =====
-        JPanel center = new JPanel();
-        center.setLayout(new BoxLayout(center, BoxLayout.Y_AXIS));
+        contentPane.add(top, BorderLayout.NORTH);
+
+        // ===== CENTER: cards + stats bar + button (all centered) =====
+        JPanel center = new JPanel(new GridBagLayout());
         center.setOpaque(false);
-        center.setBorder(new EmptyBorder(18, 0, 18, 0));
 
-        // Row: Points
-        ContrastStrip pointsRow = new ContrastStrip();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
 
-        OutlinedLabel pointsText = new OutlinedLabel("POINTS:", Color.BLACK, 3f);
-        pointsText.setFont(FontsInUse.PIXEL.getSize(34f));
-        pointsText.setForeground(Color.WHITE);
+        // --- Row 0: cards ---
+        JPanel cardsRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 70, 0));
+        cardsRow.setOpaque(false);
 
-        pointsValueLabel = new OutlinedLabel("0", Color.BLACK, 3f);
-        pointsValueLabel.setFont(FontsInUse.PIXEL.getSize(34f));
-        pointsValueLabel.setForeground(Color.WHITE);
-        pointsValueLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        leftCardPanel  = (JPanel) createCardTile(UNSELECTED_CARD);
+        rightCardPanel = (JPanel) createCardTile(UNSELECTED_CARD);
 
-        pointsRow.add(pointsText, BorderLayout.WEST);
-        pointsRow.add(pointsValueLabel, BorderLayout.EAST);
+        cardsRow.add(leftCardPanel);
+        cardsRow.add(rightCardPanel);
 
+        gbc.gridy = 0;
+        gbc.insets = new Insets(40, 0, 0, 0); // push cards down under title bar
+        center.add(cardsRow, gbc);
 
-        // Row: Health (icon + value)
-        ContrastStrip healthRow = new ContrastStrip();
+        // --- Row 1: stats inside the bottom bar area ---
+        JPanel statsBar = new JPanel(new GridLayout(1, 2));
+        statsBar.setOpaque(false);
+        statsBar.setPreferredSize(new Dimension(460, 60));
+        statsBar.setBorder(new EmptyBorder(0, 10, 0, 10)); // padding inside bar
 
-        JLabel heartLabel = new JLabel();
+        // LEFT HALF: heart + "x"
+        JPanel leftHalf = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
+        leftHalf.setOpaque(false);
+
+        JLabel heart = new JLabel();
         java.net.URL heartUrl = getClass().getResource("/heart.png");
         if (heartUrl != null) {
             ImageIcon icon = new ImageIcon(heartUrl);
-            Image scaled = icon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-            heartLabel.setIcon(new ImageIcon(scaled));
+            Image scaled = icon.getImage().getScaledInstance(44, 44, Image.SCALE_SMOOTH);
+            heart.setIcon(new ImageIcon(scaled));
         }
 
-        // left side: icon (looks better than "HEALTH:" on this screen)
-        JPanel healthLeft = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-        healthLeft.setOpaque(false);
-        healthLeft.add(heartLabel);
-
         healthValueLabel = new OutlinedLabel("0", Color.BLACK, 3f);
-        healthValueLabel.setFont(FontsInUse.PIXEL.getSize(34f));
+        healthValueLabel.setFont(FontsInUse.PIXEL.getSize(30f));
         healthValueLabel.setForeground(ColorsInUse.TEXT.get());
-        healthValueLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
-        healthRow.add(healthLeft, BorderLayout.WEST);
-        healthRow.add(healthValueLabel, BorderLayout.EAST);
+        leftHalf.add(heart);
+        leftHalf.add(healthValueLabel);
 
-        center.add(pointsRow);
-        center.add(Box.createVerticalStrut(16));
-        center.add(healthRow);
+        // RIGHT HALF: "POINTS:"
+        JPanel rightHalf = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
+        rightHalf.setOpaque(false);
+
+        pointsValueLabel = new OutlinedLabel("POINTS: 0", Color.BLACK, 3f);
+        pointsValueLabel.setFont(FontsInUse.PIXEL.getSize(30f));
+        pointsValueLabel.setForeground(ColorsInUse.TEXT.get());
+
+        rightHalf.add(pointsValueLabel);
+
+        leftHalf.setBorder(new EmptyBorder(0, 0, 0, 15));
+        rightHalf.setBorder(new EmptyBorder(10, 25, 0, 0));
+
+        statsBar.add(leftHalf);
+        statsBar.add(rightHalf);
+
+        // add to center with your existing gbc
+        gbc.gridy = 1;
+        gbc.insets = new Insets(80, 0, 0, 0);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        center.add(statsBar, gbc);
+
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
+
+
+        // --- Row 2: button small + centered ---
+        closeButton.setText("close");
+        closeButton.setPreferredSize(new Dimension(190, 54));
+        closeButton.setBackground(ColorsInUse.BTN_COLOR.get());
+        closeButton.setForeground(ColorsInUse.TEXT.get());
+        closeButton.setFont(FontsInUse.PIXEL.getSize(22f));
+        closeButton.setFocusPainted(false);
+        closeButton.addActionListener(e -> closeOverlayImmediately());
+
+        gbc.gridy = 2;
+        gbc.insets = new Insets(20, 0, 0, 0);
+        center.add(closeButton, gbc);
 
         contentPane.add(center, BorderLayout.CENTER);
 
-        // ===== Bottom button =====
-        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        bottom.setOpaque(false);
-
-        closeButton = new JButton("CLOSE");
-        closeButton.setPreferredSize(new Dimension(180, 50));
-        closeButton.setBackground(ColorsInUse.BTN_COLOR.get());
-        closeButton.setForeground(ColorsInUse.TEXT.get());
-        closeButton.setFont(FontsInUse.PIXEL.getSize(26f));
-        closeButton.setFocusPainted(false);
-        closeButton.setEnabled(false);
-        closeButton.addActionListener(e -> closeOverlayImmediately());
-
-        bottom.add(closeButton, BorderLayout.EAST);
-        contentPane.add(bottom, BorderLayout.SOUTH);
-
-        // match GameOverOverlay behavior
         this.setContentPane(contentPane);
         this.pack();
         this.setLocationRelativeTo(getParent());
     }
 
-    private void startAnimation() {
-        // These will animate label text; they are OutlinedLabel but still JLabel-based so it's fine.
-        Timer tPoints = animator.randomNumber(pointsValueLabel, pointsChange);
-        Timer tHealth = animator.randomNumber(healthValueLabel, healthChange);
 
-        Timer waiter = new Timer(30, e -> {
-            if (!tPoints.isRunning() && !tHealth.isRunning()) {
+    private JComponent createCardTile(String imagePath) {
+        JPanel tile = new JPanel(new GridBagLayout());
+        tile.setOpaque(false);
+        tile.setPreferredSize(new Dimension(170, 170));
+
+        JLabel card = new JLabel();
+        card.setHorizontalAlignment(SwingConstants.CENTER);
+
+        tile.add(card);
+
+        setTileIcon(tile, imagePath);
+        return tile;
+    }
+
+
+    private void setTileIcon(JPanel tile, String imagePath) {
+        JLabel card = (JLabel) tile.getComponent(0);
+
+        java.net.URL url = getClass().getResource(imagePath);
+        if (url != null) {
+            ImageIcon icon = new ImageIcon(url);
+            Image scaled = icon.getImage().getScaledInstance(170, 170, Image.SCALE_SMOOTH);
+            card.setIcon(new ImageIcon(scaled));
+            card.setText(null);
+        } else {
+            card.setIcon(null);
+            card.setText("CARD");
+            card.setFont(FontsInUse.PIXEL.getSize(16f));
+            card.setForeground(Color.BLACK);
+        }
+    }
+
+    private void startAnimation() {
+        int targetIndex = (int) (Math.random() * 2); // 0 = left, 1 = right
+        boolean isGood = pointsChange > 0;
+
+        JPanel[] cardPanels = new JPanel[]{leftCardPanel, rightCardPanel};
+
+        final int loops = 6;
+        final int totalSteps = loops * 2 + targetIndex;
+
+        final int[] step = {0};
+        final int[] current = {0};
+
+        final int minDelay = 40;
+        final int maxDelay = 240;
+
+        setTileIcon(leftCardPanel, UNSELECTED_CARD);
+        setTileIcon(rightCardPanel, UNSELECTED_CARD);
+
+        Timer t = new Timer(70, e -> {
+            // unselect current
+            setTileIcon(cardPanels[current[0]], UNSELECTED_CARD);
+
+            // move selection
+            current[0] = (current[0] + 1) % 2;
+            setTileIcon(cardPanels[current[0]], SELECTED_CARD);
+
+            step[0]++;
+
+            SoundManager.getInstance().playOnce(SoundManager.SoundId.SELECTION);
+
+            // recompute progress every tick (0..1)
+            double progress = Math.min(1.0, (double) step[0] / totalSteps);
+
+            // ease-out slowdown (gets slower and slower)
+            int delay = (int) (minDelay + (maxDelay - minDelay) * progress * progress);
+            ((Timer) e.getSource()).setDelay(delay);
+
+            // stop condition
+            if (step[0] >= totalSteps && current[0] == targetIndex) {
                 ((Timer) e.getSource()).stop();
 
-                pointsValueLabel.setText(formatSigned(pointsChange));
-                pointsValueLabel.setForeground(pointsChange >= 0
-                        ? ColorsInUse.FEEDBACK_GOOD_COLOR.get()
-                        : ColorsInUse.FEEDBACK_BAD_COLOR.get());
+                // reveal the TARGET card result; keep the other unselected
+                setTileIcon(cardPanels[1- targetIndex], isGood ? GOOD_CARD : BAD_CARD);
+                setTileIcon(cardPanels[targetIndex], UNSELECTED_CARD);
 
-                healthValueLabel.setText(formatSigned(healthChange));
-                healthValueLabel.setForeground(healthChange >= 0
-                        ? ColorsInUse.FEEDBACK_GOOD_COLOR.get()
-                        : ColorsInUse.FEEDBACK_BAD_COLOR.get());
+                // stats
+                healthValueLabel.setText(String.valueOf(healthChange));
+                pointsValueLabel.setText("POINTS: " + pointsChange);
 
-                closeButton.setEnabled(true);
-                closeOverlay(); // start countdown + auto-close
+                healthValueLabel.setForeground(
+                        (healthChange >= 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR : ColorsInUse.FEEDBACK_BAD_COLOR).get()
+                );
+                pointsValueLabel.setForeground(
+                        pointsChange >= 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get()
+                );
+
+                if(!isClosed) closeOverlay();
             }
         });
-        waiter.start();
+
+        t.start();
     }
 
     private void closeOverlay() {
-        // start countdown on the button (5..1), then close immediately
-        animator.closeCountdown(closeButton, 0, 5);
-
-        Timer timer = new Timer(5000, e -> closeOverlayImmediately());
-        timer.setRepeats(false);
-        timer.start();
+        closeTimer = new Timer(7000, e -> closeOverlayImmediately());
+        closeTimer.setRepeats(false);
+        closeTimer.start();
+        animator.closeCountdown(closeButton, 0, 7);
+        isClosed = true;
     }
 
     private void closeOverlayImmediately() {
         GameSessionController.getInstance()
                 .setSurpriseToGameScreen(healthChange, pointsChange, pointsChange > 0);
         GameSessionController.getInstance().setBlocked(false);
+        isClosed = true;
         close();
     }
-
-    private String formatSigned(int value) {
-        return value > 0 ? "+" + value : String.valueOf(value);
-    }
-
-    static class ContrastStrip extends JPanel {
-        public ContrastStrip() {
-            setOpaque(false);
-            setLayout(new BorderLayout(8, 0));
-            setBorder(BorderFactory.createEmptyBorder(8, 30, 8, 30));
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            g2.setColor(new Color(0, 0, 0, 170)); // strong but localized
-            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-
-            g2.dispose();
-            super.paintComponent(g);
-        }
-    }
-
 }
