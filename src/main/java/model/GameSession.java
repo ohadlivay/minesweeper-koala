@@ -66,6 +66,7 @@ public class GameSession
 
     private List<ActionMadeListener> actionMadeListeners = new ArrayList<>();
     private List<SpecialTileActivationListener> specialTileActivationListeners = new ArrayList<>();
+    private List<SurpriseListener> surpriseListeners = new ArrayList<>();
     private String message = "";
     private static GameSession instance;
     private static GameSession testInstance;
@@ -416,6 +417,8 @@ public class GameSession
                 Random random = new Random();
                 boolean resultOfRandom = random.nextBoolean();
                 int plusMinus  = (resultOfRandom) ? 1 : -1;
+                if (plusMinus > 0)
+                    notifyListenersAfterAction("Activated Surprise Tile", false, 0, -getGameDifficulty().getActivationCost());
                 String message = (resultOfRandom)? "Good surprise!" : "Bad surprise!";
                 System.out.println(message);
                 this.message = message+" Points changed by: "+(plusMinus*getGameDifficulty().getSurprisePoints())+", Health changed by: "+(plusMinus*getGameDifficulty().getSurpriseHealth());
@@ -424,11 +427,11 @@ public class GameSession
                 this.gainHealth(plusMinus*getGameDifficulty().getSurpriseHealth());
                 SoundManager.getInstance().playOnce(resultOfRandom ? SoundManager.SoundId.POINTS_WIN : SoundManager.SoundId.POINTS_LOSE);
                 if (!healthMaxedOut||!resultOfRandom)
-                    notifyListenersAfterAction(this.message,resultOfRandom,plusMinus*getGameDifficulty().getSurpriseHealth(),plusMinus*getGameDifficulty().getSurprisePoints());
+                    notifySurpriseListeners(plusMinus*getGameDifficulty().getSurpriseHealth(),plusMinus*getGameDifficulty().getSurprisePoints());
                 else
                 {
                     this.message+= " (Health is already maxed out)";
-                    notifyListenersAfterAction(this.message,resultOfRandom,0,plusMinus*getGameDifficulty().getSurprisePoints());
+                    notifySurpriseListeners(0,plusMinus*getGameDifficulty().getSurprisePoints());
                 }
 
             }
@@ -457,6 +460,13 @@ public class GameSession
         for (ActionMadeListener listener : actionMadeListeners)
             listener.onActionMade(message,positiveMove,healthChange,pointsChange);
     }
+
+    public void notifySurpriseListeners(int healthChange, int pointsChange)
+    {
+        for (SurpriseListener listener : surpriseListeners)
+            listener.revealSurprise(healthChange, pointsChange);
+    }
+
     public void updateAfterQuestionResult(QuestionDifficulty difficulty, boolean correctAnswer, Board parentBoard)
     {
         Random random = new Random();
@@ -671,5 +681,7 @@ public class GameSession
     }
 
 
-
+    public void setSurpriseListener(SurpriseListener surpriseListener) {
+        this.surpriseListeners.add(surpriseListener);
+    }
 }

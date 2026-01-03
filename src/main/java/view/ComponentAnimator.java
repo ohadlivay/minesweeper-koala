@@ -1,5 +1,7 @@
 package main.java.view;
 
+import main.java.util.SoundManager;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -196,5 +198,33 @@ public class ComponentAnimator {
             }
         });
         timer.start();
+    }
+
+    public Timer randomNumber(JLabel label, int target) {
+        final int durationMs = 700;
+        final int tickMs = 25;
+        final int steps = durationMs / tickMs;
+
+        final int[] step = {0};
+
+        Timer t = new Timer(tickMs, e -> {
+            step[0]++;
+
+            int rand = (int) (Math.random() * 100);
+            label.setText(String.valueOf(rand));
+
+            if (step[0] >= steps) {
+                ((Timer) e.getSource()).stop();
+                label.setText(String.valueOf(target));
+            }
+        });
+
+        t.start();
+        return t;
+    }
+
+
+    public boolean isRunning() {
+        return !active.isEmpty();
     }
 }

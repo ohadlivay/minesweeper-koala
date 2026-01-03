@@ -67,6 +67,13 @@ public class OverlayController {
         overlay.open();
     }
 
+    public void showSurpriseOverlay(int healthChange, int pointsChange) {
+        closeCurrentOverlay();
+        SurpriseOverlay overlay = new SurpriseOverlay(nav, healthChange, pointsChange);
+        this.currentOverlay = overlay;
+        overlay.open();
+    }
+
     public void showAddEditOverlay(Question question) {
         closeCurrentOverlay();
         AddEditQuestionOverlay overlay = new AddEditQuestionOverlay(nav, question);

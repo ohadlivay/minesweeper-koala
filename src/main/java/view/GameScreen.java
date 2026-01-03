@@ -12,7 +12,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.IOException;
 
-public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener, GameOverListener {
+public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener, GameOverListener, SurpriseListener {
     private final NavigationController nav;
     private final GameSession session; // Always holds the current game session
     private ComponentAnimator animator;
@@ -37,6 +37,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         this.session.setGameOverListener(this);
         this.session.getLeftBoard().setMinesLeftListener(this);
         this.session.getRightBoard().setMinesLeftListener(this);
+        this.session.setSurpriseListener(this);
         animator = new ComponentAnimator();
         initUI();
         setBoards(session.getLeftBoard(), session.getRightBoard());
@@ -365,5 +366,10 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         if (!saved)
             JOptionPane.showMessageDialog(mainPanel, "Error, could not save the game!", "Game Over", JOptionPane.ERROR_MESSAGE);
         OverlayController.getInstance().showGameOverOverlay(winOrLose,score);
+    }
+
+    @Override
+    public void revealSurprise(int healthChange, int pointsChange) {
+        OverlayController.getInstance().showSurpriseOverlay(healthChange, pointsChange);
     }
 }
