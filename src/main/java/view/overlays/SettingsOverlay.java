@@ -132,13 +132,13 @@ public class SettingsOverlay extends OverlayView {
 
         gbc.gridy = 2;
         gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = new Insets(30, 0, 0, 0);
+        gbc.insets = new Insets(15, 0, 0, 0);
         centerPanel.add(buttonStart, gbc);
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         bottomPanel.setBackground(ColorsInUse.BG_COLOR.get());
 
-        buttonBack = createTransparentIconButton("/back-pixel.png", 40, 40);
+        buttonBack = createTransparentIconButton("/back-pixel.png", 60, 50);
         buttonBack.addActionListener(e -> onCancel());
         bottomPanel.add(buttonBack);
 
@@ -249,7 +249,6 @@ public class SettingsOverlay extends OverlayView {
         btn.setForeground(ColorsInUse.TEXT.get());
         btn.setFocusPainted(false);
         btn.setFont(FontsInUse.PIXEL.getSize(28f));
-        btn.setBorder(BorderFactory.createBevelBorder(0));
         return btn;
     }
 
