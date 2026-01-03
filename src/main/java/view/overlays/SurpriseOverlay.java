@@ -117,7 +117,7 @@ public class SurpriseOverlay extends OverlayView {
         }
 
         healthValueLabel = new OutlinedLabel("0", Color.BLACK, 3f);
-        healthValueLabel.setFont(FontsInUse.PIXEL.getSize(30f));
+        healthValueLabel.setFont(FontsInUse.PIXEL.getSize(40f));
         healthValueLabel.setForeground(ColorsInUse.TEXT.get());
 
         leftHalf.add(heart);
@@ -128,7 +128,7 @@ public class SurpriseOverlay extends OverlayView {
         rightHalf.setOpaque(false);
 
         pointsValueLabel = new OutlinedLabel("POINTS: 0", Color.BLACK, 3f);
-        pointsValueLabel.setFont(FontsInUse.PIXEL.getSize(30f));
+        pointsValueLabel.setFont(FontsInUse.PIXEL.getSize(40f));
         pointsValueLabel.setForeground(ColorsInUse.TEXT.get());
 
         rightHalf.add(pointsValueLabel);
@@ -259,6 +259,7 @@ public class SurpriseOverlay extends OverlayView {
                         pointsChange >= 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get()
                 );
 
+                //this is maybe the reason for the double floating numbers
                 if(!isClosed) closeOverlay();
             }
         });
@@ -267,6 +268,8 @@ public class SurpriseOverlay extends OverlayView {
     }
 
     private void closeOverlay() {
+        //this is maybe the reason for the double floating numbers
+        if(isClosed) return;
         closeTimer = new Timer(7000, e -> closeOverlayImmediately());
         closeTimer.setRepeats(false);
         closeTimer.start();
