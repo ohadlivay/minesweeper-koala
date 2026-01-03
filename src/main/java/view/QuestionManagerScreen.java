@@ -29,7 +29,7 @@ public class QuestionManagerScreen extends JPanel {
     private List<Question> allQuestions = new ArrayList<>();
     private int currentPage = 1;
     private final int rowsPerPage = 10;
-    private JLabel pageLabel;
+    private OutlinedLabel pageLabel;
     private JButton btnPrev, btnNext;
 
     private ComponentAnimator animator;
@@ -46,7 +46,7 @@ public class QuestionManagerScreen extends JPanel {
         mainPanel = new JPanel(new BorderLayout(15, 15));
         mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        JLabel titleLabel = new JLabel("QUESTION MANAGER", SwingConstants.CENTER);
+        OutlinedLabel titleLabel = new OutlinedLabel("QUESTION MANAGER", Color.BLACK, 6f);
         titleLabel.setFont(FontsInUse.PIXEL.getSize(62f));
         titleLabel.setForeground(ColorsInUse.TEXT.get());
         titleLabel.setBorder(new EmptyBorder(0, 0, 10, 0));
@@ -97,10 +97,14 @@ public class QuestionManagerScreen extends JPanel {
         JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
         centerPanel.setOpaque(false);
 
-        JScrollPane scrollPane = new JScrollPane(questionsTable);
-        scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR.get());
-        scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
-        centerPanel.add(scrollPane, BorderLayout.CENTER);
+        JPanel tableContainer = new JPanel(new BorderLayout());
+        tableContainer.setBackground(ColorsInUse.BG_COLOR.get());
+        tableContainer.setBorder(new LineBorder(new Color(70, 80, 100), 1));
+
+        tableContainer.add(questionsTable.getTableHeader(), BorderLayout.NORTH);
+        tableContainer.add(questionsTable, BorderLayout.CENTER);
+
+        centerPanel.add(tableContainer, BorderLayout.CENTER);
 
         //pages navigation panel
         JPanel pagesPanel = createPagesPanel();
@@ -114,8 +118,17 @@ public class QuestionManagerScreen extends JPanel {
         homeButton = createHomeButton();
         homeButton.addActionListener(e -> nav.goToHome());
         bottomPanel.add(homeButton, BorderLayout.WEST);
-        btnAdd = createStyledButton("Add New Question", ColorsInUse.BTN_COLOR.get());
-        btnAdd.setPreferredSize(new Dimension(200, 36));
+        btnAdd = createStyledButton("", ColorsInUse.BTN_COLOR.get());
+        btnAdd.setPreferredSize(new Dimension(70, 40));
+
+        java.net.URL addIconUrl = getClass().getResource("/plus-pixel.png");
+        if (addIconUrl != null) {
+            ImageIcon icon = new ImageIcon(addIconUrl);
+            Image img = icon.getImage().getScaledInstance(24, 24, Image.SCALE_DEFAULT);
+            btnAdd.setIcon(new ImageIcon(img));
+
+        }
+
         btnAdd.addActionListener(e -> {
             OverlayController.getInstance().showAddEditOverlay(null);
         });
@@ -175,8 +188,8 @@ public class QuestionManagerScreen extends JPanel {
             refreshPage();
         });
 
-        pageLabel = new JLabel("Page 1 of 1");
-        pageLabel.setFont(FontsInUse.PIXEL.getSize(20f));
+        pageLabel = new OutlinedLabel("PAGE 1 OF 1", Color.BLACK, 4f);
+        pageLabel.setFont(FontsInUse.PIXEL.getSize(28f));
         pageLabel.setForeground(ColorsInUse.TEXT.get());
 
         btnNext = createStyledButton(">", ColorsInUse.BTN_COLOR.get());
@@ -202,7 +215,7 @@ public class QuestionManagerScreen extends JPanel {
     private void refreshPage() {
         tableModel.setRowCount(0);
         if (allQuestions.isEmpty()) {
-            pageLabel.setText("Page 0 of 0");
+            pageLabel.setText("PAGE 0 OF 0");
             btnPrev.setEnabled(false);
             btnNext.setEnabled(false);
             return;
@@ -226,7 +239,7 @@ public class QuestionManagerScreen extends JPanel {
         }
 
         //buttons are only enabled if there is only 1 page
-        pageLabel.setText("Page " + currentPage + " of " + maxPage);
+        pageLabel.setText("PAGE " + currentPage + " OF " + maxPage);
         boolean canScroll = maxPage > 1;
         btnPrev.setEnabled(canScroll);
         btnNext.setEnabled(canScroll);
@@ -238,10 +251,10 @@ public class QuestionManagerScreen extends JPanel {
         table.setSelectionBackground(ColorsInUse.BOARD_ACTIVE_BORDER2.get());
         table.setSelectionForeground(Color.BLACK);
         table.setGridColor(Color.DARK_GRAY);
-        table.setRowHeight(45);
-        table.setFont(FontsInUse.PIXEL.getSize(20f));
+        table.setRowHeight(44);
+        table.setFont(FontsInUse.PIXEL.getSize(22f));
         table.setShowGrid(true);
-        table.setFillsViewportHeight(false);
+        table.setFillsViewportHeight(true);
 
         JTableHeader header = table.getTableHeader();
         header.setBackground(new Color(30, 30, 30));
@@ -262,7 +275,7 @@ public class QuestionManagerScreen extends JPanel {
         JButton btn = new JButton(text);
         btn.setBackground(bg);
         btn.setForeground(ColorsInUse.TEXT.get());
-        btn.setFont(FontsInUse.PIXEL.getSize(20f));
+        btn.setFont(FontsInUse.PIXEL.getSize(24f));
         btn.setFocusPainted(false);
         btn.setContentAreaFilled(true);
 
@@ -280,9 +293,12 @@ public class QuestionManagerScreen extends JPanel {
     private JButton createHomeButton() {
         homeButton = new JButton();
         homeButton.setPreferredSize(new Dimension(72, 36));
-        java.net.URL icon = getClass().getResource("/home.png");
-        if (icon != null) {
-            homeButton.setIcon(new ImageIcon(icon));
+
+        java.net.URL iconUrl = getClass().getResource("/home-pixel.png");
+        if (iconUrl != null) {
+            ImageIcon icon = new ImageIcon(iconUrl);
+            Image img = icon.getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT);
+            homeButton.setIcon(new ImageIcon(img));
         }
 
         homeButton.setBackground(ColorsInUse.BTN_COLOR.get());

@@ -3,26 +3,18 @@ package main.java.view;
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
+import java.net.URL;
 
 public class TblBtnEditor extends AbstractCellEditor implements TableCellEditor {
     private final TblBtnPanel panel;
-    private final JTable table;
     private final TableActionListener listener;
-
     private int editingModelRow = -1;
 
     public TblBtnEditor(JTable table, TableActionListener listener) {
-        this.table = table;
         this.listener = listener;
 
-        JButton edit = new JButton("Edit");
-        JButton del  = new JButton("Del");
-        edit.setFocusable(false);
-        del.setFocusable(false);
-        del.setBackground(ColorsInUse.DENY.get());
-        del.setFont(FontsInUse.PIXEL.getSize(18f));
-        del.setForeground(ColorsInUse.TEXT.get());
-        edit.setFont(FontsInUse.PIXEL.getSize(18f));
+        JButton edit = createScaledIconButton("/pixel-pencil.png", ColorsInUse.BTN_COLOR.get(), 30, 30);
+        JButton del  = createScaledIconButton("/x-pixel.png", ColorsInUse.BTN_COLOR.get(), 20, 20);
 
         panel = new TblBtnPanel(edit, del);
 
@@ -35,6 +27,20 @@ public class TblBtnEditor extends AbstractCellEditor implements TableCellEditor 
             fireEditingStopped();
             if (listener != null && editingModelRow >= 0) listener.onDelete(editingModelRow);
         });
+    }
+
+    private JButton createScaledIconButton(String resourcePath, Color bg, int width, int height) {
+        JButton btn = new JButton();
+        URL iconUrl = getClass().getResource(resourcePath);
+        if (iconUrl != null) {
+            ImageIcon icon = new ImageIcon(iconUrl);
+            Image img = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            btn.setIcon(new ImageIcon(img));
+        }
+        btn.setBackground(bg);
+        btn.setFocusable(false);
+        btn.setPreferredSize(new Dimension(40, 32));
+        return btn;
     }
 
     @Override

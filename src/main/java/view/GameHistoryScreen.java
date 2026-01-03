@@ -20,16 +20,14 @@ public class GameHistoryScreen extends JPanel{
     private final NavigationController nav;
 
     private JPanel mainPanel;
-    private JPanel centerPanel;
     private JPanel bottomPanel;
     private JButton homeButton;
-    private JLabel historyLabel;
     private DefaultTableModel tableModel;
     private JTable historyTable;
     private List<GameData> allSessions = new ArrayList<>();
     private int currentPage = 1;
     private final int rowsPerPage = 10;
-    private JLabel pageLabel;
+    private OutlinedLabel pageLabel;
     private JButton btnPrev, btnNext;
 
 
@@ -45,7 +43,7 @@ public class GameHistoryScreen extends JPanel{
         mainPanel = new JPanel(new BorderLayout(15, 15));
         mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        JLabel titleLabel = new JLabel("GAME HISTORY", SwingConstants.CENTER);
+        OutlinedLabel titleLabel = new OutlinedLabel("GAME HISTORY", Color.BLACK, 6f);
         titleLabel.setFont(FontsInUse.PIXEL.getSize(62f));
         titleLabel.setForeground(ColorsInUse.TEXT.get());
         titleLabel.setBorder(new EmptyBorder(0, 0, 10, 0));
@@ -74,10 +72,14 @@ public class GameHistoryScreen extends JPanel{
         JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
         centerPanel.setOpaque(false);
 
-        JScrollPane scrollPane = new JScrollPane(historyTable);
-        scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR.get());
-        scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
-        centerPanel.add(scrollPane, BorderLayout.CENTER);
+        JPanel tableContainer = new JPanel(new BorderLayout());
+        tableContainer.setBackground(ColorsInUse.BG_COLOR.get());
+        tableContainer.setBorder(new LineBorder(new Color(70, 80, 100), 1));
+
+        tableContainer.add(historyTable.getTableHeader(), BorderLayout.NORTH);
+        tableContainer.add(historyTable, BorderLayout.CENTER);
+
+        centerPanel.add(tableContainer, BorderLayout.CENTER);
 
         //pages navigation panel
         JPanel pagesPanel = createPagesPanel();
@@ -125,8 +127,8 @@ public class GameHistoryScreen extends JPanel{
             refreshPage();
         });
 
-        pageLabel = new JLabel("Page 1 of 1");
-        pageLabel.setFont(FontsInUse.PIXEL.getSize(20f));
+        pageLabel = new OutlinedLabel("PAGE 1 OF 1", Color.BLACK, 4f);
+        pageLabel.setFont(FontsInUse.PIXEL.getSize(28f));
         pageLabel.setForeground(ColorsInUse.TEXT.get());
 
         btnNext = createStyledButton(">", ColorsInUse.BTN_COLOR.get());
@@ -153,7 +155,7 @@ public class GameHistoryScreen extends JPanel{
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         tableModel.setRowCount(0);
         if (allSessions.isEmpty()) {
-            pageLabel.setText("Page 0 of 0");
+            pageLabel.setText("PAGE 0 OF 0");
             btnPrev.setEnabled(false);
             btnNext.setEnabled(false);
             return;
@@ -178,7 +180,7 @@ public class GameHistoryScreen extends JPanel{
         }
 
         //buttons are only enabled if there is only 1 page
-        pageLabel.setText("Page " + currentPage + " of " + maxPage);
+        pageLabel.setText("PAGE " + currentPage + " OF " + maxPage);
         boolean canScroll = maxPage > 1;
         btnPrev.setEnabled(canScroll);
         btnNext.setEnabled(canScroll);
@@ -190,7 +192,7 @@ public class GameHistoryScreen extends JPanel{
         table.setSelectionBackground(ColorsInUse.BOARD_ACTIVE_BORDER2.get());
         table.setSelectionForeground(Color.BLACK);
         table.setGridColor(Color.DARK_GRAY);
-        table.setRowHeight(45);
+        table.setRowHeight(44);
         table.setFont(FontsInUse.PIXEL.getSize(20f));
         table.setShowGrid(true);
         table.setFillsViewportHeight(false);
@@ -216,7 +218,7 @@ public class GameHistoryScreen extends JPanel{
         JButton btn = new JButton(text);
         btn.setBackground(bg);
         btn.setForeground(ColorsInUse.TEXT.get());
-        btn.setFont(FontsInUse.PIXEL.getSize(20f));
+        btn.setFont(FontsInUse.PIXEL.getSize(24f));
         btn.setFocusPainted(false);
         btn.setContentAreaFilled(true);
 
@@ -234,13 +236,15 @@ public class GameHistoryScreen extends JPanel{
     private JButton createHomeButton() {
         homeButton = new JButton();
         homeButton.setPreferredSize(new Dimension(72, 36));
-        java.net.URL icon = getClass().getResource("/home.png");
-        if (icon != null) {
-            homeButton.setIcon(new ImageIcon(icon));
+
+        java.net.URL iconUrl = getClass().getResource("/home-pixel.png");
+        if (iconUrl != null) {
+            ImageIcon icon = new ImageIcon(iconUrl);
+            Image img = icon.getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT);
+            homeButton.setIcon(new ImageIcon(img));
         }
 
-        homeButton.setBackground(new Color(10, 10, 10));
-        homeButton.setBorder(BorderFactory.createLineBorder(new Color(70, 80, 100), 2));
+        homeButton.setBackground(ColorsInUse.BTN_COLOR.get());
         homeButton.setFocusPainted(false);
         homeButton.setContentAreaFilled(true);
 

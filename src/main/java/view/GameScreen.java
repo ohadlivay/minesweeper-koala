@@ -267,6 +267,16 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
             OverlayController.getInstance().showGameOverOverlay(false, session.getPoints());
         });
 
+        //TEMP BUTTON FOR TESTING QUESTION VIEW
+        JButton testQuestionButton = new JButton("Test Question");
+        testQuestionButton.setBackground(new Color(52, 152, 219)); // Blue color
+        testQuestionButton.setForeground(Color.WHITE);
+        testQuestionButton.addActionListener(e -> {
+            OverlayController.getInstance().showQuestionOverlay(session.getLeftBoard());
+        });
+
+        testButtonPanel.add(testQuestionButton);
+
 
         // TEMP BUTTON FOR TESTING GAME SAVES
         endGameButton = new JButton("End Game");
