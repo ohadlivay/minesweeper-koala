@@ -5,6 +5,8 @@ import main.java.controller.NavigationController;
 import main.java.controller.QuestionController;
 import main.java.model.*;
 import main.java.view.ColorsInUse;
+import main.java.view.FontsInUse;
+import main.java.view.OutlinedLabel;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -60,13 +62,13 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
         titlePanel.setBackground(ColorsInUse.BG_COLOR.get());
 
-        titleLabel = new JLabel("Question");
-        titleLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 32));
+        OutlinedLabel titleLabel = new OutlinedLabel("Question", Color.BLACK, 6f);
+        titleLabel.setFont(FontsInUse.PIXEL.getSize(62f));
         titleLabel.setForeground(ColorsInUse.TEXT.get());
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         difficultyLabel = new JLabel("Difficulty: Easy");
-        difficultyLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 18));
+        difficultyLabel.setFont(FontsInUse.PIXEL.getSize(32f));
         difficultyLabel.setForeground(ColorsInUse.TEXT.get());
         difficultyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -83,7 +85,7 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         centerPanel.setBorder(new EmptyBorder(0, 40, 0, 40));
 
         questionText = new JTextArea("Loading Question...");
-        questionText.setFont(new Font("Segoe UI Black", Font.BOLD, 20));
+        questionText.setFont(FontsInUse.PIXEL.getSize(28f));
         questionText.setForeground(ColorsInUse.TEXT.get());
         questionText.setBackground(ColorsInUse.BG_COLOR.get());
         questionText.setLineWrap(true);
@@ -106,8 +108,7 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         bottomPanel.setBackground(ColorsInUse.BG_COLOR.get());
         bottomPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
 
-        buttonSubmit = createButton("Submit");
-        buttonSubmit.setBackground(ColorsInUse.CONFIRM.get());
+        buttonSubmit = createButton("/v-pixel.png");
 
         bottomPanel.add(buttonSubmit);
         contentPane.add(bottomPanel, BorderLayout.SOUTH);
@@ -134,9 +135,9 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         for (int i = 0; i < answerButtons.size(); i++) {
             JButton btn = answerButtons.get(i);
             if (i == index) {
-                btn.setBorder(new CompoundBorder(new LineBorder(ColorsInUse.CONFIRM.get(), 2), new EmptyBorder(10, 15, 10, 15)));
+                btn.setBorder(new CompoundBorder(new LineBorder(ColorsInUse.CONFIRM.get(), 3), new EmptyBorder(10, 15, 10, 15)));
             } else {
-                btn.setBorder(new CompoundBorder(new LineBorder(ColorsInUse.BG_COLOR.get(), 2), new EmptyBorder(10, 15, 10, 15)));
+                btn.setBorder(new CompoundBorder(new LineBorder(ColorsInUse.BG_COLOR.get(), 3), new EmptyBorder(10, 15, 10, 15)));
             }
         }
         contentPane.revalidate();
@@ -145,7 +146,7 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
 
     private JButton createAnswerButton(String text, int index) {
         JButton btn = new JButton(text);
-        btn.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        btn.setFont(FontsInUse.PIXEL.getSize(24f));
         btn.setForeground(ColorsInUse.TEXT.get());
         btn.setBackground(ColorsInUse.BTN_COLOR.get());
         btn.setFocusPainted(false);
@@ -168,18 +169,26 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         return btn;
     }
 
-    private JButton createButton(String text) {
-        JButton btn = new JButton(text);
+    private JButton createButton(String iconPath) {
+        JButton btn = new JButton();
         btn.setPreferredSize(new Dimension(150, 45));
         btn.setMinimumSize(new Dimension(150, 45));
         btn.setMaximumSize(new Dimension(150, 45));
         btn.setBackground(ColorsInUse.BTN_COLOR.get());
-        btn.setForeground(ColorsInUse.TEXT.get());
         btn.setFocusPainted(false);
-        btn.setFont(new Font("Segoe UI Black", Font.BOLD, 14));
-        btn.setBorder(BorderFactory.createBevelBorder(0));
-        return btn;
 
+        java.net.URL iconUrl = getClass().getResource(iconPath);
+        if (iconUrl != null) {
+            ImageIcon icon = new ImageIcon(iconUrl);
+            Image scaled = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+            btn.setIcon(new ImageIcon(scaled));
+        } else {
+            btn.setText("Submit");
+            btn.setForeground(ColorsInUse.TEXT.get());
+            btn.setFont(FontsInUse.PIXEL.getSize(32f));
+        }
+
+        return btn;
     }
 
     //retrieve the question from QuestionController
