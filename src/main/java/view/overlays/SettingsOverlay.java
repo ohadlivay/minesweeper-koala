@@ -138,7 +138,7 @@ public class SettingsOverlay extends OverlayView {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         bottomPanel.setBackground(ColorsInUse.BG_COLOR.get());
 
-        buttonBack = createTransparentIconButton("/back-pixel.png", 60, 50);
+        buttonBack = createTransparentIconButton("/back-pixel-2.png", 60, 50);
         buttonBack.addActionListener(e -> onCancel());
         bottomPanel.add(buttonBack);
 
@@ -308,40 +308,62 @@ public class SettingsOverlay extends OverlayView {
     private JButton createTransparentIconButton(String resourcePath, int width, int height) {
         JButton btn = new JButton();
 
-        //make button transparent
+        // Core styling for transparency
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
         btn.setOpaque(false);
-
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btn.setPreferredSize(new Dimension(width + 10, height + 10));
 
         try {
             java.net.URL url = getClass().getResource(resourcePath);
             if (url != null) {
-                ImageIcon icon = new ImageIcon(url);
-                Image img = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
-                btn.setIcon(new ImageIcon(img));
+                ImageIcon normalIcon = new ImageIcon(url);
+                Image img = normalIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+
+
+                ImageIcon standard = new ImageIcon(img);
+                btn.setIcon(standard);
+
+                //create light version of the icon
+                ImageIcon hover = createLighterIcon(img);
+
+                //switch to lighter icon when hovered
+                btn.addMouseListener(new java.awt.event.MouseAdapter() {
+                    @Override
+                    public void mouseEntered(java.awt.event.MouseEvent evt) {
+                        btn.setIcon(hover);
+                    }
+
+                    @Override
+                    public void mouseExited(java.awt.event.MouseEvent evt) {
+                        btn.setIcon(standard);
+                    }
+                });
             }
         } catch (Exception e) {
             btn.setText("X");
             btn.setForeground(Color.WHITE);
         }
 
-        btn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            }
-        });
-
         return btn;
     }
 
+    //method to make an icon lighter for hover effect
+    private ImageIcon createLighterIcon(Image sourceImg) {
+        int w = sourceImg.getWidth(null);
+        int h = sourceImg.getHeight(null);
+        java.awt.image.BufferedImage buffered = new java.awt.image.BufferedImage(w, h, java.awt.image.BufferedImage.TYPE_INT_ARGB);
 
+        Graphics2D g2 = buffered.createGraphics();
+        g2.drawImage(sourceImg, 0, 0, null);
+        g2.dispose();
 
+        java.awt.image.RescaleOp op = new java.awt.image.RescaleOp(1.4f, 0, null);
+        buffered = op.filter(buffered, null);
 
-
-
+        return new ImageIcon(buffered);
+    }
 
 }
