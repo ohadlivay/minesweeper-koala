@@ -9,10 +9,8 @@ import main.java.model.*;
 import main.java.util.GameDataCSVManager;
 import main.java.view.GameScreen;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class GameSessionController implements DisplayQuestionListener, InputBlockListener{
     private GameSession session;
@@ -102,7 +100,9 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
 
     }
 
-
+    public void setSurpriseToGameScreen(int healthChange, int pointsChange, boolean positiveMove) {
+        session.updateAfterSurpriseRevealed(healthChange, pointsChange, positiveMove);
+    }
 }
 
 

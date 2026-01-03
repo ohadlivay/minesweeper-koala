@@ -455,6 +455,7 @@ public class GameSession
     }
     public void setGameOverListener(GameOverListener gameOverListener) {
         this.gameOverListener = gameOverListener;}
+
     private void notifyListenersAfterAction(String message, boolean positiveMove, int healthChange, int pointsChange)
     {
         for (ActionMadeListener listener : actionMadeListeners)
@@ -683,5 +684,11 @@ public class GameSession
 
     public void setSurpriseListener(SurpriseListener surpriseListener) {
         this.surpriseListeners.add(surpriseListener);
+    }
+
+    public void updateAfterSurpriseRevealed(int healthChange, int pointsChange, boolean positiveMove)
+    {
+        String message = (positiveMove)? "Good Surprise!" : "Bad Surprise!";
+        notifyListenersAfterAction(message, positiveMove, healthChange,pointsChange);
     }
 }
