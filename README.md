@@ -41,23 +41,4 @@ Code was written in IntelliJ IDEA and Version Control was done... in this very r
     
 ### Iteration 2
 
-* **Roles:**
-  * **Tali** - Scrum Master + Developer
-  * **Tom** - Product Owner + Developer
-  * **Liran** - Developer
-  * **Ohad** - Developer
-* **Tasks:**
-  * Finalize game logic.
-  * Implement Question management.
-  * Implement save/load functionality.
-  * Implement tests.
-
-### Iteration 3
-* **Roles:**
-  * **Liran** - Scrum Master + Developer
-  * **Ohad** - Product Owner + Developer
-  * **Tom** - Developer
-  * **Tali** - Developer
-* **Tasks:**
-  * Finalize game UI.
-  * Implement History.
+* Currently ongoing.
