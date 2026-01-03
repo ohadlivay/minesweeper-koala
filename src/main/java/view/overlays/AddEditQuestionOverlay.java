@@ -329,15 +329,15 @@ public class AddEditQuestionOverlay extends OverlayView {
             return;
         }
 
-        java.util.Set<String> checkSet = new HashSet<>(Arrays.asList(a1, a2, a3, a4));
+        // Correct duplicate detection: start with an empty set and add normalized answers.
+        java.util.Set<String> checkSet = new HashSet<>();
         String[] answers = {a1, a2, a3, a4};
         for (String a : answers) {
-            if (!checkSet.add(a.toLowerCase()))
-            {
+            String norm = a.trim().toLowerCase();
+            if (!checkSet.add(norm)) {
                 JOptionPane.showMessageDialog(this, "Duplicate answer found!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
         }
 
         int currentId = isEditing ? existingQuestion.getId() : -1;
@@ -454,3 +454,4 @@ public class AddEditQuestionOverlay extends OverlayView {
         };
     }
 }
+
