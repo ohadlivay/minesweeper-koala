@@ -7,6 +7,7 @@ import main.java.model.QuestionDifficulty;
 import main.java.util.SoundManager;
 import main.java.view.ColorsInUse;
 import main.java.view.FontsInUse;
+import main.java.view.OutlinedLabel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -19,14 +20,11 @@ public class SettingsOverlay extends OverlayView {
     private JPanel contentPane;
     private JButton buttonStart;
     private JButton buttonBack;
-    private JLabel difficultyLabel;
     private JButton btnEasy;
     private JButton btnMedium;
     private JButton btnHard;
     private JTextField player1Name;
     private JTextField player2Name;
-    private JLabel player1Label;
-    private JLabel player2Label;
     private GameDifficulty selectedDifficulty;
 
     public SettingsOverlay(NavigationController nav) {
@@ -95,8 +93,8 @@ public class SettingsOverlay extends OverlayView {
 
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(ColorsInUse.BG_COLOR.get());
-        JLabel title = new JLabel("Choose Difficulty:");
-        title.setFont(new Font("Segoe UI Black", Font.BOLD, 32));
+        OutlinedLabel title = new OutlinedLabel("CHOOSE DIFFICULTY:", Color.BLACK,6f);
+        title.setFont(FontsInUse.PIXEL.getSize(52f));
         title.setForeground(ColorsInUse.TEXT.get());
         titlePanel.add(title);
 
@@ -140,7 +138,7 @@ public class SettingsOverlay extends OverlayView {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         bottomPanel.setBackground(ColorsInUse.BG_COLOR.get());
 
-        buttonBack = createButton("Back");
+        buttonBack = createTransparentIconButton("/back-pixel.png", 40, 40);
         buttonBack.addActionListener(e -> onCancel());
         bottomPanel.add(buttonBack);
 
@@ -221,7 +219,7 @@ public class SettingsOverlay extends OverlayView {
 
         JLabel label = new JLabel(labelText, SwingConstants.CENTER);
         label.setForeground(ColorsInUse.TEXT.get());
-        label.setFont(new Font("Segoe UI Black", Font.BOLD, 18));
+        label.setFont(FontsInUse.PIXEL.getSize(28f));
 
         panel.add(label, BorderLayout.NORTH);
         panel.add(textField, BorderLayout.CENTER);
@@ -236,7 +234,7 @@ public class SettingsOverlay extends OverlayView {
         field.setBackground(ColorsInUse.BG_COLOR.get());
         field.setForeground(ColorsInUse.TEXT.get());
         field.setCaretColor(Color.WHITE);
-        field.setFont(new Font("Segoe UI Black", Font.BOLD, 14));
+        field.setFont(FontsInUse.PIXEL.getSize(28f));
         field.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         field.setHorizontalAlignment(SwingConstants.CENTER);
         return field;
@@ -250,7 +248,7 @@ public class SettingsOverlay extends OverlayView {
         btn.setBackground(ColorsInUse.BTN_COLOR.get());
         btn.setForeground(ColorsInUse.TEXT.get());
         btn.setFocusPainted(false);
-        btn.setFont(new Font("Segoe UI Black", Font.BOLD, 14));
+        btn.setFont(FontsInUse.PIXEL.getSize(28f));
         btn.setBorder(BorderFactory.createBevelBorder(0));
         return btn;
     }
@@ -306,6 +304,39 @@ public class SettingsOverlay extends OverlayView {
                 animator.flashForeground(btnHard, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), ColorsInUse.TEXT.get());
                 break;
         }
+    }
+
+    private JButton createTransparentIconButton(String resourcePath, int width, int height) {
+        JButton btn = new JButton();
+
+        //make button transparent
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+        btn.setOpaque(false);
+
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btn.setPreferredSize(new Dimension(width + 10, height + 10));
+
+        try {
+            java.net.URL url = getClass().getResource(resourcePath);
+            if (url != null) {
+                ImageIcon icon = new ImageIcon(url);
+                Image img = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+                btn.setIcon(new ImageIcon(img));
+            }
+        } catch (Exception e) {
+            btn.setText("X");
+            btn.setForeground(Color.WHITE);
+        }
+
+        btn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+        });
+
+        return btn;
     }
 
 
