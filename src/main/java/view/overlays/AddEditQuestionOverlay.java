@@ -16,6 +16,8 @@ import javax.swing.border.LineBorder;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
+import java.util.HashSet;
 
 public class AddEditQuestionOverlay extends OverlayView {
     private final Question existingQuestion;
@@ -325,6 +327,27 @@ public class AddEditQuestionOverlay extends OverlayView {
         if (selectedDifficulty == null) {
             JOptionPane.showMessageDialog(this, "Please select a difficulty!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
+        }
+
+        java.util.Set<String> checkSet = new HashSet<>(Arrays.asList(a1, a2, a3, a4));
+        String[] answers = {a1, a2, a3, a4};
+        for (String a : answers) {
+            if (!checkSet.add(a.toLowerCase()))
+            {
+                JOptionPane.showMessageDialog(this, "Duplicate answer found!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+        }
+
+        int currentId = isEditing ? existingQuestion.getId() : -1;
+        for (Question q : SysData.getInstance().getQuestions()) {
+            if (q.getId() != currentId && q.getQuestionText().equalsIgnoreCase(qText)) {
+                JOptionPane.showMessageDialog(this,
+                        "This question already exists in the system!",
+                        "Duplicate Question", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
 
         QuestionManagerController qmc = QuestionManagerController.getInstance();
