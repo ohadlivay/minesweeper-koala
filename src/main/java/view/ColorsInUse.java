@@ -45,7 +45,7 @@ public enum ColorsInUse {
     // Board colors
     SLATE_BLUE      (new Color(90, 110, 160)),
     STEEL_TEAL      (new Color(70, 140, 135)),
-    DUSTY_PURPLE    (new Color(140, 110, 155)),
+    DUSTY_PURPLE    (new Color(114, 6, 169)),
     MUTED_CYAN      (new Color(80, 150, 170)),
     OLIVE_GREEN     (new Color(125, 150, 85)),
     SOFT_MAROON     (new Color(150, 85, 95)),
@@ -55,7 +55,7 @@ public enum ColorsInUse {
     CLAY_ORANGE     (new Color(190, 135, 85)),
 
     DESAT_TEAL      (new Color(90, 160, 150)),
-    ASH_PURPLE      (new Color(155, 140, 170)),
+    ASH_PURPLE      (new Color(149, 115, 182)),
     SMOKY_BLUE      (new Color(110, 135, 170)),
     MOSS_GREEN      (new Color(115, 155, 100)),
     COPPER_RED      (new Color(180, 105, 85)),
@@ -74,7 +74,8 @@ public enum ColorsInUse {
             SANDSTONE,
             ROSEWOOD,
             OLIVE_GREEN,
-            MOSS_GREEN
+            MOSS_GREEN,
+            DUSTY_PURPLE
     };
 
     // Cold colors – Board 2
