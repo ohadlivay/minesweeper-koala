@@ -44,13 +44,6 @@ public class SurpriseOverlay extends OverlayView {
         this.closeButton = new JButton("CLOSE");
         this.isClosed = false;
 
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent e) {
-                closeOverlayImmediately();
-            }
-        });
-
         initUI();
         startAnimation();
     }

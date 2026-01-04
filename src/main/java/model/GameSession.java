@@ -6,10 +6,7 @@ import main.java.view.GameScreen;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 /*
 Dear Ohad,
 I would love to create the boards myself using the constructor or initiate the method with the appropriate values.
@@ -64,9 +61,8 @@ public class GameSession
     private static final int pointsForRevealingNumber = 1;
 
 
-    private List<ActionMadeListener> actionMadeListeners = new ArrayList<>();
-    private List<SpecialTileActivationListener> specialTileActivationListeners = new ArrayList<>();
-    private List<SurpriseListener> surpriseListeners = new ArrayList<>();
+    private final Set<ActionMadeListener> actionMadeListeners = new HashSet<>();
+    private final Set<SurpriseListener> surpriseListeners = new HashSet<>();
     private String message = "";
     private static GameSession instance;
     private static GameSession testInstance;
@@ -321,8 +317,8 @@ public class GameSession
                 if (!specialTile.isUsed())
                 {
                     this.activateSpecialTile(specialTile,parentBoard);
-                    if (this.isGameOver())
-                        initiateGameOver();
+//                    if (this.isGameOver())    //this was moved to updateAfterSurprise
+//                        initiateGameOver();
                 }
                 else
                     System.out.println("Special tile already used");
@@ -486,6 +482,9 @@ public class GameSession
             case HARD:
                 updateAfterQuestionResultHard(difficulty,correctAnswer,randomResult);
         }
+
+        if(isGameOver())
+            initiateGameOver();
 
     }
 
@@ -688,6 +687,10 @@ public class GameSession
 
     public void updateAfterSurpriseRevealed(int healthChange, int pointsChange, boolean positiveMove)
     {
+        if (isGameOver()) {
+            initiateGameOver();
+            return;
+        }
         String message = (positiveMove)? "Good Surprise!" : "Bad Surprise!";
         notifyListenersAfterAction(message, positiveMove, healthChange,pointsChange);
     }
