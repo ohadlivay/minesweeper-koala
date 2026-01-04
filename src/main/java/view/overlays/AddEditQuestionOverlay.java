@@ -16,6 +16,8 @@ import javax.swing.border.LineBorder;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
+import java.util.HashSet;
 
 public class AddEditQuestionOverlay extends OverlayView {
     private final Question existingQuestion;
@@ -327,6 +329,27 @@ public class AddEditQuestionOverlay extends OverlayView {
             return;
         }
 
+        // Correct duplicate detection: start with an empty set and add normalized answers.
+        java.util.Set<String> checkSet = new HashSet<>();
+        String[] answers = {a1, a2, a3, a4};
+        for (String a : answers) {
+            String norm = a.trim().toLowerCase();
+            if (!checkSet.add(norm)) {
+                JOptionPane.showMessageDialog(this, "Duplicate answer found!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+        int currentId = isEditing ? existingQuestion.getId() : -1;
+        for (Question q : SysData.getInstance().getQuestions()) {
+            if (q.getId() != currentId && q.getQuestionText().equalsIgnoreCase(qText)) {
+                JOptionPane.showMessageDialog(this,
+                        "This question already exists in the system!",
+                        "Duplicate Question", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
         QuestionManagerController qmc = QuestionManagerController.getInstance();
         if (isEditing) {
             qmc.userSavedEditedQuestion(existingQuestion.getId(), qText, selectedDifficulty, a1, a2, a3, a4);
@@ -431,3 +454,4 @@ public class AddEditQuestionOverlay extends OverlayView {
         };
     }
 }
+
