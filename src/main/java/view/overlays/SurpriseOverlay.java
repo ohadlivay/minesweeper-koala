@@ -16,7 +16,6 @@ public class SurpriseOverlay extends OverlayView {
 
     private final int healthChange;
     private final int pointsChange;
-    private boolean isClosed = false;
 
     private OutlinedLabel healthValueLabel;
     private OutlinedLabel pointsValueLabel;
@@ -25,7 +24,10 @@ public class SurpriseOverlay extends OverlayView {
     private JPanel leftCardPanel;
     private JPanel rightCardPanel;
 
+    private Timer animationTimer;
     private Timer closeTimer;
+    private boolean closed = false;
+
 
     private static final Dimension OVERLAY_SIZE = new Dimension(520, 520);
 
@@ -42,7 +44,7 @@ public class SurpriseOverlay extends OverlayView {
         this.healthChange = health;
         this.pointsChange = points;
         this.closeButton = new JButton("CLOSE");
-        this.isClosed = false;
+        this.closed = false;
 
         initUI();
         startAnimation();
@@ -151,6 +153,7 @@ public class SurpriseOverlay extends OverlayView {
         closeButton.setFont(FontsInUse.PIXEL.getSize(22f));
         closeButton.setFocusPainted(false);
         closeButton.addActionListener(e -> closeOverlayImmediately());
+        closeButton.setEnabled(false);
 
         gbc.gridy = 2;
         gbc.insets = new Insets(20, 0, 0, 0);
@@ -214,7 +217,11 @@ public class SurpriseOverlay extends OverlayView {
         setTileIcon(leftCardPanel, UNSELECTED_CARD);
         setTileIcon(rightCardPanel, UNSELECTED_CARD);
 
-        Timer t = new Timer(70, e -> {
+        animationTimer = new Timer(70, e -> {
+            if (closed) {
+                ((Timer) e.getSource()).stop();
+                return;
+            }
             // unselect current
             setTileIcon(cardPanels[current[0]], UNSELECTED_CARD);
 
@@ -252,29 +259,38 @@ public class SurpriseOverlay extends OverlayView {
                         pointsChange >= 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get()
                 );
 
-                //this is maybe the reason for the double floating numbers
-                if(!isClosed) closeOverlay();
+                closeOverlay();
+
             }
         });
 
-        t.start();
+        animationTimer.start();
     }
 
     private void closeOverlay() {
-        //this is maybe the reason for the double floating numbers
-        if(isClosed) return;
+        if (closeTimer != null) closeTimer.stop();
+
         closeTimer = new Timer(7000, e -> closeOverlayImmediately());
         closeTimer.setRepeats(false);
         closeTimer.start();
+
+        closeButton.setEnabled(true);
         animator.closeCountdown(closeButton, 0, 7);
-        isClosed = true;
     }
 
+
     private void closeOverlayImmediately() {
+        if (closed) return;   // <- hard guard
+        closed = true;
+
+        if (animationTimer != null) animationTimer.stop();
+        if (closeTimer != null) closeTimer.stop();
+
         GameSessionController.getInstance()
                 .setSurpriseToGameScreen(healthChange, pointsChange, pointsChange > 0);
         GameSessionController.getInstance().setBlocked(false);
-        isClosed = true;
+
         close();
     }
+
 }
