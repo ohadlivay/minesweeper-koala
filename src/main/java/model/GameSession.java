@@ -6,10 +6,7 @@ import main.java.view.GameScreen;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 /*
 Dear Ohad,
 I would love to create the boards myself using the constructor or initiate the method with the appropriate values.
@@ -64,8 +61,8 @@ public class GameSession
     private static final int pointsForRevealingNumber = 1;
 
 
-    private List<ActionMadeListener> actionMadeListeners = new ArrayList<>();
-    private List<SpecialTileActivationListener> specialTileActivationListeners = new ArrayList<>();
+    private final Set<ActionMadeListener> actionMadeListeners = new HashSet<>();
+    private final Set<SurpriseListener> surpriseListeners = new HashSet<>();
     private String message = "";
     private static GameSession instance;
     private static GameSession testInstance;
@@ -117,6 +114,7 @@ public class GameSession
         SysData sysData = SysData.getInstance();
         if (sysData.getQuestions().size()<20)
             throw new IllegalStateException("Not enough questions in the system to start a game. Please add more questions.");
+        this.isGameOverProcessing = false; // Reset the flag
         initiateGameStats();
         initializeBoards();
     }
@@ -205,8 +203,12 @@ public class GameSession
     {
         return getHealthPool() <= 0||getLeftBoard().allMinesRevealed() || getRightBoard().allMinesRevealed();
     }
+
+    private boolean isGameOverProcessing = false;
     private void initiateGameOver()
     {
+        if (isGameOverProcessing) return; // Prevent multiple saves/overlays
+        isGameOverProcessing = true;
         boolean winOrLose = getHealthPool() > 0;
         getLeftBoard().revealAll();
         getRightBoard().revealAll();
@@ -323,8 +325,8 @@ public class GameSession
                 if (!specialTile.isUsed())
                 {
                     this.activateSpecialTile(specialTile,parentBoard);
-                    if (this.isGameOver())
-                        initiateGameOver();
+//                    if (this.isGameOver())    //this was moved to updateAfterSurprise
+//                        initiateGameOver();
                 }
                 else
                     System.out.println("Special tile already used");
@@ -416,22 +418,24 @@ public class GameSession
             if (specialTile instanceof SurpriseTile surpriseTile)
             {
                 System.out.println("Surprise tile activated");
-                notifyListenersAfterAction("Surprise tile activated",false,0,-getGameDifficulty().getActivationCost());
                 Random random = new Random();
                 boolean resultOfRandom = random.nextBoolean();
                 int plusMinus  = (resultOfRandom) ? 1 : -1;
+                if (plusMinus > 0)
+                    notifyListenersAfterAction("Activated Surprise Tile", false, 0, -getGameDifficulty().getActivationCost());
                 String message = (resultOfRandom)? "Good surprise!" : "Bad surprise!";
                 System.out.println(message);
-                this.message = message+"<br>Points changed by: "+(plusMinus*getGameDifficulty().getSurprisePoints())+", Health changed by: "+(plusMinus*getGameDifficulty().getSurpriseHealth());
+                this.message = message+" Points changed by: "+(plusMinus*getGameDifficulty().getSurprisePoints())+", Health changed by: "+(plusMinus*getGameDifficulty().getSurpriseHealth());
                 this.gainPoints(plusMinus*getGameDifficulty().getSurprisePoints());
                 boolean healthMaxedOut = this.getHealthPool()==10;
                 this.gainHealth(plusMinus*getGameDifficulty().getSurpriseHealth());
+                SoundManager.getInstance().playOnce(resultOfRandom ? SoundManager.SoundId.POINTS_WIN : SoundManager.SoundId.POINTS_LOSE);
                 if (!healthMaxedOut||!resultOfRandom)
-                    notifyListenersAfterAction(this.message,resultOfRandom,plusMinus*getGameDifficulty().getSurpriseHealth(),plusMinus*getGameDifficulty().getSurprisePoints());
+                    notifySurpriseListeners(plusMinus*getGameDifficulty().getSurpriseHealth(),plusMinus*getGameDifficulty().getSurprisePoints());
                 else
                 {
-                    this.message+= "<br>(Health is already maxed out)";
-                    notifyListenersAfterAction(this.message,resultOfRandom,0,plusMinus*getGameDifficulty().getSurprisePoints());
+                    this.message+= " (Health is already maxed out)";
+                    notifySurpriseListeners(0,plusMinus*getGameDifficulty().getSurprisePoints());
                 }
 
             }
@@ -455,11 +459,19 @@ public class GameSession
     }
     public void setGameOverListener(GameOverListener gameOverListener) {
         this.gameOverListener = gameOverListener;}
+
     private void notifyListenersAfterAction(String message, boolean positiveMove, int healthChange, int pointsChange)
     {
         for (ActionMadeListener listener : actionMadeListeners)
             listener.onActionMade(message,positiveMove,healthChange,pointsChange);
     }
+
+    public void notifySurpriseListeners(int healthChange, int pointsChange)
+    {
+        for (SurpriseListener listener : surpriseListeners)
+            listener.revealSurprise(healthChange, pointsChange);
+    }
+
     public void updateAfterQuestionResult(QuestionDifficulty difficulty, boolean correctAnswer, Board parentBoard)
     {
         Random random = new Random();
@@ -478,6 +490,9 @@ public class GameSession
             case HARD:
                 updateAfterQuestionResultHard(difficulty,correctAnswer,randomResult);
         }
+
+        if(isGameOver())
+            initiateGameOver();
 
     }
 
@@ -674,5 +689,23 @@ public class GameSession
     }
 
 
+    public void setSurpriseListener(SurpriseListener surpriseListener) {
+        this.surpriseListeners.add(surpriseListener);
+    }
 
+    public void updateAfterSurpriseRevealed(int healthChange, int pointsChange, boolean positiveMove)
+    {
+        if (isGameOver()) {
+            initiateGameOver();
+            return;
+        }
+        String message = (positiveMove)? "Good Surprise!" : "Bad Surprise!";
+        notifyListenersAfterAction(message, positiveMove, healthChange,pointsChange);
+    }
+
+    //clear listeners to avoid memory leaks when playing more than 1 game per running instance
+    public void clearListeners() {
+        this.actionMadeListeners.clear();
+        this.surpriseListeners.clear();
+    }
 }

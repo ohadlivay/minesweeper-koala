@@ -1,5 +1,7 @@
 package main.java.view;
 
+import main.java.util.SoundManager;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -196,5 +198,66 @@ public class ComponentAnimator {
             }
         });
         timer.start();
+    }
+
+    public Timer randomNumber(JLabel label, int target) {
+        final int durationMs = 700;
+        final int tickMs = 25;
+        final int steps = durationMs / tickMs;
+
+        final int[] step = {0};
+
+        Timer t = new Timer(tickMs, e -> {
+            step[0]++;
+
+            int rand = (int) (Math.random() * 100);
+            label.setText(String.valueOf(rand));
+            label.setForeground(rand >= target ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get());
+
+            // 🔊 play on every tick
+            SoundManager.getInstance()
+                    .playOnce(SoundManager.SoundId.SELECTION);
+
+            if (step[0] >= steps) {
+                ((Timer) e.getSource()).stop();
+                label.setText(String.valueOf(target));
+            }
+        });
+
+        t.start();
+        return t;
+    }
+
+    public void closeCountdown(JButton button, int target, int startValue) {
+        final int durationMs = startValue*1000;
+        final int tickMs = 1000;
+        final int steps = durationMs / tickMs;
+
+        final int[] step = {0};
+
+        Timer t = new Timer(tickMs, e -> {
+            step[0]++;
+
+            int currentValue = startValue - (step[0] * (startValue - target) / steps);
+            button.setText("Close (" + String.valueOf(currentValue) +")");
+
+            // play on every tick
+            //SoundManager.getInstance().playOnce(SoundManager.SoundId.SELECTION);
+
+            if (step[0] >= steps) {
+                ((Timer) e.getSource()).stop();
+                button.setText("Close (" + String.valueOf(currentValue) +")");
+            }
+        });
+
+        t.start();
+    }
+
+    public void stopAllAnimations() {
+        active.values().forEach(Timer::stop);
+    }
+
+    public boolean isRunning() {
+        return !active.isEmpty();
     }
 }

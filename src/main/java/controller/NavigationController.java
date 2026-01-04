@@ -42,7 +42,6 @@ public class NavigationController {
         refresh();
     }
 
-
     public void goToHistory() {
         HistoryController hsc = HistoryController.getInstance();
         GameHistoryScreen historyScreen = new GameHistoryScreen(this);
