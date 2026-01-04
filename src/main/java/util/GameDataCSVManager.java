@@ -14,7 +14,7 @@ public class GameDataCSVManager
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
     //Header of the CSV file
-    private static final String CSV_HEADER = "Timestamp,LeftPlayerName,RightPlayerName,GameDifficulty,Points";
+    private static final String CSV_HEADER = "Timestamp,LeftPlayerName,RightPlayerName,GameDifficulty,Points,IsWin";
 
     //Write the game data list to a CSV file using the SysData singleton
     public static void writeGameDataListToCSV(String filePath) throws IOException {
@@ -33,14 +33,16 @@ public class GameDataCSVManager
                 String right = data.getRightPlayerName() == null ? "" : data.getRightPlayerName();
                 String difficulty = data.getGameDifficulty() == null ? "" : data.getGameDifficulty().toString();
                 String pointsStr = Integer.toString(data.getPoints());
+                String isWinStr = Boolean.toString(data.isWin());
 
                 // Create a comma-separated line for the record
-                String line = String.format("%s,%s,%s,%s,%s",
+                String line = String.format("%s,%s,%s,%s,%s,%s",
                         timeStampStr,
                         left,
                         right,
                         difficulty,
-                        pointsStr);
+                        pointsStr,
+                        isWinStr);
 
                 pw.println(line);
             }
@@ -72,7 +74,7 @@ public class GameDataCSVManager
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",", -1); // preserve empty fields
 
-                if (values.length == 5) {
+                if (values.length == 6) {
                     try {
                         // empty fields => nulls where appropriate
                         LocalDateTime timeStamp = null;
@@ -99,8 +101,12 @@ public class GameDataCSVManager
                         if (!pointsField.isEmpty()) {
                             points = Integer.parseInt(pointsField);
                         }
+                        boolean isWin = false;
+                        if (values.length > 5 && !values[5].trim().isEmpty()) {
+                            isWin = Boolean.parseBoolean(values[5].trim());
+                        }
 
-                        GameData gd = new GameData(timeStamp, leftPlayerName, rightPlayerName, gameDifficulty, points);
+                        GameData gd = new GameData(timeStamp, leftPlayerName, rightPlayerName, gameDifficulty, points, isWin);
                         sys.addGame(gd);
                     } catch (IllegalArgumentException e) {
                         System.err.println("Skipping malformed line in CSV: " + line + ". Error: " + e.getMessage());
