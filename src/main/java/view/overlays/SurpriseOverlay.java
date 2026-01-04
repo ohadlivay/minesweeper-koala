@@ -2,6 +2,7 @@ package main.java.view.overlays;
 
 import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
+import main.java.model.InputBlockListener;
 import main.java.util.SoundManager;
 import main.java.view.BackgroundPanel;
 import main.java.view.ColorsInUse;
@@ -12,7 +13,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-public class SurpriseOverlay extends OverlayView {
+public class SurpriseOverlay extends OverlayView{
 
     private final int healthChange;
     private final int pointsChange;
@@ -38,7 +39,7 @@ public class SurpriseOverlay extends OverlayView {
     private static final String BAD_CARD = "/bad-surprise-card.png";
 
     public SurpriseOverlay(NavigationController nav, int health, int points) {
-        super(nav, false);
+        super(nav, true);
         GameSessionController.getInstance().setBlocked(true);
 
         this.healthChange = health;

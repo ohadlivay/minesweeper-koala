@@ -111,9 +111,11 @@ public class GameSession
 
     public void initGame()
     {
+        this.isGameOverProcessing = false; // Reset the flag
         initiateGameStats();
         initializeBoards();
     }
+
 
     //Getters and setters
     public LocalDateTime getTimeStamp() {
@@ -199,8 +201,12 @@ public class GameSession
     {
         return getHealthPool() <= 0||getLeftBoard().allMinesRevealed() || getRightBoard().allMinesRevealed();
     }
+
+    private boolean isGameOverProcessing = false;
     private void initiateGameOver()
     {
+        if (isGameOverProcessing) return; // Prevent multiple saves/overlays
+        isGameOverProcessing = true;
         boolean winOrLose = getHealthPool() > 0;
         getLeftBoard().revealAll();
         getRightBoard().revealAll();
@@ -693,5 +699,11 @@ public class GameSession
         }
         String message = (positiveMove)? "Good Surprise!" : "Bad Surprise!";
         notifyListenersAfterAction(message, positiveMove, healthChange,pointsChange);
+    }
+
+    //clear listeners to avoid memory leaks when playing more than 1 game per running instance
+    public void clearListeners() {
+        this.actionMadeListeners.clear();
+        this.surpriseListeners.clear();
     }
 }
