@@ -429,7 +429,6 @@ public class GameSession
                 this.gainPoints(plusMinus*getGameDifficulty().getSurprisePoints());
                 boolean healthMaxedOut = this.getHealthPool()==10;
                 this.gainHealth(plusMinus*getGameDifficulty().getSurpriseHealth());
-                SoundManager.getInstance().playOnce(resultOfRandom ? SoundManager.SoundId.POINTS_WIN : SoundManager.SoundId.POINTS_LOSE);
                 if (!healthMaxedOut||!resultOfRandom)
                     notifySurpriseListeners(plusMinus*getGameDifficulty().getSurpriseHealth(),plusMinus*getGameDifficulty().getSurprisePoints());
                 else

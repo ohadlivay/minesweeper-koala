@@ -31,6 +31,7 @@ public class SurpriseOverlay extends OverlayView{
 
 
     private static final Dimension OVERLAY_SIZE = new Dimension(520, 520);
+    private final int closeTimerDuration = 7; // seconds
 
     private static final String BG = "/surprise-bg.png";
     private static final String SELECTED_CARD = "/surprise-card-selected.png";
@@ -130,7 +131,7 @@ public class SurpriseOverlay extends OverlayView{
         rightHalf.add(pointsValueLabel);
 
         leftHalf.setBorder(new EmptyBorder(0, 0, 0, 15));
-        rightHalf.setBorder(new EmptyBorder(10, 25, 0, 0));
+        rightHalf.setBorder(new EmptyBorder(8, 15, 0, 0));
 
         statsBar.add(leftHalf);
         statsBar.add(rightHalf);
@@ -259,6 +260,8 @@ public class SurpriseOverlay extends OverlayView{
                 pointsValueLabel.setForeground(
                         pointsChange >= 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get()
                 );
+                SoundManager.getInstance().playOnce(pointsChange>=0 ? SoundManager.SoundId.POINTS_WIN : SoundManager.SoundId.POINTS_LOSE);
+
 
                 closeOverlay();
 
@@ -271,17 +274,17 @@ public class SurpriseOverlay extends OverlayView{
     private void closeOverlay() {
         if (closeTimer != null) closeTimer.stop();
 
-        closeTimer = new Timer(7000, e -> closeOverlayImmediately());
+        closeTimer = new Timer(closeTimerDuration*1000, e -> closeOverlayImmediately());
         closeTimer.setRepeats(false);
         closeTimer.start();
 
         closeButton.setEnabled(true);
-        animator.closeCountdown(closeButton, 0, 7);
+        animator.closeCountdown(closeButton, 0, closeTimerDuration);
     }
 
 
     private void closeOverlayImmediately() {
-        if (closed) return;   // <- hard guard
+        if (closed) return;
         closed = true;
 
         if (animationTimer != null) animationTimer.stop();

@@ -3,6 +3,7 @@ package main.java.view.overlays;
 import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.model.GameDifficulty;
+import main.java.model.Question;
 import main.java.model.QuestionDifficulty;
 import main.java.util.SoundManager;
 import main.java.view.ColorsInUse;
@@ -26,6 +27,8 @@ public class SettingsOverlay extends OverlayView {
     private JTextField player1Name;
     private JTextField player2Name;
     private GameDifficulty selectedDifficulty;
+
+    private final int PlAYER_TEXT_LENGTH = 15;
 
     public SettingsOverlay(NavigationController nav) {
         super(nav, true);
@@ -226,6 +229,8 @@ public class SettingsOverlay extends OverlayView {
         label.setForeground(ColorsInUse.TEXT.get());
         label.setFont(FontsInUse.PIXEL.getSize(28f));
 
+        textField.addKeyListener(answerKeyListener(textField, label));
+
         panel.add(label, BorderLayout.NORTH);
         panel.add(textField, BorderLayout.CENTER);
         return panel;
@@ -343,10 +348,34 @@ public class SettingsOverlay extends OverlayView {
         return btn;
     }
 
+    public KeyListener answerKeyListener(JTextField tf, JLabel name) {
+        return new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (tf.getText().length() <= PlAYER_TEXT_LENGTH*0.7) {
+                    name.setForeground(ColorsInUse.TEXT.get());
+                    name.setToolTipText(null);
+                }
+                else if (tf.getText().length() >= PlAYER_TEXT_LENGTH) {
+                    e.consume();
+                    tf.setText(tf.getText().substring(0, PlAYER_TEXT_LENGTH));
 
+                    long now = System.currentTimeMillis();
+                    Long last = (Long) name.getClientProperty("shake.last");
+                    if (last == null || now - last > 200) { // 200ms cooldown
+                        name.putClientProperty("shake.last", now);
+                        animator.shake(name);
+                        soundManager.playOnce(SoundManager.SoundId.BLOCK);
+                    }
 
+                    name.setToolTipText("Maximum length reached");
+                }
 
-
-
-
+                else if (tf.getText().length() >= PlAYER_TEXT_LENGTH*0.7) {
+                    name.setForeground(ColorsInUse.DENY.get());
+                    name.setToolTipText("Approaching maximum length "+tf.getText().length()+"/"+PlAYER_TEXT_LENGTH);
+                }
+            }
+        };
+    }
 }

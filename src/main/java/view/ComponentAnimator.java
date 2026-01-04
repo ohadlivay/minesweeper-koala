@@ -15,28 +15,46 @@ public class ComponentAnimator {
 
     private void replaceTimer(JComponent c, Timer next) {
         Timer prev = active.put(c, next);
-        if (prev != null && prev.isRunning()) prev.stop();
+        if (prev != null) {
+            prev.stop();
+            // reset to stable base if we stored it
+            Point base = (Point) c.getClientProperty("shake.base");
+            if (base != null) c.setLocation(base);
+        }
     }
 
+
     public void shake(JComponent c) {
-        Point base = c.getLocation();
+        // store a stable base once
+        Point base = (Point) c.getClientProperty("shake.base");
+        if (base == null) {
+            base = c.getLocation();
+            c.putClientProperty("shake.base", new Point(base));
+        } else {
+            base = new Point(base);
+        }
+
         int frames = 10;
         int[] i = {0};
 
+        Point finalBase = base;
         Timer t = new Timer(15, e -> {
             i[0]++;
             int dx = (i[0] % 2 == 0) ? 6 : -6;
-            c.setLocation(base.x + dx, base.y);
+            c.setLocation(finalBase.x + dx, finalBase.y);
 
             if (i[0] >= frames) {
-                c.setLocation(base);
+                c.setLocation(finalBase);
                 ((Timer) e.getSource()).stop();
             }
         });
 
+        // reset before starting new one
+        c.setLocation(base);
         replaceTimer(c, t);
         t.start();
     }
+
 
     public void pulseBorder(JComponent c, int maxGrowPx) {
         Border originalBorder = c.getBorder();
@@ -235,10 +253,13 @@ public class ComponentAnimator {
 
         final int[] step = {0};
 
+        button.setText("Close (" + String.valueOf(startValue) +")");
+
         Timer t = new Timer(tickMs, e -> {
             step[0]++;
 
-            int currentValue = startValue - (step[0] * (startValue - target) / steps);
+            int currentValue = (startValue - (step[0] * (startValue - target) / steps));
+
             button.setText("Close (" + String.valueOf(currentValue) +")");
 
             // play on every tick
