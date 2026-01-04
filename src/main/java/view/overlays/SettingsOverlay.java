@@ -3,8 +3,6 @@ package main.java.view.overlays;
 import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.model.GameDifficulty;
-import main.java.model.Question;
-import main.java.model.QuestionDifficulty;
 import main.java.util.SoundManager;
 import main.java.view.ColorsInUse;
 import main.java.view.FontsInUse;
@@ -15,7 +13,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.URL;
 
 public class SettingsOverlay extends OverlayView {
     private JPanel contentPane;
@@ -92,7 +89,7 @@ public class SettingsOverlay extends OverlayView {
         contentPane = new JPanel(new BorderLayout());
         contentPane.setBackground(ColorsInUse.BG_COLOR.get());
         contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
-        contentPane.setPreferredSize(new Dimension(700, 500));
+        contentPane.setPreferredSize(new Dimension(700, 530));
 
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(ColorsInUse.BG_COLOR.get());
@@ -229,10 +226,20 @@ public class SettingsOverlay extends OverlayView {
         label.setForeground(ColorsInUse.TEXT.get());
         label.setFont(FontsInUse.PIXEL.getSize(28f));
 
-        textField.addKeyListener(answerKeyListener(textField, label));
+        textField.setPreferredSize(new Dimension(150, 30));
+        textField.setMinimumSize(new Dimension(150, 30));
+        textField.setMaximumSize(new Dimension(150, 30));
+
+        JLabel bottomLabel = new JLabel("Max length: "+PlAYER_TEXT_LENGTH);
+        bottomLabel.setFont(FontsInUse.PIXEL.getSize(20f));
+        bottomLabel.setText(" ");
+        bottomLabel.setForeground(new Color(0,0,0,0));
 
         panel.add(label, BorderLayout.NORTH);
         panel.add(textField, BorderLayout.CENTER);
+        panel.add(bottomLabel, BorderLayout.SOUTH);
+
+        textField.addKeyListener(answerKeyListener(textField, label, bottomLabel));
         return panel;
     }
 
@@ -348,13 +355,14 @@ public class SettingsOverlay extends OverlayView {
         return btn;
     }
 
-    public KeyListener answerKeyListener(JTextField tf, JLabel name) {
+    public KeyListener answerKeyListener(JTextField tf, JLabel name, JLabel bottomLabel) {
         return new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
                 if (tf.getText().length() <= PlAYER_TEXT_LENGTH*0.7) {
                     name.setForeground(ColorsInUse.TEXT.get());
                     name.setToolTipText(null);
+                    showBottomTextLimit(bottomLabel, false);
                 }
                 else if (tf.getText().length() >= PlAYER_TEXT_LENGTH) {
                     e.consume();
@@ -369,13 +377,27 @@ public class SettingsOverlay extends OverlayView {
                     }
 
                     name.setToolTipText("Maximum length reached");
+                    showBottomTextLimit(bottomLabel, true);
                 }
 
                 else if (tf.getText().length() >= PlAYER_TEXT_LENGTH*0.7) {
                     name.setForeground(ColorsInUse.DENY.get());
                     name.setToolTipText("Approaching maximum length "+tf.getText().length()+"/"+PlAYER_TEXT_LENGTH);
+                    showBottomTextLimit(bottomLabel, true);
                 }
             }
         };
     }
+
+    private void showBottomTextLimit(JLabel bottomLabel,  boolean toShow) {
+        if (toShow) {
+            bottomLabel.setText("Max length: " + PlAYER_TEXT_LENGTH);
+            bottomLabel.setForeground(ColorsInUse.TEXT.get());
+        }
+        else {
+            bottomLabel.setText(" ");
+            bottomLabel.setForeground(new Color(0,0,0,0));
+        }
+    }
+
 }
