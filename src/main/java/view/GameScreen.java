@@ -4,7 +4,6 @@ import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.controller.OverlayController;
 import main.java.model.*;
-import main.java.util.SoundManager;
 import main.java.view.overlays.OverlayType;
 
 import javax.swing.*;
@@ -27,8 +26,6 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     private JLabel healthLabel;
     private JLabel pointsLabel;
     private JLabel feedLabel;
-
-    private JButton endGameButton;
 
     public GameScreen(NavigationController nav, GameSession session) {
         this.nav = nav;
@@ -270,37 +267,8 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
 
         testButtonPanel.add(testQuestionButton);
 
-
-        // TEMP BUTTON FOR TESTING GAME SAVES
-        endGameButton = new JButton("End Game");
-        endGameButton.setBackground(ColorsInUse.BTN_COLOR.get());
-        endGameButton.setFocusPainted(false);
-        endGameButton.setPreferredSize(new Dimension(72, 36));
-        endGameButton.setContentAreaFilled(true);
-        endGameButton.setForeground(ColorsInUse.TEXT.get());
-
-        GameSessionController.getInstance().addInputBlockListener(isBlocked -> {
-            if (endGameButton != null) {
-                endGameButton.setEnabled(!isBlocked);
-            }
-        });
-
-        endGameButton.addActionListener(e -> {
-            try {
-                GameSessionController.getInstance().endGame(this.session,this.nav);
-                JOptionPane saved = new JOptionPane();
-                endGameButton.setEnabled(false);
-                saved.showMessageDialog(mainPanel, "Game Over! Game data saved.", "Game Over", JOptionPane.INFORMATION_MESSAGE);
-            } catch (IOException ex) {
-                JOptionPane endGame = new JOptionPane();
-                endGame.showMessageDialog(mainPanel, "Error saving game data!", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-        });
-
         testButtonPanel.add(testWinButton);
         testButtonPanel.add(testLossButton);
-        testButtonPanel.add(endGameButton);
         bottomPanel.add(testButtonPanel, BorderLayout.EAST);
     }
 
@@ -372,7 +340,6 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     //this method shows the end game screen when the game is over
     @Override
     public void onGameOver(boolean saved, boolean winOrLose, int score) {
-        endGameButton.setEnabled(false);
         if (!saved)
             JOptionPane.showMessageDialog(mainPanel, "Error, could not save the game!", "Game Over", JOptionPane.ERROR_MESSAGE);
         OverlayController.getInstance().showGameOverOverlay(winOrLose,score);
