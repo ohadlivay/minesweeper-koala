@@ -444,6 +444,16 @@ public class AddEditQuestionOverlay extends OverlayView {
         return new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
+                // allow Ctrl+A / Ctrl+C / Ctrl+V / Ctrl+X etc.
+                if (e.isControlDown() || e.isMetaDown() || e.isAltDown()) {
+                    return;
+                }
+
+                // also allow backspace, delete, etc. (they aren't "real" characters)
+                char ch = e.getKeyChar();
+                if (Character.isISOControl(ch)) {
+                    return;
+                }
                 errorLabel.setVisible(tf.getText().length() >= Question.getMaxAnswerLength() * 0.7);
                 if (tf.getText().length() >= Question.getMaxAnswerLength()) {
                     e.consume();

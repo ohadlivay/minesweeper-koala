@@ -163,6 +163,17 @@ public class SettingsOverlay extends OverlayView {
             return; // do not proceed if difficulty is not selected
         }
 
+        if (player1.trim().length() > PlAYER_TEXT_LENGTH) {
+            String mess = "Name for player 1 too long\n Maximum length is " + PlAYER_TEXT_LENGTH + " characters.";
+            JOptionPane.showMessageDialog(this, mess, "Name too long", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (player2.trim().length() > PlAYER_TEXT_LENGTH) {
+            String mess = "Name for player 2 too long\n Maximum length is " + PlAYER_TEXT_LENGTH + " characters.";
+            JOptionPane.showMessageDialog(this, mess, "Name too long", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         //check for player names
         if (player1.trim().isEmpty() || player2.trim().isEmpty()) {
             int choice = JOptionPane.showConfirmDialog(this, nameWarning(player1, player2), "Names not chosen", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE
@@ -219,6 +230,7 @@ public class SettingsOverlay extends OverlayView {
         }
 
     }
+
 
     private JPanel createInputGroup(String labelText, JTextField textField) {
         JPanel panel = new JPanel(new BorderLayout(0, 10));
@@ -373,6 +385,18 @@ public class SettingsOverlay extends OverlayView {
         return new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
+
+                // allow Ctrl+A / Ctrl+C / Ctrl+V / Ctrl+X etc.
+                if (e.isControlDown() || e.isMetaDown() || e.isAltDown()) {
+                    return;
+                }
+
+                // also allow backspace, delete, etc. (they aren't "real" characters)
+                char ch = e.getKeyChar();
+                if (Character.isISOControl(ch)) {
+                    return;
+                }
+
                 if (tf.getText().length() <= PlAYER_TEXT_LENGTH*0.7) {
                     name.setForeground(ColorsInUse.TEXT.get());
                     name.setToolTipText(null);
