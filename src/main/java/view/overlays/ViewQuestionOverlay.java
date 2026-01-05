@@ -23,7 +23,7 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
     private JPanel contentPane;
     private JLabel titleLabel;
     private JLabel difficultyLabel;
-    private JTextArea questionText;
+    private JLabel questionText;
     private JButton buttonSubmit;
     private List<JButton> answerButtons;
     private JPanel answersPanel;
@@ -35,7 +35,7 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
     private Question currentQuestion;
 
     public ViewQuestionOverlay(NavigationController navigationController) {
-        super(navigationController, false); //LIRAN KEEP YOUR DIRTY HANDS OFF OF THIS LINE
+        super(navigationController, false);
         GameSessionController.getInstance().setBlocked(true); //blocks board interaction
         initUI();
         displayQuestion(activeBoard);
@@ -84,14 +84,12 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         centerPanel.setBackground(ColorsInUse.BG_COLOR.get());
         centerPanel.setBorder(new EmptyBorder(0, 40, 0, 40));
 
-        questionText = new JTextArea("Loading Question...");
-        questionText.setFont(FontsInUse.PIXEL.getSize(28f));
+        // Initialized as a JLabel with center alignment
+        questionText = new JLabel("Loading Question...", SwingConstants.CENTER);
+        questionText.setFont(FontsInUse.PIXEL.getSize(36f));
         questionText.setForeground(ColorsInUse.TEXT.get());
-        questionText.setBackground(ColorsInUse.BG_COLOR.get());
-        questionText.setLineWrap(true);
-        questionText.setWrapStyleWord(true);
-        questionText.setEditable(false);
         questionText.setAlignmentX(Component.CENTER_ALIGNMENT);
+        questionText.setPreferredSize(new Dimension(700, 100));
 
         centerPanel.add(questionText);
         centerPanel.add(Box.createVerticalStrut(20));
@@ -134,12 +132,19 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         this.selected = index;
         for (int i = 0; i < answerButtons.size(); i++) {
             JButton btn = answerButtons.get(i);
+
+            btn.setBorder(new CompoundBorder(
+                    new LineBorder(ColorsInUse.BG_COLOR.get(), 2, true),
+                    new EmptyBorder(10, 15, 10, 15)
+            ));
+
             if (i == index) {
-                btn.setBorder(new CompoundBorder(new LineBorder(ColorsInUse.CONFIRM.get(), 3), new EmptyBorder(10, 15, 10, 15)));
+                btn.setBackground(ColorsInUse.CONFIRM.get());
             } else {
-                btn.setBorder(new CompoundBorder(new LineBorder(ColorsInUse.BG_COLOR.get(), 3), new EmptyBorder(10, 15, 10, 15)));
+                btn.setBackground(ColorsInUse.BTN_COLOR.get());
             }
         }
+
         contentPane.revalidate();
         contentPane.repaint();
     }
@@ -152,7 +157,7 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         btn.setFocusPainted(false);
         btn.setHorizontalAlignment(SwingConstants.LEFT);
 
-        btn.setBorder(new CompoundBorder(new LineBorder(ColorsInUse.BG_COLOR.get(), 2), new EmptyBorder(10, 15, 10, 15)));
+        btn.setBorder(new CompoundBorder(new LineBorder(ColorsInUse.BG_COLOR.get(), 2, true), new EmptyBorder(10, 15, 10, 15)));
 
         btn.addActionListener(e -> updateSelection(index));
 
@@ -191,7 +196,6 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         return btn;
     }
 
-    //retrieve the question from QuestionController
     @Override
     public void displayQuestion(Board board) {
         this.activeBoard = board;
@@ -200,10 +204,11 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
             questionText.setText("Error: No question available");
             return;
         }
-        questionText.setText(currentQuestion.getQuestionText());
+
+        //html for multiline center alignment
+        questionText.setText("<html><div style='text-align: center;'>" + currentQuestion.getQuestionText() + "</div></html>");
         QuestionDifficulty diff = currentQuestion.getDifficulty();
         difficultyLabel.setText("Difficulty: " + (diff != null ? diff.toString() : "UNKNOWN"));
-
         List<String> answerStrings = new ArrayList<>();
         String correctAnswerText = currentQuestion.getAnswer1();
 
@@ -221,7 +226,6 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
             String ans = answerStrings.get(i);
             JButton btn = createAnswerButton(ans, i);
 
-            //check if this button holds the correct answer text
             if (ans.equals(correctAnswerText)) {
                 correct = i;
             }
