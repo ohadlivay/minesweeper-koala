@@ -72,14 +72,10 @@ public class GameHistoryScreen extends JPanel{
         JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
         centerPanel.setOpaque(false);
 
-        JPanel tableContainer = new JPanel(new BorderLayout());
-        tableContainer.setBackground(ColorsInUse.BG_COLOR.get());
-        tableContainer.setBorder(new LineBorder(new Color(70, 80, 100), 1));
-
-        tableContainer.add(historyTable.getTableHeader(), BorderLayout.NORTH);
-        tableContainer.add(historyTable, BorderLayout.CENTER);
-
-        centerPanel.add(tableContainer, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(historyTable);
+        scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR.get());
+        scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
 
         //pages navigation panel
         JPanel pagesPanel = createPagesPanel();
@@ -192,7 +188,7 @@ public class GameHistoryScreen extends JPanel{
         table.setSelectionBackground(ColorsInUse.BOARD_ACTIVE_BORDER2.get());
         table.setSelectionForeground(Color.BLACK);
         table.setGridColor(Color.DARK_GRAY);
-        table.setRowHeight(44);
+        table.setRowHeight(45);
         table.setFont(FontsInUse.PIXEL.getSize(20f));
         table.setShowGrid(true);
         table.setFillsViewportHeight(false);

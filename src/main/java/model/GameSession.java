@@ -417,6 +417,8 @@ public class GameSession
             System.out.println("Points after activation cost: "+this.getPoints());
             if (specialTile instanceof SurpriseTile surpriseTile)
             {
+                int startPoints = getPoints();
+                int startHealth = getHealthPool();
                 System.out.println("Surprise tile activated");
                 Random random = new Random();
                 boolean resultOfRandom = random.nextBoolean();
@@ -424,17 +426,18 @@ public class GameSession
                 if (plusMinus > 0)
                     notifyListenersAfterAction("Activated Surprise Tile", false, 0, -getGameDifficulty().getActivationCost());
                 String message = (resultOfRandom)? "Good surprise!" : "Bad surprise!";
-                System.out.println(message);
-                this.message = message+" Points changed by: "+(plusMinus*getGameDifficulty().getSurprisePoints())+", Health changed by: "+(plusMinus*getGameDifficulty().getSurpriseHealth());
                 this.gainPoints(plusMinus*getGameDifficulty().getSurprisePoints());
                 boolean healthMaxedOut = this.getHealthPool()==10;
                 this.gainHealth(plusMinus*getGameDifficulty().getSurpriseHealth());
+                int pointsAfter = getPoints() - startPoints;
+                int healthAfter = getHealthPool() - startHealth;
+                this.message = message+"<br>Points changed by: "+pointsAfter+", Health changed by: "+(healthAfter);
                 if (!healthMaxedOut||!resultOfRandom)
-                    notifySurpriseListeners(plusMinus*getGameDifficulty().getSurpriseHealth(),plusMinus*getGameDifficulty().getSurprisePoints());
+                    notifySurpriseListeners(healthAfter,pointsAfter);
                 else
                 {
                     this.message+= " (Health is already maxed out)";
-                    notifySurpriseListeners(0,plusMinus*getGameDifficulty().getSurprisePoints());
+                    notifySurpriseListeners(0,pointsAfter);
                 }
 
             }
@@ -475,7 +478,7 @@ public class GameSession
     {
         Random random = new Random();
         boolean randomResult = random.nextBoolean();
-        String correctly = (correctAnswer)? "correctly:)" : "incorrectly:(";
+        String correctly = (correctAnswer)? "correctly :)" : "incorrectly :(";
         message = "You answered "+correctly;
         SoundManager.getInstance().playOnce(correctAnswer ? SoundManager.SoundId.POINTS_WIN : SoundManager.SoundId.POINTS_LOSE);
         switch (this.gameDifficulty)
@@ -496,16 +499,17 @@ public class GameSession
     }
 
     private void updateAfterQuestionResultHard(QuestionDifficulty difficulty, boolean correctAnswer, boolean randomResult) {
+        //orginal values before the changes
+        int startPoints = getPoints();
+        int startHealth = getHealthPool();
         switch (difficulty) {
             case EASY:
                 if (correctAnswer) {
                     this.gainPoints(10);
                     this.gainHealth(1);
-                    notifyListenersAfterAction(message,true,1,10);
                 } else {
                     this.gainPoints(-10);
                     this.gainHealth(-1);
-                    notifyListenersAfterAction(message,false,-1,-10);
                 }
                 break;
             case MEDIUM:
@@ -515,13 +519,11 @@ public class GameSession
                 {
                     this.gainPoints(15);
                     this.gainHealth(healthChanged);
-                    notifyListenersAfterAction(message,true,healthChanged,15);
                 }
                 else
                 {
                     this.gainPoints(-15);
                     this.gainHealth(-healthChanged);
-                    notifyListenersAfterAction(message,false,-healthChanged,-15);
                 }
                 break;
             case HARD:
@@ -529,13 +531,11 @@ public class GameSession
                 {
                     this.gainPoints(20);
                     this.gainHealth(2);
-                    notifyListenersAfterAction(message,true,2,20);
                 }
                 else
                 {
                     this.gainPoints(-20);
                     this.gainHealth(-2);
-                    notifyListenersAfterAction(message,false,-2,-20);
                 }
                 break;
             case MASTER:
@@ -543,27 +543,30 @@ public class GameSession
                 {
                     this.gainPoints(40);
                     this.gainHealth(3);
-                    notifyListenersAfterAction(message,true,3,40);
                 }
                 else
                 {
                     this.gainPoints(-40);
                     this.gainHealth(-3);
-                    notifyListenersAfterAction(message,false,-3,-40);
                 }
         }
+        //calculate the change in health and points
+        int pointsAfter = getPoints() - startPoints;
+        int healthAfter = getHealthPool() - startHealth;
+        notifyListenersAfterAction(message, correctAnswer, healthAfter, pointsAfter);
     }
 
     private void updateAfterQuestionResultMedium(QuestionDifficulty difficulty, boolean correctAnswer, boolean randomResult) {
+        //orginal values before the changes
+        int startPoints = getPoints();
+        int startHealth = getHealthPool();
         switch (difficulty) {
             case EASY:
                 if (correctAnswer) {
                     this.gainPoints(8);
                     this.gainHealth(1);
-                    notifyListenersAfterAction(message,true,1,8);
                 } else {
                     this.gainPoints(-8);
-                    notifyListenersAfterAction(message,false,-1,-8);
                 }
                 break;
             case MEDIUM:
@@ -571,7 +574,6 @@ public class GameSession
                 {
                     this.gainPoints(10);
                     this.gainHealth(1);
-                    notifyListenersAfterAction(message,true,1,10);
                 }
                 else
                 {
@@ -580,7 +582,6 @@ public class GameSession
                     {
                         this.gainPoints(-10);
                         this.gainHealth(-1);
-                        notifyListenersAfterAction(message,false,-1,-10);
                     }
 
                 }
@@ -590,13 +591,11 @@ public class GameSession
                 {
                     this.gainPoints(15);
                     this.gainHealth(1);
-                    notifyListenersAfterAction(message,true,1,15);
                 }
                 else
                 {
                     this.gainPoints(-15);
                     this.gainHealth(-1);
-                    notifyListenersAfterAction(message,false,-1,-15);
                 }
                 break;
             case MASTER:
@@ -604,7 +603,6 @@ public class GameSession
                 {
                     this.gainPoints(20);
                     this.gainHealth(2);
-                    notifyListenersAfterAction(message,true,2,20);
                 }
                 else
                 {
@@ -612,27 +610,31 @@ public class GameSession
                     System.out.println("Randomer is "+randomResult);
                     int healthLost = (randomResult)? -1:-2;
                     this.gainHealth(healthLost);
-                    notifyListenersAfterAction(message,false,healthLost,-20);
                 }
         }
+        //calculate the change in health and points
+        int pointsAfter = getPoints() - startPoints;
+        int healthAfter = getHealthPool() - startHealth;
+        notifyListenersAfterAction(message, correctAnswer, healthAfter, pointsAfter);
     }
 
     private void updateAfterQuestionResultEasy(QuestionDifficulty difficulty, boolean correctAnswer, boolean randomResult, Board parentBoard)
     {
+        //orginal values before the changes
+        int startPoints = getPoints();
+        int startHealth = getHealthPool();
         switch(difficulty){
             case EASY:
                 if(correctAnswer)
                 {
                     this.gainPoints(3);
                     this.gainHealth(1);
-                    notifyListenersAfterAction(message,true,1,3);
                 }
                 else
                 {
                     System.out.println("Randomer is "+randomResult);
                     int pointsLost = (randomResult)? 0:-3;
                     this.gainPoints(pointsLost);
-                    notifyListenersAfterAction(message,false,0,pointsLost);
                 }
                 break;
             case MEDIUM:
@@ -641,14 +643,12 @@ public class GameSession
                     parentBoard.revealRandomMine();
                     message+=" (Also Revealed a mine!)";
                     this.gainPoints(6);
-                    notifyListenersAfterAction(message,true,0,6);
                 }
                 else
                 {
                     System.out.println("Randomer is "+randomResult);
                     int pointsLost = (randomResult)? 0:-6;
                     this.gainPoints(pointsLost);
-                    notifyListenersAfterAction(message,false,0,pointsLost);
                 }
                 break;
             case HARD:
@@ -657,12 +657,10 @@ public class GameSession
                     parentBoard.revealGrid();
                     message+=" (Also Revealed a grid in the board!)";
                     this.gainPoints(10);
-                    notifyListenersAfterAction(message,true,0,10);
                 }
                 else
                 {
                     this.gainPoints(-10);
-                    notifyListenersAfterAction(message,false,0,-10);
                 }
                 break;
             case MASTER:
@@ -670,16 +668,19 @@ public class GameSession
                 {
                     this.gainPoints(15);
                     this.gainHealth(2);
-                    notifyListenersAfterAction(message,true,2,15);
                 }
                 else
                 {
                     this.gainPoints(-15);
                     this.gainHealth(-1);
-                    notifyListenersAfterAction(message,false,-1,-15);
                 }
                 break;
         }
+        //calculate the change in health and points
+        int pointsAfter = getPoints() - startPoints;
+        int healthAfter = getHealthPool() - startHealth;
+        notifyListenersAfterAction(message, correctAnswer, healthAfter, pointsAfter);
+
     }
 
 
