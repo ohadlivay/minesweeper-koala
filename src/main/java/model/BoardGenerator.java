@@ -1,9 +1,9 @@
 package main.java.model;
 
 import main.java.test.Testable;
-
-import java.util.Arrays;
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class BoardGenerator implements Testable {
     private int rows;
