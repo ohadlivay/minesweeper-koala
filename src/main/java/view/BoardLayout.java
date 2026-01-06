@@ -3,7 +3,6 @@ package main.java.view;
 
 import main.java.controller.GameSessionController;
 import main.java.model.Board;
-import main.java.model.MinesLeftListener;
 import main.java.model.Tile;
 import main.java.model.TurnListener;
 
@@ -19,7 +18,7 @@ public class BoardLayout extends JPanel implements TurnListener {
     private Board board; //only use for getters
     private static final int boardSize = 450;
 
-    private Color tileColor;
+    private final Color tileColor;
 
     public BoardLayout(Board board, Color color) {
 

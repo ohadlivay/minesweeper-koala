@@ -1,4 +1,5 @@
 package main.java.view.overlays;
+
 import main.java.controller.NavigationController;
 import main.java.controller.QuestionManagerController;
 import main.java.model.Question;
@@ -16,7 +17,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Arrays;
 import java.util.HashSet;
 
 public class AddEditQuestionOverlay extends OverlayView {
@@ -32,7 +32,7 @@ public class AddEditQuestionOverlay extends OverlayView {
     private JTextField answer2;
     private JTextField answer3;
     private JTextField answer4;
-    private JTextField [] wrongAnswers;
+    private JTextField[] wrongAnswers;
     private String QuestionPlaceholder;
     private String CorrectAnswerPlaceholder;
     private String WrongAnswerPlaceholder;
@@ -42,7 +42,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         super(navigationController, true);
         this.existingQuestion = q;
         this.isEditing = (q != null);
-        if (isEditing){
+        if (isEditing) {
             this.selectedDifficulty = q.getDifficulty();
         }
 
@@ -66,7 +66,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         contentPanel.setBackground(ColorsInUse.BG_COLOR.get());
         contentPanel.setPreferredSize(new Dimension(800, 600));
 
-        String titleText = isEditing ? "EDITING QUESTION " + existingQuestion.getId() : "ADDING QUESTION " + ((int)SysData.getInstance().getMaxId() + 1);
+        String titleText = isEditing ? "EDITING QUESTION " + existingQuestion.getId() : "ADDING QUESTION " + (SysData.getInstance().getMaxId() + 1);
         OutlinedLabel titleLabel = new OutlinedLabel(titleText, Color.BLACK, 5f);
         titleLabel.setFont(FontsInUse.PIXEL.getSize(40f));
         titleLabel.setForeground(ColorsInUse.TEXT.get());
@@ -165,7 +165,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         answer2 = createStyledTextField();
         answer3 = createStyledTextField();
         answer4 = createStyledTextField();
-        wrongAnswers = new JTextField[] {answer2, answer3, answer4};
+        wrongAnswers = new JTextField[]{answer2, answer3, answer4};
 
         formPanel.add(createAnswerFieldWrapper(answer1, ColorsInUse.CONFIRM.get(), CorrectAnswerPlaceholder, gbc), gbc);
         gbc.gridy++;
@@ -269,6 +269,7 @@ public class AddEditQuestionOverlay extends OverlayView {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btn.setBackground(ColorsInUse.BTN_COLOR.get().brighter());
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 btn.setBackground(ColorsInUse.BTN_COLOR.get());
             }
@@ -279,7 +280,7 @@ public class AddEditQuestionOverlay extends OverlayView {
 
     private void updateSelection() {
         Color selectedColor = ColorsInUse.TEXT.get();
-        Color unselectedColor = new Color(0,0,0,0);
+        Color unselectedColor = new Color(0, 0, 0, 0);
         btnEasy.setBorder(new LineBorder(selectedDifficulty == QuestionDifficulty.EASY ? selectedColor : unselectedColor, 3));
         btnMedium.setBorder(new LineBorder(selectedDifficulty == QuestionDifficulty.MEDIUM ? selectedColor : unselectedColor, 3));
         btnHard.setBorder(new LineBorder(selectedDifficulty == QuestionDifficulty.HARD ? selectedColor : unselectedColor, 3));
@@ -367,7 +368,10 @@ public class AddEditQuestionOverlay extends OverlayView {
                 return;
             }
             SysData.getInstance().addQuestion(newQ);
-            try { QuestionCSVManager.rewriteQuestionsToCSVFromSysData(); } catch (Exception ignored) {}
+            try {
+                QuestionCSVManager.rewriteQuestionsToCSVFromSysData();
+            } catch (Exception ignored) {
+            }
             qmc.refreshAndJumpToLastPage();
         }
         qmc.refreshQuestionList();
@@ -387,7 +391,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         tf.setBackground(ColorsInUse.BTN_COLOR.get());
         tf.setForeground(ColorsInUse.TEXT.get());
         tf.setCaretColor(ColorsInUse.TEXT.get());
-        tf.setBorder(new EmptyBorder(5,5,5,5));
+        tf.setBorder(new EmptyBorder(5, 5, 5, 5));
         tf.setPreferredSize(new Dimension(200, 45));
         return tf;
     }
@@ -401,6 +405,7 @@ public class AddEditQuestionOverlay extends OverlayView {
                 tc.setForeground(ColorsInUse.TEXT.get());
             }
         }
+
         @Override
         public void focusLost(FocusEvent e) {
             if (e.getComponent() instanceof JTextComponent tc && tc.getText().trim().isEmpty()) {

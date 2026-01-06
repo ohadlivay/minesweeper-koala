@@ -9,8 +9,7 @@ import java.awt.*;
 
 public class ComponentAnimator {
 
-    // Optional: keep last timer per component so you can cancel/replace animations cleanly
-    // (prevents double-shakes etc.)
+
     private final java.util.Map<JComponent, Timer> active = new java.util.WeakHashMap<>();
 
     private void replaceTimer(JComponent c, Timer next) {

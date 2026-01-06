@@ -1,6 +1,5 @@
 package main.java.view;
 
-import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.controller.OverlayController;
 import main.java.model.*;
@@ -9,7 +8,6 @@ import main.java.view.overlays.OverlayType;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.io.IOException;
 
 public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener, GameOverListener, SurpriseListener {
     private final NavigationController nav;
@@ -38,7 +36,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         animator = new ComponentAnimator();
         initUI();
         setBoards(session.getLeftBoard(), session.getRightBoard());
-        setPlayerNames(session.getLeftPlayerName(),session.getRightPlayerName());
+        setPlayerNames(session.getLeftPlayerName(), session.getRightPlayerName());
     }
 
     public void setBoards(Board left, Board right) {
@@ -109,7 +107,8 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         player1MinesLeftLabel.setForeground(ColorsInUse.TEXT.get());
         player1MinesLeftLabel.setFont(font);
         java.net.URL bombUrl = getClass().getResource("/white-outline-mine.png");
-        if (bombUrl != null) { ImageIcon icon = new ImageIcon(bombUrl);
+        if (bombUrl != null) {
+            ImageIcon icon = new ImageIcon(bombUrl);
             Image scaled = icon.getImage().getScaledInstance(42, 42, Image.SCALE_SMOOTH);
             player1MinesLeftLabel.setIcon(new ImageIcon(scaled));
             player1MinesLeftLabel.setIconTextGap(10);
@@ -118,7 +117,8 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         player2MinesLeftLabel = new JLabel("x" + session.getRightBoard().getMinesLeft());
         player2MinesLeftLabel.setForeground(ColorsInUse.TEXT.get());
         player2MinesLeftLabel.setFont(font);
-        if (bombUrl != null) { ImageIcon icon = new ImageIcon(bombUrl);
+        if (bombUrl != null) {
+            ImageIcon icon = new ImageIcon(bombUrl);
             Image scaled = icon.getImage().getScaledInstance(42, 42, Image.SCALE_SMOOTH);
             player2MinesLeftLabel.setIcon(new ImageIcon(scaled));
             player2MinesLeftLabel.setIconTextGap(10);
@@ -219,7 +219,6 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         statsPanel.add(pointsLabel);
 
 
-
         // bottom panel holds the home button
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setOpaque(false);
@@ -305,7 +304,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     }
 
     public void updateMinesLeft(int minesLeft, Board board) {
-        if(board == session.getLeftBoard()) player1MinesLeftLabel.setText("x" + minesLeft);
+        if (board == session.getLeftBoard()) player1MinesLeftLabel.setText("x" + minesLeft);
         else player2MinesLeftLabel.setText("x" + minesLeft);
 
     }
@@ -323,13 +322,13 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
 
         feedLabel.setForeground(positive ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get());
         updateLabels();
-        if (pointsChange!=0) {
+        if (pointsChange != 0) {
             String text = (pointsChange > 0 ? "+" : "") + pointsChange;
             Color color = pointsChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
-            animator.pulseBorder(pointsLabel,6);
+            animator.pulseBorder(pointsLabel, 6);
             animator.floatingNumber(pointsLabel, text, color, pointsChange > 0);
         }
-        if (healthChange!=0) {
+        if (healthChange != 0) {
             String text = (healthChange > 0 ? "+" : "") + healthChange;
             Color color = healthChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
             animator.floatingNumber(healthLabel, text, color, healthChange > 0);
@@ -342,7 +341,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     public void onGameOver(boolean saved, boolean winOrLose, int score) {
         if (!saved)
             JOptionPane.showMessageDialog(mainPanel, "Error, could not save the game!", "Game Over", JOptionPane.ERROR_MESSAGE);
-        OverlayController.getInstance().showGameOverOverlay(winOrLose,score);
+        OverlayController.getInstance().showGameOverOverlay(winOrLose, score);
     }
 
     @Override

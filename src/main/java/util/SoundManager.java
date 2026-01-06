@@ -1,12 +1,14 @@
 package main.java.util;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import java.net.URL;
 import java.util.EnumMap;
 import java.util.Map;
 
 public class SoundManager {
-    public enum SoundId { REVEAL, SELECTION, MINE, WIN, LOSE, BLOCK, POINTS_WIN, POINTS_LOSE }
+    public enum SoundId {REVEAL, SELECTION, MINE, WIN, LOSE, BLOCK, POINTS_WIN, POINTS_LOSE}
 
     private static final SoundManager INSTANCE = new SoundManager();
     public static SoundManager getInstance() { return INSTANCE; }

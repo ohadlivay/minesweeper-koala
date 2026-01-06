@@ -3,7 +3,6 @@ package main.java.view.overlays;
 import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.model.GameDifficulty;
-import main.java.model.QuestionDifficulty;
 import main.java.util.SoundManager;
 import main.java.view.ColorsInUse;
 import main.java.view.FontsInUse;
@@ -14,7 +13,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.URL;
 
 public class SettingsOverlay extends OverlayView {
     private JPanel contentPane;
@@ -48,7 +46,7 @@ public class SettingsOverlay extends OverlayView {
             public void mouseClicked(MouseEvent e) {
                 resetSelection();
                 selectedDifficulty = GameDifficulty.EASY;
-                btnEasy.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2),new EmptyBorder(5,5,5,5)));
+                btnEasy.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2), new EmptyBorder(5, 5, 5, 5)));
                 System.out.println("Selected Difficulty: EASY");
             }
         });
@@ -58,7 +56,7 @@ public class SettingsOverlay extends OverlayView {
             public void mouseClicked(MouseEvent e) {
                 resetSelection();
                 selectedDifficulty = GameDifficulty.MEDIUM;
-                btnMedium.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2),new EmptyBorder(5,5,5,5)));
+                btnMedium.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2), new EmptyBorder(5, 5, 5, 5)));
                 System.out.println("Selected Difficulty: MEDIUM");
             }
         });
@@ -68,7 +66,7 @@ public class SettingsOverlay extends OverlayView {
             public void mouseClicked(MouseEvent e) {
                 resetSelection();
                 selectedDifficulty = GameDifficulty.HARD;
-                btnHard.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2),new EmptyBorder(5,5,5,5)));
+                btnHard.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2), new EmptyBorder(5, 5, 5, 5)));
                 System.out.println("Selected Difficulty: HARD");
             }
         });
@@ -81,8 +79,7 @@ public class SettingsOverlay extends OverlayView {
         if (difficulty != null) {
             this.selectedDifficulty = difficulty;
             updateSelection();
-        }
-        else {
+        } else {
             resetSelection();
         }
     }
@@ -95,7 +92,7 @@ public class SettingsOverlay extends OverlayView {
 
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(ColorsInUse.BG_COLOR.get());
-        OutlinedLabel title = new OutlinedLabel("CHOOSE DIFFICULTY:", Color.BLACK,6f);
+        OutlinedLabel title = new OutlinedLabel("CHOOSE DIFFICULTY:", Color.BLACK, 6f);
         title.setFont(FontsInUse.PIXEL.getSize(52f));
         title.setForeground(ColorsInUse.TEXT.get());
         titlePanel.add(title);
@@ -188,9 +185,10 @@ public class SettingsOverlay extends OverlayView {
                 player2 = "Player 2";
             }
         }
-        try{
+        try {
             //check to see if the system has enough questions to start a game
-            GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty);}catch (IllegalStateException e){
+            GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty);
+        } catch (IllegalStateException e) {
             JOptionPane.showMessageDialog(this, "Not enough questions in the system to start a game. Please add more questions.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -206,10 +204,10 @@ public class SettingsOverlay extends OverlayView {
     public String getPlayer1Name() {
         return player1Name.getText();
     }
+
     public String getPlayer2Name() {
         return player2Name.getText();
     }
-
 
 
     // HELPER METHODS //
@@ -220,7 +218,7 @@ public class SettingsOverlay extends OverlayView {
         btnHard.setBorder(new EmptyBorder(7, 7, 7, 7));
     }
 
-    private String nameWarning (String player1, String player2) {
+    private String nameWarning(String player1, String player2) {
         if (player1.trim().isEmpty() && player2.trim().isEmpty()) {
             return "Names for both players not chosen\n Continue with default names?\n - Player 1\n - Player 2";
         } else if (player1.trim().isEmpty()) {
@@ -244,10 +242,10 @@ public class SettingsOverlay extends OverlayView {
         textField.setMinimumSize(new Dimension(150, 30));
         textField.setMaximumSize(new Dimension(150, 30));
 
-        JLabel bottomLabel = new JLabel("Max length: "+PlAYER_TEXT_LENGTH);
+        JLabel bottomLabel = new JLabel("Max length: " + PlAYER_TEXT_LENGTH);
         bottomLabel.setFont(FontsInUse.PIXEL.getSize(20f));
         bottomLabel.setText(" ");
-        bottomLabel.setForeground(new Color(0,0,0,0));
+        bottomLabel.setForeground(new Color(0, 0, 0, 0));
 
         panel.add(label, BorderLayout.NORTH);
         panel.add(textField, BorderLayout.CENTER);
@@ -397,12 +395,11 @@ public class SettingsOverlay extends OverlayView {
                     return;
                 }
 
-                if (tf.getText().length() <= PlAYER_TEXT_LENGTH*0.7) {
+                if (tf.getText().length() <= PlAYER_TEXT_LENGTH * 0.7) {
                     name.setForeground(ColorsInUse.TEXT.get());
                     name.setToolTipText(null);
                     showBottomTextLimit(bottomLabel, false);
-                }
-                else if (tf.getText().length() >= PlAYER_TEXT_LENGTH) {
+                } else if (tf.getText().length() >= PlAYER_TEXT_LENGTH) {
                     e.consume();
                     tf.setText(tf.getText().substring(0, PlAYER_TEXT_LENGTH));
 
@@ -416,25 +413,22 @@ public class SettingsOverlay extends OverlayView {
 
                     name.setToolTipText("Maximum length reached");
                     showBottomTextLimit(bottomLabel, true);
-                }
-
-                else if (tf.getText().length() >= PlAYER_TEXT_LENGTH*0.7) {
+                } else if (tf.getText().length() >= PlAYER_TEXT_LENGTH * 0.7) {
                     name.setForeground(ColorsInUse.DENY.get());
-                    name.setToolTipText("Approaching maximum length "+tf.getText().length()+"/"+PlAYER_TEXT_LENGTH);
+                    name.setToolTipText("Approaching maximum length " + tf.getText().length() + "/" + PlAYER_TEXT_LENGTH);
                     showBottomTextLimit(bottomLabel, true);
                 }
             }
         };
     }
 
-    private void showBottomTextLimit(JLabel bottomLabel,  boolean toShow) {
+    private void showBottomTextLimit(JLabel bottomLabel, boolean toShow) {
         if (toShow) {
             bottomLabel.setText("Max length: " + PlAYER_TEXT_LENGTH);
             bottomLabel.setForeground(ColorsInUse.TEXT.get());
-        }
-        else {
+        } else {
             bottomLabel.setText(" ");
-            bottomLabel.setForeground(new Color(0,0,0,0));
+            bottomLabel.setForeground(new Color(0, 0, 0, 0));
         }
     }
 

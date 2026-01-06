@@ -81,6 +81,8 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
 
     private boolean isSaving = false;
 
+
+    // used for testing purposes only
     public void endGame(GameSession session,NavigationController nav) throws IOException {
         if (isSaving)
             return;

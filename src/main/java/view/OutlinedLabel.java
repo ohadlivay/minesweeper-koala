@@ -1,6 +1,7 @@
 package main.java.view;
 
 //this class is used for creating labels with an outline
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.font.GlyphVector;

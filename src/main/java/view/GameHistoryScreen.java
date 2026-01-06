@@ -2,7 +2,6 @@ package main.java.view;
 
 import main.java.controller.NavigationController;
 import main.java.model.GameData;
-import main.java.model.GameSession;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

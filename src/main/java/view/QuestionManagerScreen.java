@@ -2,7 +2,6 @@ package main.java.view;
 
 import main.java.controller.NavigationController;
 import main.java.controller.OverlayController;
-import main.java.controller.QuestionManagerController;
 import main.java.model.Question;
 import main.java.model.SysData;
 
@@ -32,7 +31,7 @@ public class QuestionManagerScreen extends JPanel {
     private OutlinedLabel pageLabel;
     private JButton btnPrev, btnNext;
 
-    private ComponentAnimator animator;
+    private final ComponentAnimator animator;
 
     public QuestionManagerScreen(NavigationController navigationController) {
         this.nav = navigationController;
@@ -176,9 +175,7 @@ public class QuestionManagerScreen extends JPanel {
             int maxPage = (int) Math.ceil((double) allQuestions.size() / rowsPerPage);
             if (currentPage > 1) {
                 currentPage--;
-            }
-            else
-            {
+            } else {
                 currentPage = Math.max(1, maxPage); // if this is the first page, go to last page (carousel)
             }
             refreshPage();
@@ -194,9 +191,7 @@ public class QuestionManagerScreen extends JPanel {
             int maxPage = (int) Math.ceil((double) allQuestions.size() / rowsPerPage);
             if (currentPage < maxPage) {
                 currentPage++;
-            }
-            else
-            {
+            } else {
                 currentPage = 1; //if this is the last page, go back to first page (carousel)
             }
             refreshPage();
@@ -279,6 +274,7 @@ public class QuestionManagerScreen extends JPanel {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 if (btn.isEnabled()) btn.setBackground(bg.brighter());
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 if (btn.isEnabled()) btn.setBackground(bg);
             }
@@ -303,7 +299,6 @@ public class QuestionManagerScreen extends JPanel {
 
         return homeButton;
     }
-
 
 
     // --- getters ---

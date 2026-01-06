@@ -2,7 +2,6 @@ package main.java.view.overlays;
 
 import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
-import main.java.model.InputBlockListener;
 import main.java.util.SoundManager;
 import main.java.view.BackgroundPanel;
 import main.java.view.ColorsInUse;
@@ -20,7 +19,7 @@ public class SurpriseOverlay extends OverlayView{
 
     private OutlinedLabel healthValueLabel;
     private OutlinedLabel pointsValueLabel;
-    private JButton closeButton;
+    private final JButton closeButton;
 
     private JPanel leftCardPanel;
     private JPanel rightCardPanel;
