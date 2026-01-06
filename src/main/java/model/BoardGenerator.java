@@ -14,6 +14,12 @@ public class BoardGenerator implements Testable {
     private int numQuestionTiles;
     private int numSurpriseTiles;
 
+    // String Constants for Grid Values
+    private static final String MINE_STR = "MINE";
+    private static final String QUESTION_STR = "QUESTION";
+    private static final String SURPRISE_STR = "SURPRISE";
+    private static final String EMPTY_STR = "0";
+
     public BoardGenerator(GameDifficulty gameDifficulty){
         rows = gameDifficulty.getRows();
         cols = gameDifficulty.getCols();
@@ -33,7 +39,7 @@ public class BoardGenerator implements Testable {
      * fully-initialized Tile[][] board.
      */
     public Tile[][] generateValidBoard(int seed) {
-        int[][] grid;
+        String[][] grid;
 
         // Keep generating temporary boards until the minimum
         // candidate-tile requirement is satisfied
@@ -47,7 +53,7 @@ public class BoardGenerator implements Testable {
         // 1. Calculate adjacent mines and update cell values (0 to 8)
         calculateAdjacentMines(grid);
 
-        // 2. Distribute special tiles (0 to 9 or 10)
+        // 2. Distribute special tiles (Question or Surprise)
         distributeSpecialTiles(grid);
 
         // 3. Convert the final blueprint into Tiles
@@ -55,26 +61,34 @@ public class BoardGenerator implements Testable {
     }
 
 
-    private int[][] generateTempBoard(int seed) {
-        // create gridSize x gridSize grid filled with 0's
-        int[][] tempTiles = new int[rows][cols];
+    private String[][] generateTempBoard(int seed) {
+        // create grid filled with "0"s
+        String[][] tempTiles = new String[rows][cols];
+
+        // Initialize grid with "0" because String arrays default to null
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                tempTiles[i][j] = EMPTY_STR;
+            }
+        }
 
         Random rng = new Random(seed);
 
         int placed = 0;
         while (placed < numMines) {
-            int r = rng.nextInt(rows); // 0 .. gridSize-1
-            int c = rng.nextInt(cols); // 0 .. gridSize-1
+            int r = rng.nextInt(rows);
+            int c = rng.nextInt(cols);
 
-            // only place a mine if the cell is still 0
-            if (tempTiles[r][c] == 0) {
-                tempTiles[r][c] = 100; // MINE VALUE IS NOW 100
+            // only place a mine if the cell is still "0"
+            if (tempTiles[r][c].equals(EMPTY_STR)) {
+                tempTiles[r][c] = MINE_STR;
                 placed++;
             }
         }
 
         return tempTiles;
     }
+
     private int numCandidateTiles(int[][] grid) {
         int n = grid.length;
         if (n == 0) return 0;
