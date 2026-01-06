@@ -30,13 +30,6 @@ public class BoardGenerator implements Testable {
 
     /*
      * Generates a valid board configuration.
-     *
-     * Repeatedly creates temporary grids using a seeded generator
-     * until the grid contains enough candidate tiles to support
-     * the required number of question and surprise tiles.
-     *
-     * Once a valid layout is found, it is converted into a
-     * fully-initialized Tile[][] board.
      */
     public Tile[][] generateValidBoard(int seed) {
         String[][] grid;
@@ -50,16 +43,15 @@ public class BoardGenerator implements Testable {
 
         // A valid blueprint has been found — convert it into Tiles
 
-        // 1. Calculate adjacent mines and update cell values (0 to 8)
+        // 1. Calculate adjacent mines and update cell values ("0" to "8")
         calculateAdjacentMines(grid);
 
-        // 2. Distribute special tiles (Question or Surprise)
+        // 2. Distribute special tiles ("QUESTION" or "SURPRISE")
         distributeSpecialTiles(grid);
 
         // 3. Convert the final blueprint into Tiles
         return toTileGrid(grid);
     }
-
 
     private String[][] generateTempBoard(int seed) {
         // create grid filled with "0"s
@@ -89,7 +81,7 @@ public class BoardGenerator implements Testable {
         return tempTiles;
     }
 
-    private int numCandidateTiles(int[][] grid) {
+    private int numCandidateTiles(String[][] grid) {
         int n = grid.length;
         if (n == 0) return 0;
         int m = grid[0].length;
@@ -99,14 +91,14 @@ public class BoardGenerator implements Testable {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
 
-                // only interested in 0-cells
-                if (grid[i][j] != 0) continue;
+                // only interested in "0"-cells (empty spots)
+                if (!grid[i][j].equals(EMPTY_STR)) continue;
 
-                boolean hasNeighborOne = false;
+                boolean hasNeighborMine = false;
 
-                // check all 8 neighbors (and skip (0,0) itself)
-                for (int di = -1; di <= 1 && !hasNeighborOne; di++) {
-                    for (int dj = -1; dj <= 1 && !hasNeighborOne; dj++) {
+                // check all 8 neighbors
+                for (int di = -1; di <= 1 && !hasNeighborMine; di++) {
+                    for (int dj = -1; dj <= 1 && !hasNeighborMine; dj++) {
 
                         if (di == 0 && dj == 0) continue; // skip self
 
@@ -118,13 +110,13 @@ public class BoardGenerator implements Testable {
                             continue;
                         }
 
-                        if (grid[ni][nj] == 100) {
-                            hasNeighborOne = true;
+                        if (grid[ni][nj].equals(MINE_STR)) {
+                            hasNeighborMine = true;
                         }
                     }
                 }
 
-                if (!hasNeighborOne) {
+                if (!hasNeighborMine) {
                     count++;
                 }
             }
@@ -132,17 +124,18 @@ public class BoardGenerator implements Testable {
 
         return count;
     }
-    private int countMines(int[][] grid) {
+
+    private int countMines(String[][] grid) {
         int total = 0;
-        for (int[] row : grid) {
-            for (int cell : row) {
-                if (cell == 100) total++;
+        for (String[] row : grid) {
+            for (String cell : row) {
+                if (cell.equals(MINE_STR)) total++;
             }
         }
         return total;
     }
 
-    private void calculateAdjacentMines(int[][] grid) {
+    private void calculateAdjacentMines(String[][] grid) {
         int n = grid.length;
         if (n == 0) return;
         int m = grid[0].length;
@@ -150,7 +143,7 @@ public class BoardGenerator implements Testable {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
 
-                if (grid[i][j] != 100) {
+                if (!grid[i][j].equals(MINE_STR)) {
                     int mineCount = 0;
 
                     for (int di = -1; di <= 1; di++) {
@@ -161,71 +154,65 @@ public class BoardGenerator implements Testable {
                             int nj = j + dj;
 
                             if (ni >= 0 && ni < n && nj >= 0 && nj < m) {
-                                if (grid[ni][nj] == 100) { // Check for 100
+                                if (grid[ni][nj].equals(MINE_STR)) {
                                     mineCount++;
                                 }
                             }
                         }
                     }
-
-                    grid[i][j] = mineCount; // Set value to 0-8
+                    // Store the count as a String ("0", "1", etc.)
+                    grid[i][j] = String.valueOf(mineCount);
                 }
             }
         }
     }
 
     /*
-     * Distributes question and surprise tiles onto candidate cells (cells with 0 adjacent mines, value 0).
-     * Updates the grid value: 9 for QuestionTile, 10 for SurpriseTile.
+     * Distributes question and surprise tiles onto candidate cells (cells with 0 adjacent mines).
      */
-    private void distributeSpecialTiles(int[][] grid) {
+    private void distributeSpecialTiles(String[][] grid) {
         int n = grid.length;
         if (n == 0) return;
         int m = grid[0].length;
 
-        // Using a non-seeded Random ensures tile placement is unpredictable on each run
-        // once a valid mine layout is found.
-        java.util.Random rng = new java.util.   Random();
+        java.util.Random rng = new java.util.Random();
 
         int placedQuestion = 0;
         int placedSurprise = 0;
 
-        // Collect all coordinates of candidate tiles (grid value == 0)
-        java.util.List<int[]> candidates = new java.util.ArrayList<>();
+        // Collect all coordinates of candidate tiles (grid value is "0")
+        List<int[]> candidates = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
-                // Candidates are cells that have 0 adjacent mines (value 0)
-                if (grid[i][j] == 0) {
+                // Candidates are cells that have 0 adjacent mines
+                if (grid[i][j].equals(EMPTY_STR)) {
                     candidates.add(new int[]{i, j});
                 }
             }
         }
 
-        // Shuffle the candidates list to ensure random selection of the
-        // 0-neighbor tiles for special placement.
-        java.util.Collections.shuffle(candidates, rng);
+        Collections.shuffle(candidates, rng);
 
         // --- Distribution Phase ---
 
-        // 1. Distribute Question Tiles (value 9)
+        // 1. Distribute Question Tiles
         int requiredQuestion = this.numQuestionTiles;
         for (int[] coord : candidates) {
             if (placedQuestion < requiredQuestion) {
-                grid[coord[0]][coord[1]] = 9; // 9 = Question Tile
+                grid[coord[0]][coord[1]] = QUESTION_STR;
                 placedQuestion++;
             } else {
                 break;
             }
         }
 
-        // 2. Distribute Surprise Tiles (value 10)
+        // 2. Distribute Surprise Tiles
         int requiredSurprise = this.numSurpriseTiles;
-        // Continue iterating over the remaining candidates slots.
         for (int[] coord : candidates) {
-            // Only consider cells that were NOT just set to 9 (Question Tile)
-            if (grid[coord[0]][coord[1]] == 0) {
+            // Only consider cells that were NOT just set to Question Tile
+            if (grid[coord[0]][coord[1]].equals(EMPTY_STR)) {
                 if (placedSurprise < requiredSurprise) {
-                    grid[coord[0]][coord[1]] = 10; // 10 = Surprise Tile
+                    grid[coord[0]][coord[1]] = SURPRISE_STR;
                     placedSurprise++;
                 } else {
                     break;
@@ -234,7 +221,7 @@ public class BoardGenerator implements Testable {
         }
     }
 
-    private Tile[][] toTileGrid(int[][] grid) { //privatize
+    private Tile[][] toTileGrid(String[][] grid) {
         int rows = grid.length;
         int cols = grid[0].length;
 
@@ -243,22 +230,25 @@ public class BoardGenerator implements Testable {
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
 
-                int cellValue = grid[r][c];
+                String cellValue = grid[r][c];
 
-                if (cellValue == 100) {
-                    // Mine tile (value 100)
-                    tiles[r][c] = new MineTile();
-                } else if (cellValue == 9) {
-                    // Question tile (value 9)
-                    tiles[r][c] = new QuestionTile();
-                } else if (cellValue == 10) {
-                    // Surprise tile (value 10)
-                    tiles[r][c] = new SurpriseTile();
-                } else {
-                    // Number tile (values 0 through 8)
-                    NumberTile numberTile = new NumberTile();
-                    numberTile.setAdjacentMines(cellValue);
-                    tiles[r][c] = numberTile;
+                switch (cellValue) {
+                    case MINE_STR:
+                        tiles[r][c] = new MineTile();
+                        break;
+                    case QUESTION_STR:
+                        tiles[r][c] = new QuestionTile();
+                        break;
+                    case SURPRISE_STR:
+                        tiles[r][c] = new SurpriseTile();
+                        break;
+                    default:
+                        // Number tile (parse String "0"-"8" to int)
+                        NumberTile numberTile = new NumberTile();
+                        // Assume cellValue is a valid integer string here
+                        numberTile.setAdjacentMines(Integer.parseInt(cellValue));
+                        tiles[r][c] = numberTile;
+                        break;
                 }
             }
         }
@@ -267,10 +257,11 @@ public class BoardGenerator implements Testable {
 
     @Override
     public boolean runClassTests() {
-        // simple deterministic test:
         int seed = 20;
 
-        int[][] grid = generateTempBoard(seed);
+        // Helper test method logic would need to access private methods via reflection
+        // or be internal. Assuming for this context we just test logic flow.
+        String[][] grid = generateTempBoard(seed);
 
         // 1. size sanity
         if (grid.length != rows) return false;
@@ -289,7 +280,6 @@ public class BoardGenerator implements Testable {
             }
             System.out.println();
         }
-
 
         return true;
     }
