@@ -57,7 +57,7 @@ public class GameHistoryScreen extends JPanel{
         bottomPanel.add(homeButton, BorderLayout.WEST);
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
-        String[] columnNames = {"ID", "Date", "Player 1", "Player 2", "Score", "Difficulty"};
+        String[] columnNames = {"ID", "Date", "Player 1", "Player 2", "Score", "Difficulty","Result"};
 
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
@@ -170,7 +170,16 @@ public class GameHistoryScreen extends JPanel{
         for (int i = start; i < end; i++) {
             GameData s = allSessions.get(i);
             String formattedDate = s.getTimeStamp().format(formatter);
-            Object[] rowData = {i+1, formattedDate, s.getLeftPlayerName(), s.getRightPlayerName(), s.getPoints(), s.getGameDifficulty()};
+            String result = s.isWin() ? "WIN" : "LOSE";
+            Object[] rowData = {
+                    i + 1,
+                    formattedDate,
+                    s.getLeftPlayerName(),
+                    s.getRightPlayerName(),
+                    s.getPoints(),
+                    s.getGameDifficulty(),
+                    result
+            };
             tableModel.addRow(rowData);
         }
 

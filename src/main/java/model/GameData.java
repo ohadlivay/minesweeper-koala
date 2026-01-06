@@ -12,6 +12,7 @@ public class GameData
     private final String rightPlayerName;
     private final GameDifficulty gameDifficulty;
     private final int points;
+    private final boolean isWin;
 
     //Constructors
     public GameData(GameSession gameSession)
@@ -21,16 +22,18 @@ public class GameData
         this.rightPlayerName = gameSession.getRightPlayerName();
         this.gameDifficulty = gameSession.getGameDifficulty();
         this.points = gameSession.getPoints();
+        this.isWin = gameSession.getHealthPool()>0;
     }
 
     //Copy constructor
-    public GameData(LocalDateTime timeStamp, String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty, int points)
+    public GameData(LocalDateTime timeStamp, String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty, int points, boolean isWin)
     {
         this.timeStamp = timeStamp;
         this.leftPlayerName = leftPlayerName;
         this.rightPlayerName = rightPlayerName;
         this.gameDifficulty = gameDifficulty;
         this.points = points;
+        this.isWin = isWin;
     }
 
     //Getters
@@ -53,5 +56,7 @@ public class GameData
     public int getPoints() {
         return points;
     }
+
+    public boolean isWin() { return isWin; }
     
 }

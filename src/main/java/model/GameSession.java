@@ -221,7 +221,7 @@ public class GameSession
         else
             notifyListenersAfterAction("Game over! You lost!",false,0,0);
         try{
-            saveGame();
+            saveGame(winOrLose);
             gameOverListener.onGameOver(true,winOrLose,getPoints());
         }catch (Exception e){
             gameOverListener.onGameOver(false,winOrLose,getPoints());
@@ -229,8 +229,8 @@ public class GameSession
 
     }
 
-    private void saveGame() throws IOException{
-        GameData gameData = new GameData(this);
+    private void saveGame(boolean winOrLose) throws IOException{
+        GameData gameData = new GameData(this.timeStamp, this.leftPlayerName, this.rightPlayerName, this.gameDifficulty, this.points, winOrLose);
         SysData.getInstance().addGame(gameData);
         GameDataCSVManager.writeGameDataListToCSV("GameHistory.csv");
     }
