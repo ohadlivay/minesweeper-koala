@@ -19,6 +19,7 @@ public class BoardLayout extends JPanel implements TurnListener {
     private static final int boardSize = 450;
 
     private final Color tileColor;
+    private final ComponentAnimator animator = new ComponentAnimator();
 
     public BoardLayout(Board board, Color color) {
 
@@ -63,8 +64,12 @@ public class BoardLayout extends JPanel implements TurnListener {
                 Tile t = null;
                 t = board.getTiles()[i][j]; //get tile from board controller
                 if (t != null) {
-                    tileViewGrid[i][j] = new TileView(t, calculatedTileSize, tileColor);
-                    add(tileViewGrid[i][j]);
+                    TileView tv = new TileView(t, calculatedTileSize, tileColor);
+                    tileViewGrid[i][j] = tv;
+
+                    // Wrap ONLY for paint-over effects
+                    add(animator.withEffects(tv));   // <-- use your ComponentAnimator instance
+
                 } else {
                     add(new JButton()); // placeholder button for debugging
                 }

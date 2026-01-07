@@ -5,6 +5,7 @@ import main.java.util.SoundManager;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.LayerUI;
 import java.awt.*;
 
 public class ComponentAnimator {
@@ -273,6 +274,92 @@ public class ComponentAnimator {
         t.start();
     }
 
+    //tile animations
+    public JComponent withEffects(JComponent comp) {
+        LayerUI<JComponent> ui = new LayerUI<>() {
+            @Override
+            public void paint(Graphics g, JComponent c) {
+                // c is the JLayer itself
+                if (!(c instanceof JLayer<?> layer)) return;
+
+                Component viewComp = layer.getView();
+                if (!(viewComp instanceof JComponent view)) return;
+
+                // ✅ paint the wrapped component normally (prevents Synth casting issues)
+                view.paint(g);
+
+                // ===== Shine overlay (optional) =====
+                Float phase = (Float) view.getClientProperty("shine.phase");
+                if (phase == null) return;
+
+                Graphics2D g2 = (Graphics2D) g.create();
+                try {
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                    int w = view.getWidth();
+                    int h = view.getHeight();
+
+                    // diagonal band x position goes from left to right across the component
+                    float x = (phase * (w + h)) - h;
+
+                    Polygon band = new Polygon();
+                    band.addPoint((int) x, 0);
+                    band.addPoint((int) (x + h * 0.6f), 0);
+                    band.addPoint((int) (x + h), h);
+                    band.addPoint((int) (x + h * 0.4f), h);
+
+                    g2.setComposite(AlphaComposite.SrcOver.derive(0.28f));
+                    g2.setPaint(new GradientPaint(
+                            0, 0, new Color(255, 255, 255, 0),
+                            w, h, new Color(255, 255, 255, 220)
+                    ));
+                    g2.fillPolygon(band);
+                } finally {
+                    g2.dispose();
+                }
+            }
+        };
+
+        return new JLayer<>(comp, ui);
+    }
+
+    public void shine(JComponent comp, boolean loop) {
+        // normalize: if someone passes a JLayer by accident, animate the view
+        if (comp instanceof JLayer<?> layer && layer.getView() instanceof JComponent v) {
+            comp = v;
+        }
+
+        comp.putClientProperty("shine.phase", 0f);
+
+        final int tickMs = 25;
+        final float speed = 0.06f;
+
+        JComponent finalComp = comp;
+        Timer t = new Timer(tickMs, e -> {
+            Float pObj = (Float) finalComp.getClientProperty("shine.phase");
+            float p = (pObj == null) ? 0f : pObj;
+
+            p += speed;
+
+            if (p >= 1f) {
+                if (loop) {
+                    p = 0f;
+                } else {
+                    ((Timer) e.getSource()).stop();
+                    finalComp.putClientProperty("shine.phase", null);
+                }
+            }
+
+            finalComp.putClientProperty("shine.phase", p);
+            finalComp.repaint();
+        });
+
+        replaceTimer(comp, t);
+        t.start();
+    }
+
+
+    //helpers
     public void stopAllAnimations() {
         active.values().forEach(Timer::stop);
     }
