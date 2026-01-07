@@ -74,6 +74,19 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
                 repaint();
                 revalidate();
             }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                // only when it makes sense to show hover effects
+                if (!isEnabled()) return;            // disabled tiles shouldn't “shine”
+                if (getBackground().equals(Color.BLACK)) return; // board inactive
+                setAnimationType(currentTileType, true);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                setAnimationType(currentTileType, false);
+            }
         });
     }
 
@@ -87,6 +100,7 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
             setupIcon("/pixel-mine.png", true);
             setEnabled(false);
             setTileType(tileTypes.MINE);
+            animator.sparkleFor(this, 1000);
         }
         else if (type.equals("S")) {
             setupIcon("/gift-pixel.png", false);
@@ -126,7 +140,7 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
             setEnabled(false);
         }
         System.out.println("tileview: i got updated that tile was Revealed: " + type);
-        setAnimaionType(currentTileType, true);
+        //setAnimationType(currentTileType, true);
     }
 
     public void setTileColor(Color color) {
@@ -138,12 +152,12 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
     // 2 methods only used to show if board is active or not, --dont set tileColor here!--
     protected void recolorTile() { //board is active
         setBackground(tileColor);
-        setAnimaionType(currentTileType, true);
+      //  setAnimationType(currentTileType, true);
     }
 
     protected void uncolorTile() { //board is inactive
         setBackground(Color.black);
-        setAnimaionType(currentTileType, false);
+       // setAnimationType(currentTileType, false);
     }
 
     @Override
@@ -165,7 +179,7 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
     {
         setTileColor(Color.BLACK);
         setEnabled(false);
-        setAnimaionType(currentTileType, false);
+        setAnimationType(currentTileType, false);
     }
 
     // changes on turn change to visibly show the active board
@@ -208,10 +222,12 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         currentTileType = type;
     }
 
-    private void setAnimaionType (tileTypes type, boolean activate) {
+    private void setAnimationType(tileTypes type, boolean activate) {
         if (type == tileTypes.SURPRISE) {
             animator.shine(this, activate);
         }
-
+        else if (type == tileTypes.QUESTION) {
+            animator.breathe(this, ColorsInUse.QUESTION_TILE_BREATH.get(), 1500, activate);
+        }
     }
 }

@@ -13,6 +13,10 @@ public class ComponentAnimator {
 
     private final java.util.Map<JComponent, Timer> active = new java.util.WeakHashMap<>();
 
+    private final java.util.Map<JComponent, SparkleOverlay> sparkleOverlays = new java.util.WeakHashMap<>();
+    private final java.util.Map<JComponent, Timer> sparkleEmitTimers = new java.util.WeakHashMap<>();
+
+
     private void replaceTimer(JComponent c, Timer next) {
         Timer prev = active.put(c, next);
         if (prev != null) {
@@ -331,8 +335,8 @@ public class ComponentAnimator {
 
         comp.putClientProperty("shine.phase", 0f);
 
-        final int tickMs = 25;
-        final float speed = 0.06f;
+        final int tickMs = 30;
+        final float speed = 0.03f;
 
         JComponent finalComp = comp;
         Timer t = new Timer(tickMs, e -> {
@@ -358,6 +362,118 @@ public class ComponentAnimator {
         t.start();
     }
 
+    // Breath
+
+    public void stop(JComponent c) {
+        Timer prev = active.remove(c);
+        if (prev != null && prev.isRunning()) prev.stop();
+
+        Color base = (Color) c.getClientProperty("breath.baseColor");
+        if (base != null) c.setBackground(base);
+
+        c.putClientProperty("breath.baseColor", null);
+        c.putClientProperty("breath.glowColor", null);
+        c.putClientProperty("breath.t0", null);
+        c.repaint();
+    }
+
+    /**
+     * Idle breathing pulse: smoothly blends component background between baseColor and glowColor.
+     * periodMs ~ 900-1400 feels good.
+     */
+    public void breathe(JComponent c, Color glowColor, int periodMs, boolean on) {
+        if (!on) {
+            stop(c);
+            return;
+        }
+
+        // if already running
+        Timer prev = active.get(c);
+        if (prev != null && prev.isRunning()) return;
+
+        // capture base background once
+        Color base = c.getBackground();
+        c.putClientProperty("breath.baseColor", base);
+        c.putClientProperty("breath.glowColor", glowColor);
+        c.putClientProperty("breath.t0", System.currentTimeMillis());
+
+        // smoother than 60fps, cheap enough
+        final int tickMs = 30;
+
+        Timer t = new Timer(tickMs, e -> {
+            Long t0 = (Long) c.getClientProperty("breath.t0");
+            Color b = (Color) c.getClientProperty("breath.baseColor");
+            Color g = (Color) c.getClientProperty("breath.glowColor");
+            if (t0 == null || b == null || g == null) {
+                ((Timer) e.getSource()).stop();
+                return;
+            }
+
+            long dt = System.currentTimeMillis() - t0;
+
+            // 0..1..0 with sine
+            double phase = (dt % periodMs) / (double) periodMs;         // 0..1
+            double s = (Math.sin(phase * Math.PI * 2) + 1) / 2.0;       // 0..1
+
+            // keep it subtle (adjust 0.35 if you want stronger glow)
+            double intensity = 0.85 * s;
+
+            int r = (int) Math.round(b.getRed()   * (1 - intensity) + g.getRed()   * intensity);
+            int gg = (int) Math.round(b.getGreen() * (1 - intensity) + g.getGreen() * intensity);
+            int bb = (int) Math.round(b.getBlue()  * (1 - intensity) + g.getBlue()  * intensity);
+
+            c.setBackground(new Color(r, gg, bb));
+            c.repaint();
+        });
+
+        replaceTimer(c, t);
+        t.start();
+    }
+
+
+    public void sparkle(JComponent target, boolean on) {
+        if (!on) {
+            stopSparkle(target);
+            return;
+        }
+
+        // already on?
+        if (sparkleEmitTimers.containsKey(target)) return;
+
+        JRootPane root = SwingUtilities.getRootPane(target);
+        if (root == null) return;
+
+        SparkleOverlay overlay = new SparkleOverlay(target, root);
+        sparkleOverlays.put(target, overlay);
+
+        // Emit small bursts while active (hover)
+        Timer emitter = new Timer(140, e -> overlay.emitBurst(5 + (int) (Math.random() * 6))); // 5..10
+        emitter.start();
+        sparkleEmitTimers.put(target, emitter);
+
+        // kick start with an initial burst
+        overlay.emitBurst(8);
+    }
+
+    public void stopSparkle(JComponent target) {
+        Timer em = sparkleEmitTimers.remove(target);
+        if (em != null) em.stop();
+
+        SparkleOverlay ov = sparkleOverlays.remove(target);
+        if (ov != null) ov.stopAndRemove();
+    }
+
+    public void sparkleFor(JComponent target, int durationMs) {
+        sparkle(target, true); // start
+
+        Timer stopTimer = new Timer(durationMs, e -> {
+            sparkle(target, false); // stop
+            ((Timer) e.getSource()).stop();
+        });
+        stopTimer.setRepeats(false);
+        stopTimer.start();
+    }
+
 
     //helpers
     public void stopAllAnimations() {
@@ -367,4 +483,227 @@ public class ComponentAnimator {
     public boolean isRunning() {
         return !active.isEmpty();
     }
+
+
+    ////////////////////////////// sparkle overlay is a subclass used for extra layering of aninmation
+    private static class SparkleOverlay extends JComponent {
+        private static class Particles {
+            float x, y;
+            float vx, vy;
+            float a;
+            float life;
+            int size;
+            Color color;
+
+            float startY;
+            float maxTravel;
+        }
+
+
+        private final java.util.List<Particles> particles = new java.util.ArrayList<>();
+        private final JComponent target;
+        private final JRootPane root;
+        private final JLayeredPane layeredPane;
+        private final Timer twinkleTimer;
+        private int twinkleFramesLeft = 0;
+
+
+        private final Timer tick;
+        private long lastTs = System.currentTimeMillis();
+
+        SparkleOverlay(JComponent target, JRootPane root) {
+            this.target = target;
+            this.root = root;
+            this.layeredPane = root.getLayeredPane();
+            setOpaque(false);
+
+            twinkleTimer = new Timer(700, e -> { // checks ~every 0.7s
+                if (!target.isShowing()) return;
+
+                // ~18% chance each check => roughly "every few seconds"
+                if (Math.random() < 0.18) {
+                    twinkleFramesLeft = 2; // 1–2 frames of extra glint
+                }
+            });
+            twinkleTimer.start();
+
+
+            // place overlay over the whole root so we don't fight layout
+            setBounds(0, 0, root.getWidth(), root.getHeight());
+            layeredPane.add(this, JLayeredPane.POPUP_LAYER);
+            layeredPane.repaint();
+
+            tick = new Timer(16, e -> onTick()); // ~60fps
+            tick.start();
+        }
+
+        void emitBurst(int count) {
+            setBounds(0, 0, root.getWidth(), root.getHeight());
+
+            Point screenPos, rootPos;
+            try {
+                screenPos = target.getLocationOnScreen();
+                rootPos = root.getLocationOnScreen();
+            } catch (IllegalComponentStateException ex) {
+                return;
+            }
+
+            int tx = screenPos.x - rootPos.x;
+            int ty = screenPos.y - rootPos.y;
+
+            int w = Math.max(1, target.getWidth());
+            int h = Math.max(1, target.getHeight());
+
+            for (int i = 0; i < count; i++) {
+                Particles p = new Particles();
+
+                p.x = tx + (float) (Math.random() * w);
+                p.y = ty + (float) (Math.random() * (h * 0.6));
+
+                p.vx = (float) ((Math.random() - 0.5) * 0.4);
+                p.vy = (float) (-(0.6 + Math.random() * 0.6));
+
+                p.startY = p.y;
+                p.maxTravel = 50f;
+
+                p.a = 1f;
+                p.life = 450 + (float) (Math.random() * 350);
+
+                p.size = 2 + (int) (Math.random() * 6);
+
+                Color[] pal = { Color.WHITE, new Color(255, 240, 120), new Color(239, 73, 73) };
+                p.color = pal[(int) (Math.random() * pal.length)];
+
+                particles.add(p);
+            }
+
+            repaint();
+        }
+
+
+        void stopAndRemove() {
+            tick.stop();
+            twinkleTimer.stop();
+            layeredPane.remove(this);
+            layeredPane.repaint();
+        }
+
+
+        private void onTick() {
+            long now = System.currentTimeMillis();
+            float dt = (now - lastTs);
+            lastTs = now;
+
+            if (!target.isShowing() || root.getWidth() <= 0 || root.getHeight() <= 0) {
+                stopAndRemove();
+                return;
+            }
+
+            if (twinkleFramesLeft > 0) {
+                emitCornerGlint();   // adds a few pixels instantly
+                twinkleFramesLeft--;
+            }
+
+            // fade + move
+            for (int i = particles.size() - 1; i >= 0; i--) {
+                Particles particles = this.particles.get(i);
+                particles.life -= dt;
+
+                particles.x += particles.vx * dt;
+                particles.y += particles.vy * dt;
+
+                // fade out non-linearly for nicer look
+                float t = Math.max(0f, particles.life) / 800f;
+                particles.a = Math.min(1f, t * t);
+
+                if (particles.life <= 0f) this.particles.remove(i);
+            }
+
+            // if nothing left, just keep ticking (emitter may add more)
+            repaint();
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            if (particles.isEmpty()) return;
+
+            Graphics2D g2 = (Graphics2D) g.create();
+            // crisp pixels > antialias
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+
+            for (Particles particles : this.particles) {
+                if (particles.a <= 0f) continue;
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, particles.a));
+
+                int x = Math.round(particles.x);
+                int y = Math.round(particles.y);
+
+                g2.fillRect(x, y, particles.size, particles.size);
+
+                // occasional second pixel for extra retro twinkle
+                if (particles.size >= 3 && Math.random() < 0.15) {
+                    g2.fillRect(x + particles.size + 1, y, 2, 2);
+                }
+
+                g2.setColor(particles.color);
+
+            }
+
+            g2.dispose();
+        }
+
+        private void emitCornerGlint() {
+            Point screenPos, rootPos;
+            try {
+                screenPos = target.getLocationOnScreen();
+                rootPos = root.getLocationOnScreen();
+            } catch (IllegalComponentStateException ex) {
+                return;
+            }
+
+            int tx = screenPos.x - rootPos.x;
+            int ty = screenPos.y - rootPos.y;
+
+            int w = Math.max(1, target.getWidth());
+            int h = Math.max(1, target.getHeight());
+
+            // pick a corner (0..3)
+            int corner = (int)(Math.random() * 4);
+
+            float cx, cy;
+            int pad = 6;
+            switch (corner) {
+                case 0 -> { cx = tx + pad;       cy = ty + pad; }       // top-left
+                case 1 -> { cx = tx + w - pad;   cy = ty + pad; }       // top-right
+                case 2 -> { cx = tx + pad;       cy = ty + h - pad; }   // bottom-left
+                default -> { cx = tx + w - pad;  cy = ty + h - pad; }   // bottom-right
+            }
+
+            // 3–5 “pixels” clustered, barely moving, fast fade
+            int n = 3 + (int)(Math.random() * 3);
+
+            Color[] pal = { Color.WHITE, new Color(255, 240, 140) };
+
+            for (int i = 0; i < n; i++) {
+                Particles p = new Particles();
+                p.x = cx + (float)((Math.random() - 0.5) * 10);
+                p.y = cy + (float)((Math.random() - 0.5) * 10);
+
+                p.vx = 0f;
+                p.vy = 0f;
+
+                p.a = 1f;
+                p.life = 80 + (float)(Math.random() * 80); // super short
+                p.size = 2 + (int)(Math.random() * 2);
+
+                p.color = pal[(int)(Math.random() * pal.length)];
+
+                particles.add(p);
+            }
+
+            repaint();
+        }
+
+    }
 }
+

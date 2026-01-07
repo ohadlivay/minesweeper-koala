@@ -30,6 +30,8 @@ public enum ColorsInUse {
 
     SURPRISE_TILE(Color.YELLOW), // 'S' tile
     QUESTION_TILE(Color.GREEN),  // 'Q' tile
+    QUESTION_TILE_BREATH(new Color(4, 65, 5, 255)),
+
 
     NUMBER_1(Color.BLUE),
     NUMBER_2(new Color(0, 128, 0)),
