@@ -45,7 +45,7 @@ public class QuestionController {
         }
 
         // Pick a random index from the available ones
-        int randomIndex = availableIndices.get(new Random().nextInt(availableIndices.size()));
+        int randomIndex = availableIndices.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(availableIndices.size()));
         Question q = questions.get(randomIndex);
 
         usedQuestions.add(q);
