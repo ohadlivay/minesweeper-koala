@@ -61,7 +61,7 @@ public class BoardLayout extends JPanel implements TurnListener {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                Tile t = null;
+                Tile t;
                 t = board.getTiles()[i][j]; //get tile from board controller
                 if (t != null) {
                     TileView tv = new TileView(t, calculatedTileSize, tileColor);

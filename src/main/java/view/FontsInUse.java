@@ -21,7 +21,7 @@ public enum FontsInUse {
                 GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(this.baseFont);
             }
         } catch (IOException | FontFormatException e) {
-            e.printStackTrace();
+            System.err.println("Error loading font " + resourcePath + ": " + e.getMessage());
             this.baseFont = new Font("SansSerif", Font.PLAIN, 12);
         }
     }
@@ -33,6 +33,9 @@ public enum FontsInUse {
 
     //Method to get the font with a specific style (BOLD, PLAIN) and size
     public Font getStyle(int style, float size) {
+        if (style != Font.PLAIN && style != Font.BOLD && style != Font.ITALIC) {
+            style = Font.PLAIN; // default to PLAIN if invalid style
+        }
         return baseFont.deriveFont(style, size);
     }
 

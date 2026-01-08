@@ -66,6 +66,8 @@ public class AddEditQuestionOverlay extends OverlayView {
         contentPanel.setBackground(ColorsInUse.BG_COLOR.get());
         contentPanel.setPreferredSize(new Dimension(800, 600));
 
+
+        // title
         String titleText = isEditing ? "EDITING QUESTION " + existingQuestion.getId() : "ADDING QUESTION " + (SysData.getInstance().getMaxId() + 1);
         OutlinedLabel titleLabel = new OutlinedLabel(titleText, Color.BLACK, 5f);
         titleLabel.setFont(FontsInUse.PIXEL.getSize(40f));
@@ -83,6 +85,8 @@ public class AddEditQuestionOverlay extends OverlayView {
         gbc.gridx = 0;
         gbc.gridy = 0;
 
+
+        // question text area
         QuestionPlaceholder = "Write your question here...";
         CorrectAnswerPlaceholder = "Correct Answer...";
         WrongAnswerPlaceholder = "Wrong Answer...";
@@ -131,6 +135,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         formPanel.add(questionArea, gbc);
         gbc.gridy++;
 
+        //difficulty selection buttons
         gbc.weighty = 0.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
@@ -138,6 +143,8 @@ public class AddEditQuestionOverlay extends OverlayView {
         difficultyPanel.setOpaque(false);
         difficultyPanel.add(createLabel("Select Difficulty:"));
 
+
+        // this could be styled better with CSS inline styling
         String easyTip = "<html><b>Easy</b><br/>Correct: +3 to +10 pts & +1 Life<br/>Incorrect: -3 to -10 pts or nothing</html>";
         String medTip = "<html><b>Medium</b><br/>Correct: Reveal Mine or 3x3 Area, +6 to +15 pts<br/>Incorrect: -6 to -15 pts, possible Life loss</html>";
         String hardTip = "<html><b>Hard</b><br/>Correct: +15 to +20 pts & +1-2 Lives<br/>Incorrect: -15 to -20 pts & -1 Life loss</html>";
@@ -157,6 +164,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         formPanel.add(difficultyPanel, gbc);
         gbc.gridy++;
 
+        // answers area
         gbc.insets = new Insets(4, 0, 4, 0);
         formPanel.add(createLabel("Answers:"), gbc);
         gbc.gridy++;
@@ -278,6 +286,9 @@ public class AddEditQuestionOverlay extends OverlayView {
         return btn;
     }
 
+    /**
+     * Updates difficulty selection; provides visual feedback and sound
+     */
     private void updateSelection() {
         Color selectedColor = ColorsInUse.TEXT.get();
         Color unselectedColor = new Color(0, 0, 0, 0);
@@ -298,6 +309,9 @@ public class AddEditQuestionOverlay extends OverlayView {
         }
     }
 
+    /**
+     * Populates question and answer fields with existing data
+     */
     private void populateFields() {
         questionArea.setText(existingQuestion.getQuestionText());
         questionArea.setForeground(ColorsInUse.TEXT.get());
@@ -449,12 +463,12 @@ public class AddEditQuestionOverlay extends OverlayView {
         return new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                // allow Ctrl+A / Ctrl+C / Ctrl+V / Ctrl+X etc.
+                // to allow Ctrl+A / Ctrl+C / Ctrl+V / Ctrl+X etc.
                 if (e.isControlDown() || e.isMetaDown() || e.isAltDown()) {
                     return;
                 }
 
-                // also allow backspace, delete, etc. (they aren't "real" characters)
+                // to allow backspace, delete, etc.
                 char ch = e.getKeyChar();
                 if (Character.isISOControl(ch)) {
                     return;

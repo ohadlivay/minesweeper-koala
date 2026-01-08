@@ -2,11 +2,9 @@
 model.GameSession
  */
 
-
 package main.java.controller;
 
 import main.java.model.*;
-import main.java.util.GameDataCSVManager;
 import main.java.view.GameScreen;
 
 import java.io.IOException;

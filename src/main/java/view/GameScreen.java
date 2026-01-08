@@ -8,6 +8,7 @@ import main.java.view.overlays.OverlayType;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.Objects;
 
 public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener, GameOverListener, SurpriseListener {
     private final NavigationController nav;
@@ -81,7 +82,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         topPanel.setOpaque(false);
         topPanel.setBorder(new EmptyBorder(20, 20, 5, 20));
 
-        JButton infoIcon = new JButton(new ImageIcon(getClass().getResource("/info.png")));
+        JButton infoIcon = new JButton(new ImageIcon(Objects.requireNonNull(getClass().getResource("/info.png"))));
         infoIcon.setBorder(new EmptyBorder(0, 0, 5, 0));
         infoIcon.setToolTipText("How to play");
         infoIcon.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -89,9 +90,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         infoIcon.setBackground(ColorsInUse.BG_COLOR.get());
         infoIcon.setFocusPainted(false);
         infoIcon.setContentAreaFilled(false);
-        infoIcon.addActionListener(e -> {
-            OverlayController.getInstance().showOverlay(OverlayType.INSTRUCTIONS);
-        });
+        infoIcon.addActionListener(e -> OverlayController.getInstance().showOverlay(OverlayType.INSTRUCTIONS));
 
         topPanel.add(infoIcon, BorderLayout.NORTH);
 

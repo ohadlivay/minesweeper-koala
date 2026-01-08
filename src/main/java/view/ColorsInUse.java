@@ -126,27 +126,26 @@ public enum ColorsInUse {
     }
 
     public static Color numberColor(String n) {
-        switch (n) {
-            case "1": return NUMBER_1.get();
-            case "2": return NUMBER_2.get();
-            case "3": return NUMBER_3.get();
-            case "4": return NUMBER_4.get();
-            case "5": return NUMBER_5.get();
-            case "6": return NUMBER_6.get();
-            case "7": return NUMBER_7.get();
-            case "8": return NUMBER_8.get();
-            default: return TILE_DEFAULT.get();
-        }
+        return switch (n) {
+            case "1" -> NUMBER_1.get();
+            case "2" -> NUMBER_2.get();
+            case "3" -> NUMBER_3.get();
+            case "4" -> NUMBER_4.get();
+            case "5" -> NUMBER_5.get();
+            case "6" -> NUMBER_6.get();
+            case "7" -> NUMBER_7.get();
+            case "8" -> NUMBER_8.get();
+            default -> TILE_DEFAULT.get();
+        };
     }
 
     public static Color forTileType(String type) {
         if (type == null) return TILE_DEFAULT.get();
-        switch (type) {
-            case "S": return SURPRISE_TILE.get();
-            case "Q": return QUESTION_TILE.get();
-            case "0": // revealed empty
-            case "M": // mine (use revealed bg)
-            default:  return REVEALED_BG.get();
-        }
+        return switch (type) {
+            case "S" -> SURPRISE_TILE.get();
+            case "Q" -> QUESTION_TILE.get(); // revealed empty
+            // mine (use revealed bg)
+            default -> REVEALED_BG.get();
+        };
     }
 }

@@ -61,6 +61,7 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
 
     private void mouseClicked() {
         addMouseListener(new MouseAdapter() {
+            // Handles right/left clicks; triggers controller actions; refreshes display
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (gameSessionController==null) return;
@@ -96,48 +97,49 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         String type = tile.toString();
         if (tile.getIsFlagged())
             setupIcon(null, false);
-        if (type.equals("M")) {
-            setupIcon("/pixel-mine.png", true);
-            setEnabled(false);
-            setTileType(tileTypes.MINE);
-            animator.sparkleFor(this, 1000);
-        }
-        else if (type.equals("S")) {
-            setupIcon("/gift-pixel.png", false);
-            setTileColor(ColorsInUse.SURPRISE_TILE.get());
-            setEnabled(true);
-            setTileType(tileTypes.SURPRISE);
-        }
-
-        else if (type.equals("Q")) {
-            setupIcon("/pixel-question.png", false);
-            setTileColor(ColorsInUse.QUESTION_TILE.get());
-            setEnabled(true);
-            setTileType(tileTypes.QUESTION);
-        }
-        else
-        {
-            if (type.equals("0")) {
-                setText("");
-                setTileColor(ColorsInUse.REVEALED_BG.get());
-                setTileType(tileTypes.EMPTY);
+        // Updates tile appearance based on revealed type
+        switch (type) {
+            case "M" -> {
+                setupIcon("/pixel-mine.png", true);
+                setEnabled(false);
+                setTileType(tileTypes.MINE);
+                animator.sparkleFor(this, 1000);
             }
-            else
-            {
-                setText(type);
-                setTileColor(ColorsInUse.REVEALED_BG.get());
-                setTileType(tileTypes.NUMBER);
+            case "S" -> {
+                setupIcon("/gift-pixel.png", false);
+                setTileColor(ColorsInUse.SURPRISE_TILE.get());
+                setEnabled(true);
+                setTileType(tileTypes.SURPRISE);
             }
+            case "Q" -> {
+                setupIcon("/pixel-question.png", false);
+                setTileColor(ColorsInUse.QUESTION_TILE.get());
+                setEnabled(true);
+                setTileType(tileTypes.QUESTION);
+            }
+            default -> {
+                // Sets empty or numbered tile appearance
+                if (type.equals("0")) {
+                    setText("");
+                    setTileColor(ColorsInUse.REVEALED_BG.get());
+                    setTileType(tileTypes.EMPTY);
+                } else {
+                    setText(type);
+                    setTileColor(ColorsInUse.REVEALED_BG.get());
+                    setTileType(tileTypes.NUMBER);
+                }
 
-            if (type.equals("1")) setForeground(ColorsInUse.NUMBER_1.get());
-            else if (type.equals("2")) setForeground(ColorsInUse.NUMBER_2.get());
-            else if (type.equals("3")) setForeground(ColorsInUse.NUMBER_3.get());
-            else if (type.equals("4")) setForeground(ColorsInUse.NUMBER_4.get());
-            else if (type.equals("5")) setForeground(ColorsInUse.NUMBER_5.get());
-            else if (type.equals("6")) setForeground(ColorsInUse.NUMBER_6.get());
-            else if (type.equals("7")) setForeground(ColorsInUse.NUMBER_7.get());
-            else if (type.equals("8")) setForeground(ColorsInUse.NUMBER_8.get());
-            setEnabled(false);
+                // Sets foreground color based on revealed number
+                if (type.equals("1")) setForeground(ColorsInUse.NUMBER_1.get());
+                else if (type.equals("2")) setForeground(ColorsInUse.NUMBER_2.get());
+                else if (type.equals("3")) setForeground(ColorsInUse.NUMBER_3.get());
+                else if (type.equals("4")) setForeground(ColorsInUse.NUMBER_4.get());
+                else if (type.equals("5")) setForeground(ColorsInUse.NUMBER_5.get());
+                else if (type.equals("6")) setForeground(ColorsInUse.NUMBER_6.get());
+                else if (type.equals("7")) setForeground(ColorsInUse.NUMBER_7.get());
+                else if (type.equals("8")) setForeground(ColorsInUse.NUMBER_8.get());
+                setEnabled(false);
+            }
         }
         System.out.println("tileview: i got updated that tile was Revealed: " + type);
         //setAnimationType(currentTileType, true);
@@ -222,6 +224,9 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         currentTileType = type;
     }
 
+    /**
+     * Activates tile‑specific animations based on tile type
+     */
     private void setAnimationType(tileTypes type, boolean activate) {
         if (type == tileTypes.SURPRISE) {
             animator.shine(this, activate);

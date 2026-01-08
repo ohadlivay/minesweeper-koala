@@ -26,11 +26,10 @@ public class SurpriseOverlay extends OverlayView{
 
     private Timer animationTimer;
     private Timer closeTimer;
-    private boolean closed = false;
+    private boolean closed;
 
 
     private static final Dimension OVERLAY_SIZE = new Dimension(520, 520);
-    private final int closeTimerDuration = 7; // seconds
 
     private static final String BG = "/surprise-bg.png";
     private static final String SELECTED_CARD = "/surprise-card-selected.png";
@@ -84,8 +83,10 @@ public class SurpriseOverlay extends OverlayView{
         JPanel cardsRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 70, 0));
         cardsRow.setOpaque(false);
 
-        leftCardPanel  = (JPanel) createCardTile(UNSELECTED_CARD);
-        rightCardPanel = (JPanel) createCardTile(UNSELECTED_CARD);
+
+        // creating cards, default is unselected card
+        leftCardPanel  = (JPanel) createCardTile();
+        rightCardPanel = (JPanel) createCardTile();
 
         cardsRow.add(leftCardPanel);
         cardsRow.add(rightCardPanel);
@@ -168,7 +169,7 @@ public class SurpriseOverlay extends OverlayView{
     }
 
 
-    private JComponent createCardTile(String imagePath) {
+    private JComponent createCardTile() {
         JPanel tile = new JPanel(new GridBagLayout());
         tile.setOpaque(false);
         tile.setPreferredSize(new Dimension(170, 170));
@@ -178,7 +179,7 @@ public class SurpriseOverlay extends OverlayView{
 
         tile.add(card);
 
-        setTileIcon(tile, imagePath);
+        setTileIcon(tile, SurpriseOverlay.UNSELECTED_CARD);
         return tile;
     }
 
@@ -273,7 +274,9 @@ public class SurpriseOverlay extends OverlayView{
     private void closeOverlay() {
         if (closeTimer != null) closeTimer.stop();
 
-        closeTimer = new Timer(closeTimerDuration*1000, e -> closeOverlayImmediately());
+        // seconds
+        int closeTimerDuration = 7;
+        closeTimer = new Timer(closeTimerDuration *1000, e -> closeOverlayImmediately());
         closeTimer.setRepeats(false);
         closeTimer.start();
 

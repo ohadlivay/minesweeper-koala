@@ -17,7 +17,7 @@ import java.util.List;
 public class QuestionManagerScreen extends JPanel {
 
     private final NavigationController nav;
-    private TableActionListener tableActionListener;
+    private TableActionListener tableActionListener;  //never assigned but 4 usages, delete?
     private JPanel mainPanel;
     private JTable questionsTable;
     private DefaultTableModel tableModel;
@@ -120,13 +120,12 @@ public class QuestionManagerScreen extends JPanel {
         if (addIconUrl != null) {
             ImageIcon icon = new ImageIcon(addIconUrl);
             Image img = icon.getImage().getScaledInstance(24, 24, Image.SCALE_DEFAULT);
-            btnAdd.setIcon(new ImageIcon(img));
+            if(btnAdd != null)
+                btnAdd.setIcon(new ImageIcon(img));
 
         }
 
-        btnAdd.addActionListener(e -> {
-            OverlayController.getInstance().showAddEditOverlay(null);
-        });
+        btnAdd.addActionListener(e -> OverlayController.getInstance().showAddEditOverlay(null));
         bottomPanel.add(btnAdd, BorderLayout.EAST);
 
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);

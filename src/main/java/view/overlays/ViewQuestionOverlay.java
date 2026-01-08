@@ -24,7 +24,6 @@ import java.util.List;
 
 public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionListener {
     private JPanel contentPane;
-    private JLabel titleLabel;
     private JLabel difficultyLabel;
     private JLabel questionText;
     private JButton buttonSubmit;

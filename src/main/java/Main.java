@@ -17,6 +17,7 @@ import java.awt.event.WindowEvent;
 public class Main {
     public static void main(String[] args) {
 
+        /*what's flatlaf? can we delete it?*/
         /*optional FlatLef look and feel
         try {
             UIManager.setLookAndFeel(new FlatMacDarkLaf());

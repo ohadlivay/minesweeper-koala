@@ -6,7 +6,6 @@ import main.java.model.SysData;
 import main.java.util.QuestionCSVManager;
 import main.java.view.QuestionManagerScreen;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class QuestionManagerController {
@@ -41,9 +40,9 @@ public class QuestionManagerController {
         view.populateTable(questions);
         view.jumpToLastPageAndPopulate(questions);
     }
-/*
-tali's delete/edit/add questions.
- */
+    /*
+    tali's delete/edit/add questions.
+     */
     public boolean userDeletedQuestion(Question question) {
         try {
             // attempt to delete (this calls the list removal and CSV update)

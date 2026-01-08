@@ -60,6 +60,7 @@ public class QuestionController {
     /*
     Clears the history of asked questions
      */
+    // why boolean?
     public boolean restartUsedQuestions(){
         // FIX: "new Set" is invalid because Set is an interface. 
         // We can simply clear the existing HashSet.

@@ -257,21 +257,21 @@ public class ComponentAnimator {
 
         final int[] step = {0};
 
-        button.setText("Close (" + String.valueOf(startValue) +")");
+        button.setText("Close (" + startValue +")");
 
         Timer t = new Timer(tickMs, e -> {
             step[0]++;
 
             int currentValue = (startValue - (step[0] * (startValue - target) / steps));
 
-            button.setText("Close (" + String.valueOf(currentValue) +")");
+            button.setText("Close (" + currentValue +")");
 
             // play on every tick
             //SoundManager.getInstance().playOnce(SoundManager.SoundId.SELECTION);
 
             if (step[0] >= steps) {
                 ((Timer) e.getSource()).stop();
-                button.setText("Close (" + String.valueOf(currentValue) +")");
+                button.setText("Close (" + currentValue +")");
             }
         });
 

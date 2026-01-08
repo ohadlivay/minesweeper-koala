@@ -17,9 +17,6 @@ public class NavigationController {
             instance = new NavigationController(frame);
             OverlayController.getInstance(instance);
         }
-        else if (instance.getVisFrame() != frame) {
-
-        }
         return instance;
     }
 
