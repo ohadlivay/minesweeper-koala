@@ -145,20 +145,66 @@ public class AddEditQuestionOverlay extends OverlayView {
 
 
         // this could be styled better with CSS inline styling
-        String easyTip = "<html><b>Easy</b><br/>Correct: +3 to +10 pts & +1 Life<br/>Incorrect: -3 to -10 pts or nothing</html>";
-        String medTip = "<html><b>Medium</b><br/>Correct: Reveal Mine or 3x3 Area, +6 to +15 pts<br/>Incorrect: -6 to -15 pts, possible Life loss</html>";
-        String hardTip = "<html><b>Hard</b><br/>Correct: +15 to +20 pts & +1-2 Lives<br/>Incorrect: -15 to -20 pts & -1 Life loss</html>";
-        String expertTip = "<html><b>Expert</b><br/>Correct: +15 to +40 pts & +2-3 Lives<br/>Incorrect: -15 to -40 pts & up to -3 Lives loss</html>";
+        String easyTip =
+                "<html>" +
+                        "<b><font color='#027315'>EASY</font></b><br/>" +
+                        "<hr/>" +
+                        "<font color='#0cc42b'>✔ Correct:</font><br/>" +
+                        "&nbsp;&nbsp;+3 to +10 pts<br/>" +
+                        "&nbsp;&nbsp;+1 Life<br/>" +
+                        "<br/>" +
+                        "<font color='#FF6B6B'>✖ Incorrect:</font><br/>" +
+                        "&nbsp;&nbsp;-3 to -10 pts<br/>" +
+                        "&nbsp;&nbsp;or no penalty" +
+                        "</html>";
+        String medTip =
+                "<html>" +
+                        "<b><font color='#f5ca0a'>MEDIUM</font></b><br/>" +
+                        "<hr/>" +
+                        "<font color='#0cc42b'>✔ Correct:</font><br/>" +
+                        "&nbsp;&nbsp;+6 to +15 pts<br/>" +
+                        "&nbsp;&nbsp;Reveal Mine/Area<br/>" +
+                        "<br/>" +
+                        "<font color='#FF6B6B'>✖ Incorrect:</font><br/>" +
+                        "&nbsp;&nbsp;-6 to -15 pts<br/>" +
+                        "&nbsp;&nbsp;Possible life loss" +
+                        "</html>";
+
+        String hardTip =
+                "<html>" +
+                        "<b><font color='#FF6B6B'>HARD</font></b><br/>" +
+                        "<hr/>" +
+                        "<font color='#0cc42b'>✔ Correct:</font><br/>" +
+                        "&nbsp;&nbsp;+15 to +20 pts<br/>" +
+                        "&nbsp;&nbsp;+1 to +2 Lives<br/>" +
+                        "<br/>" +
+                        "<font color='#FF6B6B'>✖ Incorrect:</font><br/>" +
+                        "&nbsp;&nbsp;-15 to -20 pts<br/>" +
+                        "&nbsp;&nbsp;-1 Life loss" +
+                        "</html>";
+
+        String masterTip =
+                "<html>" +
+                        "<b><font color='#B10DC9'>MASTER</font></b><br/>" +
+                        "<hr/>" +
+                        "<font color='#0cc42b'>✔ Correct:</font><br/>" +
+                        "&nbsp;&nbsp;+15 to +40 pts<br/>" +
+                        "&nbsp;&nbsp;+2 to +3 Lives<br/>" +
+                        "<br/>" +
+                        "<font color='#FF6B6B'>✖ Incorrect:</font><br/>" +
+                        "&nbsp;&nbsp;-15 to -40 pts<br/>" +
+                        "&nbsp;&nbsp;Up to -3 Lives loss" +
+                        "</html>";
 
         btnEasy = createKoalaButton("/green-koala-pixel.png", easyTip, QuestionDifficulty.EASY);
         btnMedium = createKoalaButton("/yellow-koala-pixel.png", medTip, QuestionDifficulty.MEDIUM);
         btnHard = createKoalaButton("/red-koala-pixel.png", hardTip, QuestionDifficulty.HARD);
-        btnMaster = createKoalaButton("/master-koala-pixel.png", expertTip, QuestionDifficulty.MASTER);
+        btnMaster = createKoalaButton("/master-koala-pixel.png", masterTip, QuestionDifficulty.MASTER);
 
         difficultyPanel.add(createLabeledDifficultyPanel(btnEasy, "Easy"));
         difficultyPanel.add(createLabeledDifficultyPanel(btnMedium, "Medium"));
         difficultyPanel.add(createLabeledDifficultyPanel(btnHard, "Hard"));
-        difficultyPanel.add(createLabeledDifficultyPanel(btnMaster, "Expert"));
+        difficultyPanel.add(createLabeledDifficultyPanel(btnMaster, "Master"));
 
         gbc.insets = new Insets(10, 0, 10, 0);
         formPanel.add(difficultyPanel, gbc);
