@@ -1,10 +1,6 @@
 package main.java.model;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 // Class to handle cascading reveal of tiles in Minesweeper
 public class Cascader {
@@ -16,15 +12,6 @@ public class Cascader {
     public Cascader(Tile head, Tile[][] grid) {
         this.head = head;
         this.grid = grid;
-    }
-
-    // Getters
-    public Tile getHead() {
-        return head;
-    }
-
-    public Tile[][] getGrid() {
-        return grid;
     }
 
     // Main cascade method

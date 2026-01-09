@@ -76,13 +76,6 @@ public class DeleteQuestionOverlay extends OverlayView {
         close();
     }
 
-    private JLabel createLabel(String text) {
-        JLabel label = new JLabel(text, SwingConstants.CENTER);
-        label.setFont(FontsInUse.PIXEL.getSize(24f));
-        label.setForeground(ColorsInUse.TEXT.get());
-        return label;
-    }
-
     private JButton createActionButton(String text, Color bg) {
         JButton btn = new JButton(text);
         btn.setFont(FontsInUse.PIXEL.getSize(20f));

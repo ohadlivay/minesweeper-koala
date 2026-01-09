@@ -1,10 +1,13 @@
 package main.java.util;
-import java.util.List;
-import main.java.model.*;
+
+import main.java.model.GameData;
+import main.java.model.GameDifficulty;
+import main.java.model.SysData;
 
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 //Class that handles the CSV file for storing the game data
 public class GameDataCSVManager

@@ -2,7 +2,6 @@ package main.java.model;
 
 import main.java.util.QuestionCSVManager;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 // Singleton class to manage system data
@@ -84,16 +83,6 @@ public class SysData
     //Clear the list of questions
     public void clearQuestions() {
         questions.clear();
-    }
-
-    //Get a question from the list
-    public void getQuestion(int index) {
-        questions.get(index);
-    }
-
-    //Get the number of questions in the list
-    public int getNumberOfQuestions() {
-        return questions.size();
     }
 
     // Delete a question from the list and update the CSV file

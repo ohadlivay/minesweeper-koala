@@ -50,10 +50,6 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         super.close();
     }
 
-    public void setBoard(Board board) {
-        this.activeBoard = board;
-    }
-
     private void initUI() {
         contentPane = new JPanel(new BorderLayout());
         contentPane.setBackground(ColorsInUse.BG_COLOR.get());

@@ -1,7 +1,6 @@
 package main.java.view;
 
 
-import main.java.controller.GameSessionController;
 import main.java.model.Board;
 import main.java.model.Tile;
 import main.java.model.TurnListener;
@@ -14,7 +13,6 @@ public class BoardLayout extends JPanel implements TurnListener {
     private final int rows;
     private final int cols;
     private final TileView[][] tileViewGrid; // to hold references to TileView components
-    private final GameSessionController gameSessionController = GameSessionController.getInstance(); //changed to singleton -ohad
     private Board board; //only use for getters
     private static final int boardSize = 450;
 

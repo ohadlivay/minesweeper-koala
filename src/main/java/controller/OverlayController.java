@@ -1,7 +1,6 @@
 package main.java.controller;
 
 import main.java.model.Board;
-import main.java.model.GameDifficulty;
 import main.java.model.Question;
 import main.java.view.ComponentAnimator;
 import main.java.view.overlays.*;
@@ -43,13 +42,6 @@ public class OverlayController {
             this.currentOverlay = overlay;
             overlay.open();
         }
-    }
-
-    public void showSettingsOverlay(String player1, String player2, GameDifficulty difficulty) {
-        closeCurrentOverlay();
-        SettingsOverlay overlay = new SettingsOverlay(nav, player1, player2, difficulty);
-        this.currentOverlay = overlay;
-        overlay.open();
     }
 
     public void showGameOverOverlay(boolean isWin, int score) {

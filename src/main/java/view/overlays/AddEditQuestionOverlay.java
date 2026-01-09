@@ -175,11 +175,11 @@ public class AddEditQuestionOverlay extends OverlayView {
         answer4 = createStyledTextField();
         wrongAnswers = new JTextField[]{answer2, answer3, answer4};
 
-        formPanel.add(createAnswerFieldWrapper(answer1, ColorsInUse.CONFIRM.get(), CorrectAnswerPlaceholder, gbc), gbc);
+        formPanel.add(createAnswerFieldWrapper(answer1, ColorsInUse.CONFIRM.get(), CorrectAnswerPlaceholder), gbc);
         gbc.gridy++;
 
         for (JTextField tf : wrongAnswers) {
-            formPanel.add(createAnswerFieldWrapper(tf, ColorsInUse.DENY.get(), WrongAnswerPlaceholder, gbc), gbc);
+            formPanel.add(createAnswerFieldWrapper(tf, ColorsInUse.DENY.get(), WrongAnswerPlaceholder), gbc);
             gbc.gridy++;
         }
 
@@ -431,7 +431,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         }
     };
 
-    private JPanel createAnswerFieldWrapper(JTextField field, Color bgColor, String placeholder, GridBagConstraints gbc) {
+    private JPanel createAnswerFieldWrapper(JTextField field, Color bgColor, String placeholder) {
         field.setBackground(bgColor);
         field.setBorder(BorderFactory.createCompoundBorder(new LineBorder(ColorsInUse.TEXT_BOX_BORDER.get(), 1), new EmptyBorder(5, 5, 5, 5)));
         field.setText(placeholder);

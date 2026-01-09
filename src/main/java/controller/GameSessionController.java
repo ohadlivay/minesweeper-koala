@@ -33,10 +33,6 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
         }
     }
 
-    public void addInputBlockListener(InputBlockListener listener) {
-        this.blockListeners.add(listener);
-    }
-
     // retrieves user inputs and sets up a new game session
     public void setupGame(String leftName, String rightName, GameDifficulty difficulty) {
         session = GameSession.getInstance();
@@ -81,7 +77,7 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
 
 
     // used for testing purposes only
-    public void endGame(GameSession session,NavigationController nav) throws IOException {
+    public void endGame(GameSession session, @SuppressWarnings("unused") NavigationController nav) throws IOException {
         if (isSaving)
             return;
         isSaving = true;

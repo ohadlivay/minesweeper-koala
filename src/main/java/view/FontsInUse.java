@@ -31,13 +31,5 @@ public enum FontsInUse {
         return baseFont.deriveFont(size);
     }
 
-    //Method to get the font with a specific style (BOLD, PLAIN) and size
-    public Font getStyle(int style, float size) {
-        if (style != Font.PLAIN && style != Font.BOLD && style != Font.ITALIC) {
-            style = Font.PLAIN; // default to PLAIN if invalid style
-        }
-        return baseFont.deriveFont(style, size);
-    }
-
 
 }

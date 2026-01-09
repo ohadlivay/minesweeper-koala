@@ -56,7 +56,6 @@ public class Question {
 
     // --- Setters ---
     // these will need to update the csv aswell, so changes are permanent and not just in RAM
-    public void setId(int id) { this.id = id; }
     public void setQuestionText(String questionText) {
         if (questionText.length() > maxQuestionLength) throw new IllegalArgumentException("Question text too long");
         this.questionText = questionText;

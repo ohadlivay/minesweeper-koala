@@ -2,7 +2,10 @@ package main.java.controller;
 
 import main.java.model.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class QuestionController {
     private static QuestionController instance;
@@ -50,11 +53,6 @@ public class QuestionController {
 
         usedQuestions.add(q);
         return q;
-    }
-
-    public boolean setUsedQuestions(Set<Question> questions){
-        this.usedQuestions = questions;
-        return true;
     }
 
     /*

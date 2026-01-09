@@ -1,12 +1,14 @@
 package main.java.model;
-import main.java.test.Testable;
+
 import main.java.util.GameDataCSVManager;
 import main.java.util.SoundManager;
-import main.java.view.GameScreen;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Random;
+import java.util.Set;
 /*
 Dear Ohad,
 I would love to create the boards myself using the constructor or initiate the method with the appropriate values.
@@ -369,10 +371,6 @@ public class GameSession
         return true;
     }
 
-    private boolean hisTurn(Tile tile){
-        return tile.getParentBoard().getTurn();
-    }
-
     private void gainPoints(int points){
         System.out.println("Points 'added': "+points);
         this.setPoints(this.getPoints() + points);
@@ -384,12 +382,6 @@ public class GameSession
     }
 
     private void gainHealth(int health) {
-        System.out.println("Health 'added': "+health);
-        this.setHealthPool(this.getHealthPool() + health);
-    }
-
-    // didnt want to make gainHealth public so... for now this stupid solution until we think of something smarter :(
-    public void testOnlyGainHealth(int health) {
         System.out.println("Health 'added': "+health);
         this.setHealthPool(this.getHealthPool() + health);
     }

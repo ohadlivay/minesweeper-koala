@@ -1,13 +1,11 @@
 package main.java.model;
 
-import main.java.test.Testable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class BoardGenerator implements Testable {
+public class BoardGenerator {
     private int rows;
     private int cols;
     private int numMines;
@@ -255,7 +253,6 @@ public class BoardGenerator implements Testable {
         return tiles;
     }
 
-    @Override
     public boolean runClassTests() {
         int seed = 20;
 

@@ -1,7 +1,8 @@
 package main.java.test;
 
 import main.java.controller.NavigationController;
-import javax.swing.JFrame;
+
+import javax.swing.*;
 
 public class NavigationControllerTest {
 

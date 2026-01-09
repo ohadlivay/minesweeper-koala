@@ -8,7 +8,6 @@ import java.util.List;
 
 public class HistoryController {
     private GameHistoryScreen view;
-    private SysData sysData;
 
     private static HistoryController instance;
 

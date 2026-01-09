@@ -1,13 +1,11 @@
 // Java
 package main.java.model;
 
-import main.java.test.Testable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Board implements Testable {
+public class Board {
 
     private final int PK;
     private int minesLeft;
@@ -44,9 +42,12 @@ public class Board implements Testable {
     }
 
     // we might want to implement a factory design pattern here
-    public static Board createNewBoard(GameDifficulty gameDifficulty){
+    public static Board createNewBoard(GameDifficulty gameDifficulty)
+    {
         return new Board(gameDifficulty);
     }
+
+
     public int reveal(Tile tile) {
         if(tile.isRevealed())
             return 0;
@@ -244,8 +245,4 @@ public class Board implements Testable {
         return this.minesLeft;
     }
 
-    @Override
-    public boolean runClassTests() {
-        return false;
-    }
 }
