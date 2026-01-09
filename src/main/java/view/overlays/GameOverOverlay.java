@@ -96,15 +96,9 @@ public class GameOverOverlay extends OverlayView {
             String player2 = GameSessionController.getInstance().getSession().getRightPlayerName();
             GameDifficulty selectedDifficulty = GameSessionController.getInstance().getSession().getGameDifficulty();
 
-            //option 1: restart a game with the same difficulty and names
+            // restart a game with the same difficulty and names
             GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty);
             nav.goToGame();
-
-            // option 2: go back to settings
-            //OverlayController.getInstance().showOverlay(OverlayType.SETTINGS);
-
-            //option 3: settings screen but with the current game's details already selected
-            //OverlayController.getInstance().showSettingsOverlay(player1, player2, selectedDifficulty);
             close();
         });
 
