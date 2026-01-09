@@ -106,9 +106,27 @@ public class SettingsOverlay extends OverlayView {
         JPanel difficultyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 0));
         difficultyPanel.setBackground(ColorsInUse.BG_COLOR.get());
 
-        btnEasy = createKoalaButton("/green-koala-pixel.png", "Easy", "9x9", GameDifficulty.EASY);
-        btnMedium = createKoalaButton("/yellow-koala-pixel.png", "Medium", "13x13", GameDifficulty.MEDIUM);
-        btnHard = createKoalaButton("/red-koala-pixel.png", "Hard", "16x16", GameDifficulty.HARD);
+        //create tooltip text
+        String easyTip = "<html><b>Easy Difficulty</b><br/>" +
+                "Grid: " + GameDifficulty.EASY.getRows() + "x" + GameDifficulty.EASY.getCols() + "<br/>" +
+                "Mines: " + GameDifficulty.EASY.getMineCount() + "<br/>" +
+                "Special Tile Activation Cost: " + GameDifficulty.EASY.getActivationCost() + "</html>";
+
+        String medTip = "<html><b>Medium Difficulty</b><br/>" +
+                "Grid: " + GameDifficulty.MEDIUM.getRows() + "x" + GameDifficulty.MEDIUM.getCols() + "<br/>" +
+                "Mines: " + GameDifficulty.MEDIUM.getMineCount() + "<br/>" +
+                "Soecial Tile Activation Cost: " + GameDifficulty.MEDIUM.getActivationCost() + "</html>";
+
+        String hardTip = "<html><b>Hard Difficulty</b><br/>" +
+                "Grid: " + GameDifficulty.HARD.getRows() + "x" + GameDifficulty.HARD.getCols() + "<br/>" +
+                "Mines: " + GameDifficulty.HARD.getMineCount() + "<br/>" +
+                "Special Tile Activation Cost: " + GameDifficulty.HARD.getActivationCost() + "</html>";
+
+        btnEasy = createKoalaButton("/green-koala-pixel.png", "Easy", easyTip, GameDifficulty.EASY);
+        btnMedium = createKoalaButton("/yellow-koala-pixel.png", "Medium", medTip, GameDifficulty.MEDIUM);
+        btnHard = createKoalaButton("/red-koala-pixel.png", "Hard", hardTip, GameDifficulty.HARD);
+
+
 
         difficultyPanel.add(btnEasy);
         difficultyPanel.add(btnMedium);
@@ -146,6 +164,7 @@ public class SettingsOverlay extends OverlayView {
         contentPane.add(bottomPanel, BorderLayout.SOUTH);
 
         this.setContentPane(contentPane);
+
 
     }
 
