@@ -3,7 +3,6 @@ package main.java.view.overlays;
 import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.model.GameDifficulty;
-import main.java.model.QuestionDifficulty;
 import main.java.util.SoundManager;
 import main.java.view.ColorsInUse;
 import main.java.view.FontsInUse;
@@ -14,7 +13,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.URL;
 
 public class SettingsOverlay extends OverlayView {
     private JPanel contentPane;
@@ -26,6 +24,8 @@ public class SettingsOverlay extends OverlayView {
     private JTextField player1Name;
     private JTextField player2Name;
     private GameDifficulty selectedDifficulty;
+
+    private final int PlAYER_TEXT_LENGTH = 15;
 
     public SettingsOverlay(NavigationController nav) {
         super(nav, true);
@@ -46,7 +46,7 @@ public class SettingsOverlay extends OverlayView {
             public void mouseClicked(MouseEvent e) {
                 resetSelection();
                 selectedDifficulty = GameDifficulty.EASY;
-                btnEasy.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2),new EmptyBorder(5,5,5,5)));
+                btnEasy.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2), new EmptyBorder(5, 5, 5, 5)));
                 System.out.println("Selected Difficulty: EASY");
             }
         });
@@ -56,7 +56,7 @@ public class SettingsOverlay extends OverlayView {
             public void mouseClicked(MouseEvent e) {
                 resetSelection();
                 selectedDifficulty = GameDifficulty.MEDIUM;
-                btnMedium.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2),new EmptyBorder(5,5,5,5)));
+                btnMedium.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2), new EmptyBorder(5, 5, 5, 5)));
                 System.out.println("Selected Difficulty: MEDIUM");
             }
         });
@@ -66,7 +66,7 @@ public class SettingsOverlay extends OverlayView {
             public void mouseClicked(MouseEvent e) {
                 resetSelection();
                 selectedDifficulty = GameDifficulty.HARD;
-                btnHard.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2),new EmptyBorder(5,5,5,5)));
+                btnHard.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2), new EmptyBorder(5, 5, 5, 5)));
                 System.out.println("Selected Difficulty: HARD");
             }
         });
@@ -79,8 +79,7 @@ public class SettingsOverlay extends OverlayView {
         if (difficulty != null) {
             this.selectedDifficulty = difficulty;
             updateSelection();
-        }
-        else {
+        } else {
             resetSelection();
         }
     }
@@ -89,11 +88,11 @@ public class SettingsOverlay extends OverlayView {
         contentPane = new JPanel(new BorderLayout());
         contentPane.setBackground(ColorsInUse.BG_COLOR.get());
         contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
-        contentPane.setPreferredSize(new Dimension(700, 500));
+        contentPane.setPreferredSize(new Dimension(700, 530));
 
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(ColorsInUse.BG_COLOR.get());
-        OutlinedLabel title = new OutlinedLabel("CHOOSE DIFFICULTY:", Color.BLACK,6f);
+        OutlinedLabel title = new OutlinedLabel("CHOOSE DIFFICULTY:", Color.BLACK, 6f);
         title.setFont(FontsInUse.PIXEL.getSize(52f));
         title.setForeground(ColorsInUse.TEXT.get());
         titlePanel.add(title);
@@ -138,7 +137,7 @@ public class SettingsOverlay extends OverlayView {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         bottomPanel.setBackground(ColorsInUse.BG_COLOR.get());
 
-        buttonBack = createTransparentIconButton("/back-pixel.png", 60, 50);
+        buttonBack = createTransparentIconButton("/back-pixel-2.png", 60, 50);
         buttonBack.addActionListener(e -> onCancel());
         bottomPanel.add(buttonBack);
 
@@ -161,6 +160,17 @@ public class SettingsOverlay extends OverlayView {
             return; // do not proceed if difficulty is not selected
         }
 
+        if (player1.trim().length() > PlAYER_TEXT_LENGTH) {
+            String mess = "Name for player 1 too long\n Maximum length is " + PlAYER_TEXT_LENGTH + " characters.";
+            JOptionPane.showMessageDialog(this, mess, "Name too long", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (player2.trim().length() > PlAYER_TEXT_LENGTH) {
+            String mess = "Name for player 2 too long\n Maximum length is " + PlAYER_TEXT_LENGTH + " characters.";
+            JOptionPane.showMessageDialog(this, mess, "Name too long", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         //check for player names
         if (player1.trim().isEmpty() || player2.trim().isEmpty()) {
             int choice = JOptionPane.showConfirmDialog(this, nameWarning(player1, player2), "Names not chosen", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE
@@ -175,9 +185,10 @@ public class SettingsOverlay extends OverlayView {
                 player2 = "Player 2";
             }
         }
-        try{
+        try {
             //check to see if the system has enough questions to start a game
-            GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty);}catch (IllegalStateException e){
+            GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty);
+        } catch (IllegalStateException e) {
             JOptionPane.showMessageDialog(this, "Not enough questions in the system to start a game. Please add more questions.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -193,10 +204,10 @@ public class SettingsOverlay extends OverlayView {
     public String getPlayer1Name() {
         return player1Name.getText();
     }
+
     public String getPlayer2Name() {
         return player2Name.getText();
     }
-
 
 
     // HELPER METHODS //
@@ -207,7 +218,7 @@ public class SettingsOverlay extends OverlayView {
         btnHard.setBorder(new EmptyBorder(7, 7, 7, 7));
     }
 
-    private String nameWarning (String player1, String player2) {
+    private String nameWarning(String player1, String player2) {
         if (player1.trim().isEmpty() && player2.trim().isEmpty()) {
             return "Names for both players not chosen\n Continue with default names?\n - Player 1\n - Player 2";
         } else if (player1.trim().isEmpty()) {
@@ -218,6 +229,7 @@ public class SettingsOverlay extends OverlayView {
 
     }
 
+
     private JPanel createInputGroup(String labelText, JTextField textField) {
         JPanel panel = new JPanel(new BorderLayout(0, 10));
         panel.setBackground(ColorsInUse.BG_COLOR.get());
@@ -226,8 +238,20 @@ public class SettingsOverlay extends OverlayView {
         label.setForeground(ColorsInUse.TEXT.get());
         label.setFont(FontsInUse.PIXEL.getSize(28f));
 
+        textField.setPreferredSize(new Dimension(150, 30));
+        textField.setMinimumSize(new Dimension(150, 30));
+        textField.setMaximumSize(new Dimension(150, 30));
+
+        JLabel bottomLabel = new JLabel("Max length: " + PlAYER_TEXT_LENGTH);
+        bottomLabel.setFont(FontsInUse.PIXEL.getSize(20f));
+        bottomLabel.setText(" ");
+        bottomLabel.setForeground(new Color(0, 0, 0, 0));
+
         panel.add(label, BorderLayout.NORTH);
         panel.add(textField, BorderLayout.CENTER);
+        panel.add(bottomLabel, BorderLayout.SOUTH);
+
+        textField.addKeyListener(answerKeyListener(textField, label, bottomLabel));
         return panel;
     }
 
@@ -313,40 +337,115 @@ public class SettingsOverlay extends OverlayView {
     private JButton createTransparentIconButton(String resourcePath, int width, int height) {
         JButton btn = new JButton();
 
-        //make button transparent
+        // Core styling for transparency
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
         btn.setOpaque(false);
-
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btn.setPreferredSize(new Dimension(width + 10, height + 10));
 
         try {
             java.net.URL url = getClass().getResource(resourcePath);
             if (url != null) {
-                ImageIcon icon = new ImageIcon(url);
-                Image img = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
-                btn.setIcon(new ImageIcon(img));
+                ImageIcon normalIcon = new ImageIcon(url);
+                Image img = normalIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+
+
+                ImageIcon standard = new ImageIcon(img);
+                btn.setIcon(standard);
+
+                //create light version of the icon
+                ImageIcon hover = createLighterIcon(img);
+
+                //switch to lighter icon when hovered
+                btn.addMouseListener(new java.awt.event.MouseAdapter() {
+                    @Override
+                    public void mouseEntered(java.awt.event.MouseEvent evt) {
+                        btn.setIcon(hover);
+                    }
+
+                    @Override
+                    public void mouseExited(java.awt.event.MouseEvent evt) {
+                        btn.setIcon(standard);
+                    }
+                });
             }
         } catch (Exception e) {
             btn.setText("X");
             btn.setForeground(Color.WHITE);
         }
 
-        btn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            }
-        });
-
         return btn;
     }
 
+    public KeyListener answerKeyListener(JTextField tf, JLabel name, JLabel bottomLabel) {
+        return new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
 
+                // allow Ctrl+A / Ctrl+C / Ctrl+V / Ctrl+X etc.
+                if (e.isControlDown() || e.isMetaDown() || e.isAltDown()) {
+                    return;
+                }
 
+                // also allow backspace, delete, etc. (they aren't "real" characters)
+                char ch = e.getKeyChar();
+                if (Character.isISOControl(ch)) {
+                    return;
+                }
 
+                if (tf.getText().length() <= PlAYER_TEXT_LENGTH * 0.7) {
+                    name.setForeground(ColorsInUse.TEXT.get());
+                    name.setToolTipText(null);
+                    showBottomTextLimit(bottomLabel, false);
+                } else if (tf.getText().length() >= PlAYER_TEXT_LENGTH) {
+                    e.consume();
+                    tf.setText(tf.getText().substring(0, PlAYER_TEXT_LENGTH));
 
+                    long now = System.currentTimeMillis();
+                    Long last = (Long) name.getClientProperty("shake.last");
+                    if (last == null || now - last > 200) { // 200ms cooldown
+                        name.putClientProperty("shake.last", now);
+                        animator.shake(name);
+                        soundManager.playOnce(SoundManager.SoundId.BLOCK);
+                    }
 
+                    name.setToolTipText("Maximum length reached");
+                    showBottomTextLimit(bottomLabel, true);
+                } else if (tf.getText().length() >= PlAYER_TEXT_LENGTH * 0.7) {
+                    name.setForeground(ColorsInUse.DENY.get());
+                    name.setToolTipText("Approaching maximum length " + tf.getText().length() + "/" + PlAYER_TEXT_LENGTH);
+                    showBottomTextLimit(bottomLabel, true);
+                }
+            }
+        };
+    }
+
+    private void showBottomTextLimit(JLabel bottomLabel, boolean toShow) {
+        if (toShow) {
+            bottomLabel.setText("Max length: " + PlAYER_TEXT_LENGTH);
+            bottomLabel.setForeground(ColorsInUse.TEXT.get());
+        } else {
+            bottomLabel.setText(" ");
+            bottomLabel.setForeground(new Color(0, 0, 0, 0));
+        }
+    }
+
+    //method to make an icon lighter for hover effect
+    private ImageIcon createLighterIcon(Image sourceImg) {
+        int w = sourceImg.getWidth(null);
+        int h = sourceImg.getHeight(null);
+        java.awt.image.BufferedImage buffered = new java.awt.image.BufferedImage(w, h, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D g2 = buffered.createGraphics();
+        g2.drawImage(sourceImg, 0, 0, null);
+        g2.dispose();
+
+        java.awt.image.RescaleOp op = new java.awt.image.RescaleOp(1.4f, 0, null);
+        buffered = op.filter(buffered, null);
+
+        return new ImageIcon(buffered);
+    }
 
 }

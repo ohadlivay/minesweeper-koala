@@ -1,6 +1,6 @@
 package main.java.view;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Random;
 
 
@@ -30,6 +30,8 @@ public enum ColorsInUse {
 
     SURPRISE_TILE(Color.YELLOW), // 'S' tile
     QUESTION_TILE(Color.GREEN),  // 'Q' tile
+    QUESTION_TILE_BREATH(new Color(4, 65, 5, 255)),
+
 
     NUMBER_1(Color.BLUE),
     NUMBER_2(new Color(0, 128, 0)),
@@ -45,7 +47,7 @@ public enum ColorsInUse {
     // Board colors
     SLATE_BLUE      (new Color(90, 110, 160)),
     STEEL_TEAL      (new Color(70, 140, 135)),
-    DUSTY_PURPLE    (new Color(140, 110, 155)),
+    DUSTY_PURPLE    (new Color(114, 6, 169)),
     MUTED_CYAN      (new Color(80, 150, 170)),
     OLIVE_GREEN     (new Color(125, 150, 85)),
     SOFT_MAROON     (new Color(150, 85, 95)),
@@ -55,7 +57,7 @@ public enum ColorsInUse {
     CLAY_ORANGE     (new Color(190, 135, 85)),
 
     DESAT_TEAL      (new Color(90, 160, 150)),
-    ASH_PURPLE      (new Color(155, 140, 170)),
+    ASH_PURPLE      (new Color(149, 115, 182)),
     SMOKY_BLUE      (new Color(110, 135, 170)),
     MOSS_GREEN      (new Color(115, 155, 100)),
     COPPER_RED      (new Color(180, 105, 85)),
@@ -74,7 +76,8 @@ public enum ColorsInUse {
             SANDSTONE,
             ROSEWOOD,
             OLIVE_GREEN,
-            MOSS_GREEN
+            MOSS_GREEN,
+            DUSTY_PURPLE
     };
 
     // Cold colors – Board 2
@@ -123,27 +126,26 @@ public enum ColorsInUse {
     }
 
     public static Color numberColor(String n) {
-        switch (n) {
-            case "1": return NUMBER_1.get();
-            case "2": return NUMBER_2.get();
-            case "3": return NUMBER_3.get();
-            case "4": return NUMBER_4.get();
-            case "5": return NUMBER_5.get();
-            case "6": return NUMBER_6.get();
-            case "7": return NUMBER_7.get();
-            case "8": return NUMBER_8.get();
-            default: return TILE_DEFAULT.get();
-        }
+        return switch (n) {
+            case "1" -> NUMBER_1.get();
+            case "2" -> NUMBER_2.get();
+            case "3" -> NUMBER_3.get();
+            case "4" -> NUMBER_4.get();
+            case "5" -> NUMBER_5.get();
+            case "6" -> NUMBER_6.get();
+            case "7" -> NUMBER_7.get();
+            case "8" -> NUMBER_8.get();
+            default -> TILE_DEFAULT.get();
+        };
     }
 
     public static Color forTileType(String type) {
         if (type == null) return TILE_DEFAULT.get();
-        switch (type) {
-            case "S": return SURPRISE_TILE.get();
-            case "Q": return QUESTION_TILE.get();
-            case "0": // revealed empty
-            case "M": // mine (use revealed bg)
-            default:  return REVEALED_BG.get();
-        }
+        return switch (type) {
+            case "S" -> SURPRISE_TILE.get();
+            case "Q" -> QUESTION_TILE.get(); // revealed empty
+            // mine (use revealed bg)
+            default -> REVEALED_BG.get();
+        };
     }
 }

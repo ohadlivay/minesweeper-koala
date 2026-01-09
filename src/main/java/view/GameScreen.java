@@ -1,25 +1,19 @@
 package main.java.view;
 
-import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.controller.OverlayController;
 import main.java.model.*;
-import main.java.util.SoundManager;
 import main.java.view.overlays.OverlayType;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Objects;
 
-public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener, GameOverListener {
+public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener, GameOverListener, SurpriseListener {
     private final NavigationController nav;
     private final GameSession session; // Always holds the current game session
     private ComponentAnimator animator;
-    private final Queue<ActionData> messageQueue = new LinkedList<>();
-    private Timer displayTimer;
 
     private JPanel mainPanel;
     private JPanel centerPanel;
@@ -32,8 +26,6 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     private JLabel pointsLabel;
     private JLabel feedLabel;
 
-    private JButton endGameButton;
-
     public GameScreen(NavigationController nav, GameSession session) {
         this.nav = nav;
         this.session = session;
@@ -41,10 +33,11 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         this.session.setGameOverListener(this);
         this.session.getLeftBoard().setMinesLeftListener(this);
         this.session.getRightBoard().setMinesLeftListener(this);
+        this.session.setSurpriseListener(this);
         animator = new ComponentAnimator();
         initUI();
         setBoards(session.getLeftBoard(), session.getRightBoard());
-        setPlayerNames(session.getLeftPlayerName(),session.getRightPlayerName());
+        setPlayerNames(session.getLeftPlayerName(), session.getRightPlayerName());
     }
 
     public void setBoards(Board left, Board right) {
@@ -89,7 +82,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         topPanel.setOpaque(false);
         topPanel.setBorder(new EmptyBorder(20, 20, 5, 20));
 
-        JButton infoIcon = new JButton(new ImageIcon(getClass().getResource("/info.png")));
+        JButton infoIcon = new JButton(new ImageIcon(Objects.requireNonNull(getClass().getResource("/info.png"))));
         infoIcon.setBorder(new EmptyBorder(0, 0, 5, 0));
         infoIcon.setToolTipText("How to play");
         infoIcon.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -97,9 +90,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         infoIcon.setBackground(ColorsInUse.BG_COLOR.get());
         infoIcon.setFocusPainted(false);
         infoIcon.setContentAreaFilled(false);
-        infoIcon.addActionListener(e -> {
-            OverlayController.getInstance().showOverlay(OverlayType.INSTRUCTIONS);
-        });
+        infoIcon.addActionListener(e -> OverlayController.getInstance().showOverlay(OverlayType.INSTRUCTIONS));
 
         topPanel.add(infoIcon, BorderLayout.NORTH);
 
@@ -115,7 +106,8 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         player1MinesLeftLabel.setForeground(ColorsInUse.TEXT.get());
         player1MinesLeftLabel.setFont(font);
         java.net.URL bombUrl = getClass().getResource("/white-outline-mine.png");
-        if (bombUrl != null) { ImageIcon icon = new ImageIcon(bombUrl);
+        if (bombUrl != null) {
+            ImageIcon icon = new ImageIcon(bombUrl);
             Image scaled = icon.getImage().getScaledInstance(42, 42, Image.SCALE_SMOOTH);
             player1MinesLeftLabel.setIcon(new ImageIcon(scaled));
             player1MinesLeftLabel.setIconTextGap(10);
@@ -124,31 +116,28 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         player2MinesLeftLabel = new JLabel("x" + session.getRightBoard().getMinesLeft());
         player2MinesLeftLabel.setForeground(ColorsInUse.TEXT.get());
         player2MinesLeftLabel.setFont(font);
-        if (bombUrl != null) { ImageIcon icon = new ImageIcon(bombUrl);
+        if (bombUrl != null) {
+            ImageIcon icon = new ImageIcon(bombUrl);
             Image scaled = icon.getImage().getScaledInstance(42, 42, Image.SCALE_SMOOTH);
             player2MinesLeftLabel.setIcon(new ImageIcon(scaled));
             player2MinesLeftLabel.setIconTextGap(10);
         }
 
         // Create panels for left player and right player
-        JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         leftPanel.setOpaque(false);
 
-        leftPanel.add(Box.createVerticalGlue());
-        leftPanel.add(player1Label);
-        leftPanel.add(player1MinesLeftLabel);
-
-
-        JPanel rightPanel = new JPanel();
-        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         rightPanel.setOpaque(false);
 
-        rightPanel.add(Box.createVerticalGlue());
-        rightPanel.add(player2Label);
-        rightPanel.add(player2MinesLeftLabel);
+        // Add items into each side panel
+        leftPanel.add(player1Label);
+        leftPanel.add(player1MinesLeftLabel, BorderLayout.EAST);
 
-        // Add sub-panels to the topPanel
+        rightPanel.add(player2MinesLeftLabel, BorderLayout.WEST);
+        rightPanel.add(player2Label);
+
+        // Add those sub-panels to the topPanel
         topPanel.add(feedLabel, BorderLayout.CENTER);
         topPanel.add(leftPanel, BorderLayout.WEST);
         topPanel.add(rightPanel, BorderLayout.EAST);
@@ -229,7 +218,6 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         statsPanel.add(pointsLabel);
 
 
-
         // bottom panel holds the home button
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setOpaque(false);
@@ -277,37 +265,8 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
 
         testButtonPanel.add(testQuestionButton);
 
-
-        // TEMP BUTTON FOR TESTING GAME SAVES
-        endGameButton = new JButton("End Game");
-        endGameButton.setBackground(ColorsInUse.BTN_COLOR.get());
-        endGameButton.setFocusPainted(false);
-        endGameButton.setPreferredSize(new Dimension(72, 36));
-        endGameButton.setContentAreaFilled(true);
-        endGameButton.setForeground(ColorsInUse.TEXT.get());
-
-        GameSessionController.getInstance().addInputBlockListener(isBlocked -> {
-            if (endGameButton != null) {
-                endGameButton.setEnabled(!isBlocked);
-            }
-        });
-
-        endGameButton.addActionListener(e -> {
-            try {
-                GameSessionController.getInstance().endGame(this.session,this.nav);
-                JOptionPane saved = new JOptionPane();
-                endGameButton.setEnabled(false);
-                saved.showMessageDialog(mainPanel, "Game Over! Game data saved.", "Game Over", JOptionPane.INFORMATION_MESSAGE);
-            } catch (IOException ex) {
-                JOptionPane endGame = new JOptionPane();
-                endGame.showMessageDialog(mainPanel, "Error saving game data!", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-        });
-
         testButtonPanel.add(testWinButton);
         testButtonPanel.add(testLossButton);
-        testButtonPanel.add(endGameButton);
         bottomPanel.add(testButtonPanel, BorderLayout.EAST);
     }
 
@@ -344,7 +303,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     }
 
     public void updateMinesLeft(int minesLeft, Board board) {
-        if(board == session.getLeftBoard()) player1MinesLeftLabel.setText("x" + minesLeft);
+        if (board == session.getLeftBoard()) player1MinesLeftLabel.setText("x" + minesLeft);
         else player2MinesLeftLabel.setText("x" + minesLeft);
 
     }
@@ -358,70 +317,34 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     //this method replaces the old onPointsChange and onHealthChange, copmbining them together
     @Override
     public void onActionMade(String message, boolean positive, int healthChange, int pointsChange) {
-        messageQueue.add(new ActionData(message, positive, healthChange, pointsChange));
+        feedLabel.setText(message);
 
-        if (displayTimer == null || !displayTimer.isRunning()) {
-            showNextActionFromQueue();
-        }
-    }
-
-    private void showNextActionFromQueue() {
-        if (messageQueue.isEmpty()) return;
-
-        ActionData data = messageQueue.poll();
-
-        feedLabel.setText("<html><div style='text-align:center;'>" + data.message + "</div></html>");
-        feedLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        feedLabel.setVerticalAlignment(SwingConstants.NORTH);
-
-
-        feedLabel.setForeground(data.positive ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get());
-
+        feedLabel.setForeground(positive ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get());
         updateLabels();
-
-        if (data.pointsChange != 0) {
-            String text = (data.pointsChange > 0 ? "+" : "") + data.pointsChange;
-            Color color = data.pointsChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
+        if (pointsChange != 0) {
+            String text = (pointsChange > 0 ? "+" : "") + pointsChange;
+            Color color = pointsChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
             animator.pulseBorder(pointsLabel, 6);
-            animator.floatingNumber(pointsLabel, text, color, data.pointsChange > 0);
-            SoundManager.getInstance().playOnce(data.pointsChange>0 ? SoundManager.SoundId.POINTS_WIN : SoundManager.SoundId.POINTS_LOSE);
+            animator.floatingNumber(pointsLabel, text, color, pointsChange > 0);
         }
-
-        if (data.healthChange != 0) {
-            String text = (data.healthChange > 0 ? "+" : "") + data.healthChange;
-            Color color = data.healthChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
-            animator.floatingNumber(healthLabel, text, color, data.healthChange > 0);
-            if (data.healthChange < 0) animator.shake(healthLabel);
+        if (healthChange != 0) {
+            String text = (healthChange > 0 ? "+" : "") + healthChange;
+            Color color = healthChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
+            animator.floatingNumber(healthLabel, text, color, healthChange > 0);
+            if (healthChange < 0) animator.shake(healthLabel);
         }
-
-        // delay only when surprise tile is activated
-        displayTimer = new Timer(data.message.equals("Surprise tile activated") ? 1500 : 0, e -> showNextActionFromQueue());
-        displayTimer.setRepeats(false);
-        displayTimer.start();
     }
 
     //this method shows the end game screen when the game is over
     @Override
     public void onGameOver(boolean saved, boolean winOrLose, int score) {
-        endGameButton.setEnabled(false);
         if (!saved)
             JOptionPane.showMessageDialog(mainPanel, "Error, could not save the game!", "Game Over", JOptionPane.ERROR_MESSAGE);
-        OverlayController.getInstance().showGameOverOverlay(winOrLose,score);
+        OverlayController.getInstance().showGameOverOverlay(winOrLose, score);
     }
 
-    //helper class to save feedback queue
-    private static class ActionData {
-        String message;
-        boolean positive;
-        int healthChange;
-        int pointsChange;
-
-        ActionData(String message, boolean positive, int healthChange, int pointsChange) {
-            this.message = message;
-            this.positive = positive;
-            this.healthChange = healthChange;
-            this.pointsChange = pointsChange;
-        }
+    @Override
+    public void revealSurprise(int healthChange, int pointsChange) {
+        OverlayController.getInstance().showSurpriseOverlay(healthChange, pointsChange);
     }
 }
-

@@ -2,7 +2,6 @@ package main.java.view;
 
 import main.java.controller.NavigationController;
 import main.java.model.GameData;
-import main.java.model.GameSession;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -58,7 +57,7 @@ public class GameHistoryScreen extends JPanel{
         bottomPanel.add(homeButton, BorderLayout.WEST);
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
-        String[] columnNames = {"ID", "Date", "Player 1", "Player 2", "Score", "Difficulty"};
+        String[] columnNames = {"ID", "Date", "Player 1", "Player 2", "Score", "Difficulty","Result"};
 
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
@@ -72,14 +71,10 @@ public class GameHistoryScreen extends JPanel{
         JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
         centerPanel.setOpaque(false);
 
-        JPanel tableContainer = new JPanel(new BorderLayout());
-        tableContainer.setBackground(ColorsInUse.BG_COLOR.get());
-        tableContainer.setBorder(new LineBorder(new Color(70, 80, 100), 1));
-
-        tableContainer.add(historyTable.getTableHeader(), BorderLayout.NORTH);
-        tableContainer.add(historyTable, BorderLayout.CENTER);
-
-        centerPanel.add(tableContainer, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(historyTable);
+        scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR.get());
+        scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
 
         //pages navigation panel
         JPanel pagesPanel = createPagesPanel();
@@ -175,7 +170,16 @@ public class GameHistoryScreen extends JPanel{
         for (int i = start; i < end; i++) {
             GameData s = allSessions.get(i);
             String formattedDate = s.getTimeStamp().format(formatter);
-            Object[] rowData = {i+1, formattedDate, s.getLeftPlayerName(), s.getRightPlayerName(), s.getPoints(), s.getGameDifficulty()};
+            String result = s.isWin() ? "WIN" : "LOSE";
+            Object[] rowData = {
+                    i + 1,
+                    formattedDate,
+                    s.getLeftPlayerName(),
+                    s.getRightPlayerName(),
+                    s.getPoints(),
+                    s.getGameDifficulty(),
+                    result
+            };
             tableModel.addRow(rowData);
         }
 
@@ -192,7 +196,7 @@ public class GameHistoryScreen extends JPanel{
         table.setSelectionBackground(ColorsInUse.BOARD_ACTIVE_BORDER2.get());
         table.setSelectionForeground(Color.BLACK);
         table.setGridColor(Color.DARK_GRAY);
-        table.setRowHeight(44);
+        table.setRowHeight(45);
         table.setFont(FontsInUse.PIXEL.getSize(20f));
         table.setShowGrid(true);
         table.setFillsViewportHeight(false);

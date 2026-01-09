@@ -1,13 +1,14 @@
 package main.java.view;
 
 //this class is used for creating labels with an outline
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.font.GlyphVector;
 
 public class OutlinedLabel extends JLabel {
-    private Color outlineColor;
-    private float strokeWidth;
+    private final Color outlineColor;
+    private final float strokeWidth;
 
     public OutlinedLabel(String text, Color outlineColor, float strokeWidth) {
         super(text);

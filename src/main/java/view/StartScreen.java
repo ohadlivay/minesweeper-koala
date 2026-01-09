@@ -2,7 +2,6 @@ package main.java.view;
 import main.java.controller.NavigationController;
 import main.java.controller.OverlayController;
 import main.java.view.overlays.OverlayType;
-import main.java.view.overlays.SettingsOverlay;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,9 +18,7 @@ public class StartScreen {
     public StartScreen(NavigationController nav) {
         this.nav = nav;
         initUI();
-        startGameBtn.addActionListener(e -> {
-            OverlayController.getInstance().showOverlay(OverlayType.SETTINGS);
-        });
+        startGameBtn.addActionListener(e -> OverlayController.getInstance().showOverlay(OverlayType.SETTINGS));
         gameHistoryBtn.addActionListener(e -> nav.goToHistory());
         mngQuestionsBtn.addActionListener(e -> nav.goToQuestionManager());
         exitBtn.addActionListener(e -> {

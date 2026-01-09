@@ -3,7 +3,6 @@ package main.java.view;
 
 import main.java.controller.GameSessionController;
 import main.java.model.Board;
-import main.java.model.MinesLeftListener;
 import main.java.model.Tile;
 import main.java.model.TurnListener;
 
@@ -19,7 +18,8 @@ public class BoardLayout extends JPanel implements TurnListener {
     private Board board; //only use for getters
     private static final int boardSize = 450;
 
-    private Color tileColor;
+    private final Color tileColor;
+    private final ComponentAnimator animator = new ComponentAnimator();
 
     public BoardLayout(Board board, Color color) {
 
@@ -61,11 +61,15 @@ public class BoardLayout extends JPanel implements TurnListener {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                Tile t = null;
+                Tile t;
                 t = board.getTiles()[i][j]; //get tile from board controller
                 if (t != null) {
-                    tileViewGrid[i][j] = new TileView(t, calculatedTileSize, tileColor);
-                    add(tileViewGrid[i][j]);
+                    TileView tv = new TileView(t, calculatedTileSize, tileColor);
+                    tileViewGrid[i][j] = tv;
+
+                    // Wrap ONLY for paint-over effects
+                    add(animator.withEffects(tv));   // <-- use your ComponentAnimator instance
+
                 } else {
                     add(new JButton()); // placeholder button for debugging
                 }

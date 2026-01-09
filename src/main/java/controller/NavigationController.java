@@ -17,9 +17,6 @@ public class NavigationController {
             instance = new NavigationController(frame);
             OverlayController.getInstance(instance);
         }
-        else if (instance.getVisFrame() != frame) {
-
-        }
         return instance;
     }
 
@@ -41,7 +38,6 @@ public class NavigationController {
         visFrame.setContentPane(gameScreen.getMainPanel());
         refresh();
     }
-
 
     public void goToHistory() {
         HistoryController hsc = HistoryController.getInstance();

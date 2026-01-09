@@ -2,7 +2,6 @@ package main.java.view;
 
 import main.java.controller.NavigationController;
 import main.java.controller.OverlayController;
-import main.java.controller.QuestionManagerController;
 import main.java.model.Question;
 import main.java.model.SysData;
 
@@ -18,7 +17,7 @@ import java.util.List;
 public class QuestionManagerScreen extends JPanel {
 
     private final NavigationController nav;
-    private TableActionListener tableActionListener;
+    private TableActionListener tableActionListener;  //never assigned but 4 usages, delete?
     private JPanel mainPanel;
     private JTable questionsTable;
     private DefaultTableModel tableModel;
@@ -32,7 +31,7 @@ public class QuestionManagerScreen extends JPanel {
     private OutlinedLabel pageLabel;
     private JButton btnPrev, btnNext;
 
-    private ComponentAnimator animator;
+    private final ComponentAnimator animator;
 
     public QuestionManagerScreen(NavigationController navigationController) {
         this.nav = navigationController;
@@ -97,14 +96,10 @@ public class QuestionManagerScreen extends JPanel {
         JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
         centerPanel.setOpaque(false);
 
-        JPanel tableContainer = new JPanel(new BorderLayout());
-        tableContainer.setBackground(ColorsInUse.BG_COLOR.get());
-        tableContainer.setBorder(new LineBorder(new Color(70, 80, 100), 1));
-
-        tableContainer.add(questionsTable.getTableHeader(), BorderLayout.NORTH);
-        tableContainer.add(questionsTable, BorderLayout.CENTER);
-
-        centerPanel.add(tableContainer, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(questionsTable);
+        scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR.get());
+        scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
 
         //pages navigation panel
         JPanel pagesPanel = createPagesPanel();
@@ -125,13 +120,12 @@ public class QuestionManagerScreen extends JPanel {
         if (addIconUrl != null) {
             ImageIcon icon = new ImageIcon(addIconUrl);
             Image img = icon.getImage().getScaledInstance(24, 24, Image.SCALE_DEFAULT);
-            btnAdd.setIcon(new ImageIcon(img));
+            if(btnAdd != null)
+                btnAdd.setIcon(new ImageIcon(img));
 
         }
 
-        btnAdd.addActionListener(e -> {
-            OverlayController.getInstance().showAddEditOverlay(null);
-        });
+        btnAdd.addActionListener(e -> OverlayController.getInstance().showAddEditOverlay(null));
         bottomPanel.add(btnAdd, BorderLayout.EAST);
 
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
@@ -180,9 +174,7 @@ public class QuestionManagerScreen extends JPanel {
             int maxPage = (int) Math.ceil((double) allQuestions.size() / rowsPerPage);
             if (currentPage > 1) {
                 currentPage--;
-            }
-            else
-            {
+            } else {
                 currentPage = Math.max(1, maxPage); // if this is the first page, go to last page (carousel)
             }
             refreshPage();
@@ -198,9 +190,7 @@ public class QuestionManagerScreen extends JPanel {
             int maxPage = (int) Math.ceil((double) allQuestions.size() / rowsPerPage);
             if (currentPage < maxPage) {
                 currentPage++;
-            }
-            else
-            {
+            } else {
                 currentPage = 1; //if this is the last page, go back to first page (carousel)
             }
             refreshPage();
@@ -251,7 +241,7 @@ public class QuestionManagerScreen extends JPanel {
         table.setSelectionBackground(ColorsInUse.BOARD_ACTIVE_BORDER2.get());
         table.setSelectionForeground(Color.BLACK);
         table.setGridColor(Color.DARK_GRAY);
-        table.setRowHeight(44);
+        table.setRowHeight(45);
         table.setFont(FontsInUse.PIXEL.getSize(22f));
         table.setShowGrid(true);
         table.setFillsViewportHeight(true);
@@ -283,6 +273,7 @@ public class QuestionManagerScreen extends JPanel {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 if (btn.isEnabled()) btn.setBackground(bg.brighter());
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 if (btn.isEnabled()) btn.setBackground(bg);
             }
@@ -307,7 +298,6 @@ public class QuestionManagerScreen extends JPanel {
 
         return homeButton;
     }
-
 
 
     // --- getters ---

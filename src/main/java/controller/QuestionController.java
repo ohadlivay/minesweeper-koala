@@ -45,7 +45,7 @@ public class QuestionController {
         }
 
         // Pick a random index from the available ones
-        int randomIndex = availableIndices.get(new Random().nextInt(availableIndices.size()));
+        int randomIndex = availableIndices.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(availableIndices.size()));
         Question q = questions.get(randomIndex);
 
         usedQuestions.add(q);
@@ -60,6 +60,7 @@ public class QuestionController {
     /*
     Clears the history of asked questions
      */
+    // why boolean?
     public boolean restartUsedQuestions(){
         // FIX: "new Set" is invalid because Set is an interface. 
         // We can simply clear the existing HashSet.

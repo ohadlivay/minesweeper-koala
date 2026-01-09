@@ -17,6 +17,7 @@ import java.awt.event.WindowEvent;
 public class Main {
     public static void main(String[] args) {
 
+        /*what's flatlaf? can we delete it?*/
         /*optional FlatLef look and feel
         try {
             UIManager.setLookAndFeel(new FlatMacDarkLaf());
@@ -58,7 +59,7 @@ public class Main {
 
                 JFrame frame = new JFrame("Koala Minesweeper");
                 frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-                frame.setSize(1200, 730);
+                frame.setSize(1200, 700);
                 frame.setResizable(false);
                 frame.addWindowListener(new WindowAdapter() {
                     @Override
