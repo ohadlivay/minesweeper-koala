@@ -50,7 +50,7 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         setBackground(tileColor);
         setPreferredSize(new Dimension((int)dynamicSize, (int)dynamicSize));
         setFocusPainted(false);
-        setFont(new Font("Segoe UI Black", Font.BOLD, (int) (dynamicSize/2.5)));
+        setFont(FontsInUse.PIXEL.getSize((float)(dynamicSize / 1.5)));
         setMargin(new Insets(0, 0, 0, 0));
         tile.setRevealListener(this);
         tile.setFlagListener(this);

@@ -1,5 +1,6 @@
 package main.java.view;
 
+import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.controller.OverlayController;
 import main.java.model.*;
@@ -10,7 +11,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.Objects;
 
-public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener, GameOverListener, SurpriseListener {
+public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener, GameOverListener, SurpriseListener, InputBlockListener {
     private final NavigationController nav;
     private final GameSession session; // Always holds the current game session
     private ComponentAnimator animator;
@@ -26,6 +27,8 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     private JLabel pointsLabel;
     private JLabel feedLabel;
 
+    private JButton infoIcon;
+
     public GameScreen(NavigationController nav, GameSession session) {
         this.nav = nav;
         this.session = session;
@@ -35,6 +38,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         this.session.getRightBoard().setMinesLeftListener(this);
         this.session.setSurpriseListener(this);
         animator = new ComponentAnimator();
+        GameSessionController.getInstance().addInputBlockListener(this);
         initUI();
         setBoards(session.getLeftBoard(), session.getRightBoard());
         setPlayerNames(session.getLeftPlayerName(), session.getRightPlayerName());
@@ -82,7 +86,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         topPanel.setOpaque(false);
         topPanel.setBorder(new EmptyBorder(20, 20, 5, 20));
 
-        JButton infoIcon = new JButton(new ImageIcon(Objects.requireNonNull(getClass().getResource("/info.png"))));
+        this.infoIcon = new JButton(new ImageIcon(Objects.requireNonNull(getClass().getResource("/info.png"))));
         infoIcon.setBorder(new EmptyBorder(0, 0, 5, 0));
         infoIcon.setToolTipText("How to play");
         infoIcon.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -198,13 +202,13 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         }
         statsPanel.add(healthLabel);
 
-        java.net.URL scoreBgUrl = getClass().getResource("/metal-score-bg.png");
+        java.net.URL scoreBgUrl = getClass().getResource("/labelBorder.png");
         final Image scoreBgImage = (scoreBgUrl != null) ? new ImageIcon(scoreBgUrl).getImage() : null;
 
         pointsLabel = new OutlinedLabel("Score: " + session.getPoints(), Color.BLACK, 3f) {
             protected void paintComponent(Graphics g) {
                 if (scoreBgImage != null) {
-                    g.drawImage(scoreBgImage, 0, 0, getWidth(), getHeight(), this);
+                    g.drawImage(scoreBgImage, 0, -15, getWidth(), 70, this);
                 }
                 super.paintComponent(g);
             }
@@ -270,18 +274,30 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         bottomPanel.add(testButtonPanel, BorderLayout.EAST);
     }
 
+    //make sure to disable the info button when ViewQuestionOverlay is being viewed
+    @Override
+    public void onInputBlock(boolean isBlocked) {
+        if (infoIcon != null) {
+            infoIcon.setEnabled(!isBlocked);
+        }
+    }
+
+
+
     private JButton createHomeButton() {
-        JButton button = new JButton();
-        button.setPreferredSize(new Dimension(72, 36));
-        java.net.URL icon = getClass().getResource("/home.png");
-        if (icon != null) {
-            button.setIcon(new ImageIcon(icon));
+        JButton homeButton = new JButton();
+        homeButton.setPreferredSize(new Dimension(72, 36));
+        java.net.URL iconUrl = getClass().getResource("/home-pixel.png");
+        if (iconUrl != null) {
+            ImageIcon icon = new ImageIcon(iconUrl);
+            Image img = icon.getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT);
+            homeButton.setIcon(new ImageIcon(img));
         }
 
-        button.setBackground(ColorsInUse.BTN_COLOR.get());
-        button.setFocusPainted(false);
-        button.setContentAreaFilled(true);
-        button.addActionListener(e -> {
+        homeButton.setBackground(ColorsInUse.BTN_COLOR.get());
+        homeButton.setFocusPainted(false);
+        homeButton.setContentAreaFilled(true);
+        homeButton.addActionListener(e -> {
             int option = JOptionPane.showConfirmDialog(
                     mainPanel,
                     "Are you sure you want to return to the main menu?",
@@ -295,7 +311,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
 
         });
 
-        return button;
+        return homeButton;
     }
 
     public JPanel getMainPanel() {
