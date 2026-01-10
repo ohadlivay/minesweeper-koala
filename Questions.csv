@@ -2,7 +2,7 @@ ID,Question,Difficulty,A,B,C,D,Correct Answer
 1,How do software maintenance costs compare to development?,HARD,Often higher than development,Negligible,Always equal,About half,1
 2,What is a major drawback of the Waterfall model?,MEDIUM,Inflexible to change,Proceeding too fast,Has no documentation,Is not applicable for large teams,1
 3,Non-functional requirements define:,HARD,System constraints/properties,Specific system services,Database schemas,User inputs,1
-4,Correct order of Risk Management activities?,MASTER,"Identify,Analyze,Plan,Monitor",1,,,
+4,Correct order of Risk Management activities?,MASTER,Identify > Analyze > Plan > Monitor,Monitor > Plan > Analyze > Identify,Plan > Identify > Monitor > Analyze,Analyze > Plan > Identify > Monitor,1
 5,"The term ""Validation"" asks which question?",HARD,Are we building the right product?,Are we building the product right?,Is the code efficient?,Is the budget sufficient?,1
 6,When is defect removal most expensive?,EASY,Operation/Field,Requirements,Design,Testing,1
 7,The MVC pattern separates:,MEDIUM,Presentation from data,User from hardware,Input from output,Online from offline,1
