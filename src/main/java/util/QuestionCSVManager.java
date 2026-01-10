@@ -17,14 +17,14 @@ public class QuestionCSVManager {
     it will fetch all current questions from SysData and write them into a fresh csv (clean slate).
      */
     public static void rewriteQuestionsToCSVFromSysData() throws IOException {
-        writeQuestionsToCSV();
+        writeQuestionsToCSV(FILE_PATH);
     }
 
-    public static void writeQuestionsToCSV() throws IOException {
+    public static void writeQuestionsToCSV(String filePath) throws IOException {
         SysData sys = SysData.getInstance();
         List<Question> questionsList = sys.getQuestions();
 
-        try (FileWriter fw = new FileWriter(FILE_PATH);
+        try (FileWriter fw = new FileWriter(filePath);
              PrintWriter pw = new PrintWriter(fw)) {
 
             pw.println(CSV_HEADER);

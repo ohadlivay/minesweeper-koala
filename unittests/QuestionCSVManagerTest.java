@@ -44,7 +44,7 @@ public class QuestionCSVManagerTest {
         sysData.addQuestion(q2);
 
         // 2. Write to CSV
-        QuestionCSVManager.writeQuestionsToCSV();
+        QuestionCSVManager.writeQuestionsToCSV(TEST_FILE_PATH);
 
         // 3. Clear Memory
         sysData.clearQuestions();
@@ -100,25 +100,25 @@ public class QuestionCSVManagerTest {
 
         Assert.assertTrue(sysData.getQuestions().isEmpty());
     }
-// depracated, new BL is no nulls allowed.
-//    @Test
-//    public void testWriteHandlesNullsGracefully() throws IOException {
-//        // Create a question with null fields
-//        Question qNulls = new Question(10, null, null, null, null, null, null);
-//
-//        sysData.addQuestion(qNulls);
-//
-//        // Write (Implicit check: if this throws an exception, the test fails)
-//        QuestionCSVManager.writeQuestionsToCSV();
-//
-//        // Read back to verify it became empty strings
-//        sysData.clearQuestions();
-//        QuestionCSVManager.readQuestionsFromCSV(TEST_FILE_PATH);
-//
-//        Question loaded = sysData.getQuestions().get(0);
-//        Assert.assertEquals("", loaded.getQuestionText());
-//        Assert.assertEquals("", loaded.getAnswer1());
-//    }
+
+    @Test
+    public void testWriteHandlesNullsGracefully() throws IOException {
+        // Create a question with null fields
+        Question qNulls = new Question(10, null, null, null, null, null, null);
+
+        sysData.addQuestion(qNulls);
+
+        // Write (Implicit check: if this throws an exception, the test fails)
+        QuestionCSVManager.writeQuestionsToCSV(TEST_FILE_PATH);
+
+        // Read back to verify it became empty strings
+        sysData.clearQuestions();
+        QuestionCSVManager.readQuestionsFromCSV(TEST_FILE_PATH);
+
+        Question loaded = sysData.getQuestions().get(0);
+        Assert.assertEquals("", loaded.getQuestionText());
+        Assert.assertEquals("", loaded.getAnswer1());
+    }
 
     @Test
     public void testReadRealDataFormat() throws IOException {
