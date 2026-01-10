@@ -18,4 +18,4 @@
 17,"In UI design, ""Constraints"" serve to:",3,Restrict actions to prevent errors,Increase processing speed,Improve color contrast,Give immediate feedback,A
 18,"Which Design Pattern is classified as ""Behavioral""",4,Observer,Adapter,Factory Method,Singleton,A
 19,What is the primary focus of Integration Testing?,3,Combining modules to check the product as a whole,Testing individual units in isolation,Checking marketing materials,Writing code comments,A
-20,"What is the standard use of ""Shall"" vs. ""Should"" in requirements?",2,Shall = Mandatory; Should = Desirable,Interchangeable,Shall = Desirable; Should = Mandatory,Shall = Legal; Should = Technical,A
+20,Which of the following lines of code is wrong when applying the Singleton design pattern?,2,private ClassA getInstance(){...};,private static ClassA instance;,private ClassA(){...};,public static ClassA getInstance(){...};,A
