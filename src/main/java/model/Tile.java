@@ -227,6 +227,21 @@ public class Tile implements Testable
             flagListener.updateFlagged(isFlagged);
         }
     }
+    /**
+     * Strategy: Should the cascade STOP spreading after reaching this tile?
+     */
+    public boolean stopsExpansion() {
+        // Default logic: Mines stop expansion (usually by not being revealable),
+        // but we'll define the base behavior here.
+        return false;
+    }
+
+    /**
+     * Strategy: Is this tile allowed to be revealed in a cascade?
+     */
+    public boolean isRevealable() {
+        return false; // Default: hidden/mines are not revealable by standard cascade
+    }
 
     public void setFlagListener(FlagListener flagListener) {
         this.flagListener = flagListener;

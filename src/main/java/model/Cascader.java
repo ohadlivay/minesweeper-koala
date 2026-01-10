@@ -15,15 +15,10 @@ public class Cascader {
         this.grid = grid;
     }
 
-    public Tile getHead() {
-        return head;
-    }
-
-    public Tile[][] getGrid() {
-        return grid;
-    }
-
-    // Main cascade method
+    /**
+     * this is the main cascading method
+     * it executes the cascade logic using the Strategy Pattern
+     */
     public ArrayList<Tile> getTilesToReveal() {
         ArrayList<Tile> cascadees = new ArrayList<>();
 
@@ -41,13 +36,14 @@ public class Cascader {
             Tile current = queue.remove();
             cascadees.add(current);
 
-            // STOP when number tile (standard Minesweeper rule)
-            if (current instanceof NumberTile && ((NumberTile) current).getAdjacentMines() > 0) {
+            // STRATEGY: Ask the current tile if the cascade should stop spreading
+            if (current.stopsExpansion()) {
                 continue;
             }
 
-            for (Tile neighbor : getNonMineNeighbors(current)) {
-                if (!visited.contains(neighbor)) {
+            for (Tile neighbor : getAllNeighbors(current)) {
+                // STRATEGY: Ask the neighbor if it is allowed to be revealed
+                if (!visited.contains(neighbor) && neighbor.isRevealable()) {
                     visited.add(neighbor);
                     queue.add(neighbor);
                 }
@@ -59,33 +55,12 @@ public class Cascader {
 
     // === Helpers ===
 
-    private int getTileRow(Tile target) {
-        for (int row = 0; row < grid.length; row++) {
-            for (int col = 0; col < grid[row].length; col++) {
-                if (grid[row][col] == target) {
-                    return row;
-                }
-            }
-        }
-        return -1;
-    }
-
-    private int getTileCol(Tile target) {
-        for (int row = 0; row < grid.length; row++) {
-            for (int col = 0; col < grid[row].length; col++) {
-                if (grid[row][col] == target) {
-                    return col;
-                }
-            }
-        }
-        return -1;
-    }
-
-    private ArrayList<Tile> getNonMineNeighbors(Tile tile) {
+    private ArrayList<Tile> getAllNeighbors(Tile tile) {
         ArrayList<Tile> neighbors = new ArrayList<>();
 
         int row = getTileRow(tile);
         int col = getTileCol(tile);
+
         if (row == -1 || col == -1) {
             return neighbors;
         }
@@ -97,16 +72,30 @@ public class Cascader {
                 int nr = row + dr;
                 int nc = col + dc;
 
-                if (nr < 0 || nr >= grid.length) continue;
-                if (nc < 0 || nc >= grid[nr].length) continue;
-
-                Tile neighbor = grid[nr][nc];
-                if (neighbor instanceof NumberTile) {
-                    neighbors.add(neighbor);
+                if (nr >= 0 && nr < grid.length && nc >= 0 && nc < grid[nr].length) {
+                    neighbors.add(grid[nr][nc]);
                 }
             }
         }
 
         return neighbors;
+    }
+
+    private int getTileRow(Tile target) {
+        for (int row = 0; row < grid.length; row++) {
+            for (int col = 0; col < grid[row].length; col++) {
+                if (grid[row][col] == target) return row;
+            }
+        }
+        return -1;
+    }
+
+    private int getTileCol(Tile target) {
+        for (int row = 0; row < grid.length; row++) {
+            for (int col = 0; col < grid[row].length; col++) {
+                if (grid[row][col] == target) return col;
+            }
+        }
+        return -1;
     }
 }

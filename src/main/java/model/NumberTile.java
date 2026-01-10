@@ -96,4 +96,17 @@ public class NumberTile extends Tile
             return false;
         }
     }
+
+    /* for the strategy design pattern, custom BL */
+    @Override
+    public boolean stopsExpansion() {
+        // Rule: If it's a number > 0, stop the spread.
+        return getAdjacentMines() > 0;
+    }
+
+    @Override
+    public boolean isRevealable() {
+        // Rule: Numbers are always safe to reveal.
+        return true;
+    }
 }

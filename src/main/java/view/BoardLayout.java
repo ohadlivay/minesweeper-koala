@@ -40,7 +40,7 @@ public class BoardLayout extends JPanel implements TurnListener {
     private void initBoardPanel() {
         setBackground(ColorsInUse.BOARD_BACKGROUND.get());
         setLayout(new GridLayout(rows, cols));
-        board.setTurnListener(this); // could this be the responsibility of the controller?
+        board.setTurnListener(this);
 
         //calculation for the tile size to dynamically change per difficulty
         //divide the board size by the number of rows

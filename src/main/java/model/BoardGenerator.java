@@ -224,32 +224,13 @@ public class BoardGenerator implements Testable {
     private Tile[][] toTileGrid(String[][] grid) {
         int rows = grid.length;
         int cols = grid[0].length;
-
         Tile[][] tiles = new Tile[rows][cols];
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
-
-                String cellValue = grid[r][c];
-
-                switch (cellValue) {
-                    case MINE_STR:
-                        tiles[r][c] = new MineTile();
-                        break;
-                    case QUESTION_STR:
-                        tiles[r][c] = new QuestionTile();
-                        break;
-                    case SURPRISE_STR:
-                        tiles[r][c] = new SurpriseTile();
-                        break;
-                    default:
-                        // Number tile (parse String "0"-"8" to int)
-                        NumberTile numberTile = new NumberTile();
-                        // Assume cellValue is a valid integer string here
-                        numberTile.setAdjacentMines(Integer.parseInt(cellValue));
-                        tiles[r][c] = numberTile;
-                        break;
-                }
+                // The logic of "How do I turn 'M' into a MineTile?"
+                // is now completely hidden inside the Factory.
+                tiles[r][c] = TileFactory.createTile(grid[r][c]);
             }
         }
         return tiles;
