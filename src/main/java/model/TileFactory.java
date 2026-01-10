@@ -3,15 +3,14 @@ package main.java.model;
 public class TileFactory {
 
     /**
-     * FACTORY MAGIC: This method acts as the single point of creation.
+     * FACTORY Design pattern
      * The client (BoardGenerator) provides a blueprint symbol, and this
-     * factory "magically" transforms it into the correct object type.
+     * factory transforms it into the correct object type.
      */
     public static Tile createTile(String blueprintValue) {
-        // MAGIC STEP: Mapping a String representation to a Concrete Class
         switch (blueprintValue) {
             case "MINE":
-            case "M": // Supporting both full names and shorthand from your blueprint
+            case "M":
                 return new MineTile();
 
             case "QUESTION":
@@ -23,9 +22,6 @@ public class TileFactory {
                 return new SurpriseTile();
 
             default:
-                // MAGIC STEP: Handling dynamic data (Numbers 0-8)
-                // The factory handles the internal configuration (setAdjacentMines)
-                // so the caller doesn't have to worry about NumberTile's specific methods.
                 try {
                     int mineCount = Integer.parseInt(blueprintValue);
                     NumberTile nt = new NumberTile();
