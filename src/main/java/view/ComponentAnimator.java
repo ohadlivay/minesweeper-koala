@@ -1,7 +1,5 @@
 package main.java.view;
 
-import main.java.util.SoundManager;
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -195,59 +193,6 @@ public class ComponentAnimator {
 
         });
         timer.start();
-    }
-
-    public void pulse(JComponent c) {
-        Insets original = c.getBorder() instanceof EmptyBorder eb ? eb.getBorderInsets() : new Insets(5, 20, 5, 20);
-        int max = 8;
-        int[] t = {0};
-
-        Timer timer = new Timer(15, e -> {
-            t[0] += 1;
-            int k = (t[0] <= max) ? t[0] : (2 * max - t[0]); // up then down
-            c.setBorder(BorderFactory.createEmptyBorder(
-                    original.top - k/2,
-                    original.left - k,
-                    original.bottom - k/2,
-                    original.right - k
-            ));
-            c.revalidate();
-            c.repaint();
-
-            if (t[0] >= 2 * max) {
-                c.setBorder(BorderFactory.createEmptyBorder(original.top, original.left, original.bottom, original.right));
-                ((Timer) e.getSource()).stop();
-            }
-        });
-        timer.start();
-    }
-
-    public Timer randomNumber(JLabel label, int target) {
-        final int durationMs = 700;
-        final int tickMs = 25;
-        final int steps = durationMs / tickMs;
-
-        final int[] step = {0};
-
-        Timer t = new Timer(tickMs, e -> {
-            step[0]++;
-
-            int rand = (int) (Math.random() * 100);
-            label.setText(String.valueOf(rand));
-            label.setForeground(rand >= target ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get());
-
-            // 🔊 play on every tick
-            SoundManager.getInstance()
-                    .playOnce(SoundManager.SoundId.SELECTION);
-
-            if (step[0] >= steps) {
-                ((Timer) e.getSource()).stop();
-                label.setText(String.valueOf(target));
-            }
-        });
-
-        t.start();
-        return t;
     }
 
     public void closeCountdown(JButton button, int target, int startValue) {

@@ -52,17 +52,4 @@ public class SoundManager {
         c.setFramePosition(0); // Rewind
         c.start();             // Play
     }
-
-    public void loop(SoundId id) {
-        Clip c = clips.get(id);
-        if (c == null) return;
-        c.setFramePosition(0);
-        c.loop(Clip.LOOP_CONTINUOUSLY);
-    }
-
-    public void stop(SoundId id) {
-        Clip c = clips.get(id);
-        if (c != null) c.stop();
-    }
-
 }

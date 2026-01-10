@@ -17,7 +17,7 @@ import java.util.List;
 public class QuestionManagerScreen extends JPanel {
 
     private final NavigationController nav;
-    private TableActionListener tableActionListener;  //never assigned but 4 usages, delete?
+    private TableActionListener tableActionListener;
     private JPanel mainPanel;
     private JTable questionsTable;
     private DefaultTableModel tableModel;
@@ -303,9 +303,5 @@ public class QuestionManagerScreen extends JPanel {
     // --- getters ---
 
     public JPanel getMainPanel() { return mainPanel; }
-    public JTable getQuestionsTable() { return questionsTable; }
-    public DefaultTableModel getTableModel() { return tableModel; }
-    public JButton getBtnAdd() { return btnAdd; }
-
 
 }

@@ -239,39 +239,6 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         southContainer.add(bottomPanel);
 
         mainPanel.add(southContainer, BorderLayout.SOUTH);
-
-        // ******TEMP BUTTONS FOR SHOWING WIN/LOSE OVERLAYS******** //
-        JPanel testButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        testButtonPanel.setOpaque(false);
-
-        JButton testWinButton = new JButton("Test Win");
-        testWinButton.setBackground(new Color(46, 204, 113)); // Green
-        testWinButton.setForeground(Color.WHITE);
-        testWinButton.addActionListener(e -> {
-            // For direct UI testing:
-            OverlayController.getInstance().showGameOverOverlay(true, session.getPoints());
-        });
-
-        JButton testLossButton = new JButton("Test Loss");
-        testLossButton.setBackground(new Color(231, 76, 60)); // Red
-        testLossButton.setForeground(Color.WHITE);
-        testLossButton.addActionListener(e -> {
-            OverlayController.getInstance().showGameOverOverlay(false, session.getPoints());
-        });
-
-        //TEMP BUTTON FOR TESTING QUESTION VIEW
-        JButton testQuestionButton = new JButton("Test Question");
-        testQuestionButton.setBackground(new Color(52, 152, 219)); // Blue color
-        testQuestionButton.setForeground(Color.WHITE);
-        testQuestionButton.addActionListener(e -> {
-            OverlayController.getInstance().showQuestionOverlay(session.getLeftBoard());
-        });
-
-        testButtonPanel.add(testQuestionButton);
-
-        testButtonPanel.add(testWinButton);
-        testButtonPanel.add(testLossButton);
-        bottomPanel.add(testButtonPanel, BorderLayout.EAST);
     }
 
     //make sure to disable the info button when ViewQuestionOverlay is being viewed

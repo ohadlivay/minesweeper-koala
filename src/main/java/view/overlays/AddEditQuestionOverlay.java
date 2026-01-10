@@ -85,7 +85,6 @@ public class AddEditQuestionOverlay extends OverlayView {
         gbc.gridx = 0;
         gbc.gridy = 0;
 
-
         // question text area
         QuestionPlaceholder = "Write your question here...";
         CorrectAnswerPlaceholder = "Correct Answer...";

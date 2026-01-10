@@ -31,7 +31,6 @@ public class GameInstructionOverlay extends OverlayView {
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBackground(ColorsInUse.BG_COLOR.get());
         contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
-        //contentPane.setPreferredSize(new Dimension(760, 460));
 
         // Title
         JLabel titleLabel = new JLabel("How to Play");
@@ -59,7 +58,7 @@ public class GameInstructionOverlay extends OverlayView {
         instructionsPanel.add(createInstructionRow("/gift-pixel.png", "Activate surprise and get a reward or penalty."));
         instructionsPanel.add(createInstructionRow("/plus-minus.png", "Activation of special tiles (Q/S) costs points, so manage your score wisely."));
         instructionsPanel.add(createInstructionRow("/target.png", "Maximize your score by revealing tiles and neutralizing mines while protecting your health."));
-        instructionsPanel.add(createInstructionRow("/home.png", "Exit the current session and return to the main menu at any time."));
+        instructionsPanel.add(createInstructionRow("/home-pixel.png", "Exit the current session and return to the main menu at any time."));
         instructionsPanel.add(Box.createVerticalGlue());
         instructionsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
