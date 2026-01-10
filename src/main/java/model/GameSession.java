@@ -111,14 +111,28 @@ public class GameSession
 
     public void initGame()
     {
+        System.out.println("TTT");
         SysData sysData = SysData.getInstance();
-        if (sysData.getQuestions().size()<20)
-            throw new IllegalStateException("Not enough questions in the system to start a game. Please add more questions.");
+        int availableQuestions = sysData.getQuestions().size();
+
+        // Get the requirement directly from the current difficulty
+        GameDifficulty difficulty = this.getGameDifficulty();
+        int required = difficulty.getQuestionCount() * 2;
+
+        if (availableQuestions < required) {
+            int missing = required - availableQuestions;
+            System.out.println("DDD");
+
+            throw new IllegalStateException(String.format(
+                    "Not enough questions for %s mode. Current: %d, Required: %d. Please add %d more questions.",
+                    difficulty.name(), availableQuestions, required, missing
+            ));
+        }
+
         this.isGameOverProcessing = false; // Reset the flag
         initiateGameStats();
         initializeBoards();
     }
-
     //Getters and setters
     public LocalDateTime getTimeStamp() {
         return timeStamp;
