@@ -13,6 +13,7 @@ ID,Question,Difficulty,A,B,C,D,Correct Answer
 12,"An ""Equivalence Class"" is:",EASY,Inputs producing same behavior,A Java class,A design pattern,A class the checks booleans,1
 13,Which is a Gang of Four (GoF) design pattern category?,MEDIUM,Creational,Relational,Functional,Operational,1
 14,What do Sequence Diagrams show?,MEDIUM,Interactions between actors and objects,Exact database tables,Hardware deployment,State transitions only,1
+15,"Does ""Open Source"" mean no usage restrictions?",EASY,"No, licenses may restrict use","Yes, always",Only for juniors,Only if paid for,1
 15,How does the Observer know when the Observed changes?,EASY,Observed saves a reference to the Observer and updates during change,Observer pings the subject occasionally and checks for status updates,Observed broadcasts its state globally and Observers react.,Observer is notified via a thrown execption,1
 16,What does the Strategy DP do?,MEDIUM,Reduces algorithm responsibiltiies via Strategy methods in subclasses.,Combines N similar objects to form a Generic Strategy object,Forces a single-dependency relation between two classes via interface.,Allows each object to call the Strategy object,1
 17,Which problem is usually solved by the Factory design pattern?,MEDIUM,Code has objects that are complex to instantiate,Code relies too heavily on object variables rather than class,Code has to be refactored to adhere to SOLID prinicples,Code is tightly coupled and unmaintainable,1
