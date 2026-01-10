@@ -5,11 +5,14 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.net.URL;
 
+/**
+ * this class simply renders the panel onto the table cell
+ */
+
 public class TblBtnRenderer implements TableCellRenderer {
     private final TblBtnPanel panel;
 
     public TblBtnRenderer() {
-        // Scaling to 20x20 so they sit nicely inside the 40x32 button
         JButton edit = createScaledIconButton("/pixel-pencil.png", ColorsInUse.BTN_COLOR.get(), 30, 30);
         JButton del  = createScaledIconButton("/x-pixel.png", ColorsInUse.BTN_COLOR.get(), 20, 20);
 

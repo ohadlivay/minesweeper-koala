@@ -17,7 +17,6 @@ import java.util.List;
 public class QuestionManagerScreen extends JPanel {
 
     private final NavigationController nav;
-    private TableActionListener tableActionListener;  //never assigned but 4 usages, delete?
     private JPanel mainPanel;
     private JTable questionsTable;
     private DefaultTableModel tableModel;
@@ -65,7 +64,7 @@ public class QuestionManagerScreen extends JPanel {
 
         //these 2 classes need to be created to handle the buttons in the table (this is the standard way to do it in swing)
         questionsTable.getColumnModel().getColumn(4).setCellRenderer(new TblBtnRenderer());
-        questionsTable.getColumnModel().getColumn(4).setCellEditor(new TblBtnEditor(questionsTable, new TableActionListener() {
+        questionsTable.getColumnModel().getColumn(4).setCellEditor(new TblBtnEditor(new TableActionListener() {
 
             // when edit button is clicked, open the overlay with the question data
             @Override
@@ -73,9 +72,6 @@ public class QuestionManagerScreen extends JPanel {
                 int id = (int) tableModel.getValueAt(row, 0);
                 Question q = SysData.getInstance().getQuestionByID(id);
                 OverlayController.getInstance().showAddEditOverlay(q);
-                if (tableActionListener != null) {
-                    tableActionListener.onEdit(row);
-                }
             }
 
             @Override
@@ -86,9 +82,6 @@ public class QuestionManagerScreen extends JPanel {
                     OverlayController.getInstance().showDeleteQuestionOverlay(q);
                 } else {
                     System.err.println("Could not find question with ID: " + id);
-                }
-                if (tableActionListener != null) {
-                    tableActionListener.onDelete(row);
                 }
             }
         }));
@@ -122,7 +115,6 @@ public class QuestionManagerScreen extends JPanel {
             Image img = icon.getImage().getScaledInstance(24, 24, Image.SCALE_DEFAULT);
             if(btnAdd != null)
                 btnAdd.setIcon(new ImageIcon(img));
-
         }
 
         btnAdd.addActionListener(e -> OverlayController.getInstance().showAddEditOverlay(null));
@@ -133,14 +125,12 @@ public class QuestionManagerScreen extends JPanel {
         add(mainPanel, BorderLayout.CENTER);
     }
 
-    //store all questions and refresh the table to show the first page
     public void populateTable(List<Question> questions) {
         if (questions == null) {
             this.allQuestions = new ArrayList<>();
         } else {
             this.allQuestions = new ArrayList<>(questions);
         }
-        //make sure the current page isnt out of bounds after changes (like delete)
         int maxPage = (int) Math.ceil((double) allQuestions.size() / rowsPerPage);
         if (currentPage > maxPage) {
             currentPage = Math.max(1, maxPage);
@@ -148,7 +138,6 @@ public class QuestionManagerScreen extends JPanel {
         refreshPage();
     }
 
-    //for jumping to last page after adding a question
     public void jumpToLastPageAndPopulate(List<Question> questions) {
         if (questions == null) {
             this.allQuestions = new ArrayList<>();
@@ -160,7 +149,6 @@ public class QuestionManagerScreen extends JPanel {
             this.currentPage = 1;
         }
         refreshPage();
-
         animator.flashForeground(questionsTable, ColorsInUse.CONFIRM.get(), ColorsInUse.TEXT.get());
     }
 
@@ -175,7 +163,7 @@ public class QuestionManagerScreen extends JPanel {
             if (currentPage > 1) {
                 currentPage--;
             } else {
-                currentPage = Math.max(1, maxPage); // if this is the first page, go to last page (carousel)
+                currentPage = Math.max(1, maxPage);
             }
             refreshPage();
         });
@@ -191,7 +179,7 @@ public class QuestionManagerScreen extends JPanel {
             if (currentPage < maxPage) {
                 currentPage++;
             } else {
-                currentPage = 1; //if this is the last page, go back to first page (carousel)
+                currentPage = 1;
             }
             refreshPage();
         });
@@ -214,21 +202,18 @@ public class QuestionManagerScreen extends JPanel {
         int totalQuestions = allQuestions.size();
         int maxPage = (int) Math.ceil((double) totalQuestions / rowsPerPage);
 
-        //ensure current page is valid
         if (currentPage > maxPage) currentPage = maxPage;
         if (currentPage < 1) currentPage = 1;
 
         int start = (currentPage - 1) * rowsPerPage;
         int end = Math.min(start + rowsPerPage, totalQuestions);
 
-        //add rows for the current page
         for (int i = start; i < end; i++) {
             Question q = allQuestions.get(i);
             Object[] rowData = {q.getId(), q.getQuestionText(), q.getDifficulty(), q.getAnswer1(), ""};
             tableModel.addRow(rowData);
         }
 
-        //buttons are only enabled if there is only 1 page
         pageLabel.setText("PAGE " + currentPage + " OF " + maxPage);
         boolean canScroll = maxPage > 1;
         btnPrev.setEnabled(canScroll);
@@ -273,7 +258,6 @@ public class QuestionManagerScreen extends JPanel {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 if (btn.isEnabled()) btn.setBackground(bg.brighter());
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 if (btn.isEnabled()) btn.setBackground(bg);
             }
@@ -299,13 +283,8 @@ public class QuestionManagerScreen extends JPanel {
         return homeButton;
     }
 
-
-    // --- getters ---
-
     public JPanel getMainPanel() { return mainPanel; }
     public JTable getQuestionsTable() { return questionsTable; }
     public DefaultTableModel getTableModel() { return tableModel; }
     public JButton getBtnAdd() { return btnAdd; }
-
-
 }
