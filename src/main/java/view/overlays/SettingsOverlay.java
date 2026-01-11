@@ -418,12 +418,6 @@ public class SettingsOverlay extends OverlayView {
                     return;
                 }
 
-                // also allow backspace, delete, etc. (they aren't "real" characters)
-                char ch = e.getKeyChar();
-                if (Character.isISOControl(ch)) {
-                    return;
-                }
-
                 if (tf.getText().length() <= PlAYER_TEXT_LENGTH * 0.7) {
                     name.setForeground(ColorsInUse.TEXT.get());
                     name.setToolTipText(null);

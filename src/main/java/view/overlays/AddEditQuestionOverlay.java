@@ -518,11 +518,6 @@ public class AddEditQuestionOverlay extends OverlayView {
                     return;
                 }
 
-                // to allow backspace, delete, etc.
-                char ch = e.getKeyChar();
-                if (Character.isISOControl(ch)) {
-                    return;
-                }
                 errorLabel.setVisible(tf.getText().length() >= Question.getMaxAnswerLength() * 0.7);
                 if (tf.getText().length() >= Question.getMaxAnswerLength()) {
                     e.consume();
