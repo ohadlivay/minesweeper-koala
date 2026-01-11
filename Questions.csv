@@ -4,10 +4,10 @@ ID,Question,Difficulty,A,B,C,D,Correct Answer
 3,Non-functional requirements define:,HARD,System constraints/properties,Specific system services,Database schemas,User inputs,1
 4,Correct order of Risk Management activities?,MASTER,Identify > Analyze > Plan > Monitor,Monitor > Plan > Analyze > Identify,Plan > Identify > Monitor > Analyze,Analyze > Plan > Identify > Monitor,1
 5,"The term ""Validation"" asks which question?",HARD,Are we building the right product?,Are we building the product right?,Is the code efficient?,Is the budget sufficient?,1
-6,When is defect removal most expensive?,EASY,Operation/Field,Requirements,Design,Testing,1
-7,The MVC pattern separates:,MEDIUM,Presentation from data,User from hardware,Input from output,Online from offline,1
-8,What does the Singleton pattern ensure?,MEDIUM,One instance of a class,Multiple object copies,Public access only,Database connectivity,1
-9,"The term ""Affordance"" refers to ",HARD,Clues on object use,Software price,Processor speed,Memory limit,1
+6,Why do Adaptive and Perfective maintenance require higher skill levels than typical development?,MASTER,Programmers must handle all life cycle phases on an existing base,They only focus on correcting internal logical errors,It deletes history after every tenth commi,They are performed only when documentation is 100% complete,1
+7,Which annotation executes a method once before any tests in the class begin?,EASY,BeforeClass,Before,After,AfterClass,1
+8,Which activity happens at the end of each sprint?,MEDIUM,Retrospective Meeting,Backlog Refinement,Daily Scrum,Sprint Planning,1
+9,"What is the best strategy for a low-quality, high-business value legacy system?",MASTER,Re-engineer or replace the system,Continue normal maintenance activities,Scrap the system completely,Transfer it immediately to a COTS platform,1
 10,White-Box testing focuses on:,EASY,Internal structure/logic,Output behavior only,User experience,Requirements gathering,1
 11,Black-Box testing focuses on:,EASY,Erroneous outputs/behavior,Code complexity,Internal structure/logic,Variable initialization,1
 12,"An ""Equivalence Class"" is:",EASY,Inputs producing same behavior,A Java class,A design pattern,A class the checks booleans,1
@@ -19,3 +19,5 @@ ID,Question,Difficulty,A,B,C,D,Correct Answer
 18,Which problem is usually solved by the Factory design pattern?,MEDIUM,Code has objects that are complex to instantiate,Code relies too heavily on object variables rather than class,Code has to be refactored to adhere to SOLID prinicples,Code is tightly coupled and unmaintainable,1
 19,Why would you even use design patterns?,HARD,All answers are correct,They are well known and form a common ground between developers,They allow software to be extendable maintainable and efficient,They offer optimal and time tested solutions to problems plaguing SWE.,1
 20,Which of the following lines of code is wrong when applying the Singleton design pattern?,MEDIUM,private ClassA getInstance(){...};,private static ClassA instance;,private ClassA(){...};,public static ClassA getInstance(){...};,1
+21,"The term ""Affordance"" refers to",HARD,Clues on object use,Software price,Processor speed,Memory limit,1
+22,When is defect removal most expensive?,EASY,Operation/Field,Requirements,Design,Testing,1
