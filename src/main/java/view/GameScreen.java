@@ -181,7 +181,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         JLabel costLabel = new JLabel("Activation Cost: " + currentDifficulty.getActivationCost());
         costLabel.setForeground(ColorsInUse.TEXT.get());
         costLabel.setFont(font);
-        java.net.URL targetUrl = getClass().getResource("/plus-minus.png");
+        java.net.URL targetUrl = getClass().getResource("/cost-pixel.png");
         if (targetUrl != null) {
             ImageIcon icon = new ImageIcon(targetUrl);
             Image scaled = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
