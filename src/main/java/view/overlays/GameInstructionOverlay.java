@@ -79,7 +79,7 @@ public class GameInstructionOverlay extends OverlayView {
         btnClose.setPreferredSize(new Dimension(110, 40));
         btnClose.setBackground(ColorsInUse.BTN_COLOR.get());
         btnClose.setForeground(ColorsInUse.TEXT.get());
-        btnClose.setFont(FontsInUse.PIXEL.getSize(16f));
+        btnClose.setFont(FontsInUse.PIXEL.getSize(20f));
         btnClose.setFocusPainted(false);
         btnClose.addActionListener(e -> close());
 
