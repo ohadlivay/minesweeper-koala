@@ -8,6 +8,7 @@ import java.util.Random;
 public enum ColorsInUse {
 
     BG_COLOR(new Color(20, 20, 20)),
+    BG_BLACK(new Color(4,3,4)),
     BTN_COLOR(new Color(10, 10, 10)),
     TEXT(Color.WHITE),
     ALT_TEXT(Color.BLACK),

@@ -36,17 +36,34 @@ public class StartScreen {
 
     private void initUI() {
         mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        mainPanel.setBackground(ColorsInUse.BG_BLACK.get());
 
-        java.net.URL imageURL = getClass().getResource("/start-title.png");
+        //setup for gif+static png combination
+        java.net.URL animURL = getClass().getResource("/start-gif.gif");
+        java.net.URL staticURL = getClass().getResource("/start-static.png");
 
-        if (imageURL != null) {
-            ImageIcon startTitle = new ImageIcon(imageURL);
-            startScreenLabel = new JLabel(startTitle);
+        if (animURL != null) {
+            //start with gif
+            ImageIcon animation = new ImageIcon(animURL);
+            startScreenLabel = new JLabel(animation);
+
+            //timer to stop the gif and swap with static image
+            int animationDurationMs = 3000;
+            Timer stopAnimationTimer = new Timer(animationDurationMs, e -> {
+                if (staticURL != null) {
+                    startScreenLabel.setIcon(new ImageIcon(staticURL));
+                }
+            });
+            stopAnimationTimer.setRepeats(false); // Ensure it only runs once
+            stopAnimationTimer.start();
         } else {
-            System.err.println("Could not find image resource: /images/title_banner.png");
-            startScreenLabel = new JLabel("KOALA MINESWEEPER (Image Missing)");
-            startScreenLabel.setForeground(Color.RED);
+            //fallback
+            if (staticURL != null) {
+                startScreenLabel = new JLabel(new ImageIcon(staticURL));
+            } else {
+                startScreenLabel = new JLabel("KOALA MINESWEEPER (Image Missing)");
+                startScreenLabel.setForeground(Color.RED);
+            }
         }
 
         startScreenLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -62,10 +79,12 @@ public class StartScreen {
 
         JPanel centerButtonContainer = new JPanel();
         centerButtonContainer.setLayout(new BoxLayout(centerButtonContainer, BoxLayout.Y_AXIS));
-        centerButtonContainer.setBackground(ColorsInUse.BG_COLOR.get());
+        centerButtonContainer.setBackground(ColorsInUse.BG_BLACK.get());
 
         for (JButton btn : centerButtons) {
             btn.setFont(btnFont);
+            btn.setBackground(ColorsInUse.BTN_COLOR.get());
+            btn.setForeground(ColorsInUse.TEXT.get());
             btn.setFocusable(false);
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
             btn.setMaximumSize(new java.awt.Dimension(350, 60));
@@ -76,17 +95,19 @@ public class StartScreen {
         }
 
         JPanel centerWrapper = new JPanel(new GridBagLayout());
-        centerWrapper.setBackground(ColorsInUse.BG_COLOR.get());
+        centerWrapper.setBackground(ColorsInUse.BG_BLACK.get());
         centerWrapper.add(centerButtonContainer);
         mainPanel.add(centerWrapper, BorderLayout.CENTER);
 
         exitBtn = new JButton("Exit");
         exitBtn.setFont(btnFont);
+        exitBtn.setBackground(ColorsInUse.BTN_COLOR.get());
+        exitBtn.setForeground(ColorsInUse.TEXT.get());
         exitBtn.setFocusable(false);
         exitBtn.setPreferredSize(new java.awt.Dimension(120, 45));
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        bottomPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        bottomPanel.setBackground(ColorsInUse.BG_BLACK.get());
         bottomPanel.add(exitBtn);
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
     }
