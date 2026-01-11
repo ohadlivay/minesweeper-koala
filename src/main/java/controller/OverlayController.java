@@ -1,7 +1,6 @@
 package main.java.controller;
 
 import main.java.model.Board;
-import main.java.model.GameDifficulty;
 import main.java.model.Question;
 import main.java.view.ComponentAnimator;
 import main.java.view.overlays.*;

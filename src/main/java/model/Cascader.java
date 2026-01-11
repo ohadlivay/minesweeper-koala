@@ -1,10 +1,6 @@
 package main.java.model;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public class Cascader {
     private Tile head;
