@@ -47,6 +47,13 @@ public class Main {
             SwingUtilities.invokeLater(() -> {
 
                 JFrame frame = new JFrame("Koala Minesweeper");
+                java.net.URL iconURL = Main.class.getResource("/game-won-koala.png");
+                if (iconURL != null) {
+                    ImageIcon icon = new ImageIcon(iconURL);
+                    frame.setIconImage(icon.getImage());
+                } else {
+                    System.err.println("Could not find icon resource: /game-won-koala.png");
+                }
                 frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                 frame.setSize(1200, 720);
                 frame.setResizable(false);
