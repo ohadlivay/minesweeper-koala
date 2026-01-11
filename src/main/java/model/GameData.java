@@ -1,7 +1,5 @@
 package main.java.model;
 
-import main.java.test.Testable;
-
 import java.time.LocalDateTime;
 
 // GameData class to store the game data after the game is over

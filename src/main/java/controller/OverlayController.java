@@ -45,13 +45,6 @@ public class OverlayController {
         }
     }
 
-    public void showSettingsOverlay(String player1, String player2, GameDifficulty difficulty) {
-        closeCurrentOverlay();
-        SettingsOverlay overlay = new SettingsOverlay(nav, player1, player2, difficulty);
-        this.currentOverlay = overlay;
-        overlay.open();
-    }
-
     public void showGameOverOverlay(boolean isWin, int score) {
         closeCurrentOverlay();
         GameOverOverlay overlay = new GameOverOverlay(nav, isWin, score);

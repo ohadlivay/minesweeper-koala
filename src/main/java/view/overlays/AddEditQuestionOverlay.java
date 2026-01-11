@@ -85,7 +85,6 @@ public class AddEditQuestionOverlay extends OverlayView {
         gbc.gridx = 0;
         gbc.gridy = 0;
 
-
         // question text area
         QuestionPlaceholder = "Write your question here...";
         CorrectAnswerPlaceholder = "Correct Answer...";
@@ -380,7 +379,12 @@ public class AddEditQuestionOverlay extends OverlayView {
         String a3 = answer3.getText().trim();
         String a4 = answer4.getText().trim();
 
-        if (qText.isEmpty() || qText.equals(QuestionPlaceholder) || a1.isEmpty() || a1.equals(CorrectAnswerPlaceholder)) {
+        // Require question text and ALL four answers to be filled (not placeholders)
+        if (qText.isEmpty() || qText.equals(QuestionPlaceholder)
+                || a1.isEmpty() || a1.equals(CorrectAnswerPlaceholder)
+                || a2.isEmpty() || a2.equals(WrongAnswerPlaceholder)
+                || a3.isEmpty() || a3.equals(WrongAnswerPlaceholder)
+                || a4.isEmpty() || a4.equals(WrongAnswerPlaceholder)) {
             JOptionPane.showMessageDialog(this, "All text fields must be filled!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -529,4 +533,3 @@ public class AddEditQuestionOverlay extends OverlayView {
         };
     }
 }
-

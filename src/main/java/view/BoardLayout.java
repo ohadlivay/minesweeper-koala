@@ -112,46 +112,5 @@ public class BoardLayout extends JPanel implements TurnListener {
             throw new IllegalArgumentException("Board cannot be null");
         this.board = board;
     }
-
-
-    //Helper methods
-
-    //get random color
- /*   private boolean isTooSimilar(Color c1, Color c2) {
-        float dr = c1.getRed() / 255f - c2.getRed() / 255f;
-        float dg = c1.getGreen() / 255f - c2.getGreen() / 255f;
-        float db = c1.getBlue() / 255f - c2.getBlue() / 255f;
-
-        float distance = (float) Math.sqrt(dr*dr + dg*dg + db*db);
-        return distance < 0.40f;
-    }
-
-    private boolean isTooBrightOrDark(Color c) {
-        float r = c.getRed() / 255f;
-        float g = c.getGreen() / 255f;
-        float b = c.getBlue() / 255f;
-
-        float brightness = (r + g + b) / 3f;
-        return brightness < 0.25f || brightness > 0.80f;
-    }
-
-    private Color randomColor() {
-        Color toReturn = new Color(
-                (float) Math.random(),
-                (float) Math.random(),
-                (float) Math.random()
-        );
-
-        for (ColorsInUse color : ColorsInUse.values()) {
-            Color reserved = color.get();
-
-            // reject if EXACT match or TOO SIMILAR match or TOO BRIGHT or TOO DARK
-            if (toReturn.equals(reserved) || isTooSimilar(toReturn, reserved) || isTooBrightOrDark(toReturn)) {
-                return randomColor(); // regenerate
-            }
-        }
-
-        return toReturn;
-    } */
 }
 

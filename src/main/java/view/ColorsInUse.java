@@ -130,28 +130,4 @@ public enum ColorsInUse {
         else
             return BOARD_BORDER_DEFAULT.get();
     }
-
-    public static Color numberColor(String n) {
-        return switch (n) {
-            case "1" -> NUMBER_1.get();
-            case "2" -> NUMBER_2.get();
-            case "3" -> NUMBER_3.get();
-            case "4" -> NUMBER_4.get();
-            case "5" -> NUMBER_5.get();
-            case "6" -> NUMBER_6.get();
-            case "7" -> NUMBER_7.get();
-            case "8" -> NUMBER_8.get();
-            default -> TILE_DEFAULT.get();
-        };
-    }
-
-    public static Color forTileType(String type) {
-        if (type == null) return TILE_DEFAULT.get();
-        return switch (type) {
-            case "S" -> SURPRISE_TILE.get();
-            case "Q" -> QUESTION_TILE.get(); // revealed empty
-            // mine (use revealed bg)
-            default -> REVEALED_BG.get();
-        };
-    }
 }

@@ -41,7 +41,7 @@ public class QuestionManagerController {
         view.jumpToLastPageAndPopulate(questions);
     }
     /*
-    tali's delete/edit/add questions.
+    delete/edit/add questions.
      */
     public boolean userDeletedQuestion(Question question) {
         try {
@@ -62,7 +62,7 @@ public class QuestionManagerController {
     }
 
     /*
-    im assuming when a user presses 'Add new question', a new empty line will be shown to him and a new Question object
+    assuming when a user presses 'Add new question', a new empty line will be shown to him and a new Question object
     will be created (and returned by this method)
     the user can then edit the Question and save it, changing the Question object.
      */
@@ -72,7 +72,7 @@ public class QuestionManagerController {
 
     public boolean userSavedEditedQuestion(int id, String questionText, QuestionDifficulty difficulty, String answer1, String answer2, String answer3, String answer4) {
         /*
-        im assuming the user pressed 'Edit', a window to edit has opened, user edited the fields to his liking, pressed 'Save' and then this was activated.
+        assuming the user pressed 'Edit', a window to edit has opened, user edited the fields to his liking, pressed 'Save' and then this was activated.
         so this will take the user input, delete the old question, create a new Question (same id) and save it to csv.
          */
         try

@@ -214,10 +214,11 @@ public class SettingsOverlay extends OverlayView {
             }
         }
         try {
-            //check to see if the system has enough questions to start a game
+            // Check to see if the system has enough questions to start a game
             GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty);
         } catch (IllegalStateException e) {
-            JOptionPane.showMessageDialog(this, "Not enough questions in the system to start a game. Please add more questions.", "Error", JOptionPane.ERROR_MESSAGE);
+            // e.getMessage() contains the detailed "Current: X, Required: Y..." string we built
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         nav.goToGame();

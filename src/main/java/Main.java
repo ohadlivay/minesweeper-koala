@@ -1,8 +1,6 @@
 package main.java;
 
-import com.formdev.flatlaf.*;
-import com.formdev.flatlaf.themes.FlatMacDarkLaf;
-import com.formdev.flatlaf.themes.FlatMacLightLaf;
+
 import main.java.controller.NavigationController;
 import main.java.model.BoardGenerator;
 import main.java.model.GameDifficulty;
@@ -17,14 +15,6 @@ import java.awt.event.WindowEvent;
 public class Main {
     public static void main(String[] args) {
 
-        /*what's flatlaf? can we delete it?*/
-        /*optional FlatLef look and feel
-        try {
-            UIManager.setLookAndFeel(new FlatMacDarkLaf());
-        } catch (Exception ex) {
-            System.err.println("Failed to initialize LaF");
-        }*/
-
         //DON'T TOUCH THIS CODE - IT SETS THE WHOLE UI THEME
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -35,18 +25,17 @@ public class Main {
                 }
             }
         } catch (UnsupportedLookAndFeelException e) {
-            // handle exception
+            throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
-            // handle exception
+            e.printStackTrace();
         } catch (InstantiationException e) {
-            // handle exception
+            e.printStackTrace();
         } catch (IllegalAccessException e) {
-            // handle exception
+            e.printStackTrace();
         }
 
 
         //ohad's tests:
-        // (this will be replaced with smarter tests)
         BoardGenerator testBoard = new BoardGenerator(GameDifficulty.HARD);
         System.out.println(testBoard.runClassTests());
         //end of ohad's tests

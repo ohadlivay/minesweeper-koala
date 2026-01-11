@@ -7,27 +7,6 @@ import main.java.view.GameScreen;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
-/*
-Dear Ohad,
-I would love to create the boards myself using the constructor or initiate the method with the appropriate values.
-unfortunately, I do not have access to those methods as they are both Private
-*/
-
-/*
-Dearest Thomas,
-
-Sadly, it would be bad practice to expose my constructor or private methods,
-as that would tightly couple your code to my internal implementation.
-However! I have created a dedicated public method just for you.
-
-You may safely call:
-    createNewBoard(gameDifficulty)
-
-Rest assured — it will return a valid and fully initialized Board.
-
-Cheers and all the best to you and your family,
-Ohad
-*/
 
 public class GameSession
 {
@@ -111,14 +90,28 @@ public class GameSession
 
     public void initGame()
     {
+        System.out.println("TTT");
         SysData sysData = SysData.getInstance();
-        if (sysData.getQuestions().size()<20)
-            throw new IllegalStateException("Not enough questions in the system to start a game. Please add more questions.");
+        int availableQuestions = sysData.getQuestions().size();
+
+        // Get the requirement directly from the current difficulty
+        GameDifficulty difficulty = this.getGameDifficulty();
+        int required = difficulty.getQuestionCount() * 2;
+
+        if (availableQuestions < required) {
+            int missing = required - availableQuestions;
+            System.out.println("DDD");
+
+            throw new IllegalStateException(String.format(
+                    "Not enough questions for %s mode. Current: %d, Required: %d. Please add %d more questions.",
+                    difficulty.name(), availableQuestions, required, missing
+            ));
+        }
+
         this.isGameOverProcessing = false; // Reset the flag
         initiateGameStats();
         initializeBoards();
     }
-
     //Getters and setters
     public LocalDateTime getTimeStamp() {
         return timeStamp;

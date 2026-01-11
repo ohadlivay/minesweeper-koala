@@ -60,7 +60,6 @@ public class QuestionController {
     /*
     Clears the history of asked questions
      */
-    // why boolean?
     public boolean restartUsedQuestions(){
         // FIX: "new Set" is invalid because Set is an interface. 
         // We can simply clear the existing HashSet.
@@ -73,7 +72,6 @@ public class QuestionController {
     }
 
     public void submitQuestionResult(boolean isCorrect, QuestionDifficulty difficulty, Board board) {
-        //tom you can use this method to get the result of the question into GameSession
         GameSession session = GameSessionController.getInstance().getSession();
         session.updateAfterQuestionResult(difficulty, isCorrect, board);
     }
