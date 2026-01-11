@@ -17,54 +17,61 @@ public class ComponentAnimator {
     private final java.util.Map<JComponent, Timer> sparkleEmitTimers = new java.util.WeakHashMap<>();
 
 
-    private void replaceTimer(JComponent c, Timer next) {
-        Timer prev = active.put(c, next);
-        if (prev != null) {
-            prev.stop();
-            // reset to stable base if we stored it
-            Point base = (Point) c.getClientProperty("shake.base");
-            if (base != null) c.setLocation(base);
+    //blocks new animations if one is already running
+    private boolean canAnimate(JComponent c, Timer next) {
+        if (active.containsKey(c)) {
+            return false;
         }
+        active.put(c, next);
+        return true;
     }
 
 
     public void shake(JComponent c) {
-        // store a stable base once
-        Point base = (Point) c.getClientProperty("shake.base");
-        if (base == null) {
-            base = c.getLocation();
-            c.putClientProperty("shake.base", new Point(base));
-        } else {
-            base = new Point(base);
+        Border stableBorder = (Border) c.getClientProperty("shake.stableBorder");
+        if (stableBorder == null) {
+            stableBorder = c.getBorder();
+            c.putClientProperty("shake.stableBorder", stableBorder);
         }
+
+        final Border finalStable = stableBorder;
+        Insets base = (finalStable instanceof EmptyBorder eb) ? eb.getBorderInsets() : new Insets(0,0,0,0);
 
         int frames = 10;
         int[] i = {0};
 
-        Point finalBase = base;
         Timer t = new Timer(15, e -> {
             i[0]++;
-            int dx = (i[0] % 2 == 0) ? 6 : -6;
-            c.setLocation(finalBase.x + dx, finalBase.y);
+
+            int offset = (i[0] % 2 == 0) ? 2 : -2;
+
+            c.setBorder(BorderFactory.createEmptyBorder(
+                    base.top, base.left + offset, base.bottom, base.right - offset
+            ));
 
             if (i[0] >= frames) {
-                c.setLocation(finalBase);
+                c.setBorder(finalStable);
+                active.remove(c);
                 ((Timer) e.getSource()).stop();
             }
         });
 
-        // reset before starting new one
-        c.setLocation(base);
-        replaceTimer(c, t);
-        t.start();
+        if (canAnimate(c, t)) {
+            t.start();
+        }
     }
 
 
     public void pulseBorder(JComponent c, int maxGrowPx) {
-        Border originalBorder = c.getBorder();
-        Insets baseInsets = (originalBorder instanceof EmptyBorder eb)
-                ? eb.getBorderInsets()
-                : new Insets(5, 10, 5, 10);
+        Border stableBorder = (Border) c.getClientProperty("pulse.stableBorder");
+        if (stableBorder == null) {
+            stableBorder = c.getBorder();
+            c.putClientProperty("pulse.stableBorder", stableBorder);
+        }
+
+        final Border finalStable = stableBorder;
+        Insets baseInsets = (finalStable instanceof EmptyBorder eb)
+                ? eb.getBorderInsets() : new Insets(5, 10, 5, 10);
 
         int frames = 16;
         int[] i = {0};
@@ -72,8 +79,7 @@ public class ComponentAnimator {
         Timer t = new Timer(15, e -> {
             i[0]++;
             int half = frames / 2;
-            int k = (i[0] <= half) ? i[0] : (frames - i[0]); // up then down
-
+            int k = (i[0] <= half) ? i[0] : (frames - i[0]);
             int grow = (int) Math.round((k / (double) half) * maxGrowPx);
 
             c.setBorder(BorderFactory.createEmptyBorder(
@@ -82,17 +88,16 @@ public class ComponentAnimator {
                     Math.max(0, baseInsets.bottom - grow / 2),
                     Math.max(0, baseInsets.right - grow)
             ));
-            c.revalidate();
-            c.repaint();
 
             if (i[0] >= frames) {
-                c.setBorder(originalBorder);
+                c.setBorder(finalStable);
+                active.remove(c);
                 ((Timer) e.getSource()).stop();
             }
         });
 
-        replaceTimer(c, t);
-        t.start();
+        if (canAnimate(c, t)) t.start();
+
     }
 
     public void flashForeground(JComponent label, Color flashColor, Color baseColor) {
@@ -112,8 +117,7 @@ public class ComponentAnimator {
             if (i[0] >= frames) ((Timer) e.getSource()).stop();
         });
 
-        replaceTimer(label, t);
-        t.start();
+        if (canAnimate(label, t)) t.start();
     }
 
     public void flashBackground(JComponent c, Color flashColor, Color base) {
@@ -141,8 +145,7 @@ public class ComponentAnimator {
 
         c.setBackground(base);
 
-        replaceTimer(c, t);
-        t.start();
+        if (canAnimate(c, t)) t.start();
     }
 
 
@@ -358,8 +361,7 @@ public class ComponentAnimator {
             finalComp.repaint();
         });
 
-        replaceTimer(comp, t);
-        t.start();
+        if (canAnimate(comp, t)) t.start();
     }
 
     // Breath
@@ -374,6 +376,7 @@ public class ComponentAnimator {
         c.putClientProperty("breath.baseColor", null);
         c.putClientProperty("breath.glowColor", null);
         c.putClientProperty("breath.t0", null);
+        c.putClientProperty("shine.phase", null);
         c.repaint();
     }
 
@@ -426,8 +429,7 @@ public class ComponentAnimator {
             c.repaint();
         });
 
-        replaceTimer(c, t);
-        t.start();
+        if (canAnimate(c, t)) t.start();
     }
 
 
@@ -708,6 +710,7 @@ public class ComponentAnimator {
 
     }
 
+    //this animation is shake specifically for the mine icon within the mine tile
     public void animateMineHit(TileView tile) {
         int frames = 10;
         int[] i = {0};
@@ -715,16 +718,16 @@ public class ComponentAnimator {
         Timer t = new Timer(15, e -> {
             i[0]++;
             int dx = (i[0] % 2 == 0) ? 2 : -2;
-
             tile.setIconOffsetX(dx);
 
             if (i[0] >= frames) {
                 tile.setIconOffsetX(0);
+                active.remove(tile);
                 ((Timer) e.getSource()).stop();
             }
         });
 
-        t.start();
+        if (canAnimate(tile, t)) t.start();
     }
 }
 

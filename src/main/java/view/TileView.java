@@ -257,7 +257,11 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
      */
     private void setAnimationType(tileTypes type, boolean activate) {
         if (type == tileTypes.SURPRISE) {
-            animator.shine(this, activate);
+            if (activate) {
+                animator.shine(this, true);
+            } else {
+                animator.stop(this);
+            }
         }
         else if (type == tileTypes.QUESTION) {
             animator.breathe(this, ColorsInUse.QUESTION_TILE_BREATH.get(), 1500, activate);
