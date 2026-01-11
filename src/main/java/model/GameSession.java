@@ -40,6 +40,7 @@ public class GameSession
     private static final int pointsForRevealingNumber = 1;
 
 
+    // Game session attributes
     private final Set<ActionMadeListener> actionMadeListeners = new HashSet<>();
     private final Set<SurpriseListener> surpriseListeners = new HashSet<>();
     private String message = "";
@@ -60,6 +61,7 @@ public class GameSession
         this.setHealthPool(getGameDifficulty().getInitialHealthPool());
     }
 
+    //Singleton pattern
     public static GameSession getInstance(){
         if(instance==null){
             instance = new GameSession("Player1", "Player2", GameDifficulty.EASY);
@@ -74,6 +76,7 @@ public class GameSession
         return testInstance;
     }
 
+    // Initialize game stats
     private void initiateGameStats() {
         this.setPoints(0);
         this.setHealthPool(getGameDifficulty().getInitialHealthPool());
@@ -88,6 +91,7 @@ public class GameSession
         this.getLeftBoard().setTurn(true);
     }
 
+    // Initialize the game session
     public void initGame()
     {
         System.out.println("TTT");
@@ -98,6 +102,7 @@ public class GameSession
         GameDifficulty difficulty = this.getGameDifficulty();
         int required = difficulty.getQuestionCount() * 2;
 
+        // Check if there are enough questions for the current difficulty
         if (availableQuestions < required) {
             int missing = required - availableQuestions;
             System.out.println("DDD");
@@ -181,11 +186,6 @@ public class GameSession
         return true;
     }
 
-    /*
-    I am so sorry Ohad
-    I had to make this method public for scientific research (will be used in the Controller package)
-    Test the game over screen
-     */
     public void forceGameOver() {
         this.setHealthPool(0);
         initiateGameOver();
@@ -197,7 +197,9 @@ public class GameSession
         return getHealthPool() <= 0||getLeftBoard().allMinesRevealed() || getRightBoard().allMinesRevealed();
     }
 
+    // to prevent multiple calls to game over processing
     private boolean isGameOverProcessing = false;
+    // handles all game over logic
     private void initiateGameOver()
     {
         if (isGameOverProcessing) return; // Prevent multiple saves/overlays
@@ -222,12 +224,14 @@ public class GameSession
 
     }
 
+    // saves the game data to the CSV file
     private void saveGame(boolean winOrLose) throws IOException{
         GameData gameData = new GameData(this.timeStamp, this.leftPlayerName, this.rightPlayerName, this.gameDifficulty, this.points, winOrLose);
         SysData.getInstance().addGame(gameData);
         GameDataCSVManager.writeGameDataListToCSV("GameHistory.csv");
     }
 
+    // handles right click on tile logic
     public void RightClickedTile(Tile tile) {
         /*
         this encompasses all the logic that happens when a user tries to flag/unflag a tile
@@ -296,6 +300,7 @@ public class GameSession
         //this.changeTurn();
 }
 
+    // handles left click on tile logic
     public boolean LeftClickedTile(Tile tile) {
         /*
         this encompasses all the logic that happens when a user tries to reveal a tile
@@ -318,8 +323,6 @@ public class GameSession
                 if (!specialTile.isUsed())
                 {
                     this.activateSpecialTile(specialTile,parentBoard);
-//                    if (this.isGameOver())    //this was moved to updateAfterSurprise
-//                        initiateGameOver();
                 }
                 else
                     System.out.println("Special tile already used");
@@ -362,31 +365,23 @@ public class GameSession
         return true;
     }
 
-    private boolean hisTurn(Tile tile){
-        return tile.getParentBoard().getTurn();
-    }
-
+    // helper methods for gaining points and health
     private void gainPoints(int points){
         System.out.println("Points 'added': "+points);
         this.setPoints(this.getPoints() + points);
     }
-
     public void setPoints(int i) {
         this.points = i;
         if (this.getPoints()<0) this.points = 0;
     }
 
+    // helper methods for gaining health
     private void gainHealth(int health) {
         System.out.println("Health 'added': "+health);
         this.setHealthPool(this.getHealthPool() + health);
     }
 
-    // didnt want to make gainHealth public so... for now this stupid solution until we think of something smarter :(
-    public void testOnlyGainHealth(int health) {
-        System.out.println("Health 'added': "+health);
-        this.setHealthPool(this.getHealthPool() + health);
-    }
-
+    // health cannot go below 0 or above max health pool
     private void setHealthPool(int i) {
         this.healthPool = i;
         if (this.getHealthPool()<0) this.healthPool = 0;
@@ -396,8 +391,10 @@ public class GameSession
         }
     }
 
+    // handles special tile activation logic
     private boolean activateSpecialTile(SpecialTile specialTile, Board parentBoard) {
         System.out.println("Activation cost: " + getGameDifficulty().getActivationCost() + "\tPoints: " + this.getPoints());
+        // case activation cost is greater than points
         if (this.getPoints() < getGameDifficulty().getActivationCost()){
             System.out.println("Not enough points to activate special tile");
             message = "Not enough points to activate special tile";
@@ -406,8 +403,10 @@ public class GameSession
             return false;
         }
         else {
+            // case activation cost is less than or equal to points
             this.gainPoints(-getGameDifficulty().getActivationCost());
             System.out.println("Points after activation cost: "+this.getPoints());
+            // case special tile is a question tile
             if (specialTile instanceof SurpriseTile surpriseTile)
             {
                 System.out.println("Surprise tile activated");
@@ -434,6 +433,7 @@ public class GameSession
                     this.message = "<html>" + baseMessage + (extraDetail.isEmpty() ? "" : "<br>" + extraDetail) + "</html>";
                 notifySurpriseListeners(healthAfter,pointsAfter);
             }
+            // case special tile is a question tile
             if (specialTile instanceof QuestionTile questionTile)
             {
                 message = "Question tile activated and it costed you "+getGameDifficulty().getActivationCost()+" points";
@@ -443,9 +443,6 @@ public class GameSession
             }
             specialTile.setUsed();
             System.out.println("Points: "+" "+this.getPoints()+"    Health: "+this.getHealthPool()+"\n");
-            /*for (SpecialTileActivationListener listener : specialTileActivationListeners)
-                listener.onSpecialTileActivated(); // your view should implement SpecialTileActivationListener and that method onSpecialTileActivated should update the view
-                */
         }
         return true;
     }
