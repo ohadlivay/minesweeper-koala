@@ -107,20 +107,29 @@ public class SettingsOverlay extends OverlayView {
         difficultyPanel.setBackground(ColorsInUse.BG_COLOR.get());
 
         //create tooltip text
-        String easyTip = "<html><b>Easy Difficulty</b><br/>" +
-                "Grid: " + GameDifficulty.EASY.getRows() + "x" + GameDifficulty.EASY.getCols() + "<br/>" +
-                "Mines: " + GameDifficulty.EASY.getMineCount() + "<br/>" +
-                "Special Tile Activation Cost: " + GameDifficulty.EASY.getActivationCost() + "</html>";
+        String easyTip = "<html>" +
+                "<b><font color='#027315'>EASY DIFFICULTY</font></b><br/>" +
+                "<hr/>" +
+                "<font color='#0cc42b'>Grid:</font> " + GameDifficulty.EASY.getRows() + "x" + GameDifficulty.EASY.getCols() + "<br/>" +
+                "<font color='#0cc42b'>Mines:</font> " + GameDifficulty.EASY.getMineCount() + "<br/>" +
+                "<font color='#0cc42b'>Activation Cost:</font> " + GameDifficulty.EASY.getActivationCost() + " pts" +
+                "</html>";
 
-        String medTip = "<html><b>Medium Difficulty</b><br/>" +
-                "Grid: " + GameDifficulty.MEDIUM.getRows() + "x" + GameDifficulty.MEDIUM.getCols() + "<br/>" +
-                "Mines: " + GameDifficulty.MEDIUM.getMineCount() + "<br/>" +
-                "Soecial Tile Activation Cost: " + GameDifficulty.MEDIUM.getActivationCost() + "</html>";
+        String medTip = "<html>" +
+                "<b><font color='#c78800'>MEDIUM DIFFICULTY</font></b><br/>" +
+                "<hr/>" +
+                "<font color='#c78800'>Grid:</font> " + GameDifficulty.MEDIUM.getRows() + "x" + GameDifficulty.MEDIUM.getCols() + "<br/>" +
+                "<font color='#c78800'>Mines:</font> " + GameDifficulty.MEDIUM.getMineCount() + "<br/>" +
+                "<font color='#c78800'>Activation Cost:</font> " + GameDifficulty.MEDIUM.getActivationCost() + " pts" +
+                "</html>";
 
-        String hardTip = "<html><b>Hard Difficulty</b><br/>" +
-                "Grid: " + GameDifficulty.HARD.getRows() + "x" + GameDifficulty.HARD.getCols() + "<br/>" +
-                "Mines: " + GameDifficulty.HARD.getMineCount() + "<br/>" +
-                "Special Tile Activation Cost: " + GameDifficulty.HARD.getActivationCost() + "</html>";
+        String hardTip = "<html>" +
+                "<b><font color='#FF6B6B'>HARD DIFFICULTY</font></b><br/>" +
+                "<hr/>" +
+                "<font color='#FF6B6B'>Grid:</font> " + GameDifficulty.HARD.getRows() + "x" + GameDifficulty.HARD.getCols() + "<br/>" +
+                "<font color='#FF6B6B'>Mines:</font> " + GameDifficulty.HARD.getMineCount() + "<br/>" +
+                "<font color='#FF6B6B'>Activation Cost:</font> " + GameDifficulty.HARD.getActivationCost() + " pts" +
+                "</html>";
 
         btnEasy = createKoalaButton("/green-koala-pixel.png", "Easy", easyTip, GameDifficulty.EASY);
         btnMedium = createKoalaButton("/yellow-koala-pixel.png", "Medium", medTip, GameDifficulty.MEDIUM);
