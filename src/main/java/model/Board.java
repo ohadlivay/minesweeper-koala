@@ -1,4 +1,3 @@
-// Java
 package main.java.model;
 
 import main.java.test.Testable;

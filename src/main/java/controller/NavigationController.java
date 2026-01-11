@@ -1,8 +1,11 @@
 package main.java.controller;
 
-import javax.swing.JFrame;
+import main.java.view.GameHistoryScreen;
+import main.java.view.GameScreen;
+import main.java.view.QuestionManagerScreen;
+import main.java.view.StartScreen;
 
-import main.java.view.*;
+import javax.swing.*;
 
 public class NavigationController {
     private static NavigationController instance;

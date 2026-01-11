@@ -2,7 +2,6 @@ package main.java.model;
 
 import main.java.util.QuestionCSVManager;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
