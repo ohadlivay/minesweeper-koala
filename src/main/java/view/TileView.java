@@ -14,6 +14,8 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
     private final double dynamicSize; //dynamic tile size per difficulty
     private final int iconSize; //dynamic icon size per difficulty
 
+    private int iconOffsetX = 0; //for icon animation
+
     private Color tileColor;
     private final ComponentAnimator animator = new ComponentAnimator();
 
@@ -25,6 +27,8 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         SURPRISE
     }
     private tileTypes currentTileType;
+
+
 
     public TileView(Tile tile, int dynamicSize) {
         this.tile = tile;
@@ -44,6 +48,30 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         this.tileColor = tileColor;
         initTile();
         mouseClicked();
+    }
+
+    public void setIconOffsetX(int x) {
+        this.iconOffsetX = x;
+        repaint();
+    }
+
+    //for icon animation
+    @Override
+    protected void paintComponent(Graphics g) {
+        Icon standard = getIcon();
+        Icon disabled = getDisabledIcon();
+        setIcon(null);
+        setDisabledIcon(null);
+        super.paintComponent(g);
+        setIcon(standard);
+        setDisabledIcon(disabled);
+        Icon activeIcon = isEnabled() ? standard : disabled;
+
+        if (activeIcon != null) {
+            int x = (getWidth() - activeIcon.getIconWidth()) / 2 + iconOffsetX;
+            int y = (getHeight() - activeIcon.getIconHeight()) / 2;
+            activeIcon.paintIcon(this, g, x, y);
+        }
     }
 
     private void initTile() {
@@ -103,7 +131,7 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
                 setupIcon("/pixel-mine.png", true);
                 setEnabled(false);
                 setTileType(tileTypes.MINE);
-                animator.sparkleFor(this, 1000);
+                animator.animateMineHit(this);
             }
             case "S" -> {
                 setupIcon("/gift-pixel.png", false);

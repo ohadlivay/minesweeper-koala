@@ -704,6 +704,27 @@ public class ComponentAnimator {
             repaint();
         }
 
+
+
+    }
+
+    public void animateMineHit(TileView tile) {
+        int frames = 10;
+        int[] i = {0};
+
+        Timer t = new Timer(15, e -> {
+            i[0]++;
+            int dx = (i[0] % 2 == 0) ? 2 : -2;
+
+            tile.setIconOffsetX(dx);
+
+            if (i[0] >= frames) {
+                tile.setIconOffsetX(0);
+                ((Timer) e.getSource()).stop();
+            }
+        });
+
+        t.start();
     }
 }
 
