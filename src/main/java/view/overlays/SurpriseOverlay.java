@@ -31,7 +31,7 @@ public class SurpriseOverlay extends OverlayView{
 
     private static final Dimension OVERLAY_SIZE = new Dimension(520, 520);
 
-    private static final String BG = "/surprise-bg.png";
+    private static final String BG = "/surprise-bg (2).png";
     private static final String SELECTED_CARD = "/surprise-card-selected.png";
     private static final String UNSELECTED_CARD = "/surprise-card.png";
     private static final String GOOD_CARD = "/good-surprise-card.png";
@@ -130,8 +130,8 @@ public class SurpriseOverlay extends OverlayView{
 
         rightHalf.add(pointsValueLabel);
 
-        leftHalf.setBorder(new EmptyBorder(0, 0, 0, 15));
-        rightHalf.setBorder(new EmptyBorder(8, 15, 0, 0));
+        leftHalf.setBorder(new EmptyBorder(-2, 0, 2, 15));
+        rightHalf.setBorder(new EmptyBorder(6, 15, 0, 0));
 
         statsBar.add(leftHalf);
         statsBar.add(rightHalf);
@@ -166,6 +166,8 @@ public class SurpriseOverlay extends OverlayView{
         this.setContentPane(contentPane);
         this.pack();
         this.setLocationRelativeTo(getParent());
+
+        pack();
     }
 
 

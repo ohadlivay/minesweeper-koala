@@ -58,7 +58,7 @@ public class GameHistoryScreen extends JPanel{
         bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setOpaque(false);
         bottomPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
-        JButton homeButton = createHomeButton();
+        homeButton = createHomeButton();
         homeButton.addActionListener(e -> nav.goToHome());
         bottomPanel.add(homeButton, BorderLayout.WEST);
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
@@ -266,6 +266,7 @@ public class GameHistoryScreen extends JPanel{
         btn.setFont(FontsInUse.PIXEL.getSize(24f));
         btn.setFocusPainted(false);
         btn.setContentAreaFilled(true);
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -282,7 +283,8 @@ public class GameHistoryScreen extends JPanel{
         ImageIcon bg = loadScaledIcon("btn-koala", 80, 70);
         ImageIcon home = loadScaledIcon("home-pixel", 25, 25);
 
-        JButton homeButton = new IconOnImageButton("Home", new Dimension(80, 70), home, bg);
+        homeButton = new IconOnImageButton("Home", new Dimension(80, 70), home, bg);
+        homeButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         return homeButton;
     }

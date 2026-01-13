@@ -2,8 +2,10 @@ package main.java.view.overlays;
 
 import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
+import main.java.view.BackgroundPanel;
 import main.java.view.ColorsInUse;
 import main.java.view.FontsInUse;
+import main.java.view.OutlinedLabel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -28,24 +30,24 @@ public class GameInstructionOverlay extends OverlayView {
     }
 
     private void initUI() {
-        JPanel contentPane = new JPanel(new BorderLayout());
-        contentPane.setBackground(ColorsInUse.BG_COLOR.get());
+        JPanel contentPane = new BackgroundPanel("/overlay-bg.png");
+        contentPane.setLayout(new BorderLayout());
         contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         // Title
-        JLabel titleLabel = new JLabel("How to Play");
+        JLabel titleLabel = new OutlinedLabel("How to Play", Color.BLACK, 3f);
         titleLabel.setForeground(ColorsInUse.TEXT.get());
-        titleLabel.setFont(FontsInUse.PIXEL.getSize(28f));
+        titleLabel.setFont(FontsInUse.PIXEL.getSize(42f));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         JPanel titlePanel = new JPanel(new BorderLayout());
-        titlePanel.setBackground(ColorsInUse.BG_COLOR.get());
+        titlePanel.setOpaque(false);
         titlePanel.add(titleLabel, BorderLayout.CENTER);
         contentPane.add(titlePanel, BorderLayout.NORTH);
 
         // Instructions area with icons (each row is a JLabel + icon)
         JPanel instructionsPanel = new JPanel();
         instructionsPanel.setLayout(new BoxLayout(instructionsPanel, BoxLayout.Y_AXIS));
-        instructionsPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        instructionsPanel.setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
         instructionsPanel.setBorder(new EmptyBorder(20, 10, 10, 10));
 
         // Add instruction rows using resource icons (png files in resources)
@@ -72,7 +74,7 @@ public class GameInstructionOverlay extends OverlayView {
 
         // Bottom panel with Close button
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        bottomPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        bottomPanel.setOpaque(false);
         bottomPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
         JButton btnClose = new JButton("Close");
@@ -94,7 +96,7 @@ public class GameInstructionOverlay extends OverlayView {
     // helper to create a row with an icon and text
     private JPanel createInstructionRow(String resourcePath, String text) {
         JPanel row = new JPanel(new FlowLayout(FlowLayout.CENTER, 12, 0));
-        row.setBackground(ColorsInUse.BG_COLOR.get());
+        row.setOpaque(false);
         row.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // load and scale icon

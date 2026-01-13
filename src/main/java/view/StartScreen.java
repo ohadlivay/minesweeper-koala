@@ -156,6 +156,7 @@ public class StartScreen {
             btn.setBorderPainted(false);
             btn.setContentAreaFilled(false);
             btn.setOpaque(false);
+            btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
             // try to load corresponding koala image and scale it to the button size
             ImageIcon koalaIcon = loadScaledIcon(centerResources[i], btnSize.width, btnSize.height);
@@ -226,6 +227,7 @@ public class StartScreen {
         exitBtn.setMinimumSize(exitBtnSize);
         exitBtn.setBorderPainted(false);
         exitBtn.setContentAreaFilled(false);
+        exitBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         // try to load exit koala and scale to exit button size
         ImageIcon exitIcon = loadScaledIcon("exit-koala", exitBtnSize.width, exitBtnSize.height);

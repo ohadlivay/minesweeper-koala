@@ -4,6 +4,7 @@ import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.model.GameDifficulty;
 import main.java.util.SoundManager;
+import main.java.view.BackgroundPanel;
 import main.java.view.ColorsInUse;
 import main.java.view.FontsInUse;
 import main.java.view.OutlinedLabel;
@@ -86,8 +87,8 @@ public class SettingsOverlay extends OverlayView {
     }
 
     private void initUI() {
-        contentPane = new JPanel(new BorderLayout());
-        contentPane.setBackground(ColorsInUse.BG_COLOR.get());
+        contentPane = new BackgroundPanel("/overlay-bg.png");
+        contentPane.setLayout(new BorderLayout());
         contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
         contentPane.setPreferredSize(new Dimension(700, 530));
 

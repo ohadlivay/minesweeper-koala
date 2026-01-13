@@ -55,7 +55,7 @@ public class Main {
                     System.err.println("Could not find icon resource: /green-koala-pixel.png");
                 }
                 frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-                frame.setSize(1200, 720);
+                frame.setSize(1200, 725);
                 frame.setResizable(false);
                 frame.addWindowListener(new WindowAdapter() {
                     @Override
