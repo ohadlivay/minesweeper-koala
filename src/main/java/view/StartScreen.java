@@ -5,6 +5,7 @@ import main.java.view.overlays.OverlayType;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -43,6 +44,40 @@ public class StartScreen {
         mainPanel = new BackgroundPanel("/start-bg.jpeg");
         mainPanel.setLayout(new BorderLayout());
 
+        // Top panel: only feed in center and info icon at EAST
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+        topPanel.setBorder(new EmptyBorder(0, 20, 0, 20));
+
+        JButton infoIcon = new JButton();
+        infoIcon.setBorder(new EmptyBorder(0, 0, 0, 0));
+        infoIcon.setToolTipText("How to play");
+        infoIcon.setContentAreaFilled(false);
+        infoIcon.setBorderPainted(false);
+        infoIcon.setFocusPainted(false);
+        infoIcon.setOpaque(false);
+        infoIcon.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        infoIcon.addActionListener(e ->
+                OverlayController.getInstance().showOverlay(OverlayType.INSTRUCTIONS)
+        );
+
+        URL iconUrl = getClass().getResource("/info-koala.png");
+        if (iconUrl != null) {
+            try {
+                BufferedImage img = ImageIO.read(iconUrl);
+                Image scaled = img.getScaledInstance(105, 70, Image.SCALE_SMOOTH);
+                infoIcon.setIcon(new ImageIcon(scaled));
+            } catch (IOException ignored) {}
+        } else {
+            // fallback so you notice missing resource
+            infoIcon.setText("i");
+            infoIcon.setForeground(Color.WHITE);
+        }
+
+        topPanel.add(infoIcon, BorderLayout.EAST);
+
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+
         //setup for gif+static png combination
         java.net.URL animURL = getClass().getResource("/start-gif.gif");
         java.net.URL staticURL = getClass().getResource("/start-static.png");
@@ -73,7 +108,6 @@ public class StartScreen {
 
         startScreenLabel.setHorizontalAlignment(SwingConstants.CENTER);
         startScreenLabel.setBorder(BorderFactory.createEmptyBorder(60, 0, 0, 0));
-        mainPanel.add(startScreenLabel, BorderLayout.NORTH);
 
         startGameBtn = new JButton();
         gameHistoryBtn = new JButton();
@@ -148,10 +182,41 @@ public class StartScreen {
             }
         }
 
-        JPanel centerWrapper = new JPanel(new GridBagLayout());
+        JPanel centerWrapper = new JPanel();
         centerWrapper.setOpaque(false);
-        centerWrapper.add(centerButtonContainer);
-        mainPanel.add(centerWrapper, BorderLayout.CENTER);
+        centerWrapper.setLayout(new BoxLayout(centerWrapper, BoxLayout.Y_AXIS));
+
+        // --- CENTER area ---
+        JPanel contentStack = new JPanel();
+        contentStack.setOpaque(false);
+        contentStack.setLayout(new BoxLayout(contentStack, BoxLayout.Y_AXIS));
+
+        // logo
+        startScreenLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        contentStack.add(Box.createVerticalStrut(40));   // tweak this to fine-tune Y
+        contentStack.add(startScreenLabel);
+
+        // buttons
+        contentStack.add(Box.createVerticalStrut(20));
+        centerButtonContainer.setAlignmentX(Component.CENTER_ALIGNMENT);
+        contentStack.add(centerButtonContainer);
+
+        // anchor panel
+        JPanel centerAnchor = new JPanel(new GridBagLayout());
+        centerAnchor.setOpaque(false);
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 0;
+        c.anchor = GridBagConstraints.NORTH;
+        c.insets = new Insets(0, 0, 0, 0);
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+        centerAnchor.add(contentStack, c);
+
+        mainPanel.add(centerAnchor, BorderLayout.CENTER);
+
+
 
         exitBtn = new JButton();
         exitBtn.setFocusable(false);
