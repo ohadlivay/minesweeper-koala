@@ -3,8 +3,12 @@ import main.java.controller.NavigationController;
 import main.java.controller.OverlayController;
 import main.java.view.overlays.OverlayType;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 
 public class StartScreen {
     private JPanel mainPanel;
@@ -35,8 +39,9 @@ public class StartScreen {
     }
 
     private void initUI() {
-        mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(ColorsInUse.BG_BLACK.get());
+        // Use BackgroundPanel with the resource image so it scales to the panel size
+        mainPanel = new BackgroundPanel("/start-bg.jpeg");
+        mainPanel.setLayout(new BorderLayout());
 
         //setup for gif+static png combination
         java.net.URL animURL = getClass().getResource("/start-gif.gif");
@@ -70,32 +75,89 @@ public class StartScreen {
         startScreenLabel.setBorder(BorderFactory.createEmptyBorder(60, 0, 0, 0));
         mainPanel.add(startScreenLabel, BorderLayout.NORTH);
 
-        startGameBtn = new JButton("START GAME");
-        gameHistoryBtn = new JButton("GAME HISTORY");
-        mngQuestionsBtn = new JButton("MANAGE QUESTIONS");
+        startGameBtn = new JButton();
+        gameHistoryBtn = new JButton();
+        mngQuestionsBtn = new JButton();
 
         java.awt.Font btnFont = FontsInUse.PIXEL.getSize(32f);
+
+        // create outlined labels and style them
+        OutlinedLabel startLbl = new OutlinedLabel("START GAME", ColorsInUse.BTN_COLOR.get(), 3f);
+        startLbl.setFont(btnFont);
+        startLbl.setForeground(ColorsInUse.TEXT.get());
+        startLbl.setOpaque(false);
+
+        OutlinedLabel historyLbl = new OutlinedLabel("GAME HISTORY", ColorsInUse.BTN_COLOR.get(), 3f);
+        historyLbl.setFont(btnFont);
+        historyLbl.setForeground(ColorsInUse.TEXT.get());
+        historyLbl.setOpaque(false);
+
+        OutlinedLabel manageLbl = new OutlinedLabel("MANAGE QUESTIONS", ColorsInUse.BTN_COLOR.get(), 3f);
+        manageLbl.setFont(btnFont);
+        manageLbl.setForeground(ColorsInUse.TEXT.get());
+        manageLbl.setOpaque(false);
+
         JButton[] centerButtons = {startGameBtn, gameHistoryBtn, mngQuestionsBtn};
 
-        JPanel centerButtonContainer = new JPanel();
-        centerButtonContainer.setLayout(new BoxLayout(centerButtonContainer, BoxLayout.Y_AXIS));
-        centerButtonContainer.setBackground(ColorsInUse.BG_BLACK.get());
+        URL borderURL = getClass().getResource("/labelBorder.png");
+        BufferedImage borderImg = null;
+        if (borderURL != null) {
+            try {
+                borderImg = ImageIO.read(borderURL);
+            } catch (IOException ignored) {
+            }
+        }
 
-        for (JButton btn : centerButtons) {
+        JPanel centerButtonContainer = new JPanel();
+        centerButtonContainer.setLayout(new BoxLayout(centerButtonContainer, BoxLayout.X_AXIS));
+        centerButtonContainer.setOpaque(false); // let background show through
+        centerButtonContainer.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // create a fixed horizontal gap width between buttons
+        int gap = 20;
+
+        JButton[] btns = {startGameBtn, gameHistoryBtn, mngQuestionsBtn};
+        OutlinedLabel[] lbls = {startLbl, historyLbl, manageLbl};
+        Dimension btnSize = new Dimension(270, 270);
+        for (int i = 0; i < centerButtons.length; i++) {
+            JButton btn = centerButtons[i];
+            OutlinedLabel lbl = lbls[i];
+
+            btn.setLayout(new GridBagLayout());
+            btn.add(lbl, gbc);
+
             btn.setFont(btnFont);
-            btn.setBackground(ColorsInUse.BTN_COLOR.get());
             btn.setForeground(ColorsInUse.TEXT.get());
             btn.setFocusable(false);
-            btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-            btn.setMaximumSize(new java.awt.Dimension(350, 60));
-            btn.setPreferredSize(new java.awt.Dimension(350, 60));
+            btn.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+            // use a wide-but-short preferred size for horizontal layout
+            btn.setPreferredSize(btnSize);
+            btn.setMaximumSize(btnSize);
+            btn.setMinimumSize(btnSize);
+            btn.setIconTextGap(0);
+
+            if (borderImg != null) {
+                Image scaled = borderImg.getScaledInstance(btnSize.width, btnSize.height, Image.SCALE_SMOOTH);
+                btn.setIcon(new ImageIcon(scaled));
+                btn.setHorizontalTextPosition(SwingConstants.CENTER);
+                btn.setVerticalTextPosition(SwingConstants.CENTER);
+                btn.setBorderPainted(false);
+                btn.setContentAreaFilled(false);
+                btn.setOpaque(false);
+            } else {
+                btn.setBackground(ColorsInUse.BTN_COLOR.get());
+            }
 
             centerButtonContainer.add(btn);
-            centerButtonContainer.add(Box.createRigidArea(new java.awt.Dimension(0, 20)));
+
+            if (i < centerButtons.length - 1) {
+                centerButtonContainer.add(Box.createRigidArea(new Dimension(gap, 0)));
+            }
         }
 
         JPanel centerWrapper = new JPanel(new GridBagLayout());
-        centerWrapper.setBackground(ColorsInUse.BG_BLACK.get());
+        centerWrapper.setOpaque(false);
         centerWrapper.add(centerButtonContainer);
         mainPanel.add(centerWrapper, BorderLayout.CENTER);
 
@@ -104,10 +166,23 @@ public class StartScreen {
         exitBtn.setBackground(ColorsInUse.BTN_COLOR.get());
         exitBtn.setForeground(ColorsInUse.TEXT.get());
         exitBtn.setFocusable(false);
-        exitBtn.setPreferredSize(new java.awt.Dimension(120, 45));
+        Dimension exitBtnSize = new java.awt.Dimension(100, 100);
+        exitBtn.setPreferredSize(exitBtnSize);
+
+        if (borderImg != null) {
+            Image scaled = borderImg.getScaledInstance(exitBtnSize.width, exitBtnSize.height, Image.SCALE_SMOOTH);
+            exitBtn.setIcon(new ImageIcon(scaled));
+            exitBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+            exitBtn.setVerticalTextPosition(SwingConstants.CENTER);
+            exitBtn.setBorderPainted(false);
+            exitBtn.setContentAreaFilled(false);
+            exitBtn.setOpaque(false);
+        } else {
+            exitBtn.setBackground(ColorsInUse.BTN_COLOR.get());
+        }
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        bottomPanel.setBackground(ColorsInUse.BG_BLACK.get());
+        bottomPanel.setOpaque(false); // let background show through
         bottomPanel.add(exitBtn);
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
     }
