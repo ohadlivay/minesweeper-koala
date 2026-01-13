@@ -6,9 +6,13 @@ import main.java.controller.OverlayController;
 import main.java.model.*;
 import main.java.view.overlays.OverlayType;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Objects;
 
 public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener, GameOverListener, SurpriseListener, InputBlockListener {
@@ -68,35 +72,54 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         player2Label.setText(rightName);
     }
 
-
     private void initUI() {
-        mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
-        mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        mainPanel = new BackgroundPanel("/start-bg.jpeg");
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setBorder(new EmptyBorder(5, 10, 10, 10));
 
         Font font = FontsInUse.PIXEL.getSize(28f);
-
 
         feedLabel = new JLabel("Welcome! Click a tile to start.", SwingConstants.CENTER);
         feedLabel.setFont(font);
         feedLabel.setForeground(ColorsInUse.TEXT.get());
         feedLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // Top panel: only feed in center and info icon at EAST
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
-        topPanel.setBorder(new EmptyBorder(20, 20, 5, 20));
+        topPanel.setBorder(new EmptyBorder(0, 20, 0, 20));
 
-        this.infoIcon = new JButton(new ImageIcon(Objects.requireNonNull(getClass().getResource("/info.png"))));
-        infoIcon.setBorder(new EmptyBorder(0, 0, 5, 0));
+        infoIcon = new JButton();
+        infoIcon.setBorder(new EmptyBorder(0, 0, 0, 0));
         infoIcon.setToolTipText("How to play");
-        infoIcon.setHorizontalAlignment(SwingConstants.RIGHT);
-
-        infoIcon.setBackground(ColorsInUse.BG_COLOR.get());
-        infoIcon.setFocusPainted(false);
         infoIcon.setContentAreaFilled(false);
-        infoIcon.addActionListener(e -> OverlayController.getInstance().showOverlay(OverlayType.INSTRUCTIONS));
+        infoIcon.setBorderPainted(false);
+        infoIcon.setFocusPainted(false);
+        infoIcon.setOpaque(false);
+        infoIcon.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        infoIcon.addActionListener(e ->
+                OverlayController.getInstance().showOverlay(OverlayType.INSTRUCTIONS)
+        );
 
-        topPanel.add(infoIcon, BorderLayout.NORTH);
+        URL iconUrl = getClass().getResource("/info-koala.png");
+        if (iconUrl != null) {
+            try {
+                BufferedImage img = ImageIO.read(iconUrl);
+                Image scaled = img.getScaledInstance(150, 100, Image.SCALE_SMOOTH);
+                infoIcon.setIcon(new ImageIcon(scaled));
+            } catch (IOException ignored) {}
+        } else {
+            // fallback so you notice missing resource
+            infoIcon.setText("i");
+            infoIcon.setForeground(Color.WHITE);
+        }
+
+        topPanel.add(infoIcon, BorderLayout.EAST);
+
+        // Names panel: appears below the topPanel and above the boards
+        JPanel namesPanel = new JPanel(new BorderLayout());
+        namesPanel.setOpaque(false);
+        namesPanel.setBorder(new EmptyBorder(0, 90, 5, 90));
 
         player1Label = new JLabel();
         player1Label.setForeground(ColorsInUse.TEXT.get());
@@ -127,37 +150,40 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
             player2MinesLeftLabel.setIconTextGap(10);
         }
 
-        // Create panels for left player and right player
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         leftPanel.setOpaque(false);
+        leftPanel.add(player1Label);
+        leftPanel.add(player1MinesLeftLabel);
 
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         rightPanel.setOpaque(false);
-
-        // Add items into each side panel
-        leftPanel.add(player1Label);
-        leftPanel.add(player1MinesLeftLabel, BorderLayout.EAST);
-
-        rightPanel.add(player2MinesLeftLabel, BorderLayout.WEST);
+        rightPanel.add(player2MinesLeftLabel);
         rightPanel.add(player2Label);
 
-        // Add those sub-panels to the topPanel
-        topPanel.add(feedLabel, BorderLayout.CENTER);
-        topPanel.add(leftPanel, BorderLayout.WEST);
-        topPanel.add(rightPanel, BorderLayout.EAST);
-        topPanel.setBorder(new EmptyBorder(20, 90, 10, 90));
+        namesPanel.add(leftPanel, BorderLayout.WEST);
+        namesPanel.add(feedLabel, BorderLayout.CENTER);
+        namesPanel.add(rightPanel, BorderLayout.EAST);
 
-        mainPanel.add(topPanel, BorderLayout.NORTH);
+        // North container stacks topPanel (feed + info) and namesPanel (player names) vertically
+        JPanel northContainer = new JPanel();
+        northContainer.setLayout(new BoxLayout(northContainer, BoxLayout.Y_AXIS));
+        northContainer.setOpaque(false);
+        northContainer.add(topPanel);
+        northContainer.add(namesPanel);
 
-        //center panel holds the boardlayouts
+        mainPanel.add(northContainer, BorderLayout.NORTH);
+
+        // center panel holds the boardlayouts
         centerPanel = new JPanel();
-        centerPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        centerPanel.setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
+        centerPanel.setOpaque(false);
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.X_AXIS));
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
+        // stats and bottom UI stay unchanged...
         JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 0));
-        statsPanel.setOpaque(false);
+        statsPanel.setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
         statsPanel.setBorder(new EmptyBorder(10, 0, 10, 0));
         GameDifficulty currentDifficulty = session.getGameDifficulty();
         String koalaPath = switch (currentDifficulty) {
@@ -214,15 +240,12 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
             }
         };
 
-
         pointsLabel.setForeground(ColorsInUse.TEXT.get());
         pointsLabel.setFont(FontsInUse.PIXEL.getSize(24f));
         pointsLabel.setOpaque(false);
         pointsLabel.setBorder(BorderFactory.createEmptyBorder(10, 25, 10, 25));
         statsPanel.add(pointsLabel);
 
-
-        // bottom panel holds the home button
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setOpaque(false);
         bottomPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
@@ -235,11 +258,11 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
 
         southContainer.add(statsPanel);
         southContainer.add(Box.createVerticalStrut(10));
-
         southContainer.add(bottomPanel);
 
         mainPanel.add(southContainer, BorderLayout.SOUTH);
     }
+
 
     //make sure to disable the info button when ViewQuestionOverlay is being viewed
     @Override
@@ -248,8 +271,6 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
             infoIcon.setEnabled(!isBlocked);
         }
     }
-
-
 
     private JButton createHomeButton() {
         JButton homeButton = new JButton();

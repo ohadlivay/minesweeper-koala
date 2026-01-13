@@ -42,8 +42,8 @@ public class QuestionManagerScreen extends JPanel {
     private void initUI() {
         setLayout(new BorderLayout());
 
-        mainPanel = new JPanel(new BorderLayout(15, 15));
-        mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        mainPanel = new BackgroundPanel("/start-bg.jpeg");
+        mainPanel.setLayout(new BorderLayout(15, 15));
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
         OutlinedLabel titleLabel = new OutlinedLabel("QUESTION MANAGER", Color.BLACK, 6f);
         titleLabel.setFont(FontsInUse.PIXEL.getSize(62f));
@@ -122,7 +122,7 @@ public class QuestionManagerScreen extends JPanel {
         centerPanel.setOpaque(false);
 
         JScrollPane scrollPane = new JScrollPane(questionsTable);
-        scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR.get());
+        scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
         scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
         centerPanel.add(scrollPane, BorderLayout.CENTER);
 
@@ -261,7 +261,7 @@ public class QuestionManagerScreen extends JPanel {
     }
 
     private void styleTable(JTable table) {
-        table.setBackground(ColorsInUse.BTN_COLOR.get());
+        table.setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
         table.setForeground(ColorsInUse.TEXT.get());
         table.setSelectionBackground(ColorsInUse.BOARD_ACTIVE_BORDER2.get());
         table.setSelectionForeground(Color.BLACK);

@@ -39,7 +39,7 @@ public class StartScreen {
     }
 
     private void initUI() {
-        // Use BackgroundPanel with the resource image so it scales to the panel size
+        //  BackgroundPanel with the resource image so it scales to the panel size
         mainPanel = new BackgroundPanel("/start-bg.jpeg");
         mainPanel.setLayout(new BorderLayout());
 
