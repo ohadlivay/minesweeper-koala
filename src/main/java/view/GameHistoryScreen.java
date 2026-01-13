@@ -77,14 +77,13 @@ public class GameHistoryScreen extends JPanel{
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 int col = historyTable.columnAtPoint(e.getPoint());
-                if (col == 0) return;
 
                 // toggle direction if clicking same column
                 if (col == lastCol) asc = !asc;
                 else { asc = true; lastCol = col; }
 
                 Comparator<GameData> cmp = switch (col) {
-                    case 1 -> Comparator.comparingLong(GameData::getTimestampMillis);
+                    case 0, 1 -> Comparator.comparingLong(GameData::getTimestampMillis);
                     case 2 -> Comparator.comparing(g -> safe(g.getLeftPlayerName()),
                             String.CASE_INSENSITIVE_ORDER);
                     case 3 -> Comparator.comparing(g -> safe(g.getRightPlayerName()),
@@ -208,6 +207,7 @@ public class GameHistoryScreen extends JPanel{
             GameData s = allSessions.get(i);
             String formattedDate = s.getTimeStamp().format(formatter);
             String result = s.isWin() ? "WIN" : "LOSE";
+
             Object[] rowData = {
                     i + 1,
                     formattedDate,
