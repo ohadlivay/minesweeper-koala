@@ -108,7 +108,7 @@ public class StartScreen {
 
         // resource names for the three center buttons
         String[] centerResources = {"start-koala", "history-koala", "questions-koala"};
-        Dimension btnSize = new Dimension(230, 80);
+        Dimension btnSize = new Dimension(210, 70);
         for (int i = 0; i < centerButtons.length; i++) {
             JButton btn = centerButtons[i];
 
@@ -154,7 +154,6 @@ public class StartScreen {
         mainPanel.add(centerWrapper, BorderLayout.CENTER);
 
         exitBtn = new JButton();
-        // no text / label added to exit button
         exitBtn.setFocusable(false);
         Dimension exitBtnSize = new java.awt.Dimension(120, 52);
         exitBtn.setPreferredSize(exitBtnSize);

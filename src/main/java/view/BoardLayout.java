@@ -38,7 +38,7 @@ public class BoardLayout extends JPanel implements TurnListener {
 
     //Initialize the board panel
     private void initBoardPanel() {
-        setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
+        setBackground(ColorsInUse.BG_COLOR.get());
         setLayout(new GridLayout(rows, cols));
         board.setTurnListener(this);
 

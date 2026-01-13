@@ -13,7 +13,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Objects;
 
 public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener, GameOverListener, SurpriseListener, InputBlockListener {
     private final NavigationController nav;
@@ -105,7 +104,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         if (iconUrl != null) {
             try {
                 BufferedImage img = ImageIO.read(iconUrl);
-                Image scaled = img.getScaledInstance(150, 100, Image.SCALE_SMOOTH);
+                Image scaled = img.getScaledInstance(105, 70, Image.SCALE_SMOOTH);
                 infoIcon.setIcon(new ImageIcon(scaled));
             } catch (IOException ignored) {}
         } else {
@@ -273,34 +272,31 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     }
 
     private JButton createHomeButton() {
-        JButton homeButton = new JButton();
-        homeButton.setPreferredSize(new Dimension(72, 36));
-        java.net.URL iconUrl = getClass().getResource("/home-pixel.png");
-        if (iconUrl != null) {
-            ImageIcon icon = new ImageIcon(iconUrl);
-            Image img = icon.getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT);
-            homeButton.setIcon(new ImageIcon(img));
-        }
+        ImageIcon bg = loadScaledIcon("btn-koala", 80, 70);
+        ImageIcon home = loadScaledIcon("home-pixel", 25, 25);
 
-        homeButton.setBackground(ColorsInUse.BTN_COLOR.get());
-        homeButton.setFocusPainted(false);
-        homeButton.setContentAreaFilled(true);
-        homeButton.addActionListener(e -> {
-            int option = JOptionPane.showConfirmDialog(
-                    mainPanel,
-                    "Are you sure you want to return to the main menu?",
-                    "Confirm Navigation",
-                    JOptionPane.YES_NO_OPTION
-            );
-            if (option == JOptionPane.YES_OPTION) {
-                OverlayController.getInstance().closeCurrentOverlay();
-                nav.goToHome();
-            }
-
-        });
+        JButton homeButton = new IconOnImageButton(
+                () -> {
+                    int option = JOptionPane.showConfirmDialog(
+                            mainPanel,
+                            "Are you sure you want to return to the main menu?",
+                            "Confirm Navigation",
+                            JOptionPane.YES_NO_OPTION
+                    );
+                    if (option == JOptionPane.YES_OPTION) {
+                        OverlayController.getInstance().closeCurrentOverlay();
+                        nav.goToHome();
+                    }
+                },
+                "Home",
+                new Dimension(80, 70),
+                home,
+                bg
+        );
 
         return homeButton;
     }
+
 
     public JPanel getMainPanel() {
         return mainPanel;
@@ -350,5 +346,23 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     @Override
     public void revealSurprise(int healthChange, int pointsChange) {
         OverlayController.getInstance().showSurpriseOverlay(healthChange, pointsChange);
+    }
+
+    private ImageIcon loadScaledIcon(String resourceBase, int width, int height) {
+        String[] exts = {".png", ".jpg", ".jpeg", ".gif"};
+        for (String ext : exts) {
+            URL url = getClass().getResource("/" + resourceBase + ext);
+            if (url != null) {
+                try {
+                    BufferedImage img = ImageIO.read(url);
+                    if (img != null) {
+                        Image scaled = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+                        return new ImageIcon(scaled);
+                    }
+                } catch (IOException ignored) {
+                }
+            }
+        }
+        return null;
     }
 }

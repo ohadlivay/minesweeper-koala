@@ -4,6 +4,7 @@ import main.java.controller.GameSessionController;
 import main.java.model.*;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -78,6 +79,7 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         setBackground(tileColor);
         setPreferredSize(new Dimension((int)dynamicSize, (int)dynamicSize));
         setFocusPainted(false);
+        //setRolloverEnabled(false);  //this kills hovering problems
         setFont(FontsInUse.PIXEL.getSize((float)(dynamicSize / 1.5)));
         setMargin(new Insets(0, 0, 0, 0));
         tile.setRevealListener(this);
