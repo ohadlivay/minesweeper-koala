@@ -10,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import java.util.Comparator;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,37 @@ public class QuestionManagerScreen extends JPanel {
 
         questionsTable = new JTable(tableModel);
         styleTable(questionsTable);
+
+        questionsTable.getTableHeader().addMouseListener(new java.awt.event.MouseAdapter() {
+            private int lastCol = -1;
+            private boolean asc = true;
+
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                int col = questionsTable.columnAtPoint(e.getPoint());
+                if (col == 4) return; // Actions
+
+                // toggle direction if clicking same column
+                if (col == lastCol) asc = !asc;
+                else { asc = true; lastCol = col; }
+
+                Comparator<Question> cmp = switch (col) {
+                    case 0 -> Comparator.comparingInt(Question::getId);
+                    case 1 -> Comparator.comparing(q -> safe(q.getQuestionText()), String.CASE_INSENSITIVE_ORDER);
+                    case 2 -> Comparator.comparingInt(q -> q.getDifficulty().ordinal());
+                    case 3 -> Comparator.comparing(q -> safe(q.getAnswer1()), String.CASE_INSENSITIVE_ORDER);
+                    default -> null;
+                };
+
+                if (cmp != null) {
+                    allQuestions.sort(asc ? cmp : cmp.reversed());
+                    refreshPage();
+                }
+            }
+
+            private String safe(String s) { return s == null ? "" : s; }
+        });
+
 
         //these 2 classes need to be created to handle the buttons in the table (this is the standard way to do it in swing)
         questionsTable.getColumnModel().getColumn(4).setCellRenderer(new TblBtnRenderer());

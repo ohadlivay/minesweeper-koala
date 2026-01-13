@@ -81,22 +81,6 @@ public class StartScreen {
 
         java.awt.Font btnFont = FontsInUse.PIXEL.getSize(32f);
 
-        // create outlined labels and style them
-        OutlinedLabel startLbl = new OutlinedLabel("START GAME", ColorsInUse.BTN_COLOR.get(), 3f);
-        startLbl.setFont(btnFont);
-        startLbl.setForeground(ColorsInUse.TEXT.get());
-        startLbl.setOpaque(false);
-
-        OutlinedLabel historyLbl = new OutlinedLabel("GAME HISTORY", ColorsInUse.BTN_COLOR.get(), 3f);
-        historyLbl.setFont(btnFont);
-        historyLbl.setForeground(ColorsInUse.TEXT.get());
-        historyLbl.setOpaque(false);
-
-        OutlinedLabel manageLbl = new OutlinedLabel("MANAGE QUESTIONS", ColorsInUse.BTN_COLOR.get(), 3f);
-        manageLbl.setFont(btnFont);
-        manageLbl.setForeground(ColorsInUse.TEXT.get());
-        manageLbl.setOpaque(false);
-
         // helper to add label centered and make it fill the button
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 1.0; gbc.weighty = 1.0;
@@ -122,14 +106,14 @@ public class StartScreen {
         // create a fixed horizontal gap width between buttons
         int gap = 20;
 
-        OutlinedLabel[] lbls = {startLbl, historyLbl, manageLbl};
-        Dimension btnSize = new Dimension(270, 270);
+        // resource names for the three center buttons
+        String[] centerResources = {"start-koala", "history-koala", "questions-koala"};
+        Dimension btnSize = new Dimension(230, 80);
         for (int i = 0; i < centerButtons.length; i++) {
             JButton btn = centerButtons[i];
-            OutlinedLabel lbl = lbls[i];
 
+            // remove internal text/labels: keep layout so icon is centered
             btn.setLayout(new GridBagLayout());
-            btn.add(lbl, gbc);
 
             btn.setFocusable(false);
             btn.setPreferredSize(btnSize);
@@ -139,7 +123,13 @@ public class StartScreen {
             btn.setContentAreaFilled(false);
             btn.setOpaque(false);
 
-            if (borderImg != null) {
+            // try to load corresponding koala image and scale it to the button size
+            ImageIcon koalaIcon = loadScaledIcon(centerResources[i], btnSize.width, btnSize.height);
+            if (koalaIcon != null) {
+                btn.setIcon(koalaIcon);
+                btn.setHorizontalTextPosition(SwingConstants.CENTER);
+                btn.setVerticalTextPosition(SwingConstants.CENTER);
+            } else if (borderImg != null) {
                 Image scaled = borderImg.getScaledInstance(btnSize.width, btnSize.height, Image.SCALE_SMOOTH);
                 btn.setIcon(new ImageIcon(scaled));
                 btn.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -163,22 +153,26 @@ public class StartScreen {
         centerWrapper.add(centerButtonContainer);
         mainPanel.add(centerWrapper, BorderLayout.CENTER);
 
-        OutlinedLabel exitLbl = new OutlinedLabel("EXIT", ColorsInUse.BTN_COLOR.get(), 3f);
-        exitLbl.setFont(btnFont);
-        exitLbl.setForeground(ColorsInUse.TEXT.get());
-        exitLbl.setOpaque(false);
-
         exitBtn = new JButton();
-        exitBtn.add(exitLbl, gbc);
+        // no text / label added to exit button
         exitBtn.setFocusable(false);
-        Dimension exitBtnSize = new java.awt.Dimension(100, 100);
+        Dimension exitBtnSize = new java.awt.Dimension(120, 52);
         exitBtn.setPreferredSize(exitBtnSize);
         exitBtn.setMaximumSize(exitBtnSize);
         exitBtn.setMinimumSize(exitBtnSize);
         exitBtn.setBorderPainted(false);
         exitBtn.setContentAreaFilled(false);
 
-        if (borderImg != null) {
+        // try to load exit koala and scale to exit button size
+        ImageIcon exitIcon = loadScaledIcon("exit-koala", exitBtnSize.width, exitBtnSize.height);
+        if (exitIcon != null) {
+            exitBtn.setIcon(exitIcon);
+            exitBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+            exitBtn.setVerticalTextPosition(SwingConstants.CENTER);
+            exitBtn.setBorderPainted(false);
+            exitBtn.setContentAreaFilled(false);
+            exitBtn.setOpaque(false);
+        } else if (borderImg != null) {
             Image scaled = borderImg.getScaledInstance(exitBtnSize.width, exitBtnSize.height, Image.SCALE_SMOOTH);
             exitBtn.setIcon(new ImageIcon(scaled));
             exitBtn.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -194,6 +188,25 @@ public class StartScreen {
         bottomPanel.setOpaque(false); // let background show through
         bottomPanel.add(exitBtn);
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+    }
+
+    // helper to load a resource with common extensions and scale it
+    private ImageIcon loadScaledIcon(String resourceBase, int width, int height) {
+        String[] exts = {".png", ".jpg", ".jpeg", ".gif"};
+        for (String ext : exts) {
+            URL url = getClass().getResource("/" + resourceBase + ext);
+            if (url != null) {
+                try {
+                    BufferedImage img = ImageIO.read(url);
+                    if (img != null) {
+                        Image scaled = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+                        return new ImageIcon(scaled);
+                    }
+                } catch (IOException ignored) {
+                }
+            }
+        }
+        return null;
     }
 
     public JPanel getMainPanel() {

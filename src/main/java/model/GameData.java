@@ -56,5 +56,12 @@ public class GameData
     }
 
     public boolean isWin() { return isWin; }
-    
+
+    public int getSessionId() {
+        return timeStamp.hashCode();
+    }
+
+    public long getTimestampMillis() {
+        return timeStamp.toInstant(java.time.ZoneOffset.UTC).toEpochMilli();
+    }
 }

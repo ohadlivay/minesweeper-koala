@@ -2,6 +2,7 @@ package main.java.view;
 
 import main.java.controller.NavigationController;
 import main.java.model.GameData;
+import main.java.model.Question;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -11,6 +12,7 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -67,6 +69,41 @@ public class GameHistoryScreen extends JPanel{
         };
         historyTable = new JTable(tableModel);
         styleTable(historyTable);
+
+        historyTable.getTableHeader().addMouseListener(new java.awt.event.MouseAdapter() {
+            private int lastCol = -1;
+            private boolean asc = true;
+
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                int col = historyTable.columnAtPoint(e.getPoint());
+                if (col == 0) return;
+
+                // toggle direction if clicking same column
+                if (col == lastCol) asc = !asc;
+                else { asc = true; lastCol = col; }
+
+                Comparator<GameData> cmp = switch (col) {
+                    case 1 -> Comparator.comparingLong(GameData::getTimestampMillis);
+                    case 2 -> Comparator.comparing(g -> safe(g.getLeftPlayerName()),
+                            String.CASE_INSENSITIVE_ORDER);
+                    case 3 -> Comparator.comparing(g -> safe(g.getRightPlayerName()),
+                            String.CASE_INSENSITIVE_ORDER);
+                    case 4 -> Comparator.comparingInt(GameData::getPoints);
+                    case 5 -> Comparator.comparingInt(g -> g.getGameDifficulty().ordinal());
+                    case 6 -> Comparator.comparing(GameData::isWin);
+                    default -> null;
+                };
+
+
+                if (cmp != null) {
+                    allSessions.sort(asc ? cmp : cmp.reversed());
+                    refreshPage();
+                }
+            }
+
+            private String safe(String s) { return s == null ? "" : s; }
+        });
 
         JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
         centerPanel.setOpaque(false);
