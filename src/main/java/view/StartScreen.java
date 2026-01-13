@@ -122,7 +122,6 @@ public class StartScreen {
         // create a fixed horizontal gap width between buttons
         int gap = 20;
 
-        JButton[] btns = {startGameBtn, gameHistoryBtn, mngQuestionsBtn};
         OutlinedLabel[] lbls = {startLbl, historyLbl, manageLbl};
         Dimension btnSize = new Dimension(270, 270);
         for (int i = 0; i < centerButtons.length; i++) {
@@ -164,13 +163,20 @@ public class StartScreen {
         centerWrapper.add(centerButtonContainer);
         mainPanel.add(centerWrapper, BorderLayout.CENTER);
 
-        exitBtn = new JButton("Exit");
-        exitBtn.setFont(btnFont);
-        exitBtn.setBackground(ColorsInUse.BTN_COLOR.get());
-        exitBtn.setForeground(ColorsInUse.TEXT.get());
+        OutlinedLabel exitLbl = new OutlinedLabel("EXIT", ColorsInUse.BTN_COLOR.get(), 3f);
+        exitLbl.setFont(btnFont);
+        exitLbl.setForeground(ColorsInUse.TEXT.get());
+        exitLbl.setOpaque(false);
+
+        exitBtn = new JButton();
+        exitBtn.add(exitLbl, gbc);
         exitBtn.setFocusable(false);
         Dimension exitBtnSize = new java.awt.Dimension(100, 100);
         exitBtn.setPreferredSize(exitBtnSize);
+        exitBtn.setMaximumSize(exitBtnSize);
+        exitBtn.setMinimumSize(exitBtnSize);
+        exitBtn.setBorderPainted(false);
+        exitBtn.setContentAreaFilled(false);
 
         if (borderImg != null) {
             Image scaled = borderImg.getScaledInstance(exitBtnSize.width, exitBtnSize.height, Image.SCALE_SMOOTH);

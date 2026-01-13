@@ -23,6 +23,7 @@ public class SettingsOverlay extends OverlayView {
     private JButton btnHard;
     private JTextField player1Name;
     private JTextField player2Name;
+    private JLabel gameInfo;
     private GameDifficulty selectedDifficulty;
 
     private final int PlAYER_TEXT_LENGTH = 15;
@@ -143,26 +144,64 @@ public class SettingsOverlay extends OverlayView {
         gbc.gridy = 0;
         centerPanel.add(difficultyPanel, gbc);
 
-        JPanel namesPanel = new JPanel(new GridLayout(1, 2, 60, 0));
+        gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 1.0;
+        gbc.insets = new Insets(15, 15, 10, 15);
+        centerPanel.add(difficultyPanel, gbc);
+
+        // --- game info (centered to screen) ---
+        gameInfo = new JLabel("");
+        gameInfo.setOpaque(false);
+        gameInfo.setForeground(ColorsInUse.TEXT.get());
+        gameInfo.setFont(FontsInUse.PIXEL.getSize(24f));
+        gameInfo.setHorizontalAlignment(SwingConstants.CENTER);
+
+        gbc.gridy++;
+        gbc.insets = new Insets(10, 15, 10, 15);
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.weightx = 1.0;
+
+        gameInfo.setPreferredSize(new Dimension(560, 44));
+        gameInfo.setMinimumSize(new Dimension(560, 44));
+        centerPanel.add(gameInfo, gbc);
+
+        // --- names panel (YOU FORGOT TO ADD IT) ---
+        JPanel namesPanel = new JPanel(new GridLayout(1, 2, 20, 0));
         namesPanel.setBackground(ColorsInUse.BG_COLOR.get());
-        namesPanel.setBorder(new EmptyBorder(20, 0, 20, 0));
+        namesPanel.setBorder(new EmptyBorder(0, 20, 0, 20));
 
         namesPanel.add(createInputGroup("Player 1", player1Name = createTextField()));
         namesPanel.add(createInputGroup("Player 2", player2Name = createTextField()));
 
-        gbc.gridy = 1;
+        gbc.gridy++;
+        gbc.insets = new Insets(5, 50, 5, 50);
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.weightx = 1.0;
+
         centerPanel.add(namesPanel, gbc);
 
+        // --- start button (closer to back button) ---
         buttonStart = createButton("START");
+        buttonStart.setPreferredSize(new Dimension(180, 50));
 
-        gbc.gridy = 2;
+        gbc.gridy++;
+        gbc.insets = new Insets(6, 0, 0, 0); // smaller bottom space
         gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = new Insets(15, 0, 0, 0);
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.weightx = 0.0;
+
         centerPanel.add(buttonStart, gbc);
 
+
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        bottomPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        bottomPanel.setOpaque(false);
+
 
         buttonBack = createTransparentIconButton("/back-pixel-2.png", 60, 50);
         buttonBack.addActionListener(e -> onCancel());
@@ -286,9 +325,9 @@ public class SettingsOverlay extends OverlayView {
 
     private JTextField createTextField() {
         JTextField field = new JTextField();
-        field.setPreferredSize(new Dimension(150, 30));
-        field.setMinimumSize(new Dimension(150, 30));
-        field.setMaximumSize(new Dimension(150, 30));
+        field.setPreferredSize(new Dimension(100, 30));
+        field.setMinimumSize(new Dimension(100, 30));
+        field.setMaximumSize(new Dimension(100, 30));
         field.setBackground(ColorsInUse.BG_COLOR.get());
         field.setForeground(ColorsInUse.TEXT.get());
         field.setCaretColor(Color.WHITE);
@@ -307,6 +346,7 @@ public class SettingsOverlay extends OverlayView {
         btn.setForeground(ColorsInUse.TEXT.get());
         btn.setFocusPainted(false);
         btn.setFont(FontsInUse.PIXEL.getSize(28f));
+
         return btn;
     }
 
@@ -351,14 +391,32 @@ public class SettingsOverlay extends OverlayView {
             case EASY:
                 btnEasy.setBorder(new LineBorder(selectedColor, 3));
                 animator.flashForeground(btnEasy, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), ColorsInUse.TEXT.get());
+                gameInfo.setText("<html><center>" +
+                        "<b><font color='#0cc42b'>EASY DIFFICULTY</font><br/>" +
+                        "<font color='#0cc42b'>Grid:</font> " + GameDifficulty.EASY.getRows() + "x" + GameDifficulty.EASY.getCols() +
+                        " | <font color='#0cc42b'>Mines:</font> " + GameDifficulty.EASY.getMineCount() +
+                        " | <font color='#0cc42b'>Activation Cost:</font> " + GameDifficulty.EASY.getActivationCost() + " pts" +
+                        "</center></html>");
                 break;
             case MEDIUM:
                 btnMedium.setBorder(new LineBorder(selectedColor, 3));
                 animator.flashForeground(btnMedium, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), ColorsInUse.TEXT.get());
+                gameInfo.setText("<html><center>" +
+                        "<b><font color='#c78800'>MEDIUM DIFFICULTY</font><br/>" +
+                        "<font color='#c78800'>Grid:</font> " + GameDifficulty.MEDIUM.getRows() + "x" + GameDifficulty.MEDIUM.getCols() +
+                        " | <font color='#c78800'>Mines:</font> " + GameDifficulty.MEDIUM.getMineCount() +
+                        " | <font color='#c78800'>Activation Cost:</font> " + GameDifficulty.MEDIUM.getActivationCost() + " pts" +
+                        "</center></html>");
                 break;
             case HARD:
                 btnHard.setBorder(new LineBorder(selectedColor, 3));
                 animator.flashForeground(btnHard, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), ColorsInUse.TEXT.get());
+                gameInfo.setText("<html><center>" +
+                        "<b><font color='#FF6B6B'>HARD DIFFICULTY</font><br/>" +
+                        "<font color='#FF6B6B'>Grid:</font> " + GameDifficulty.HARD.getRows() + "x" + GameDifficulty.HARD.getCols() +
+                        " | <font color='#FF6B6B'>Mines:</font> " + GameDifficulty.HARD.getMineCount() +
+                        " | <font color='#FF6B6B'>Activation Cost:</font> " + GameDifficulty.HARD.getActivationCost() + " pts" +
+                        "</center></html>");
                 break;
         }
     }
