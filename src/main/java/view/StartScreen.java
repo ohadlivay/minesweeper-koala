@@ -97,6 +97,12 @@ public class StartScreen {
         manageLbl.setForeground(ColorsInUse.TEXT.get());
         manageLbl.setOpaque(false);
 
+        // helper to add label centered and make it fill the button
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 1.0; gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.CENTER;
+
         JButton[] centerButtons = {startGameBtn, gameHistoryBtn, mngQuestionsBtn};
 
         URL borderURL = getClass().getResource("/labelBorder.png");
@@ -126,16 +132,13 @@ public class StartScreen {
             btn.setLayout(new GridBagLayout());
             btn.add(lbl, gbc);
 
-            btn.setFont(btnFont);
-            btn.setForeground(ColorsInUse.TEXT.get());
             btn.setFocusable(false);
-            btn.setAlignmentY(Component.CENTER_ALIGNMENT);
-
-            // use a wide-but-short preferred size for horizontal layout
             btn.setPreferredSize(btnSize);
             btn.setMaximumSize(btnSize);
             btn.setMinimumSize(btnSize);
-            btn.setIconTextGap(0);
+            btn.setBorderPainted(false);
+            btn.setContentAreaFilled(false);
+            btn.setOpaque(false);
 
             if (borderImg != null) {
                 Image scaled = borderImg.getScaledInstance(btnSize.width, btnSize.height, Image.SCALE_SMOOTH);
