@@ -31,6 +31,8 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     private JLabel healthLabel;
     private JLabel pointsLabel;
     private JLabel feedLabel;
+    private BoardLayout leftBoard;
+    private BoardLayout rightBoard;
 
     private JButton infoIcon;
 
@@ -53,8 +55,8 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         Color leftColor = ColorsInUse.getRandomWarmBoardColor().get();
         Color rightColor = ColorsInUse.getRandomColdBoardColor().get();
 
-        BoardLayout leftBoard = new BoardLayout(left, leftColor);
-        BoardLayout rightBoard = new BoardLayout(right, rightColor);
+        leftBoard = new BoardLayout(left, leftColor);
+        rightBoard = new BoardLayout(right, rightColor);
         leftBoard.revalidate();
         rightBoard.revalidate();
         leftBoard.repaint();
@@ -331,6 +333,11 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
             // ColorsInUse.TEXT.get() appears to be the main text color (white on dark bg).
             feedLabel.setForeground(ColorsInUse.TEXT.get());
             // do not run the usual color/animation logic for this message
+            if (!session.getLeftBoard().getTurn()) {
+                animator.shake(leftBoard);
+            } else {
+                animator.shake(rightBoard);
+            }
             return;
         }
 
