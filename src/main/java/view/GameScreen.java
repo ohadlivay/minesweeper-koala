@@ -17,7 +17,7 @@ import java.net.URL;
 public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener, GameOverListener, SurpriseListener, InputBlockListener {
     private final NavigationController nav;
     private final GameSession session; // Always holds the current game session
-    private ComponentAnimator animator;
+    private final ComponentAnimator animator;
     // track whether the current game session has ended
     private boolean gameIsOver = false;
 
@@ -279,7 +279,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         ImageIcon bg = loadScaledIcon("btn-koala", 80, 70);
         ImageIcon home = loadScaledIcon("home-pixel", 25, 25);
 
-        JButton homeButton = new IconOnImageButton(
+        return new IconOnImageButton(
                 () -> {
                     if (!gameIsOver) {
                         int option = JOptionPane.showConfirmDialog(
@@ -303,8 +303,6 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
                 home,
                 bg
         );
-
-        return homeButton;
     }
 
 
