@@ -349,6 +349,13 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
             Color color = healthChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
             animator.floatingNumber(healthLabel, text, color, healthChange > 0);
             if (healthChange < 0) animator.shake(healthLabel);
+            if (session.getHealthPool() <3) {
+                animator.shake(healthLabel);
+                healthLabel.setForeground(Color.RED);
+            }
+            if (session.getHealthPool() >= 3 && healthLabel.getForeground() == Color.RED) {
+                healthLabel.setForeground(ColorsInUse.TEXT.get());
+            }
         }
     }
 
