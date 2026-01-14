@@ -60,10 +60,10 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
         if(isBlocked) {
             return;
         }
-
-        if(!tile.getParentBoard().getTurn()){
+        /*if(!tile.getParentBoard().getTurn()){
             return;
         }
+         */
         session.RightClickedTile(tile);
     }
 
@@ -71,9 +71,11 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
         if(isBlocked) {
             return;
         }
+        /*
         if(!tile.getParentBoard().getTurn()){
             return;
         }
+         */
         session.LeftClickedTile(tile);
     }
 

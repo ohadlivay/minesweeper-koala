@@ -317,6 +317,15 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     //this method replaces the old onPointsChange and onHealthChange, copmbining them together
     @Override
     public void onActionMade(String message, boolean positive, int healthChange, int pointsChange) {
+        // special-case: show "This is not your turn" in white
+        if (message != null && message.equalsIgnoreCase("This is not your turn!")) {
+            feedLabel.setText(message);
+            // ColorsInUse.TEXT.get() appears to be the main text color (white on dark bg).
+            feedLabel.setForeground(ColorsInUse.TEXT.get());
+            // do not run the usual color/animation logic for this message
+            return;
+        }
+
         feedLabel.setText(message);
 
         feedLabel.setForeground(positive ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get());

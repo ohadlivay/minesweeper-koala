@@ -246,6 +246,7 @@ public class GameSession
         //turn test
         if(!parentBoard.getTurn()){
             System.out.println("Invalid turn");
+            notifyListenersAfterAction("This is not your turn!",false,0,0);
             return; //not his turn
         }
 
@@ -315,6 +316,7 @@ public class GameSession
         //turn test
         if( ! parentBoard.getTurn()){
             System.out.println("Invalid turn");
+            notifyListenersAfterAction("This is not your turn!",false,0,0);
             return false; //not his turn
         }
 
