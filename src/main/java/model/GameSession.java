@@ -347,6 +347,8 @@ public class GameSession
                 System.out.println("Mine");
                 message = "BOOM! You hit a mine! Lost 1 health";
                 this.gainHealth(healthForRevealingMine);
+                if (this.getHealthPool() < 3 && this.getHealthPool() > 0)
+                    message="Be Careful! You only have "+this.getHealthPool()+" health left";
                 parentBoard.reveal(tile);
                 SoundManager.getInstance().playOnce(SoundManager.SoundId.MINE);
                 notifyListenersAfterAction(message,false,-1,0);
@@ -435,7 +437,10 @@ public class GameSession
                     String extraDetail = extraHpString(startHealth, rewardHealth);
                     this.message = baseMessage + " +" + rewardPoints + " pts." + extraDetail;
                 } else {
-                    this.message = baseMessage + " " + rewardHealth + " HP, " + rewardPoints + " pts.";
+                    if (healthPool < 3&&healthPool>0)
+                        this.message = "Be Careful! You only have " + healthPool + " health left";
+                    else
+                        this.message = baseMessage + " " + rewardHealth + " HP, " + rewardPoints + " pts.";
                 }
 
                 notifySurpriseListeners(healthAfter, pointsAfter);
@@ -475,8 +480,7 @@ public class GameSession
     {
         Random random = new Random();
         boolean randomResult = random.nextBoolean();
-        String correctly = (correctAnswer)? "Correct!" : "Incorrect!";
-        message = correctly;
+        message = (correctAnswer)? "Correct!" : "Incorrect!";
         SoundManager.getInstance().playOnce(correctAnswer ? SoundManager.SoundId.POINTS_WIN : SoundManager.SoundId.POINTS_LOSE);
         switch (this.gameDifficulty)
         {
@@ -557,12 +561,17 @@ public class GameSession
 
         if (!correctAnswer && pointsAfter == 0) {
             message = "Incorrect! But you were lucky this time...";
-        } else {
-            String sign;
-            if (pointsAfter > 0) sign = "+";
-            else if (pointsAfter < 0) sign = "";
-            else sign = correctAnswer ? "+" : "-";
-            message += " (" + sign + pointsAfter + " pts)";
+        }
+        else{
+            if (healthPool < 3&&healthPool>0&&!correctAnswer)
+                message = "Be Careful! You only have "+healthPool+" health left";
+            else {
+                String sign;
+                if (pointsAfter > 0) sign = "+";
+                else if (pointsAfter < 0) sign = "";
+                else sign = correctAnswer ? "+" : "-";
+                message += " (" + sign + pointsAfter + " pts)";
+            }
         }
 
         notifyListenersAfterAction(message, correctAnswer, healthAfter, pointsAfter);
@@ -634,12 +643,17 @@ public class GameSession
 
         if (!correctAnswer && pointsAfter == 0) {
             message = "Incorrect! But you were lucky this time...";
-        } else {
-            String sign;
-            if (pointsAfter > 0) sign = "+";
-            else if (pointsAfter < 0) sign = "";
-            else sign = correctAnswer ? "+" : "-";
-            message += " (" + sign + pointsAfter + " pts)";
+        }
+        else{
+            if (healthPool < 3&&healthPool>0&&!correctAnswer)
+                message = "Be Careful! You only have "+healthPool+" health left";
+            else {
+                String sign;
+                if (pointsAfter > 0) sign = "+";
+                else if (pointsAfter < 0) sign = "";
+                else sign = correctAnswer ? "+" : "-";
+                message += " (" + sign + pointsAfter + " pts)";
+            }
         }
 
         notifyListenersAfterAction(message, correctAnswer, healthAfter, pointsAfter);
@@ -711,12 +725,17 @@ public class GameSession
 
         if (!correctAnswer && pointsAfter == 0) {
             message = "Incorrect! But you were lucky this time...";
-        } else {
-            String sign;
-            if (pointsAfter > 0) sign = "+";
-            else if (pointsAfter < 0) sign = "";
-            else sign = correctAnswer ? "+" : "-";
-            message += " (" + sign + pointsAfter + " pts)";
+        }
+        else{
+            if (healthPool < 3&&healthPool>0&&!correctAnswer)
+                message = "Be Careful! You only have "+healthPool+" health left";
+            else {
+                String sign;
+                if (pointsAfter > 0) sign = "+";
+                else if (pointsAfter < 0) sign = "";
+                else sign = correctAnswer ? "+" : "-";
+                message += " (" + sign + pointsAfter + " pts)";
+            }
         }
 
         notifyListenersAfterAction(message, correctAnswer, healthAfter, pointsAfter);
