@@ -2,16 +2,20 @@ package main.java.view;
 
 import main.java.controller.NavigationController;
 import main.java.model.GameData;
-import main.java.model.GameSession;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -40,7 +44,8 @@ public class GameHistoryScreen extends JPanel{
     private void initUI() {
         setLayout(new BorderLayout());
 
-        mainPanel = new JPanel(new BorderLayout(15, 15));
+        mainPanel = new BackgroundPanel("/start-bg.jpeg");
+        mainPanel.setLayout(new BorderLayout(15, 15));
         mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
         OutlinedLabel titleLabel = new OutlinedLabel("GAME HISTORY", Color.BLACK, 6f);
@@ -53,7 +58,7 @@ public class GameHistoryScreen extends JPanel{
         bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setOpaque(false);
         bottomPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
-        JButton homeButton = createHomeButton();
+        homeButton = createHomeButton();
         homeButton.addActionListener(e -> nav.goToHome());
         bottomPanel.add(homeButton, BorderLayout.WEST);
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
@@ -69,17 +74,47 @@ public class GameHistoryScreen extends JPanel{
         historyTable = new JTable(tableModel);
         styleTable(historyTable);
 
+        historyTable.getTableHeader().addMouseListener(new java.awt.event.MouseAdapter() {
+            private int lastCol = -1;
+            private boolean asc = true;
+
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                int col = historyTable.columnAtPoint(e.getPoint());
+
+                // toggle direction if clicking same column
+                if (col == lastCol) asc = !asc;
+                else { asc = true; lastCol = col; }
+
+                Comparator<GameData> cmp = switch (col) {
+                    case 0, 1 -> Comparator.comparingLong(GameData::getTimestampMillis);
+                    case 2 -> Comparator.comparing(g -> safe(g.getLeftPlayerName()),
+                            String.CASE_INSENSITIVE_ORDER);
+                    case 3 -> Comparator.comparing(g -> safe(g.getRightPlayerName()),
+                            String.CASE_INSENSITIVE_ORDER);
+                    case 4 -> Comparator.comparingInt(GameData::getPoints);
+                    case 5 -> Comparator.comparingInt(g -> g.getGameDifficulty().ordinal());
+                    case 6 -> Comparator.comparing(GameData::isWin);
+                    default -> null;
+                };
+
+
+                if (cmp != null) {
+                    allSessions.sort(asc ? cmp : cmp.reversed());
+                    refreshPage();
+                }
+            }
+
+            private String safe(String s) { return s == null ? "" : s; }
+        });
+
         JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
         centerPanel.setOpaque(false);
 
-        JPanel tableContainer = new JPanel(new BorderLayout());
-        tableContainer.setBackground(ColorsInUse.BG_COLOR.get());
-        tableContainer.setBorder(new LineBorder(new Color(70, 80, 100), 1));
-
-        tableContainer.add(historyTable.getTableHeader(), BorderLayout.NORTH);
-        tableContainer.add(historyTable, BorderLayout.CENTER);
-
-        centerPanel.add(tableContainer, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(historyTable);
+        scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
+        scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
 
         //pages navigation panel
         JPanel pagesPanel = createPagesPanel();
@@ -186,6 +221,7 @@ public class GameHistoryScreen extends JPanel{
             GameData s = allSessions.get(i);
             String formattedDate = s.getTimeStamp().format(formatter);
             String result = s.isWin() ? "WIN" : "LOSE";
+
             Object[] rowData = {
                     i + 1,
                     formattedDate,
@@ -206,12 +242,12 @@ public class GameHistoryScreen extends JPanel{
     }
 
     private void styleTable(JTable table) {
-        table.setBackground(ColorsInUse.BTN_COLOR.get());
+        table.setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
         table.setForeground(ColorsInUse.TEXT.get());
         table.setSelectionBackground(ColorsInUse.BOARD_ACTIVE_BORDER2.get());
         table.setSelectionForeground(Color.BLACK);
         table.setGridColor(Color.DARK_GRAY);
-        table.setRowHeight(44);
+        table.setRowHeight(45);
         table.setFont(FontsInUse.PIXEL.getSize(20f));
         table.setShowGrid(true);
         table.setFillsViewportHeight(false);
@@ -240,6 +276,7 @@ public class GameHistoryScreen extends JPanel{
         btn.setFont(FontsInUse.PIXEL.getSize(24f));
         btn.setFocusPainted(false);
         btn.setContentAreaFilled(true);
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -253,21 +290,31 @@ public class GameHistoryScreen extends JPanel{
     }
 
     private JButton createHomeButton() {
-        homeButton = new JButton();
-        homeButton.setPreferredSize(new Dimension(72, 36));
+        ImageIcon bg = loadScaledIcon("btn-koala", 80, 70);
+        ImageIcon home = loadScaledIcon("home-pixel", 25, 25);
 
-        java.net.URL iconUrl = getClass().getResource("/home-pixel.png");
-        if (iconUrl != null) {
-            ImageIcon icon = new ImageIcon(iconUrl);
-            Image img = icon.getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT);
-            homeButton.setIcon(new ImageIcon(img));
-        }
-
-        homeButton.setBackground(ColorsInUse.BTN_COLOR.get());
-        homeButton.setFocusPainted(false);
-        homeButton.setContentAreaFilled(true);
+        homeButton = new IconOnImageButton("Home", new Dimension(80, 70), home, bg);
+        homeButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         return homeButton;
+    }
+
+    private ImageIcon loadScaledIcon(String resourceBase, int width, int height) {
+        String[] exts = {".png", ".jpg", ".jpeg", ".gif"};
+        for (String ext : exts) {
+            URL url = getClass().getResource("/" + resourceBase + ext);
+            if (url != null) {
+                try {
+                    BufferedImage img = ImageIO.read(url);
+                    if (img != null) {
+                        Image scaled = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+                        return new ImageIcon(scaled);
+                    }
+                } catch (IOException ignored) {
+                }
+            }
+        }
+        return null;
     }
 
     public JPanel getMainPanel() {

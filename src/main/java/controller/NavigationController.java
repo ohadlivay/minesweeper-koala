@@ -1,8 +1,11 @@
 package main.java.controller;
 
-import javax.swing.JFrame;
+import main.java.view.GameHistoryScreen;
+import main.java.view.GameScreen;
+import main.java.view.QuestionManagerScreen;
+import main.java.view.StartScreen;
 
-import main.java.view.*;
+import javax.swing.*;
 
 public class NavigationController {
     private static NavigationController instance;
@@ -16,9 +19,6 @@ public class NavigationController {
         if (instance == null) {
             instance = new NavigationController(frame);
             OverlayController.getInstance(instance);
-        }
-        else if (instance.getVisFrame() != frame) {
-
         }
         return instance;
     }
@@ -41,7 +41,6 @@ public class NavigationController {
         visFrame.setContentPane(gameScreen.getMainPanel());
         refresh();
     }
-
 
     public void goToHistory() {
         HistoryController hsc = HistoryController.getInstance();

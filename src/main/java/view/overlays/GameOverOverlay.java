@@ -2,7 +2,6 @@ package main.java.view.overlays;
 
 import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
-import main.java.controller.OverlayController;
 import main.java.model.GameDifficulty;
 import main.java.util.SoundManager;
 import main.java.view.BackgroundPanel;
@@ -19,7 +18,7 @@ public class GameOverOverlay extends OverlayView {
     private final int finalScore;
 
     public GameOverOverlay(NavigationController nav, boolean isWin, int finalScore) {
-        super(nav,true);
+        super(nav, true);
         this.isWin = isWin;
         this.finalScore = finalScore;
 
@@ -40,7 +39,7 @@ public class GameOverOverlay extends OverlayView {
         String bgPath = isWin ? "/win-bg-gif.gif" : "/loss-bg-gif.gif";
         BackgroundPanel contentPane = new BackgroundPanel(bgPath);
         contentPane.setLayout(new BorderLayout());
-        contentPane.setPreferredSize(new Dimension(400,446));
+        contentPane.setPreferredSize(new Dimension(400, 446));
         contentPane.setBorder(new EmptyBorder(30, 40, 30, 40));
 
         String titleText = isWin ? "YOU WIN!" : "GAME OVER";
@@ -67,7 +66,8 @@ public class GameOverOverlay extends OverlayView {
                 Image img = icon.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
                 iconLabel.setIcon(new ImageIcon(img));
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         centerPanel.add(iconLabel);
         centerPanel.add(Box.createVerticalStrut(20));
@@ -96,15 +96,9 @@ public class GameOverOverlay extends OverlayView {
             String player2 = GameSessionController.getInstance().getSession().getRightPlayerName();
             GameDifficulty selectedDifficulty = GameSessionController.getInstance().getSession().getGameDifficulty();
 
-            //option 1: restart a game with the same difficulty and names
+            // restart a game with the same difficulty and names
             GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty);
             nav.goToGame();
-
-            // option 2: go back to settings
-            //OverlayController.getInstance().showOverlay(OverlayType.SETTINGS);
-
-            //option 3: settings screen but with the current game's details already selected
-            //OverlayController.getInstance().showSettingsOverlay(player1, player2, selectedDifficulty);
             close();
         });
 

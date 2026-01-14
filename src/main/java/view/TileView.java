@@ -2,9 +2,9 @@ package main.java.view;
 
 import main.java.controller.GameSessionController;
 import main.java.model.*;
-import main.java.util.SoundManager;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -15,7 +15,19 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
     private final double dynamicSize; //dynamic tile size per difficulty
     private final int iconSize; //dynamic icon size per difficulty
 
+    private int iconOffsetX = 0; //for icon animation
+
     private Color tileColor;
+    private final ComponentAnimator animator = new ComponentAnimator();
+
+    private enum tileTypes {
+        MINE,
+        NUMBER,
+        EMPTY,
+        QUESTION,
+        SURPRISE
+    }
+    private tileTypes currentTileType;
 
 
 
@@ -39,11 +51,36 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         mouseClicked();
     }
 
+    public void setIconOffsetX(int x) {
+        this.iconOffsetX = x;
+        repaint();
+    }
+
+    //for icon animation
+    @Override
+    protected void paintComponent(Graphics g) {
+        Icon standard = getIcon();
+        Icon disabled = getDisabledIcon();
+        setIcon(null);
+        setDisabledIcon(null);
+        super.paintComponent(g);
+        setIcon(standard);
+        setDisabledIcon(disabled);
+        Icon activeIcon = isEnabled() ? standard : disabled;
+
+        if (activeIcon != null) {
+            int x = (getWidth() - activeIcon.getIconWidth()) / 2 + iconOffsetX;
+            int y = (getHeight() - activeIcon.getIconHeight()) / 2;
+            activeIcon.paintIcon(this, g, x, y);
+        }
+    }
+
     private void initTile() {
         setBackground(tileColor);
         setPreferredSize(new Dimension((int)dynamicSize, (int)dynamicSize));
         setFocusPainted(false);
-        setFont(new Font("Segoe UI Black", Font.BOLD, (int) (dynamicSize/2.5)));
+        //setRolloverEnabled(false);  //this kills hovering problems
+        setFont(FontsInUse.PIXEL.getSize((float)(dynamicSize / 1.5)));
         setMargin(new Insets(0, 0, 0, 0));
         tile.setRevealListener(this);
         tile.setFlagListener(this);
@@ -54,6 +91,7 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
 
     private void mouseClicked() {
         addMouseListener(new MouseAdapter() {
+            // Handles right/left clicks; triggers controller actions; refreshes display
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (gameSessionController==null) return;
@@ -67,6 +105,19 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
                 repaint();
                 revalidate();
             }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                // only when it makes sense to show hover effects
+                if (!isEnabled()) return;            // disabled tiles shouldn't “shine”
+                if (getBackground().equals(Color.BLACK)) return; // board inactive
+                setAnimationType(currentTileType, true);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                setAnimationType(currentTileType, false);
+            }
         });
     }
 
@@ -76,44 +127,52 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
         String type = tile.toString();
         if (tile.getIsFlagged())
             setupIcon(null, false);
-        if (type.equals("M")) {
-            setupIcon("/pixel-mine.png", true);
-            setEnabled(false);
-        }
-        else if (type.equals("S")) {
-            setupIcon("/gift-pixel.png", false);
-            setTileColor(ColorsInUse.SURPRISE_TILE.get());
-            setEnabled(true);
-        }
-
-        else if (type.equals("Q")) {
-            setupIcon("/pixel-question.png", false);
-            setTileColor(ColorsInUse.QUESTION_TILE.get());
-            setEnabled(true);
-        }
-        else
-        {
-            if (type.equals("0")) {
-                setText("");
-                setTileColor(ColorsInUse.REVEALED_BG.get());
+        // Updates tile appearance based on revealed type
+        switch (type) {
+            case "M" -> {
+                setupIcon("/pixel-mine.png", true);
+                setEnabled(false);
+                setTileType(tileTypes.MINE);
+                animator.animateMineHit(this);
             }
-            else
-            {
-                setText(type);
-                setTileColor(ColorsInUse.REVEALED_BG.get());
+            case "S" -> {
+                setupIcon("/gift-pixel.png", false);
+                setTileColor(ColorsInUse.SURPRISE_TILE.get());
+                setEnabled(true);
+                setTileType(tileTypes.SURPRISE);
             }
+            case "Q" -> {
+                setupIcon("/pixel-question.png", false);
+                setTileColor(ColorsInUse.QUESTION_TILE.get());
+                setEnabled(true);
+                setTileType(tileTypes.QUESTION);
+            }
+            default -> {
+                // Sets empty or numbered tile appearance
+                if (type.equals("0")) {
+                    setText("");
+                    setTileColor(ColorsInUse.REVEALED_BG.get());
+                    setTileType(tileTypes.EMPTY);
+                } else {
+                    setText(type);
+                    setTileColor(ColorsInUse.REVEALED_BG.get());
+                    setTileType(tileTypes.NUMBER);
+                }
 
-            if (type.equals("1")) setForeground(ColorsInUse.NUMBER_1.get());
-            else if (type.equals("2")) setForeground(ColorsInUse.NUMBER_2.get());
-            else if (type.equals("3")) setForeground(ColorsInUse.NUMBER_3.get());
-            else if (type.equals("4")) setForeground(ColorsInUse.NUMBER_4.get());
-            else if (type.equals("5")) setForeground(ColorsInUse.NUMBER_5.get());
-            else if (type.equals("6")) setForeground(ColorsInUse.NUMBER_6.get());
-            else if (type.equals("7")) setForeground(ColorsInUse.NUMBER_7.get());
-            else if (type.equals("8")) setForeground(ColorsInUse.NUMBER_8.get());
-            setEnabled(false);
+                // Sets foreground color based on revealed number
+                if (type.equals("1")) setForeground(ColorsInUse.NUMBER_1.get());
+                else if (type.equals("2")) setForeground(ColorsInUse.NUMBER_2.get());
+                else if (type.equals("3")) setForeground(ColorsInUse.NUMBER_3.get());
+                else if (type.equals("4")) setForeground(ColorsInUse.NUMBER_4.get());
+                else if (type.equals("5")) setForeground(ColorsInUse.NUMBER_5.get());
+                else if (type.equals("6")) setForeground(ColorsInUse.NUMBER_6.get());
+                else if (type.equals("7")) setForeground(ColorsInUse.NUMBER_7.get());
+                else if (type.equals("8")) setForeground(ColorsInUse.NUMBER_8.get());
+                setEnabled(false);
+            }
         }
         System.out.println("tileview: i got updated that tile was Revealed: " + type);
+        //setAnimationType(currentTileType, true);
     }
 
     public void setTileColor(Color color) {
@@ -123,12 +182,14 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
 
 
     // 2 methods only used to show if board is active or not, --dont set tileColor here!--
-    protected void recolorTile() {
+    protected void recolorTile() { //board is active
         setBackground(tileColor);
+      //  setAnimationType(currentTileType, true);
     }
 
-    protected void uncolorTile() {
+    protected void uncolorTile() { //board is inactive
         setBackground(Color.black);
+       // setAnimationType(currentTileType, false);
     }
 
     @Override
@@ -136,11 +197,11 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
 
         if (flagged) {
             setupIcon("/pixel-flag.png", false);
-            System.out.println("tileview: i got updated that tile was flagged");
-        }
+            System.out.println("tileview: i got updated that tile was flagged");}
         else {
             setIcon(null);
             setText("");
+
         }
 
     }
@@ -150,6 +211,7 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
     {
         setTileColor(Color.BLACK);
         setEnabled(false);
+        setAnimationType(currentTileType, false);
     }
 
     // changes on turn change to visibly show the active board
@@ -185,6 +247,26 @@ public class TileView extends JButton implements RevealListener, FlagListener, S
             else {
                 setDisabledIcon(null);
             }
+        }
+    }
+
+    private void setTileType(tileTypes type) {
+        currentTileType = type;
+    }
+
+    /**
+     * Activates tile‑specific animations based on tile type
+     */
+    private void setAnimationType(tileTypes type, boolean activate) {
+        if (type == tileTypes.SURPRISE) {
+            if (activate) {
+                animator.shine(this, true);
+            } else {
+                animator.stop(this);
+            }
+        }
+        else if (type == tileTypes.QUESTION) {
+            animator.breathe(this, ColorsInUse.QUESTION_TILE_BREATH.get(), 1500, activate);
         }
     }
 }

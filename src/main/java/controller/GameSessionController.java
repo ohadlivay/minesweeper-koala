@@ -2,17 +2,13 @@
 model.GameSession
  */
 
-
 package main.java.controller;
 
 import main.java.model.*;
-import main.java.util.GameDataCSVManager;
 import main.java.view.GameScreen;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class GameSessionController implements DisplayQuestionListener, InputBlockListener{
     private GameSession session;
@@ -43,8 +39,9 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
 
     // retrieves user inputs and sets up a new game session
     public void setupGame(String leftName, String rightName, GameDifficulty difficulty) {
-        this.blockListeners.clear();
         session = GameSession.getInstance();
+        session.clearListeners();
+        this.blockListeners.clear();
         this.isBlocked = false;
         assert session != null;
         if( !(session.setLeftPlayerName(leftName) && session.setRightPlayerName(rightName) && session.setGameDifficulty(difficulty))) {
@@ -63,10 +60,10 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
         if(isBlocked) {
             return;
         }
-
-        if(!tile.getParentBoard().getTurn()){
+        /*if(!tile.getParentBoard().getTurn()){
             return;
         }
+         */
         session.RightClickedTile(tile);
     }
 
@@ -74,18 +71,28 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
         if(isBlocked) {
             return;
         }
+        /*
         if(!tile.getParentBoard().getTurn()){
             return;
         }
+         */
         session.LeftClickedTile(tile);
     }
 
+    private boolean isSaving = false;
+
+
+    // used for testing purposes only
     public void endGame(GameSession session,NavigationController nav) throws IOException {
-        session.forceGameOver();
-        GameData gameData = new GameData(session);
-        SysData.getInstance().addGame(gameData);
-        GameDataCSVManager.writeGameDataListToCSV("GameHistory.csv");
+        if (isSaving)
+            return;
+        isSaving = true;
+        try {
+            session.forceGameOver();
+        } finally {
+            isSaving = false;
         }
+    }
 
     @Override
     public void displayQuestion(Board board) {
@@ -102,7 +109,10 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
 
     }
 
-
+    public void setSurpriseToGameScreen(int healthChange, int pointsChange, boolean positiveMove) {
+        session.updateAfterSurpriseRevealed(healthChange, pointsChange, positiveMove);
+    }
+    
 }
 
 

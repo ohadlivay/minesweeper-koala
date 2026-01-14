@@ -5,13 +5,15 @@ import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.net.URL;
 
+/**
+ * handles interaction with the actions column in the Questions table
+ * when the user clicks one of the buttons, this class takes over to process the button events
+ */
 public class TblBtnEditor extends AbstractCellEditor implements TableCellEditor {
     private final TblBtnPanel panel;
-    private final TableActionListener listener;
     private int editingModelRow = -1;
 
-    public TblBtnEditor(JTable table, TableActionListener listener) {
-        this.listener = listener;
+    public TblBtnEditor(TableActionListener listener) {
 
         JButton edit = createScaledIconButton("/pixel-pencil.png", ColorsInUse.BTN_COLOR.get(), 30, 30);
         JButton del  = createScaledIconButton("/x-pixel.png", ColorsInUse.BTN_COLOR.get(), 20, 20);
@@ -20,12 +22,16 @@ public class TblBtnEditor extends AbstractCellEditor implements TableCellEditor 
 
         edit.addActionListener(e -> {
             fireEditingStopped();
-            if (listener != null && editingModelRow >= 0) listener.onEdit(editingModelRow);
+            if (editingModelRow >= 0) {
+                listener.onEdit(editingModelRow);
+            }
         });
 
         del.addActionListener(e -> {
             fireEditingStopped();
-            if (listener != null && editingModelRow >= 0) listener.onDelete(editingModelRow);
+            if (editingModelRow >= 0) {
+                listener.onDelete(editingModelRow);
+            }
         });
     }
 
@@ -40,6 +46,7 @@ public class TblBtnEditor extends AbstractCellEditor implements TableCellEditor 
         btn.setBackground(bg);
         btn.setFocusable(false);
         btn.setPreferredSize(new Dimension(40, 32));
+        btn.setBorderPainted(false);
         return btn;
     }
 
@@ -51,6 +58,8 @@ public class TblBtnEditor extends AbstractCellEditor implements TableCellEditor 
         return panel;
     }
 
+    //this is required by TableCellEditor. returns the value of the cell after editing
+    //since these are just buttons, we return an empty string
     @Override
     public Object getCellEditorValue() {
         return "";

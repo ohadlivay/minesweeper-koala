@@ -3,7 +3,6 @@ package main.java.view;
 
 import main.java.controller.GameSessionController;
 import main.java.model.Board;
-import main.java.model.MinesLeftListener;
 import main.java.model.Tile;
 import main.java.model.TurnListener;
 
@@ -19,7 +18,8 @@ public class BoardLayout extends JPanel implements TurnListener {
     private Board board; //only use for getters
     private static final int boardSize = 450;
 
-    private Color tileColor;
+    private final Color tileColor;
+    private final ComponentAnimator animator = new ComponentAnimator();
 
     public BoardLayout(Board board, Color color) {
 
@@ -38,9 +38,9 @@ public class BoardLayout extends JPanel implements TurnListener {
 
     //Initialize the board panel
     private void initBoardPanel() {
-        setBackground(ColorsInUse.BOARD_BACKGROUND.get());
+        setBackground(ColorsInUse.BG_COLOR.get());
         setLayout(new GridLayout(rows, cols));
-        board.setTurnListener(this); // could this be the responsibility of the controller?
+        board.setTurnListener(this);
 
         //calculation for the tile size to dynamically change per difficulty
         //divide the board size by the number of rows
@@ -61,11 +61,15 @@ public class BoardLayout extends JPanel implements TurnListener {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                Tile t = null;
+                Tile t;
                 t = board.getTiles()[i][j]; //get tile from board controller
                 if (t != null) {
-                    tileViewGrid[i][j] = new TileView(t, calculatedTileSize, tileColor);
-                    add(tileViewGrid[i][j]);
+                    TileView tv = new TileView(t, calculatedTileSize, tileColor);
+                    tileViewGrid[i][j] = tv;
+
+                    // Wrap ONLY for paint-over effects
+                    add(animator.withEffects(tv));   // <-- use your ComponentAnimator instance
+
                 } else {
                     add(new JButton()); // placeholder button for debugging
                 }
@@ -108,46 +112,5 @@ public class BoardLayout extends JPanel implements TurnListener {
             throw new IllegalArgumentException("Board cannot be null");
         this.board = board;
     }
-
-
-    //Helper methods
-
-    //get random color
- /*   private boolean isTooSimilar(Color c1, Color c2) {
-        float dr = c1.getRed() / 255f - c2.getRed() / 255f;
-        float dg = c1.getGreen() / 255f - c2.getGreen() / 255f;
-        float db = c1.getBlue() / 255f - c2.getBlue() / 255f;
-
-        float distance = (float) Math.sqrt(dr*dr + dg*dg + db*db);
-        return distance < 0.40f;
-    }
-
-    private boolean isTooBrightOrDark(Color c) {
-        float r = c.getRed() / 255f;
-        float g = c.getGreen() / 255f;
-        float b = c.getBlue() / 255f;
-
-        float brightness = (r + g + b) / 3f;
-        return brightness < 0.25f || brightness > 0.80f;
-    }
-
-    private Color randomColor() {
-        Color toReturn = new Color(
-                (float) Math.random(),
-                (float) Math.random(),
-                (float) Math.random()
-        );
-
-        for (ColorsInUse color : ColorsInUse.values()) {
-            Color reserved = color.get();
-
-            // reject if EXACT match or TOO SIMILAR match or TOO BRIGHT or TOO DARK
-            if (toReturn.equals(reserved) || isTooSimilar(toReturn, reserved) || isTooBrightOrDark(toReturn)) {
-                return randomColor(); // regenerate
-            }
-        }
-
-        return toReturn;
-    } */
 }
 

@@ -1,21 +1,23 @@
 ID,Question,Difficulty,A,B,C,D,Correct Answer
-1,What is the capital of France?,3,Paris,London,Rome,Berlin,A
-2,How many days are in a week?,2,Seven,Five,Ten,Three,A
-3,What color is a primary stop sign?,3,Red,Blue,Green,Yellow,A
-4,Which planet is known as the Red Planet?,4,Mars,Jupiter,Venus,Earth,A
-5,What animal barks?,3,Dog,Cat,Bird,Fish,A
-6,How many sides does a triangle have?,1,Three,Four,Two,One,A
-7,What is 2 + 2?,2,Four,Three,Five,Six,A
-8,Which season follows Spring?,2,Summer,Winter,Autumn,Rainy,A
-9,What do bees produce?,3,Honey,Milk,Eggs,Wool,A
-10,What is the largest ocean?,1,Pacific Ocean,Atlantic Ocean,Indian Ocean,Arctic Ocean,A
-11,What is the opposite of 'hot'?,1,Cold,Warm,Wet,Dry,A
-12,Which finger is usually the longest?,1,Middle,Index,Thumb,Pinky,A
-13,Who wrote Romeo and Juliet?,2,William Shakespeare,Charles Dickens,Jane Austen,Mark Twain,A
-14,Which geometric shape has four equal sides?,2,Square,Circle,Triangle,Oval,A
-15,What is the main source of light for Earth?,1,Sun,Moon,Stars,Electric Lamp,A
-16,What do you use to write with?,2,Pen/Pencil,Eraser,Ruler,Calculator,A
-17,Which bird is a symbol of peace?,3,Dove,Eagle,Crow,Sparrow,A
-18,What is the color of the sky on a clear day?,4,Blue,Green,Black,White,A
-19,What is the largest continent?,3,Asia,Africa,Europe,North America,A
-20,What do you wear on your feet?,2,Shoes,Hat,Gloves,Scarf,A
+1,How do software maintenance costs compare to development?,HARD,Often higher than development,Negligible,Always equal,About half,1
+2,What is a major drawback of the Waterfall model?,MEDIUM,Inflexible to change,Proceeding too fast,Has no documentation,Is not applicable for large teams,1
+3,Non-functional requirements define:,HARD,System constraints/properties,Specific system services,Database schemas,User inputs,1
+4,Correct order of Risk Management activities?,MASTER,Identify > Analyze > Plan > Monitor,Monitor > Plan > Analyze > Identify,Plan > Identify > Monitor > Analyze,Analyze > Plan > Identify > Monitor,1
+5,"The term ""Validation"" asks which question?",HARD,Are we building the right product?,Are we building the product right?,Is the code efficient?,Is the budget sufficient?,1
+6,Why do Adaptive and Perfective maintenance require higher skill levels than typical development?,MASTER,Programmers must handle all life cycle phases on an existing base,They only focus on correcting internal logical errors,It deletes history after every tenth commi,They are performed only when documentation is 100% complete,1
+7,Which annotation executes a method once before any tests in the class begin?,EASY,BeforeClass,Before,After,AfterClass,1
+8,Which activity happens at the end of each sprint?,MEDIUM,Retrospective Meeting,Backlog Refinement,Daily Scrum,Sprint Planning,1
+9,"What is the best strategy for a low-quality, high-business value legacy system?",MASTER,Re-engineer or replace the system,Continue normal maintenance activities,Scrap the system completely,Transfer it immediately to a COTS platform,1
+10,White-Box testing focuses on:,EASY,Internal structure/logic,Output behavior only,User experience,Requirements gathering,1
+11,Black-Box testing focuses on:,EASY,Erroneous outputs/behavior,Code complexity,Internal structure/logic,Variable initialization,1
+12,"An ""Equivalence Class"" is:",EASY,Inputs producing same behavior,A Java class,A design pattern,A class the checks booleans,1
+13,Which is a Gang of Four (GoF) design pattern category?,MEDIUM,Creational,Relational,Functional,Operational,1
+14,What do Sequence Diagrams show?,MEDIUM,Interactions between actors and objects,Exact database tables,Hardware deployment,State transitions only,1
+15,"Does ""Open Source"" mean no usage restrictions?",EASY,"No, licenses may restrict use","Yes, always",Only for juniors,Only if paid for,1
+16,How does the Observer know when the Observed changes?,EASY,Observed saves an Observer instance and updates it,Observer pings the subject occasionally and checks for updates,Observed broadcasts its state globally and Observers react.,Observer is notified via a thrown execption,1
+17,What does the Strategy DP do?,MEDIUM,Reduces algorithm responsibiltiies via methods in subclasses.,Combines N similar objects to form a Generic Strategy object,Forces a single-dependency relation between two classes,Allows each object to call the Strategy object,1
+18,Which problem is usually solved by the Factory design pattern?,MEDIUM,Code has objects that are complex to instantiate,Code relies too heavily on object variables rather than class,Code has to be refactored to adhere to SOLID prinicples,Code is tightly coupled and unmaintainable,1
+19,Why would you even use design patterns?,HARD,All answers are correct,They are well known and form a common ground between developers,They allow software to be extendable maintainable and efficient,They offer optimal and time tested solutions to problems plaguing SWE.,1
+20,Which of the following lines of code is wrong when applying the Singleton design pattern?,MEDIUM,private ClassA getInstance(){...};,private static ClassA instance;,private ClassA(){...};,public static ClassA getInstance(){...};,1
+21,"The term ""Affordance"" refers to",HARD,Clues on object use,Software price,Processor speed,Memory limit,1
+22,When is defect removal most expensive?,EASY,Operation/Field,Requirements,Design,Testing,1

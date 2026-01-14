@@ -101,24 +101,25 @@ public class QuestionCSVManagerTest {
         Assert.assertTrue(sysData.getQuestions().isEmpty());
     }
 
-    @Test
-    public void testWriteHandlesNullsGracefully() throws IOException {
-        // Create a question with null fields
-        Question qNulls = new Question(10, null, null, null, null, null, null);
-
-        sysData.addQuestion(qNulls);
-
-        // Write (Implicit check: if this throws an exception, the test fails)
-        QuestionCSVManager.writeQuestionsToCSV(TEST_FILE_PATH);
-
-        // Read back to verify it became empty strings
-        sysData.clearQuestions();
-        QuestionCSVManager.readQuestionsFromCSV(TEST_FILE_PATH);
-
-        Question loaded = sysData.getQuestions().get(0);
-        Assert.assertEquals("", loaded.getQuestionText());
-        Assert.assertEquals("", loaded.getAnswer1());
-    }
+    //deprecated: new logic was implemented: nulls are not allowed. so this test is gone.
+//    @Test
+//    public void testWriteHandlesNullsGracefully() throws IOException {
+//        // Create a question with null fields
+//        Question qNulls = new Question(10, null, null, null, null, null, null);
+//
+//        sysData.addQuestion(qNulls);
+//
+//        // Write (Implicit check: if this throws an exception, the test fails)
+//        QuestionCSVManager.writeQuestionsToCSV(TEST_FILE_PATH);
+//
+//        // Read back to verify it became empty strings
+//        sysData.clearQuestions();
+//        QuestionCSVManager.readQuestionsFromCSV(TEST_FILE_PATH);
+//
+//        Question loaded = sysData.getQuestions().get(0);
+//        Assert.assertEquals("", loaded.getQuestionText());
+//        Assert.assertEquals("", loaded.getAnswer1());
+//    }
 
     @Test
     public void testReadRealDataFormat() throws IOException {

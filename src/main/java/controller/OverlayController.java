@@ -1,8 +1,8 @@
 package main.java.controller;
 
 import main.java.model.Board;
-import main.java.model.GameDifficulty;
 import main.java.model.Question;
+import main.java.view.ComponentAnimator;
 import main.java.view.overlays.*;
 
 public class OverlayController {
@@ -44,18 +44,14 @@ public class OverlayController {
         }
     }
 
-    public void showSettingsOverlay(String player1, String player2, GameDifficulty difficulty) {
-        closeCurrentOverlay();
-        SettingsOverlay overlay = new SettingsOverlay(nav, player1, player2, difficulty);
-        this.currentOverlay = overlay;
-        overlay.open();
-    }
-
     public void showGameOverOverlay(boolean isWin, int score) {
         closeCurrentOverlay();
         GameOverOverlay overlay = new GameOverOverlay(nav, isWin, score);
         this.currentOverlay = overlay;
         overlay.open();
+
+        ComponentAnimator animator = new ComponentAnimator();
+        animator.stopAllAnimations();
     }
 
     //this overlay specifically needs the current board
@@ -64,6 +60,13 @@ public class OverlayController {
         ViewQuestionOverlay overlay = new ViewQuestionOverlay(nav);
         this.currentOverlay = overlay;
         overlay.displayQuestion(board);
+        overlay.open();
+    }
+
+    public void showSurpriseOverlay(int healthChange, int pointsChange) {
+        closeCurrentOverlay();
+        SurpriseOverlay overlay = new SurpriseOverlay(nav, healthChange, pointsChange);
+        this.currentOverlay = overlay;
         overlay.open();
     }
 

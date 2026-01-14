@@ -1,4 +1,3 @@
-// Java
 package main.java.model;
 
 import main.java.test.Testable;
@@ -9,16 +8,25 @@ import java.util.Random;
 
 public class Board implements Testable {
 
+    // Unique identifier for this board
     private final int PK;
+    // Number of mines left on the board
     private int minesLeft;
+    // 2D array of tiles on the board
     private Tile[][] tiles;
+    // Game difficulty
     private static final Random RANDOM = new Random();
+    // Game difficulty
     private final GameDifficulty gameDifficulty;
+    // Current turn
     private boolean turn;
+    // Game session
     private GameSession gameSession;
+    //Listeners
     private TurnListener turnListener;
     private MinesLeftListener minesLeftListener;
 
+    // Constructor for the board class
     private Board(GameDifficulty gameDifficulty) {
         this.PK = RANDOM.nextInt(99999999);
         this.tiles = new Tile[gameDifficulty.getRows()][gameDifficulty.getCols()];
@@ -29,6 +37,7 @@ public class Board implements Testable {
         this.gameSession = GameSession.getInstance();
     }
 
+    // Populates the board with tiles
     private Tile[][] populateBoard() {
         BoardGenerator boardGenerator = new BoardGenerator(this.gameDifficulty);
         int seed = RANDOM.nextInt(); // use a fresh random seed per board
@@ -43,7 +52,7 @@ public class Board implements Testable {
         return tiles;
     }
 
-    // we might want to implement a factory design pattern here
+    // Factory method to create a new board
     public static Board createNewBoard(GameDifficulty gameDifficulty){
         return new Board(gameDifficulty);
     }
@@ -72,6 +81,7 @@ public class Board implements Testable {
         return 0;
     }
 
+    // Reveals all tiles on the board
     protected void revealAll()
     {
         for (int r = 0; r < getRows(); r++) {
@@ -83,6 +93,7 @@ public class Board implements Testable {
         }
     }
 
+    // Reveals a random mine on the board
     protected void revealRandomMine()
     {
         if (getMinesLeft() == 0)
@@ -102,6 +113,7 @@ public class Board implements Testable {
 
     }
 
+    // Reveals a random grid of mines on the board
     protected void revealGrid()
     {
         if(this.getCols()<3||this.getRows()<3)
@@ -109,6 +121,7 @@ public class Board implements Testable {
             System.out.println("Cannot reveal grid, board too small");
             return;
         }
+        // Find all possible 3x3 grids and count unrevealed tiles
         List<int[]> candidates = new ArrayList<>();
         int minUnrevealedCount = 0;
         for (int r=0;r<=this.getRows()-3;r++)
@@ -132,6 +145,7 @@ public class Board implements Testable {
                     minUnrevealedCount = Math.max(minUnrevealedCount,unRevealedCount);
                 }
             }
+        // Select optimal candidates with minimum unrevealed tiles
         if (candidates.isEmpty())
         {
             System.out.println("No grid found");
@@ -150,6 +164,7 @@ public class Board implements Testable {
         int r = optimalCandidate[0];
         int c = optimalCandidate[1];
         System.out.println("Revealing "+minUnrevealedCount+" tiles in grid at ("+(r+1)+","+(c+1)+")");
+        // Reveal all tiles in the grid
         for (int i=0;i<3;i++)
             for (int j=0;j<3;j++)
             {
@@ -161,6 +176,7 @@ public class Board implements Testable {
 
     }
 
+    // Flags a tile on the board
     protected void flag(Tile tile)
     {
         if(tile.isRevealed()) {
@@ -184,11 +200,13 @@ public class Board implements Testable {
         tile.setIsFlagged(true);
 
     }
+    // Unflags a tile on the board
     protected void unflag(Tile tile)
     {
         System.out.println("Unflagging tile: " + tile);
         tile.setIsFlagged(false);
     }
+    // Cascades reveal from a tile
     private int cascade(Tile tile) {
         Cascader cascader = new Cascader(tile,this.tiles);
         int revealedCount = 0;
@@ -199,11 +217,13 @@ public class Board implements Testable {
         return revealedCount;
     }
 
+    // Checks if all mines have been revealed
     protected boolean allMinesRevealed()
     {
         return getMinesLeft() == 0;
     }
 
+    // Getters and setters
     public Tile[][] getTiles() {
         return tiles;
     }

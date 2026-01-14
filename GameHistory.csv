@@ -1,3 +1,5 @@
 Timestamp,LeftPlayerName,RightPlayerName,GameDifficulty,Points,IsWin
-04-01-2026 13:10:10,Player 1,Player 2,EASY,125,false
-04-01-2026 13:26:21,Player 1,Player 2,EASY,178,true
+13-01-2026 17:47:29,Player 1,Player 2,EASY,155,true
+13-01-2026 17:47:29,Player 1,Player 2,EASY,140,true
+13-01-2026 17:47:29,Player 1,Player 2,HARD,172,false
+13-01-2026 18:12:29,casnj,cnjsa,MEDIUM,94,false

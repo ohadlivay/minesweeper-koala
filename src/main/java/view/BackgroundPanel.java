@@ -6,13 +6,15 @@ import java.awt.*;
 // this class is for setting background images to screens
 public class BackgroundPanel extends JPanel {
     private Image backgroundImage;
+
     public BackgroundPanel(String resourcePath) {
         try {
             java.net.URL url = getClass().getResource(resourcePath);
             if (url != null) {
                 this.backgroundImage = new ImageIcon(url).getImage();
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     @Override

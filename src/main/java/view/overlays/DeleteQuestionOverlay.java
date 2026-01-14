@@ -15,13 +15,15 @@ import java.awt.*;
 
 public class DeleteQuestionOverlay extends OverlayView {
     private final Question question;
+
     public DeleteQuestionOverlay(NavigationController navigationController, Question question) {
         super(navigationController, true);
         this.question = question;
         initUI();
     }
+
     private void initUI() {
-        JPanel contentPanel = new JPanel(new BorderLayout(20,10));
+        JPanel contentPanel = new JPanel(new BorderLayout(20, 10));
         contentPanel.setBackground(ColorsInUse.BG_COLOR.get());
         contentPanel.setBorder(new EmptyBorder(30, 40, 30, 40));
         contentPanel.setPreferredSize(new Dimension(500, 300));

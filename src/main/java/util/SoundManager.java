@@ -1,12 +1,14 @@
 package main.java.util;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import java.net.URL;
 import java.util.EnumMap;
 import java.util.Map;
 
 public class SoundManager {
-    public enum SoundId { REVEAL, SELECTION, MINE, WIN, LOSE, BLOCK, POINTS_WIN, POINTS_LOSE }
+    public enum SoundId {REVEAL, SELECTION, MINE, WIN, LOSE, BLOCK, POINTS_WIN, POINTS_LOSE}
 
     private static final SoundManager INSTANCE = new SoundManager();
     public static SoundManager getInstance() { return INSTANCE; }
@@ -50,17 +52,4 @@ public class SoundManager {
         c.setFramePosition(0); // Rewind
         c.start();             // Play
     }
-
-    public void loop(SoundId id) {
-        Clip c = clips.get(id);
-        if (c == null) return;
-        c.setFramePosition(0);
-        c.loop(Clip.LOOP_CONTINUOUSLY);
-    }
-
-    public void stop(SoundId id) {
-        Clip c = clips.get(id);
-        if (c != null) c.stop();
-    }
-
 }

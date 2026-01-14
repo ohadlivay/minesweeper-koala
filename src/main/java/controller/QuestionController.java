@@ -2,7 +2,10 @@ package main.java.controller;
 
 import main.java.model.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class QuestionController {
     private static QuestionController instance;
@@ -45,7 +48,7 @@ public class QuestionController {
         }
 
         // Pick a random index from the available ones
-        int randomIndex = availableIndices.get(new Random().nextInt(availableIndices.size()));
+        int randomIndex = availableIndices.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(availableIndices.size()));
         Question q = questions.get(randomIndex);
 
         usedQuestions.add(q);
@@ -72,7 +75,6 @@ public class QuestionController {
     }
 
     public void submitQuestionResult(boolean isCorrect, QuestionDifficulty difficulty, Board board) {
-        //tom you can use this method to get the result of the question into GameSession
         GameSession session = GameSessionController.getInstance().getSession();
         session.updateAfterQuestionResult(difficulty, isCorrect, board);
     }

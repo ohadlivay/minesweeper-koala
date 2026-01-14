@@ -1,7 +1,11 @@
 package main.java.util;
 
-import main.java.model.*;
+import main.java.model.Question;
+import main.java.model.QuestionDifficulty;
+import main.java.model.SysData;
+
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class QuestionCSVManager {
@@ -41,6 +45,7 @@ public class QuestionCSVManager {
     /**
      * Helper: Converts a single Question object into a CSV formatted string.
      * Handles null checks and string formatting.
+     * Now properly escapes/quotes fields that contain commas or quotes.
      */
     private static String convertQuestionToLine(Question q) {
         String id = String.valueOf(q.getId());
@@ -55,8 +60,32 @@ public class QuestionCSVManager {
         // Hardcoded "1" for correct index as per original logic
         String correctIndex = "1";
 
-        return String.format("%s,%s,%s,%s,%s,%s,%s,%s",
-                id, text, diff, a, b, c, d, correctIndex);
+        // Escape/quote each field as needed
+        return String.join(",",
+                escapeCsvField(id),
+                escapeCsvField(text),
+                escapeCsvField(diff),
+                escapeCsvField(a),
+                escapeCsvField(b),
+                escapeCsvField(c),
+                escapeCsvField(d),
+                escapeCsvField(correctIndex)
+        );
+    }
+
+    /**
+     * Escapes a single CSV field: doubles internal quotes and wraps in quotes
+     * if the field contains comma, quote or newline.
+     */
+    private static String escapeCsvField(String field) {
+        if (field == null) return "";
+        boolean containsSpecial = field.contains(",") || field.contains("\"") || field.contains("\n") || field.contains("\r");
+        if (containsSpecial) {
+            String escaped = field.replace("\"", "\"\"");
+            return "\"" + escaped + "\"";
+        } else {
+            return field;
+        }
     }
 
     // ==========================================
@@ -77,7 +106,7 @@ public class QuestionCSVManager {
 
             while ((line = br.readLine()) != null) {
                 try {
-                    String[] values = line.split("[\t,]", -1);
+                    String[] values = parseCsvLine(line);
 
                     if (values.length >= 7) {
                         // HELPER 2: Delegate object creation to a helper
@@ -138,5 +167,44 @@ public class QuestionCSVManager {
                     return QuestionDifficulty.EASY;
                 }
         }
+    }
+
+    /**
+     * Lightweight CSV parser for a single line. Supports quoted fields with commas and double-quote escaping.
+     * Returns array of fields (may include empty strings).
+     */
+    private static String[] parseCsvLine(String line) {
+        if (line == null || line.isEmpty()) return new String[0];
+        List<String> fields = new ArrayList<>();
+        StringBuilder cur = new StringBuilder();
+        boolean inQuotes = false;
+        int len = line.length();
+        for (int i = 0; i < len; i++) {
+            char c = line.charAt(i);
+            if (inQuotes) {
+                if (c == '"') {
+                    // look ahead for escaped quote
+                    if (i + 1 < len && line.charAt(i + 1) == '"') {
+                        cur.append('"');
+                        i++; // skip next quote
+                    } else {
+                        inQuotes = false; // end quote
+                    }
+                } else {
+                    cur.append(c);
+                }
+            } else {
+                if (c == '"') {
+                    inQuotes = true;
+                } else if (c == ',') {
+                    fields.add(cur.toString());
+                    cur.setLength(0);
+                } else {
+                    cur.append(c);
+                }
+            }
+        }
+        fields.add(cur.toString());
+        return fields.toArray(new String[0]);
     }
 }

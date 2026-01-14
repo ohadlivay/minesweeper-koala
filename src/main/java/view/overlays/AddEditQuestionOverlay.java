@@ -1,4 +1,5 @@
 package main.java.view.overlays;
+
 import main.java.controller.NavigationController;
 import main.java.controller.QuestionManagerController;
 import main.java.model.Question;
@@ -16,7 +17,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Arrays;
 import java.util.HashSet;
 
 public class AddEditQuestionOverlay extends OverlayView {
@@ -32,7 +32,7 @@ public class AddEditQuestionOverlay extends OverlayView {
     private JTextField answer2;
     private JTextField answer3;
     private JTextField answer4;
-    private JTextField [] wrongAnswers;
+    private JTextField[] wrongAnswers;
     private String QuestionPlaceholder;
     private String CorrectAnswerPlaceholder;
     private String WrongAnswerPlaceholder;
@@ -42,7 +42,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         super(navigationController, true);
         this.existingQuestion = q;
         this.isEditing = (q != null);
-        if (isEditing){
+        if (isEditing) {
             this.selectedDifficulty = q.getDifficulty();
         }
 
@@ -66,7 +66,9 @@ public class AddEditQuestionOverlay extends OverlayView {
         contentPanel.setBackground(ColorsInUse.BG_COLOR.get());
         contentPanel.setPreferredSize(new Dimension(800, 600));
 
-        String titleText = isEditing ? "EDITING QUESTION " + existingQuestion.getId() : "ADDING QUESTION " + ((int)SysData.getInstance().getMaxId() + 1);
+
+        // title
+        String titleText = isEditing ? "EDITING QUESTION " + existingQuestion.getId() : "ADDING QUESTION " + (SysData.getInstance().getMaxId() + 1);
         OutlinedLabel titleLabel = new OutlinedLabel(titleText, Color.BLACK, 5f);
         titleLabel.setFont(FontsInUse.PIXEL.getSize(40f));
         titleLabel.setForeground(ColorsInUse.TEXT.get());
@@ -83,6 +85,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         gbc.gridx = 0;
         gbc.gridy = 0;
 
+        // question text area
         QuestionPlaceholder = "Write your question here...";
         CorrectAnswerPlaceholder = "Correct Answer...";
         WrongAnswerPlaceholder = "Wrong Answer...";
@@ -131,6 +134,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         formPanel.add(questionArea, gbc);
         gbc.gridy++;
 
+        //difficulty selection buttons
         gbc.weighty = 0.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
@@ -138,25 +142,74 @@ public class AddEditQuestionOverlay extends OverlayView {
         difficultyPanel.setOpaque(false);
         difficultyPanel.add(createLabel("Select Difficulty:"));
 
-        String easyTip = "<html><b>Easy</b><br/>Correct: +3 to +10 pts & +1 Life<br/>Incorrect: -3 to -10 pts or nothing</html>";
-        String medTip = "<html><b>Medium</b><br/>Correct: Reveal Mine or 3x3 Area, +6 to +15 pts<br/>Incorrect: -6 to -15 pts, possible Life loss</html>";
-        String hardTip = "<html><b>Hard</b><br/>Correct: +15 to +20 pts & +1-2 Lives<br/>Incorrect: -15 to -20 pts & -1 Life loss</html>";
-        String expertTip = "<html><b>Expert</b><br/>Correct: +15 to +40 pts & +2-3 Lives<br/>Incorrect: -15 to -40 pts & up to -3 Lives loss</html>";
+
+        // this could be styled better with CSS inline styling
+        String easyTip =
+                "<html>" +
+                        "<b><font color='#027315'>EASY</font></b><br/>" +
+                        "<hr/>" +
+                        "<font color='#0cc42b'>✔ Correct:</font><br/>" +
+                        "&nbsp;&nbsp;+3 to +10 pts<br/>" +
+                        "&nbsp;&nbsp;+1 Life<br/>" +
+                        "<br/>" +
+                        "<font color='#FF6B6B'>✖ Incorrect:</font><br/>" +
+                        "&nbsp;&nbsp;-3 to -10 pts<br/>" +
+                        "&nbsp;&nbsp;or no penalty" +
+                        "</html>";
+        String medTip =
+                "<html>" +
+                        "<b><font color='#f5ca0a'>MEDIUM</font></b><br/>" +
+                        "<hr/>" +
+                        "<font color='#0cc42b'>✔ Correct:</font><br/>" +
+                        "&nbsp;&nbsp;+6 to +15 pts<br/>" +
+                        "&nbsp;&nbsp;Reveal Mine/Area<br/>" +
+                        "<br/>" +
+                        "<font color='#FF6B6B'>✖ Incorrect:</font><br/>" +
+                        "&nbsp;&nbsp;-6 to -15 pts<br/>" +
+                        "&nbsp;&nbsp;Possible life loss" +
+                        "</html>";
+
+        String hardTip =
+                "<html>" +
+                        "<b><font color='#FF6B6B'>HARD</font></b><br/>" +
+                        "<hr/>" +
+                        "<font color='#0cc42b'>✔ Correct:</font><br/>" +
+                        "&nbsp;&nbsp;+15 to +20 pts<br/>" +
+                        "&nbsp;&nbsp;+1 to +2 Lives<br/>" +
+                        "<br/>" +
+                        "<font color='#FF6B6B'>✖ Incorrect:</font><br/>" +
+                        "&nbsp;&nbsp;-15 to -20 pts<br/>" +
+                        "&nbsp;&nbsp;-1 Life loss" +
+                        "</html>";
+
+        String masterTip =
+                "<html>" +
+                        "<b><font color='#B10DC9'>MASTER</font></b><br/>" +
+                        "<hr/>" +
+                        "<font color='#0cc42b'>✔ Correct:</font><br/>" +
+                        "&nbsp;&nbsp;+15 to +40 pts<br/>" +
+                        "&nbsp;&nbsp;+2 to +3 Lives<br/>" +
+                        "<br/>" +
+                        "<font color='#FF6B6B'>✖ Incorrect:</font><br/>" +
+                        "&nbsp;&nbsp;-15 to -40 pts<br/>" +
+                        "&nbsp;&nbsp;Up to -3 Lives loss" +
+                        "</html>";
 
         btnEasy = createKoalaButton("/green-koala-pixel.png", easyTip, QuestionDifficulty.EASY);
         btnMedium = createKoalaButton("/yellow-koala-pixel.png", medTip, QuestionDifficulty.MEDIUM);
         btnHard = createKoalaButton("/red-koala-pixel.png", hardTip, QuestionDifficulty.HARD);
-        btnMaster = createKoalaButton("/master-koala-pixel.png", expertTip, QuestionDifficulty.MASTER);
+        btnMaster = createKoalaButton("/master-koala-pixel.png", masterTip, QuestionDifficulty.MASTER);
 
         difficultyPanel.add(createLabeledDifficultyPanel(btnEasy, "Easy"));
         difficultyPanel.add(createLabeledDifficultyPanel(btnMedium, "Medium"));
         difficultyPanel.add(createLabeledDifficultyPanel(btnHard, "Hard"));
-        difficultyPanel.add(createLabeledDifficultyPanel(btnMaster, "Expert"));
+        difficultyPanel.add(createLabeledDifficultyPanel(btnMaster, "Master"));
 
         gbc.insets = new Insets(10, 0, 10, 0);
         formPanel.add(difficultyPanel, gbc);
         gbc.gridy++;
 
+        // answers area
         gbc.insets = new Insets(4, 0, 4, 0);
         formPanel.add(createLabel("Answers:"), gbc);
         gbc.gridy++;
@@ -165,7 +218,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         answer2 = createStyledTextField();
         answer3 = createStyledTextField();
         answer4 = createStyledTextField();
-        wrongAnswers = new JTextField[] {answer2, answer3, answer4};
+        wrongAnswers = new JTextField[]{answer2, answer3, answer4};
 
         formPanel.add(createAnswerFieldWrapper(answer1, ColorsInUse.CONFIRM.get(), CorrectAnswerPlaceholder, gbc), gbc);
         gbc.gridy++;
@@ -269,6 +322,7 @@ public class AddEditQuestionOverlay extends OverlayView {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btn.setBackground(ColorsInUse.BTN_COLOR.get().brighter());
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 btn.setBackground(ColorsInUse.BTN_COLOR.get());
             }
@@ -277,9 +331,12 @@ public class AddEditQuestionOverlay extends OverlayView {
         return btn;
     }
 
+    /**
+     * Updates difficulty selection; provides visual feedback and sound
+     */
     private void updateSelection() {
         Color selectedColor = ColorsInUse.TEXT.get();
-        Color unselectedColor = new Color(0,0,0,0);
+        Color unselectedColor = new Color(0, 0, 0, 0);
         btnEasy.setBorder(new LineBorder(selectedDifficulty == QuestionDifficulty.EASY ? selectedColor : unselectedColor, 3));
         btnMedium.setBorder(new LineBorder(selectedDifficulty == QuestionDifficulty.MEDIUM ? selectedColor : unselectedColor, 3));
         btnHard.setBorder(new LineBorder(selectedDifficulty == QuestionDifficulty.HARD ? selectedColor : unselectedColor, 3));
@@ -297,6 +354,9 @@ public class AddEditQuestionOverlay extends OverlayView {
         }
     }
 
+    /**
+     * Populates question and answer fields with existing data
+     */
     private void populateFields() {
         questionArea.setText(existingQuestion.getQuestionText());
         questionArea.setForeground(ColorsInUse.TEXT.get());
@@ -319,7 +379,12 @@ public class AddEditQuestionOverlay extends OverlayView {
         String a3 = answer3.getText().trim();
         String a4 = answer4.getText().trim();
 
-        if (qText.isEmpty() || qText.equals(QuestionPlaceholder) || a1.isEmpty() || a1.equals(CorrectAnswerPlaceholder)) {
+        // Require question text and ALL four answers to be filled (not placeholders)
+        if (qText.isEmpty() || qText.equals(QuestionPlaceholder)
+                || a1.isEmpty() || a1.equals(CorrectAnswerPlaceholder)
+                || a2.isEmpty() || a2.equals(WrongAnswerPlaceholder)
+                || a3.isEmpty() || a3.equals(WrongAnswerPlaceholder)
+                || a4.isEmpty() || a4.equals(WrongAnswerPlaceholder)) {
             JOptionPane.showMessageDialog(this, "All text fields must be filled!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -367,7 +432,10 @@ public class AddEditQuestionOverlay extends OverlayView {
                 return;
             }
             SysData.getInstance().addQuestion(newQ);
-            try { QuestionCSVManager.rewriteQuestionsToCSVFromSysData(); } catch (Exception ignored) {}
+            try {
+                QuestionCSVManager.rewriteQuestionsToCSVFromSysData();
+            } catch (Exception ignored) {
+            }
             qmc.refreshAndJumpToLastPage();
         }
         qmc.refreshQuestionList();
@@ -387,7 +455,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         tf.setBackground(ColorsInUse.BTN_COLOR.get());
         tf.setForeground(ColorsInUse.TEXT.get());
         tf.setCaretColor(ColorsInUse.TEXT.get());
-        tf.setBorder(new EmptyBorder(5,5,5,5));
+        tf.setBorder(new EmptyBorder(5, 5, 5, 5));
         tf.setPreferredSize(new Dimension(200, 45));
         return tf;
     }
@@ -401,6 +469,7 @@ public class AddEditQuestionOverlay extends OverlayView {
                 tc.setForeground(ColorsInUse.TEXT.get());
             }
         }
+
         @Override
         public void focusLost(FocusEvent e) {
             if (e.getComponent() instanceof JTextComponent tc && tc.getText().trim().isEmpty()) {
@@ -444,6 +513,11 @@ public class AddEditQuestionOverlay extends OverlayView {
         return new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
+                // to allow Ctrl+A / Ctrl+C / Ctrl+V / Ctrl+X etc.
+                if (e.isControlDown() || e.isMetaDown() || e.isAltDown()) {
+                    return;
+                }
+
                 errorLabel.setVisible(tf.getText().length() >= Question.getMaxAnswerLength() * 0.7);
                 if (tf.getText().length() >= Question.getMaxAnswerLength()) {
                     e.consume();
@@ -454,4 +528,3 @@ public class AddEditQuestionOverlay extends OverlayView {
         };
     }
 }
-

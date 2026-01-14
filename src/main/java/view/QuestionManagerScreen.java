@@ -2,23 +2,26 @@ package main.java.view;
 
 import main.java.controller.NavigationController;
 import main.java.controller.OverlayController;
-import main.java.controller.QuestionManagerController;
 import main.java.model.Question;
 import main.java.model.SysData;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class QuestionManagerScreen extends JPanel {
 
     private final NavigationController nav;
-    private TableActionListener tableActionListener;
     private JPanel mainPanel;
     private JTable questionsTable;
     private DefaultTableModel tableModel;
@@ -32,7 +35,7 @@ public class QuestionManagerScreen extends JPanel {
     private OutlinedLabel pageLabel;
     private JButton btnPrev, btnNext;
 
-    private ComponentAnimator animator;
+    private final ComponentAnimator animator;
 
     public QuestionManagerScreen(NavigationController navigationController) {
         this.nav = navigationController;
@@ -43,8 +46,8 @@ public class QuestionManagerScreen extends JPanel {
     private void initUI() {
         setLayout(new BorderLayout());
 
-        mainPanel = new JPanel(new BorderLayout(15, 15));
-        mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        mainPanel = new BackgroundPanel("/start-bg.jpeg");
+        mainPanel.setLayout(new BorderLayout(15, 15));
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
         OutlinedLabel titleLabel = new OutlinedLabel("QUESTION MANAGER", Color.BLACK, 6f);
         titleLabel.setFont(FontsInUse.PIXEL.getSize(62f));
@@ -64,9 +67,40 @@ public class QuestionManagerScreen extends JPanel {
         questionsTable = new JTable(tableModel);
         styleTable(questionsTable);
 
+        questionsTable.getTableHeader().addMouseListener(new java.awt.event.MouseAdapter() {
+            private int lastCol = -1;
+            private boolean asc = true;
+
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                int col = questionsTable.columnAtPoint(e.getPoint());
+                if (col == 4) return; // Actions
+
+                // toggle direction if clicking same column
+                if (col == lastCol) asc = !asc;
+                else { asc = true; lastCol = col; }
+
+                Comparator<Question> cmp = switch (col) {
+                    case 0 -> Comparator.comparingInt(Question::getId);
+                    case 1 -> Comparator.comparing(q -> safe(q.getQuestionText()), String.CASE_INSENSITIVE_ORDER);
+                    case 2 -> Comparator.comparingInt(q -> q.getDifficulty().ordinal());
+                    case 3 -> Comparator.comparing(q -> safe(q.getAnswer1()), String.CASE_INSENSITIVE_ORDER);
+                    default -> null;
+                };
+
+                if (cmp != null) {
+                    allQuestions.sort(asc ? cmp : cmp.reversed());
+                    refreshPage();
+                }
+            }
+
+            private String safe(String s) { return s == null ? "" : s; }
+        });
+
+
         //these 2 classes need to be created to handle the buttons in the table (this is the standard way to do it in swing)
         questionsTable.getColumnModel().getColumn(4).setCellRenderer(new TblBtnRenderer());
-        questionsTable.getColumnModel().getColumn(4).setCellEditor(new TblBtnEditor(questionsTable, new TableActionListener() {
+        questionsTable.getColumnModel().getColumn(4).setCellEditor(new TblBtnEditor(new TableActionListener() {
 
             // when edit button is clicked, open the overlay with the question data
             @Override
@@ -74,9 +108,6 @@ public class QuestionManagerScreen extends JPanel {
                 int id = (int) tableModel.getValueAt(row, 0);
                 Question q = SysData.getInstance().getQuestionByID(id);
                 OverlayController.getInstance().showAddEditOverlay(q);
-                if (tableActionListener != null) {
-                    tableActionListener.onEdit(row);
-                }
             }
 
             @Override
@@ -88,23 +119,16 @@ public class QuestionManagerScreen extends JPanel {
                 } else {
                     System.err.println("Could not find question with ID: " + id);
                 }
-                if (tableActionListener != null) {
-                    tableActionListener.onDelete(row);
-                }
             }
         }));
 
         JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
         centerPanel.setOpaque(false);
 
-        JPanel tableContainer = new JPanel(new BorderLayout());
-        tableContainer.setBackground(ColorsInUse.BG_COLOR.get());
-        tableContainer.setBorder(new LineBorder(new Color(70, 80, 100), 1));
-
-        tableContainer.add(questionsTable.getTableHeader(), BorderLayout.NORTH);
-        tableContainer.add(questionsTable, BorderLayout.CENTER);
-
-        centerPanel.add(tableContainer, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(questionsTable);
+        scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
+        scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
 
         //pages navigation panel
         JPanel pagesPanel = createPagesPanel();
@@ -125,13 +149,12 @@ public class QuestionManagerScreen extends JPanel {
         if (addIconUrl != null) {
             ImageIcon icon = new ImageIcon(addIconUrl);
             Image img = icon.getImage().getScaledInstance(24, 24, Image.SCALE_DEFAULT);
-            btnAdd.setIcon(new ImageIcon(img));
+            if(btnAdd != null)
+                btnAdd.setIcon(new ImageIcon(img));
 
         }
 
-        btnAdd.addActionListener(e -> {
-            OverlayController.getInstance().showAddEditOverlay(null);
-        });
+        btnAdd.addActionListener(e -> OverlayController.getInstance().showAddEditOverlay(null));
         bottomPanel.add(btnAdd, BorderLayout.EAST);
 
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
@@ -180,9 +203,7 @@ public class QuestionManagerScreen extends JPanel {
             int maxPage = (int) Math.ceil((double) allQuestions.size() / rowsPerPage);
             if (currentPage > 1) {
                 currentPage--;
-            }
-            else
-            {
+            } else {
                 currentPage = Math.max(1, maxPage); // if this is the first page, go to last page (carousel)
             }
             refreshPage();
@@ -198,9 +219,7 @@ public class QuestionManagerScreen extends JPanel {
             int maxPage = (int) Math.ceil((double) allQuestions.size() / rowsPerPage);
             if (currentPage < maxPage) {
                 currentPage++;
-            }
-            else
-            {
+            } else {
                 currentPage = 1; //if this is the last page, go back to first page (carousel)
             }
             refreshPage();
@@ -246,12 +265,12 @@ public class QuestionManagerScreen extends JPanel {
     }
 
     private void styleTable(JTable table) {
-        table.setBackground(ColorsInUse.BTN_COLOR.get());
+        table.setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
         table.setForeground(ColorsInUse.TEXT.get());
         table.setSelectionBackground(ColorsInUse.BOARD_ACTIVE_BORDER2.get());
         table.setSelectionForeground(Color.BLACK);
         table.setGridColor(Color.DARK_GRAY);
-        table.setRowHeight(44);
+        table.setRowHeight(45);
         table.setFont(FontsInUse.PIXEL.getSize(22f));
         table.setShowGrid(true);
         table.setFillsViewportHeight(true);
@@ -283,6 +302,7 @@ public class QuestionManagerScreen extends JPanel {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 if (btn.isEnabled()) btn.setBackground(bg.brighter());
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 if (btn.isEnabled()) btn.setBackground(bg);
             }
@@ -291,31 +311,32 @@ public class QuestionManagerScreen extends JPanel {
     }
 
     private JButton createHomeButton() {
-        homeButton = new JButton();
-        homeButton.setPreferredSize(new Dimension(72, 36));
+        ImageIcon bg = loadScaledIcon("btn-koala", 80, 70);
+        ImageIcon home = loadScaledIcon("home-pixel", 25, 25);
 
-        java.net.URL iconUrl = getClass().getResource("/home-pixel.png");
-        if (iconUrl != null) {
-            ImageIcon icon = new ImageIcon(iconUrl);
-            Image img = icon.getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT);
-            homeButton.setIcon(new ImageIcon(img));
-        }
-
-        homeButton.setBackground(ColorsInUse.BTN_COLOR.get());
-        homeButton.setFocusPainted(false);
-        homeButton.setContentAreaFilled(true);
+        JButton homeButton = new IconOnImageButton("Home", new Dimension(80, 70), home, bg);
 
         return homeButton;
     }
 
-
-
-    // --- getters ---
+    private ImageIcon loadScaledIcon(String resourceBase, int width, int height) {
+        String[] exts = {".png", ".jpg", ".jpeg", ".gif"};
+        for (String ext : exts) {
+            URL url = getClass().getResource("/" + resourceBase + ext);
+            if (url != null) {
+                try {
+                    BufferedImage img = ImageIO.read(url);
+                    if (img != null) {
+                        Image scaled = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+                        return new ImageIcon(scaled);
+                    }
+                } catch (IOException ignored) {
+                }
+            }
+        }
+        return null;
+    }
 
     public JPanel getMainPanel() { return mainPanel; }
-    public JTable getQuestionsTable() { return questionsTable; }
-    public DefaultTableModel getTableModel() { return tableModel; }
-    public JButton getBtnAdd() { return btnAdd; }
-
 
 }

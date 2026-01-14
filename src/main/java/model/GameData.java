@@ -1,7 +1,5 @@
 package main.java.model;
 
-import main.java.test.Testable;
-
 import java.time.LocalDateTime;
 
 // GameData class to store the game data after the game is over
@@ -58,5 +56,12 @@ public class GameData
     }
 
     public boolean isWin() { return isWin; }
-    
+
+    public int getSessionId() {
+        return timeStamp.hashCode();
+    }
+
+    public long getTimestampMillis() {
+        return timeStamp.toInstant(java.time.ZoneOffset.UTC).toEpochMilli();
+    }
 }
