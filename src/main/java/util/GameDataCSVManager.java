@@ -119,5 +119,15 @@ public class GameDataCSVManager
         }
     }
 
+    //Delete all games from the CSV file
+    public static void deleteAllGames(String filePath) throws IOException {
+        // Overwrite the file with only the header
+        try (FileWriter fw = new FileWriter(filePath);
+             PrintWriter pw = new PrintWriter(fw)) {
+            pw.println(CSV_HEADER); // Write only the header
+            pw.flush();
+        }
+    }
+
 
 }
