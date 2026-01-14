@@ -18,6 +18,8 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     private final NavigationController nav;
     private final GameSession session; // Always holds the current game session
     private ComponentAnimator animator;
+    // track whether the current game session has ended
+    private boolean gameIsOver = false;
 
     private JPanel mainPanel;
     private JPanel centerPanel;
@@ -277,13 +279,19 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
 
         JButton homeButton = new IconOnImageButton(
                 () -> {
-                    int option = JOptionPane.showConfirmDialog(
-                            mainPanel,
-                            "Are you sure you want to return to the main menu?",
-                            "Confirm Navigation",
-                            JOptionPane.YES_NO_OPTION
-                    );
-                    if (option == JOptionPane.YES_OPTION) {
+                    if (!gameIsOver) {
+                        int option = JOptionPane.showConfirmDialog(
+                                mainPanel,
+                                "Are you sure you want to return to the main menu?",
+                                "Confirm Navigation",
+                                JOptionPane.YES_NO_OPTION
+                        );
+                        if (option == JOptionPane.YES_OPTION) {
+                            OverlayController.getInstance().closeCurrentOverlay();
+                            nav.goToHome();
+                        }
+                    } else {
+                        // if the game is already over, skip confirmation and go home immediately
                         OverlayController.getInstance().closeCurrentOverlay();
                         nav.goToHome();
                     }
@@ -347,6 +355,8 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     //this method shows the end game screen when the game is over
     @Override
     public void onGameOver(boolean saved, boolean winOrLose, int score) {
+        // mark session as ended so home button doesn't prompt again
+        this.gameIsOver = true;
         if (!saved)
             JOptionPane.showMessageDialog(mainPanel, "Error, could not save the game!", "Game Over", JOptionPane.ERROR_MESSAGE);
         OverlayController.getInstance().showGameOverOverlay(winOrLose, score);
