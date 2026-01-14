@@ -437,7 +437,7 @@ public class GameSession
                     String extraDetail = extraHpString(startHealth, rewardHealth);
                     this.message = baseMessage + " +" + rewardPoints + " pts." + extraDetail;
                 } else {
-                    if (healthPool < 3&&healthPool>0)
+                    if (healthPool < 3&&healthPool>0&&healthAfter<startHealth)
                         this.message = "Be Careful! You only have " + healthPool + " health left";
                     else
                         this.message = baseMessage + " " + rewardHealth + " HP, " + rewardPoints + " pts.";
@@ -563,7 +563,7 @@ public class GameSession
             message = "Incorrect! But you were lucky this time...";
         }
         else{
-            if (healthPool < 3&&healthPool>0&&!correctAnswer)
+            if (healthPool < 3&&healthPool>0&&!correctAnswer&&healthAfter<startHealth)
                 message = "Be Careful! You only have "+healthPool+" health left";
             else {
                 String sign;
@@ -645,7 +645,7 @@ public class GameSession
             message = "Incorrect! But you were lucky this time...";
         }
         else{
-            if (healthPool < 3&&healthPool>0&&!correctAnswer)
+            if (healthPool < 3&&healthPool>0&&!correctAnswer&&healthAfter<startHealth)
                 message = "Be Careful! You only have "+healthPool+" health left";
             else {
                 String sign;
@@ -727,7 +727,7 @@ public class GameSession
             message = "Incorrect! But you were lucky this time...";
         }
         else{
-            if (healthPool < 3&&healthPool>0&&!correctAnswer)
+            if (healthPool < 3&&healthPool>0&&!correctAnswer&&healthAfter<startHealth)
                 message = "Be Careful! You only have "+healthPool+" health left";
             else {
                 String sign;
