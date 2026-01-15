@@ -10,7 +10,37 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
+/**
+ * GameSession represents a single session of the Minesweeper game.
+ * It follows the Singleton pattern to ensure only one active session exists.
+ * This class manages game state, player actions, scores, and game flow.
+ */
 public class GameSession {
+
+    // ==================================================================================
+    // CONSTANTS
+    // ==================================================================================
+
+    /** Maximum health pool for a game session */
+    private static final int MAX_HEALTH_POOL = 10;
+    /** Points given after flagging a mine */
+    private static final int pointsForFlaggingMine = 1;
+    /** Health lost after revealing a mine */
+    private static final int healthForRevealingMine = -1;
+    /** Points lost after flagging a number tile */
+    private static final int pointsForFlaggingNumber = -3;
+    /** Points gained after revealing a number tile */
+    private static final int pointsForRevealingNumber = 1;
+
+    // ==================================================================================
+    // FIELDS
+    // ==================================================================================
+
+    /** Singleton instance */
+    private static GameSession instance;
+    /** Test singleton instance */
+    private static GameSession testInstance;
+
     /** Timestamp for when the session began. */
     private final LocalDateTime timeStamp;
 
@@ -29,27 +59,30 @@ public class GameSession {
     private int healthPool;
     private int points;
 
-    // Maximum health pool for a game session
-    private static final int MAX_HEALTH_POOL = 10;
-    // Points given after flagging a mine
-    private static final int pointsForFlaggingMine = 1;
-    // Health lost after revealing a mine
-    private static final int healthForRevealingMine = -1;
-    // Points lost after flagging a number tile
-    private static final int pointsForFlaggingNumber = -3;
-    // Points gained after revealing a number tile
-    private static final int pointsForRevealingNumber = 1;
-
     // Game session attributes
+    private String message = "";
+
+    // Logic control flags
+    /** To prevent multiple calls to game over processing */
+    private boolean isGameOverProcessing = false;
+
+    // Listeners and Observers
     private final Set<ActionMadeListener> actionMadeListeners = new HashSet<>();
     private final Set<SurpriseListener> surpriseListeners = new HashSet<>();
-    private String message = "";
-    private static GameSession instance;
-    private static GameSession testInstance;
     private DisplayQuestionListener displayQuestionListener;
     private GameOverListener gameOverListener;
 
-    // Constructors
+    // ==================================================================================
+    // CONSTRUCTOR & SINGLETON ACCESS
+    // ==================================================================================
+
+    /**
+     * Private constructor to enforce Singleton pattern.
+     * 
+     * @param leftPlayerName  Name of the left player
+     * @param rightPlayerName Name of the right player
+     * @param gameDifficulty  Difficulty setting for the game
+     */
     private GameSession(String leftPlayerName, String rightPlayerName, GameDifficulty gameDifficulty) {
         this.timeStamp = LocalDateTime.now();
         if (Objects.equals(rightPlayerName, leftPlayerName) && rightPlayerName != null)
@@ -73,6 +106,12 @@ public class GameSession {
         return instance;
     }
 
+    /**
+     * Retrieves the test singleton instance of the GameSession.
+     * Initializes with default values if it doesn't exist.
+     * 
+     * @return The test GameSession instance.
+     */
     public static GameSession getTestInstance() {
         if (testInstance == null) {
             testInstance = new GameSession("Player1", "Player2", GameDifficulty.EASY);
@@ -80,18 +119,9 @@ public class GameSession {
         return testInstance;
     }
 
-    // Initialize game stats
-    private void initiateGameStats() {
-        this.setPoints(0);
-        this.setHealthPool(getGameDifficulty().getInitialHealthPool());
-    }
-
-    // Initialize the boards of the players involved in the game session
-    public void initializeBoards() {
-        this.setLeftBoard(Board.createNewBoard(this.getGameDifficulty()));
-        this.setRightBoard(Board.createNewBoard(this.getGameDifficulty()));
-        this.getLeftBoard().setTurn(true);
-    }
+    // ==================================================================================
+    // INITIALIZATION & LIFECYCLE
+    // ==================================================================================
 
     /**
      * Initializes a new game session.
@@ -124,7 +154,23 @@ public class GameSession {
         initializeBoards();
     }
 
-    // Getters and setters
+    /** Initialize game stats (points and health). */
+    private void initiateGameStats() {
+        this.setPoints(0);
+        this.setHealthPool(getGameDifficulty().getInitialHealthPool());
+    }
+
+    /** Initialize the boards of the players involved in the game session. */
+    public void initializeBoards() {
+        this.setLeftBoard(Board.createNewBoard(this.getGameDifficulty()));
+        this.setRightBoard(Board.createNewBoard(this.getGameDifficulty()));
+        this.getLeftBoard().setTurn(true);
+    }
+
+    // ==================================================================================
+    // GETTERS & SETTERS
+    // ==================================================================================
+
     public LocalDateTime getTimeStamp() {
         return timeStamp;
     }
@@ -133,12 +179,27 @@ public class GameSession {
         return rightPlayerName;
     }
 
+    public boolean setRightPlayerName(String rightPlayerName) {
+        this.rightPlayerName = rightPlayerName;
+        return true;
+    }
+
     public String getLeftPlayerName() {
         return leftPlayerName;
     }
 
+    public boolean setLeftPlayerName(String leftPlayerName) {
+        this.leftPlayerName = leftPlayerName;
+        return true;
+    }
+
     public GameDifficulty getGameDifficulty() {
         return gameDifficulty;
+    }
+
+    public boolean setGameDifficulty(GameDifficulty difficulty) {
+        this.gameDifficulty = difficulty;
+        return true;
     }
 
     public Board getLeftBoard() {
@@ -161,81 +222,39 @@ public class GameSession {
         return healthPool;
     }
 
-    public int getPoints() {
-        return points;
+    /**
+     * Sets the health pool. Health cannot go below 0.
+     * If health exceeds max, extra health is converted to points.
+     * 
+     * @param i New health value
+     */
+    private void setHealthPool(int i) {
+        this.healthPool = i;
+        if (this.getHealthPool() < 0)
+            this.healthPool = 0;
+        if (this.getHealthPool() > MAX_HEALTH_POOL) {
+            this.gainPoints((i - MAX_HEALTH_POOL) * getGameDifficulty().getActivationCost());
+            this.healthPool = MAX_HEALTH_POOL;
+        }
     }
 
     public static int getMaxHealthPool() {
         return MAX_HEALTH_POOL;
     }
 
-    // switch the turns of the boards
-    public void changeTurn() {
-        leftBoard.setTurn(!leftBoard.getTurn());
-        rightBoard.setTurn(!rightBoard.getTurn());
+    public int getPoints() {
+        return points;
     }
 
-    // these have to be public since we're not using interfaces
-    public boolean setLeftPlayerName(String leftPlayerName) {
-        this.leftPlayerName = leftPlayerName;
-        return true;
+    public void setPoints(int i) {
+        this.points = i;
+        if (this.getPoints() < 0)
+            this.points = 0;
     }
 
-    public boolean setRightPlayerName(String rightPlayerName) {
-        this.rightPlayerName = rightPlayerName;
-        return true;
-    }
-
-    public boolean setGameDifficulty(GameDifficulty difficulty) {
-        this.gameDifficulty = difficulty;
-        return true;
-    }
-
-    public void forceGameOver() {
-        this.setHealthPool(0);
-        initiateGameOver();
-    }
-
-    // Methods for the gameplay
-    private boolean isGameOver() {
-        return getHealthPool() <= 0 || getLeftBoard().allMinesRevealed() || getRightBoard().allMinesRevealed();
-    }
-
-    // to prevent multiple calls to game over processing
-    private boolean isGameOverProcessing = false;
-
-    // handles all game over logic
-    private void initiateGameOver() {
-        if (isGameOverProcessing)
-            return; // Prevent multiple saves/overlays
-        isGameOverProcessing = true;
-        boolean winOrLose = getHealthPool() > 0;
-        getLeftBoard().revealAll();
-        getRightBoard().revealAll();
-        if (getHealthPool() > 0) {
-            gainPoints(getHealthPool() * getGameDifficulty().getActivationCost());
-            int healthBefore = getHealthPool();
-            setHealthPool(0);
-            notifyListenersAfterAction("Game over! You won!", true, -healthBefore,
-                    healthBefore * getGameDifficulty().getActivationCost());
-        } else
-            notifyListenersAfterAction("Game over! You lost!", false, 0, 0);
-        try {
-            saveGame(winOrLose);
-            gameOverListener.onGameOver(true, winOrLose, getPoints());
-        } catch (Exception e) {
-            gameOverListener.onGameOver(false, winOrLose, getPoints());
-        }
-
-    }
-
-    // saves the game data to the CSV file
-    private void saveGame(boolean winOrLose) throws IOException {
-        GameData gameData = new GameData(this.timeStamp, this.leftPlayerName, this.rightPlayerName, this.gameDifficulty,
-                this.points, winOrLose);
-        SysData.getInstance().addGame(gameData);
-        GameDataCSVManager.writeGameDataListToCSV("GameHistory.csv");
-    }
+    // ==================================================================================
+    // GAMEPLAY ACTIONS (INPUT HANDLING)
+    // ==================================================================================
 
     /**
      * Handles the logic when a user right-clicks a tile (flagging/unflagging).
@@ -384,33 +403,26 @@ public class GameSession {
         return true;
     }
 
-    // helper methods for gaining points and health
+    // ==================================================================================
+    // GAME LOGIC HELPERS
+    // ==================================================================================
+
+    /** Switches the turns of the boards. */
+    public void changeTurn() {
+        leftBoard.setTurn(!leftBoard.getTurn());
+        rightBoard.setTurn(!rightBoard.getTurn());
+    }
+
+    /** Helper method for gaining points. */
     private void gainPoints(int points) {
         System.out.println("Points 'added': " + points);
         this.setPoints(this.getPoints() + points);
     }
 
-    public void setPoints(int i) {
-        this.points = i;
-        if (this.getPoints() < 0)
-            this.points = 0;
-    }
-
-    // helper methods for gaining health
+    /** Helper method for gaining health. */
     private void gainHealth(int health) {
         System.out.println("Health 'added': " + health);
         this.setHealthPool(this.getHealthPool() + health);
-    }
-
-    // health cannot go below 0 or above max health pool
-    private void setHealthPool(int i) {
-        this.healthPool = i;
-        if (this.getHealthPool() < 0)
-            this.healthPool = 0;
-        if (this.getHealthPool() > MAX_HEALTH_POOL) {
-            this.gainPoints((i - MAX_HEALTH_POOL) * getGameDifficulty().getActivationCost());
-            this.healthPool = MAX_HEALTH_POOL;
-        }
     }
 
     /**
@@ -481,23 +493,33 @@ public class GameSession {
         return true;
     }
 
-    public void setDisplayQuestionListener(DisplayQuestionListener displayQuestionListener) {
-        this.displayQuestionListener = displayQuestionListener;
+    /**
+     * Create a string specifically for when the user gains extra points from extra
+     * hp.
+     */
+    private String extraHpString(int currentHealth, int healthReward) {
+        int potentialHealth = currentHealth + healthReward;
+        int activationCost = getGameDifficulty().getActivationCost();
+
+        // check if the reward pushes the player beyond the max health pool
+        if (potentialHealth > MAX_HEALTH_POOL) {
+            int overflowAmount = potentialHealth - MAX_HEALTH_POOL;
+            int pointsFromHealth = overflowAmount * activationCost;
+            int actualHpGain = MAX_HEALTH_POOL - currentHealth;
+
+            if (actualHpGain > 0) {
+                return " (Gained " + actualHpGain + " HP + " + pointsFromHealth + " pts from " + overflowAmount
+                        + " extra HP)";
+            } else {
+                return " (Max HP! +" + pointsFromHealth + " pts from " + overflowAmount + " extra HP)";
+            }
+        }
+        return healthReward > 0 ? " (Gained " + healthReward + " HP)" : "";
     }
 
-    public void setGameOverListener(GameOverListener gameOverListener) {
-        this.gameOverListener = gameOverListener;
-    }
-
-    private void notifyListenersAfterAction(String message, boolean positiveMove, int healthChange, int pointsChange) {
-        for (ActionMadeListener listener : actionMadeListeners)
-            listener.onActionMade(message, positiveMove, healthChange, pointsChange);
-    }
-
-    public void notifySurpriseListeners(int healthChange, int pointsChange) {
-        for (SurpriseListener listener : surpriseListeners)
-            listener.revealSurprise(healthChange, pointsChange);
-    }
+    // ==================================================================================
+    // QUESTION HANDLING
+    // ==================================================================================
 
     public void updateAfterQuestionResult(QuestionDifficulty difficulty, boolean correctAnswer, Board parentBoard) {
         Random random = new Random();
@@ -518,11 +540,10 @@ public class GameSession {
 
         if (isGameOver())
             initiateGameOver();
-
     }
 
-    private void updateAfterQuestionResultHard(QuestionDifficulty difficulty, boolean correctAnswer,
-            boolean randomResult) {
+    private void updateAfterQuestionResultEasy(QuestionDifficulty difficulty, boolean correctAnswer,
+            boolean randomResult, Board parentBoard) {
         // Original values before the changes
         int startPoints = getPoints();
         int startHealth = getHealthPool();
@@ -530,44 +551,44 @@ public class GameSession {
             case EASY:
                 if (correctAnswer) {
                     message += extraHpString(this.healthPool, 1);
-                    this.gainPoints(10);
+                    this.gainPoints(3);
                     this.gainHealth(1);
                 } else {
-                    this.gainPoints(-10);
-                    this.gainHealth(-1);
+                    System.out.println("Randomer is " + randomResult);
+                    int pointsLost = (randomResult) ? 0 : -3;
+                    this.gainPoints(pointsLost);
                 }
                 break;
             case MEDIUM:
-                System.out.println("Randomer is " + randomResult);
-                int healthChanged = (randomResult) ? 2 : 1;
                 if (correctAnswer) {
-                    message += extraHpString(this.healthPool, healthChanged);
-                    this.gainPoints(15);
-                    this.gainHealth(healthChanged);
+                    parentBoard.revealRandomMine();
+                    message += " (Also Revealed a mine!)";
+                    this.gainPoints(6);
                 } else {
-                    this.gainPoints(-15);
-                    this.gainHealth(-healthChanged);
+                    System.out.println("Randomer is " + randomResult);
+                    int pointsLost = (randomResult) ? 0 : -6;
+                    this.gainPoints(pointsLost);
                 }
                 break;
             case HARD:
                 if (correctAnswer) {
-                    message += extraHpString(this.healthPool, 2);
-                    this.gainPoints(20);
-                    this.gainHealth(2);
+                    parentBoard.revealGrid();
+                    message += " (Revealed a grid!)";
+                    this.gainPoints(10);
                 } else {
-                    this.gainPoints(-20);
-                    this.gainHealth(-2);
+                    this.gainPoints(-10);
                 }
                 break;
             case MASTER:
                 if (correctAnswer) {
-                    message += extraHpString(this.healthPool, 3);
-                    this.gainPoints(40);
-                    this.gainHealth(3);
+                    message += extraHpString(this.healthPool, 2);
+                    this.gainPoints(15);
+                    this.gainHealth(2);
                 } else {
-                    this.gainPoints(-40);
-                    this.gainHealth(-3);
+                    this.gainPoints(-15);
+                    this.gainHealth(-1);
                 }
+                break;
         }
         // calculate the change in health and points
         int pointsAfter = getPoints() - startPoints;
@@ -668,8 +689,8 @@ public class GameSession {
         notifyListenersAfterAction(message, correctAnswer, healthAfter, pointsAfter);
     }
 
-    private void updateAfterQuestionResultEasy(QuestionDifficulty difficulty, boolean correctAnswer,
-            boolean randomResult, Board parentBoard) {
+    private void updateAfterQuestionResultHard(QuestionDifficulty difficulty, boolean correctAnswer,
+            boolean randomResult) {
         // Original values before the changes
         int startPoints = getPoints();
         int startHealth = getHealthPool();
@@ -677,44 +698,44 @@ public class GameSession {
             case EASY:
                 if (correctAnswer) {
                     message += extraHpString(this.healthPool, 1);
-                    this.gainPoints(3);
+                    this.gainPoints(10);
                     this.gainHealth(1);
                 } else {
-                    System.out.println("Randomer is " + randomResult);
-                    int pointsLost = (randomResult) ? 0 : -3;
-                    this.gainPoints(pointsLost);
+                    this.gainPoints(-10);
+                    this.gainHealth(-1);
                 }
                 break;
             case MEDIUM:
+                System.out.println("Randomer is " + randomResult);
+                int healthChanged = (randomResult) ? 2 : 1;
                 if (correctAnswer) {
-                    parentBoard.revealRandomMine();
-                    message += " (Also Revealed a mine!)";
-                    this.gainPoints(6);
+                    message += extraHpString(this.healthPool, healthChanged);
+                    this.gainPoints(15);
+                    this.gainHealth(healthChanged);
                 } else {
-                    System.out.println("Randomer is " + randomResult);
-                    int pointsLost = (randomResult) ? 0 : -6;
-                    this.gainPoints(pointsLost);
+                    this.gainPoints(-15);
+                    this.gainHealth(-healthChanged);
                 }
                 break;
             case HARD:
                 if (correctAnswer) {
-                    parentBoard.revealGrid();
-                    message += " (Revealed a grid!)";
-                    this.gainPoints(10);
+                    message += extraHpString(this.healthPool, 2);
+                    this.gainPoints(20);
+                    this.gainHealth(2);
                 } else {
-                    this.gainPoints(-10);
+                    this.gainPoints(-20);
+                    this.gainHealth(-2);
                 }
                 break;
             case MASTER:
                 if (correctAnswer) {
-                    message += extraHpString(this.healthPool, 2);
-                    this.gainPoints(15);
-                    this.gainHealth(2);
+                    message += extraHpString(this.healthPool, 3);
+                    this.gainPoints(40);
+                    this.gainHealth(3);
                 } else {
-                    this.gainPoints(-15);
-                    this.gainHealth(-1);
+                    this.gainPoints(-40);
+                    this.gainHealth(-3);
                 }
-                break;
         }
         // calculate the change in health and points
         int pointsAfter = getPoints() - startPoints;
@@ -738,7 +759,76 @@ public class GameSession {
         }
 
         notifyListenersAfterAction(message, correctAnswer, healthAfter, pointsAfter);
+    }
 
+    // ==================================================================================
+    // GAME END & SAVE LOGIC
+    // ==================================================================================
+
+    /**
+     * Checks if the game is over.
+     * 
+     * @return true if health <= 0 or all mines revealed on either board.
+     */
+    private boolean isGameOver() {
+        return getHealthPool() <= 0 || getLeftBoard().allMinesRevealed() || getRightBoard().allMinesRevealed();
+    }
+
+    /** Forces the game to end immediately (e.g. from debug). */
+    public void forceGameOver() {
+        this.setHealthPool(0);
+        initiateGameOver();
+    }
+
+    /**
+     * Handles all game over logic.
+     * Reveals boards, calculates final score, notifies listeners, and saves the
+     * game.
+     */
+    private void initiateGameOver() {
+        if (isGameOverProcessing)
+            return; // Prevent multiple saves/overlays
+        isGameOverProcessing = true;
+        boolean winOrLose = getHealthPool() > 0;
+        getLeftBoard().revealAll();
+        getRightBoard().revealAll();
+        if (getHealthPool() > 0) {
+            gainPoints(getHealthPool() * getGameDifficulty().getActivationCost());
+            int healthBefore = getHealthPool();
+            setHealthPool(0);
+            notifyListenersAfterAction("Game over! You won!", true, -healthBefore,
+                    healthBefore * getGameDifficulty().getActivationCost());
+        } else
+            notifyListenersAfterAction("Game over! You lost!", false, 0, 0);
+        try {
+            saveGame(winOrLose);
+            gameOverListener.onGameOver(true, winOrLose, getPoints());
+        } catch (Exception e) {
+            gameOverListener.onGameOver(false, winOrLose, getPoints());
+        }
+
+    }
+
+    /**
+     * Saves the game data to the CSV file.
+     */
+    private void saveGame(boolean winOrLose) throws IOException {
+        GameData gameData = new GameData(this.timeStamp, this.leftPlayerName, this.rightPlayerName, this.gameDifficulty,
+                this.points, winOrLose);
+        SysData.getInstance().addGame(gameData);
+        GameDataCSVManager.writeGameDataListToCSV("GameHistory.csv");
+    }
+
+    // ==================================================================================
+    // LISTENER MANAGEMENT
+    // ==================================================================================
+
+    public void setDisplayQuestionListener(DisplayQuestionListener displayQuestionListener) {
+        this.displayQuestionListener = displayQuestionListener;
+    }
+
+    public void setGameOverListener(GameOverListener gameOverListener) {
+        this.gameOverListener = gameOverListener;
     }
 
     public void setActionMadeListener(ActionMadeListener actionMadeListener) {
@@ -747,6 +837,19 @@ public class GameSession {
 
     public void setSurpriseListener(SurpriseListener surpriseListener) {
         this.surpriseListeners.add(surpriseListener);
+    }
+
+    /**
+     * Notifies all action listeners of a game event.
+     */
+    private void notifyListenersAfterAction(String message, boolean positiveMove, int healthChange, int pointsChange) {
+        for (ActionMadeListener listener : actionMadeListeners)
+            listener.onActionMade(message, positiveMove, healthChange, pointsChange);
+    }
+
+    public void notifySurpriseListeners(int healthChange, int pointsChange) {
+        for (SurpriseListener listener : surpriseListeners)
+            listener.revealSurprise(healthChange, pointsChange);
     }
 
     public void updateAfterSurpriseRevealed(int healthChange, int pointsChange, boolean positiveMove) {
@@ -766,27 +869,5 @@ public class GameSession {
     public void clearListeners() {
         this.actionMadeListeners.clear();
         this.surpriseListeners.clear();
-    }
-
-    // create a string specifically for when the user gains extra points from extra
-    // hp
-    private String extraHpString(int currentHealth, int healthReward) {
-        int potentialHealth = currentHealth + healthReward;
-        int activationCost = getGameDifficulty().getActivationCost();
-
-        // check if the reward pushes the player beyond the max health pool
-        if (potentialHealth > MAX_HEALTH_POOL) {
-            int overflowAmount = potentialHealth - MAX_HEALTH_POOL;
-            int pointsFromHealth = overflowAmount * activationCost;
-            int actualHpGain = MAX_HEALTH_POOL - currentHealth;
-
-            if (actualHpGain > 0) {
-                return " (Gained " + actualHpGain + " HP + " + pointsFromHealth + " pts from " + overflowAmount
-                        + " extra HP)";
-            } else {
-                return " (Max HP! +" + pointsFromHealth + " pts from " + overflowAmount + " extra HP)";
-            }
-        }
-        return healthReward > 0 ? " (Gained " + healthReward + " HP)" : "";
     }
 }
