@@ -11,7 +11,7 @@ public class SysData
     private static SysData instance = null;
     //List of game data
     private final List<GameData> games;
-    //need to add questions here??
+    //List of questions
     private final List<Question> questions;
 
     //Private constructor
@@ -29,6 +29,7 @@ public class SysData
         return instance;
     }
 
+    //Method to get the max id of the questions
     public int getMaxId() {
         int max = -1;
         for(Question q : this.questions){
@@ -94,6 +95,7 @@ public class SysData
         return questions.size();
     }
 
+    //Method to delete a question from the list
     public boolean deleteQuestion(Question question) {
         try {
             // 1. Attempt to remove from the local list
@@ -114,6 +116,7 @@ public class SysData
         }
     }
 
+    //Get question by ID
     public Question getQuestionByID(int id)
     {
         for(Question q : questions){

@@ -82,6 +82,8 @@ public class Question {
         this.answer4 = answer4;
     }
 
+    // --- Validation Methods ---
+
     private void validateUniqueAnswers(String a1, String a2, String a3, String a4)
     {
         java.util.Set<String> uniqueAnswers = new java.util.HashSet<>();

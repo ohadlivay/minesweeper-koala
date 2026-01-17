@@ -2,204 +2,117 @@ package main.java.model;
 
 import main.java.test.Testable;
 
-//Tile class for the minesweeper game
-public class Tile implements Testable
-{
+/**
+ * Tile represents a single square on the Minesweeper board.
+ * It holds the state of the tile (flagged, revealed, activated) and its relationships
+ * to the board and UI listeners.
+ * 
+ * Implements Testable interface for unit testing support.
+ */
+public class Tile implements Testable {
 
-    //Indicators of whether the tile is flagged or revealed
+    // ==================================================================================
+    // FIELDS
+    // ==================================================================================
+
+    // Indicators of whether the tile is flagged or revealed
     private boolean isFlagged;
     private boolean isRevealed;
 
-    //Indicator of whether the tile has been activated
+    // Indicator of whether the tile has been activated (clicked or interacted with)
     private boolean isActivated;
 
+    // Parent board reference
+    private Board parentBoard;
+
+    // UI Listeners
     private RevealListener revealListener;
     private FlagListener flagListener;
 
-    private Board parentBoard;
+    // ==================================================================================
+    // CONSTRUCTOR
+    // ==================================================================================
 
-    //Constructors
-
-    public Tile()
-    {
+    /**
+     * Creates a new, empty Tile.
+     * Initializes state to unflagged, unrevealed, and unactivated.
+     */
+    public Tile() {
         this.isFlagged = false;
         this.isRevealed = false;
         this.isActivated = false;
         this.parentBoard = null;
-
     }
 
-    //Getters and setters for the tile class
-    public boolean isFlagged()
-    {
-        return isFlagged;
-    }
+    // ==================================================================================
+    // ACCESSORS (GETTERS & SETTERS)
+    // ==================================================================================
 
-    public boolean isRevealed()
-    {
-        return isRevealed;
-    }
-
-    public boolean isActivated()
-    {
-        return isActivated;
-    }
-
-    //Methods for the tile class
-
-    protected void forceReveal()
-    {
-        setIsRevealed(true);
-    }
-
-    //Activates the tile if it is not activated already
-    private void activate()
-    {
-        isActivated = true;
-    }
-
-    //Tests the tile class
-    @Override
-    public boolean runClassTests()
-    {
-        return true;
-        /*
-        try {
-            Tile t = new Tile();
-            // --- Default State Test ---
-            // defaults: isFlagged, isRevealed, isActivated should be false
-            if (t.isFlagged() || t.isRevealed() || t.isActivated()) return false;
-            if (t.getX() != 0 || t.getY() != 0) return false;
-            t.setX(10);
-            t.setY(20);
-            if (t.getX() != 10 || t.getY() != 20) return false;
-
-
-            // --- Invalid Coordinate Test ---
-            // invalid coordinates should throw
-            try { t.setX(-1); return false; } catch (IllegalArgumentException ignored) {}
-            try { t.setY(-1); return false; } catch (IllegalArgumentException ignored) {}
-
-
-            // --- Flag / Unflag Behavior Test ---
-            Tile t2 = new Tile();
-
-            // Flagging should set isFlagged=true and isActivated=true
-            t2.flag();
-            if (!t2.isFlagged() || !t2.isActivated() || t2.isRevealed()) return false;
-
-            // Flagging again when already flagged should throw IllegalMoveException
-            try { t2.flag(); return false; } catch (IllegalMoveException ignored) {}
-
-            // Unflagging should set isFlagged=false. isActivated should remain true.
-            t2.unflag();
-            if (t2.isFlagged() || !t2.isActivated() || t2.isRevealed()) return false;
-
-            // Unflagging again when not flagged should throw IllegalMoveException
-            try { t2.unflag(); return false; } catch (IllegalMoveException ignored) {}
-
-
-            // --- Reveal Behavior Test ---
-            Tile t3 = new Tile();
-
-            // Revealing should set isRevealed=true and isActivated=true
-            t3.reveal();
-            if (!t3.isRevealed() || !t3.isActivated() || t3.isFlagged()) return false;
-
-            // Revealing again when already revealed should throw IllegalMoveException
-            try { t3.reveal(); return false; } catch (IllegalMoveException ignored) {}
-
-            // Trying to flag a revealed tile should throw IllegalMoveException
-            try { t3.flag(); return false; } catch (IllegalMoveException ignored) {}
-
-
-            // --- Flag/Reveal Conflict Test ---
-            Tile t4 = new Tile();
-            t4.flag(); // t4 isFlagged=true, isActivated=true
-
-            // Trying to reveal a flagged tile should throw IllegalMoveException
-            try { t4.reveal(); return false; } catch (IllegalMoveException ignored) {}
-
-            t4.unflag(); // t4 isFlagged=false, isActivated=true
-            t4.reveal(); // t4 isRevealed=true, isActivated=true (still true)
-
-
-            // --- Activate Method Consistency Test ---
-            // The private activate() method just sets isActivated = true, it doesn't check state or throw.
-            // Calling it again should have no effect, not throw an exception.
-            t4.activate();
-            if (!t4.isActivated()) return false; // Should still be true
-
-
-            // --- Coordinates Consistency Test ---
-            t4.setX(5.5);
-            t4.setY(9.9);
-            double[] coords = t4.getCoordinates();
-            if (coords.length != 2) return false;
-            return coords[0] == t4.getX() && coords[1] == t4.getY();
-
-        } catch (Exception e) {
-            // Catch any unexpected exceptions and fail the test
-            return false;
-        }
-         */
-    }
-    @Override
-    public String toString(){
-        return "T";
-    }
-
-    public Board getParentBoard()
-    {
+    public Board getParentBoard() {
         return this.parentBoard;
     }
 
-    public void setParentBoard(Board parentBoard)
-    {
+    public void setParentBoard(Board parentBoard) {
         this.parentBoard = parentBoard;
     }
 
-    public boolean getIsRevealed(){
+    public boolean isFlagged() {
+        return isFlagged;
+    }
+
+    // Duplicate getter for legacy support
+    public boolean getIsFlagged() {
+        return this.isFlagged;
+    }
+
+    /**
+     * Sets the flagged state of the tile.
+     * Activates the tile and notifies listeners.
+     * 
+     * @param isFlagged true to flag, false to unflag
+     */
+    public void setIsFlagged(boolean isFlagged) {
+        activate();
+        this.isFlagged = isFlagged;
+
+        System.out.println("Updating flagged tile view");
+        if (flagListener != null) {
+            flagListener.updateFlagged(isFlagged);
+        }
+    }
+
+    public boolean isRevealed() {
+        return isRevealed;
+    }
+
+    // Duplicate getter for legacy support
+    public boolean getIsRevealed() {
         return this.isRevealed;
     }
-    public boolean setIsRevealed(boolean isRevealed){
+
+    /**
+     * Sets the revealed state of the tile.
+     * Activates the tile and notifies listeners.
+     * 
+     * @param isRevealed true to reveal
+     * @return true (always)
+     */
+    public boolean setIsRevealed(boolean isRevealed) {
         activate();
         this.isRevealed = isRevealed;
-        if(revealListener != null) {
+        if (revealListener != null) {
             revealListener.updateRevealed();
         }
         return true;
     }
 
-
-    public boolean getIsFlagged(){
-        return this.isFlagged;
+    public boolean isActivated() {
+        return isActivated;
     }
 
-    public void setIsFlagged(boolean isFlagged){
-        activate();
-        this.isFlagged = isFlagged;
-
-        System.out.println("Updating flagged tile view");
-        if(flagListener != null) {
-            flagListener.updateFlagged(isFlagged);
-        }
-    }
-    /**
-     * Strategy: Should the cascade STOP spreading after reaching this tile?
-     */
-    public boolean stopsExpansion() {
-        // Default logic: Mines stop expansion (usually by not being revealable),
-        // but we'll define the base behavior here.
-        return false;
-    }
-
-    /**
-     * Strategy: Is this tile allowed to be revealed in a cascade?
-     */
-    public boolean isRevealable() {
-        return false; // Default: hidden/mines are not revealable by standard cascade
-    }
+    // ==================================================================================
+    // LISTENER MANAGEMENT
+    // ==================================================================================
 
     public void setFlagListener(FlagListener flagListener) {
         this.flagListener = flagListener;
@@ -207,5 +120,59 @@ public class Tile implements Testable
 
     public void setRevealListener(RevealListener revealListener) {
         this.revealListener = revealListener;
+    }
+
+    // ==================================================================================
+    // GAME LOGIC & BEHAVIOR
+    // ==================================================================================
+
+    /**
+     * Activates the tile if it is not activated already.
+     * This marks the tile as having been interacted with.
+     */
+    private void activate() {
+        isActivated = true;
+    }
+
+    /**
+     * Forces the tile to be revealed without standard interaction checks.
+     */
+    protected void forceReveal() {
+        setIsRevealed(true);
+    }
+
+    /**
+     * Strategy: Should the cascade STOP spreading after reaching this tile?
+     * Default logic: false (allows propagation unless overridden).
+     * 
+     * @return true if expansion should stop here.
+     */
+    public boolean stopsExpansion() {
+        return false;
+    }
+
+    /**
+     * Strategy: Is this tile allowed to be revealed in a cascade?
+     * Default: false (hidden/mines are not revealable by standard cascade).
+     * 
+     * @return true if this tile can be auto-revealed.
+     */
+    public boolean isRevealable() {
+        return false;
+    }
+
+    // ==================================================================================
+    // OVERRIDES (TOSTRING & TESTABLE)
+    // ==================================================================================
+
+    @Override
+    public String toString() {
+        return "T";
+    }
+
+    // Tests the tile class
+    @Override
+    public boolean runClassTests() {
+        return true;
     }
 }
