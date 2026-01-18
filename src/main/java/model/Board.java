@@ -139,16 +139,20 @@ public class Board implements Testable {
             System.out.println("No mines left to reveal");
             return;
         }
-        int row, col;
-        Tile tile;
-        do {
-            row = RANDOM.nextInt(getRows());
-            col = RANDOM.nextInt(getCols());
-            tile = this.getTiles()[row][col];
-        } while (!(tile instanceof MineTile) || tile.isRevealed());
-        System.out.println("Revealing random mine at (" + (row + 1) + "," + (col + 1) + ")");
-        reveal(tile);
-
+        // collect all hidden mines with one traversal
+        List<Tile> hiddenMines = new ArrayList<>();
+        for (Tile[] row : getTiles()) {
+            for (Tile tile : row) {
+                if (tile instanceof MineTile && !tile.isRevealed()) {
+                    hiddenMines.add(tile);
+                }
+            }
+        }
+        // reveal one of them
+        if (!hiddenMines.isEmpty()) {
+            Tile randomMine = hiddenMines.get(RANDOM.nextInt(hiddenMines.size()));
+            reveal(randomMine);
+        }
     }
 
     /**
