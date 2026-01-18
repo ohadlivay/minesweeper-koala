@@ -112,7 +112,12 @@ public class ComponentAnimator {
 
             label.setForeground(new Color(r, g, b));
 
-            if (i[0] >= frames) ((Timer) e.getSource()).stop();
+            if (i[0] >= frames) {
+                // Ensure final color and free the component so it can animate again
+                label.setForeground(baseColor);
+                active.remove(label);
+                ((Timer) e.getSource()).stop();
+            }
         });
 
         if (canAnimate(label, t)) t.start();

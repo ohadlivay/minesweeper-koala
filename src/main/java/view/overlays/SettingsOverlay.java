@@ -187,26 +187,37 @@ public class SettingsOverlay extends OverlayView {
 
         centerPanel.add(namesPanel, gbc);
 
-        // --- start button (closer to back button) ---
+        // --- bottom buttons: back on the left, start centered ---
         buttonStart = createButton("START");
         buttonStart.setPreferredSize(new Dimension(180, 50));
 
-        gbc.gridy++;
-        gbc.insets = new Insets(6, 0, 0, 0); // smaller bottom space
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.weightx = 0.0;
-
-        centerPanel.add(buttonStart, gbc);
-
-
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        bottomPanel.setOpaque(false);
-
-
         buttonBack = createTransparentIconButton("/back-pixel-2.png", 60, 50);
         buttonBack.addActionListener(e -> onCancel());
-        bottomPanel.add(buttonBack);
+
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.setOpaque(false);
+        bottomPanel.setPreferredSize(new Dimension(700, 70));
+
+        // a little padding so the back button isn't glued to the edge
+        JPanel backWrap = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        backWrap.setOpaque(false);
+        backWrap.add(buttonBack);
+
+        // keep START visually centered
+        JPanel startWrap = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 20));
+        startWrap.setOpaque(false);
+        startWrap.add(buttonStart);
+
+        // RIGHT SPACER — SAME WIDTH AS BACK
+        JPanel rightSpacer = new JPanel();
+        rightSpacer.setOpaque(false);
+        rightSpacer.setPreferredSize(backWrap.getPreferredSize());
+
+        bottomPanel.add(backWrap, BorderLayout.WEST);
+        bottomPanel.add(startWrap, BorderLayout.CENTER);
+        bottomPanel.add(rightSpacer, BorderLayout.EAST);
+
+
 
         contentPane.add(titlePanel, BorderLayout.NORTH);
         contentPane.add(centerPanel, BorderLayout.CENTER);
