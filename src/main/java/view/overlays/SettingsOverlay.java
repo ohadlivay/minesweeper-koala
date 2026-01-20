@@ -3,6 +3,7 @@ package main.java.view.overlays;
 import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.model.GameDifficulty;
+import main.java.model.Question;
 import main.java.util.SoundManager;
 import main.java.view.*;
 
@@ -10,11 +11,15 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SettingsOverlay extends OverlayView {
     private JPanel contentPane;
@@ -32,10 +37,13 @@ public class SettingsOverlay extends OverlayView {
     private ColorsInUse player2Color;
     private JPanel player1ColorPanel;
     private JPanel player2ColorPanel;
-    private java.util.List<JButton> player1ColorButtons;
-    private java.util.List<JButton> player2ColorButtons;
+    private List<JButton> player1ColorButtons;
+    private List<JButton> player2ColorButtons;
 
     private final int PlAYER_TEXT_LENGTH = 15;
+
+    // Placeholder text used for name fields
+    private static final String NAME_PLACEHOLDER = "Enter name here...";
 
     public SettingsOverlay(NavigationController nav) {
         super(nav, true);
@@ -109,7 +117,7 @@ public class SettingsOverlay extends OverlayView {
     }
 
     private void initUI() {
-        contentPane = new BackgroundPanel("/overlay-bg.png");
+        contentPane = new BackgroundPanel("/wood-bg.png");
         contentPane.setLayout(new BorderLayout());
         contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
         contentPane.setPreferredSize(new Dimension(700, 650));
@@ -247,6 +255,7 @@ public class SettingsOverlay extends OverlayView {
         centerPanel.add(colorPanel, gbc);
 
         // --- bottom buttons: back on the left, start centered ---
+
         buttonStart = createButton("START");
         buttonStart.setPreferredSize(new Dimension(180, 50));
 
@@ -289,8 +298,8 @@ public class SettingsOverlay extends OverlayView {
 
     // pass the user input, close the overlay and go to the game screen
     private void onOK() {
-        String player1 = getPlayer1Name();
-        String player2 = getPlayer2Name();
+        String player1 = getPlayer1Name().equals(NAME_PLACEHOLDER) ? "" : getPlayer1Name();
+        String player2 = getPlayer2Name().equals(NAME_PLACEHOLDER) ? "" : getPlayer2Name();
 
         // check for difficulty
         if (selectedDifficulty == null) {
@@ -405,6 +414,30 @@ public class SettingsOverlay extends OverlayView {
         return panel;
     }
 
+    FocusAdapter placeholderListener = new FocusAdapter() {
+        @Override
+        public void focusGained(FocusEvent e) {
+            if (!(e.getComponent() instanceof JTextComponent tc)) return;
+            Object ph = tc.getClientProperty("placeholder");
+            if (ph instanceof String placeholder && tc.getText().equals(placeholder)) {
+                tc.setText("");
+                tc.setForeground(ColorsInUse.TEXT.get());
+            }
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            if (!(e.getComponent() instanceof JTextComponent tc)) return;
+            if (tc.getText().trim().isEmpty()) {
+                Object ph = tc.getClientProperty("placeholder");
+                if (ph instanceof String placeholder) {
+                    tc.setText(placeholder);
+                    tc.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
+                }
+            }
+        }
+    };
+
     private JPanel createColorSelectionGroup(String labelText, int playerNumber) {
         JPanel panel = new JPanel(new BorderLayout(0, 10));
         //panel.setBackground(ColorsInUse.BG_COLOR.get());
@@ -423,7 +456,7 @@ public class SettingsOverlay extends OverlayView {
         ColorsInUse[] warmColors = ColorsInUse.getBoardColors();
         ColorsInUse selectedColor = (playerNumber == 1) ? player1Color : player2Color;
 
-        java.util.List<JButton> buttonsList = new java.util.ArrayList<>();
+        List<JButton> buttonsList = new ArrayList<>();
 
         for (ColorsInUse color : warmColors) {
             JButton colorBtn = createColorButton(color, playerNumber, selectedColor);
@@ -558,11 +591,18 @@ public class SettingsOverlay extends OverlayView {
         field.setMinimumSize(new Dimension(100, 30));
         field.setMaximumSize(new Dimension(100, 30));
         field.setBackground(ColorsInUse.BG_COLOR.get());
-        field.setForeground(ColorsInUse.TEXT.get());
+        // Set placeholder state by default for name fields
+        field.putClientProperty("placeholder", NAME_PLACEHOLDER);
+        field.setText(NAME_PLACEHOLDER);
+        field.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
+
         field.setCaretColor(Color.WHITE);
-        field.setFont(FontsInUse.PIXEL.getSize(28f));
+        field.setFont(FontsInUse.PIXEL.getSize(26f));
         field.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         field.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // Attach placeholder listener so focus changes toggle placeholder text/color
+        field.addFocusListener(placeholderListener);
         return field;
     }
 
@@ -583,12 +623,12 @@ public class SettingsOverlay extends OverlayView {
         int SQUARE_SIZE = 130;
 
         // Load wood background
-        ImageIcon woodBg = loadScaledIcon("wood-bg", SQUARE_SIZE, SQUARE_SIZE);
+        ImageIcon woodBg = loadScaledIcon("btn-square", SQUARE_SIZE, SQUARE_SIZE);
 
         // Load koala icon
         ImageIcon koalaIcon = null;
         try {
-            java.net.URL koalaUrl = getClass().getResource(resourcePath);
+            URL koalaUrl = getClass().getResource(resourcePath);
             if (koalaUrl != null) {
                 ImageIcon icon = new ImageIcon(koalaUrl);
                 Image scaled = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
@@ -667,7 +707,7 @@ public class SettingsOverlay extends OverlayView {
         btn.setPreferredSize(new Dimension(width + 10, height + 10));
 
         try {
-            java.net.URL url = getClass().getResource(resourcePath);
+            URL url = getClass().getResource(resourcePath);
             if (url != null) {
                 ImageIcon normalIcon = new ImageIcon(url);
                 Image img = normalIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
@@ -680,14 +720,14 @@ public class SettingsOverlay extends OverlayView {
                 ImageIcon hover = createLighterIcon(img);
 
                 //switch to lighter icon when hovered
-                btn.addMouseListener(new java.awt.event.MouseAdapter() {
+                btn.addMouseListener(new MouseAdapter() {
                     @Override
-                    public void mouseEntered(java.awt.event.MouseEvent evt) {
+                    public void mouseEntered(MouseEvent evt) {
                         btn.setIcon(hover);
                     }
 
                     @Override
-                    public void mouseExited(java.awt.event.MouseEvent evt) {
+                    public void mouseExited(MouseEvent evt) {
                         btn.setIcon(standard);
                     }
                 });
@@ -751,13 +791,13 @@ public class SettingsOverlay extends OverlayView {
     private ImageIcon createLighterIcon(Image sourceImg) {
         int w = sourceImg.getWidth(null);
         int h = sourceImg.getHeight(null);
-        java.awt.image.BufferedImage buffered = new java.awt.image.BufferedImage(w, h, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+        BufferedImage buffered = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D g2 = buffered.createGraphics();
         g2.drawImage(sourceImg, 0, 0, null);
         g2.dispose();
 
-        java.awt.image.RescaleOp op = new java.awt.image.RescaleOp(1.4f, 0, null);
+        RescaleOp op = new RescaleOp(1.4f, 0, null);
         buffered = op.filter(buffered, null);
 
         return new ImageIcon(buffered);

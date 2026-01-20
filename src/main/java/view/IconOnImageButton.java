@@ -95,7 +95,7 @@ public class IconOnImageButton extends JButton {
                 if (koalaIcon != null) {
                     int koalaSize = 100;
                     int koalaX = (getWidth() - koalaSize) / 2;
-                    int koalaY = 5;
+                    int koalaY = 20;
                     g2d.drawImage(koalaIcon.getImage(), koalaX, koalaY, this);
                 }
 
@@ -104,7 +104,7 @@ public class IconOnImageButton extends JButton {
                 g2d.setFont(new Font("Arial", Font.BOLD, 16));
                 FontMetrics fm = g2d.getFontMetrics();
                 int textX = (getWidth() - fm.stringWidth(text)) / 2;
-                int textY = getHeight() - 12;
+                int textY = getHeight() - 14;
                 g2d.drawString(text, textX, textY);
 
                 // IMPORTANT: paint border last so it’s on top
