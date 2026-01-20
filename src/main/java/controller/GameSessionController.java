@@ -5,6 +5,7 @@ model.GameSession
 package main.java.controller;
 
 import main.java.model.*;
+import main.java.view.ColorsInUse;
 import main.java.view.GameScreen;
 
 import java.io.IOException;
@@ -15,6 +16,9 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
     private boolean isBlocked = false;
     private ArrayList<InputBlockListener> blockListeners = new ArrayList<>();
     private static GameSessionController instance;
+    private ColorsInUse leftBoardColor;
+    private ColorsInUse rightBoardColor;
+    
     private GameSessionController() {
 
     }
@@ -39,10 +43,17 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
 
     // retrieves user inputs and sets up a new game session
     public void setupGame(String leftName, String rightName, GameDifficulty difficulty) {
+        setupGame(leftName, rightName, difficulty, null, null);
+    }
+
+    // retrieves user inputs and sets up a new game session with board colors
+    public void setupGame(String leftName, String rightName, GameDifficulty difficulty, ColorsInUse leftColor, ColorsInUse rightColor) {
         session = GameSession.getInstance();
         session.clearListeners();
         this.blockListeners.clear();
         this.isBlocked = false;
+        this.leftBoardColor = leftColor;
+        this.rightBoardColor = rightColor;
         assert session != null;
         if( !(session.setLeftPlayerName(leftName) && session.setRightPlayerName(rightName) && session.setGameDifficulty(difficulty))) {
             System.out.println("couldnt set either difficulty or player names");
@@ -53,6 +64,9 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
 
     // Creates a new GameScreen with the current session
     public GameScreen startNewGame(NavigationController nav) {
+        if (leftBoardColor != null && rightBoardColor != null) {
+            return new GameScreen(nav, session, leftBoardColor, rightBoardColor);
+        }
         return new GameScreen(nav, session);
     }
 

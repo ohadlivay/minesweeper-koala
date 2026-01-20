@@ -37,6 +37,10 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     private JButton infoIcon;
 
     public GameScreen(NavigationController nav, GameSession session) {
+        this(nav, session, null, null);
+    }
+
+    public GameScreen(NavigationController nav, GameSession session, ColorsInUse leftBoardColor, ColorsInUse rightBoardColor) {
         this.nav = nav;
         this.session = session;
         this.session.setActionMadeListener(this);
@@ -47,13 +51,17 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         animator = new ComponentAnimator();
         GameSessionController.getInstance().addInputBlockListener(this);
         initUI();
-        setBoards(session.getLeftBoard(), session.getRightBoard());
+        setBoards(session.getLeftBoard(), session.getRightBoard(), leftBoardColor, rightBoardColor);
         setPlayerNames(session.getLeftPlayerName(), session.getRightPlayerName());
     }
 
     public void setBoards(Board left, Board right) {
-        Color leftColor = ColorsInUse.getRandomWarmBoardColor().get();
-        Color rightColor = ColorsInUse.getRandomColdBoardColor().get();
+        setBoards(left, right, null, null);
+    }
+
+    public void setBoards(Board left, Board right, ColorsInUse leftBoardColor, ColorsInUse rightBoardColor) {
+        Color leftColor = (leftBoardColor != null) ? leftBoardColor.get() : ColorsInUse.getRandomWarmBoardColor().get();
+        Color rightColor = (rightBoardColor != null) ? rightBoardColor.get() : ColorsInUse.getRandomColdBoardColor().get();
 
         leftBoard = new BoardLayout(left, leftColor);
         rightBoard = new BoardLayout(right, rightColor);

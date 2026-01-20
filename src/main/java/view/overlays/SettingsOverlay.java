@@ -26,6 +26,10 @@ public class SettingsOverlay extends OverlayView {
     private JTextField player2Name;
     private JLabel gameInfo;
     private GameDifficulty selectedDifficulty;
+    private JComboBox<String> player1ColorCombo;
+    private JComboBox<String> player2ColorCombo;
+    private ColorsInUse player1SelectedColor;
+    private ColorsInUse player2SelectedColor;
 
     private final int PlAYER_TEXT_LENGTH = 15;
 
@@ -75,6 +79,10 @@ public class SettingsOverlay extends OverlayView {
     }
 
     public SettingsOverlay(NavigationController nav, String player1, String player2, GameDifficulty difficulty) {
+        this(nav, player1, player2, difficulty, null, null);
+    }
+
+    public SettingsOverlay(NavigationController nav, String player1, String player2, GameDifficulty difficulty, ColorsInUse player1Color, ColorsInUse player2Color) {
         this(nav);
         player1Name.setText(player1);
         player2Name.setText(player2);
@@ -83,6 +91,21 @@ public class SettingsOverlay extends OverlayView {
             updateSelection();
         } else {
             resetSelection();
+        }
+        
+        // Set color selections if provided
+        if (player1Color != null && player2Color != null) {
+            ColorsInUse[] warmColors = ColorsInUse.getWarmBoardColors();
+            for (int i = 0; i < warmColors.length; i++) {
+                if (warmColors[i] == player1Color) {
+                    player1ColorCombo.setSelectedIndex(i);
+                    player1SelectedColor = player1Color;
+                }
+                if (warmColors[i] == player2Color) {
+                    player2ColorCombo.setSelectedIndex(i);
+                    player2SelectedColor = player2Color;
+                }
+            }
         }
     }
 
@@ -176,8 +199,51 @@ public class SettingsOverlay extends OverlayView {
         namesPanel.setBackground(ColorsInUse.BG_COLOR.get());
         namesPanel.setBorder(new EmptyBorder(0, 20, 0, 20));
 
-        namesPanel.add(createInputGroup("Player 1", player1Name = createTextField()));
-        namesPanel.add(createInputGroup("Player 2", player2Name = createTextField()));
+        // Initialize color combos with warm board colors
+        ColorsInUse[] warmColors = ColorsInUse.getWarmBoardColors();
+        String[] colorNames = new String[warmColors.length];
+        for (int i = 0; i < warmColors.length; i++) {
+            colorNames[i] = warmColors[i].name().replace("_", " ");
+        }
+
+        player1ColorCombo = new JComboBox<>(colorNames);
+        player2ColorCombo = new JComboBox<>(colorNames);
+
+        // Set default selections (different colors)
+        player1ColorCombo.setSelectedIndex(0);
+        player2ColorCombo.setSelectedIndex(1);
+        player1SelectedColor = warmColors[0];
+        player2SelectedColor = warmColors[1];
+
+        // Style the combo boxes
+        styleColorComboBox(player1ColorCombo);
+        styleColorComboBox(player2ColorCombo);
+
+        // Add listeners to prevent same color selection
+        player1ColorCombo.addActionListener(e -> {
+            int selectedIndex = player1ColorCombo.getSelectedIndex();
+            player1SelectedColor = warmColors[selectedIndex];
+            if (player1SelectedColor == player2SelectedColor) {
+                // Find a different color for player 2
+                int newIndex = (selectedIndex + 1) % warmColors.length;
+                player2ColorCombo.setSelectedIndex(newIndex);
+                player2SelectedColor = warmColors[newIndex];
+            }
+        });
+
+        player2ColorCombo.addActionListener(e -> {
+            int selectedIndex = player2ColorCombo.getSelectedIndex();
+            player2SelectedColor = warmColors[selectedIndex];
+            if (player2SelectedColor == player1SelectedColor) {
+                // Find a different color for player 1
+                int newIndex = (selectedIndex + 1) % warmColors.length;
+                player1ColorCombo.setSelectedIndex(newIndex);
+                player1SelectedColor = warmColors[newIndex];
+            }
+        });
+
+        namesPanel.add(createInputGroup("Player 1", player1Name = createTextField(), player1ColorCombo));
+        namesPanel.add(createInputGroup("Player 2", player2Name = createTextField(), player2ColorCombo));
 
         gbc.gridy++;
         gbc.insets = new Insets(5, 50, 5, 50);
@@ -266,7 +332,7 @@ public class SettingsOverlay extends OverlayView {
         }
         try {
             // Check to see if the system has enough questions to start a game
-            GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty);
+            GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty, player1SelectedColor, player2SelectedColor);
         } catch (IllegalStateException e) {
             // e.getMessage() contains the detailed "Current: X, Required: Y..." string we built
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -311,6 +377,10 @@ public class SettingsOverlay extends OverlayView {
 
 
     private JPanel createInputGroup(String labelText, JTextField textField) {
+        return createInputGroup(labelText, textField, null);
+    }
+
+    private JPanel createInputGroup(String labelText, JTextField textField, JComboBox<String> colorCombo) {
         JPanel panel = new JPanel(new BorderLayout(0, 10));
         panel.setBackground(ColorsInUse.BG_COLOR.get());
 
@@ -328,7 +398,32 @@ public class SettingsOverlay extends OverlayView {
         bottomLabel.setForeground(new Color(0, 0, 0, 0));
 
         panel.add(label, BorderLayout.NORTH);
-        panel.add(textField, BorderLayout.CENTER);
+
+        if (colorCombo != null) {
+            // Create a panel to hold both text field and color selector
+            JPanel inputPanel = new JPanel();
+            inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
+            inputPanel.setBackground(ColorsInUse.BG_COLOR.get());
+
+            textField.setAlignmentX(Component.CENTER_ALIGNMENT);
+            inputPanel.add(textField);
+            inputPanel.add(Box.createVerticalStrut(5));
+
+            JLabel colorLabel = new JLabel("Board Color:", SwingConstants.CENTER);
+            colorLabel.setForeground(ColorsInUse.TEXT.get());
+            colorLabel.setFont(FontsInUse.PIXEL.getSize(18f));
+            colorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            inputPanel.add(colorLabel);
+            inputPanel.add(Box.createVerticalStrut(3));
+
+            colorCombo.setAlignmentX(Component.CENTER_ALIGNMENT);
+            inputPanel.add(colorCombo);
+
+            panel.add(inputPanel, BorderLayout.CENTER);
+        } else {
+            panel.add(textField, BorderLayout.CENTER);
+        }
+
         panel.add(bottomLabel, BorderLayout.SOUTH);
 
         textField.addKeyListener(answerKeyListener(textField, label, bottomLabel));
@@ -539,6 +634,54 @@ public class SettingsOverlay extends OverlayView {
         buffered = op.filter(buffered, null);
 
         return new ImageIcon(buffered);
+    }
+
+    private void styleColorComboBox(JComboBox<String> comboBox) {
+        comboBox.setPreferredSize(new Dimension(150, 30));
+        comboBox.setMaximumSize(new Dimension(150, 30));
+        comboBox.setBackground(ColorsInUse.BG_COLOR.get());
+        comboBox.setForeground(ColorsInUse.TEXT.get());
+        comboBox.setFont(FontsInUse.PIXEL.getSize(16f));
+        comboBox.setFocusable(false);
+        
+        // Custom renderer to show color preview
+        comboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                label.setFont(FontsInUse.PIXEL.getSize(16f));
+                
+                if (value != null) {
+                    String colorName = value.toString();
+                    ColorsInUse[] warmColors = ColorsInUse.getWarmBoardColors();
+                    for (ColorsInUse color : warmColors) {
+                        if (color.name().replace("_", " ").equals(colorName)) {
+                            // Create a small colored square as icon
+                            int size = 16;
+                            java.awt.image.BufferedImage img = new java.awt.image.BufferedImage(size, size, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+                            Graphics2D g2 = img.createGraphics();
+                            g2.setColor(color.get());
+                            g2.fillRect(0, 0, size, size);
+                            g2.setColor(Color.BLACK);
+                            g2.drawRect(0, 0, size-1, size-1);
+                            g2.dispose();
+                            label.setIcon(new ImageIcon(img));
+                            break;
+                        }
+                    }
+                }
+                
+                if (isSelected) {
+                    label.setBackground(ColorsInUse.BTN_COLOR.get());
+                    label.setForeground(ColorsInUse.TEXT.get());
+                } else {
+                    label.setBackground(ColorsInUse.BG_COLOR.get());
+                    label.setForeground(ColorsInUse.TEXT.get());
+                }
+                
+                return label;
+            }
+        });
     }
 
 }

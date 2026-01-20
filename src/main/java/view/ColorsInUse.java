@@ -132,4 +132,8 @@ public enum ColorsInUse {
         else
             return BOARD_BORDER_DEFAULT.get();
     }
+
+    public static ColorsInUse[] getWarmBoardColors() {
+        return BOARD_COLORS_WARM;
+    }
 }
