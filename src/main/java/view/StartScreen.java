@@ -270,7 +270,7 @@ public class StartScreen {
     /**
      * Helper method to load a resource with common image extensions and scale it.
      * Tries extensions .png, .jpg, .jpeg, .gif in order.
-     * 
+     *
      * @param resourceBase The base name of the resource (without extension).
      * @param width        The desired width.
      * @param height       The desired height.
@@ -299,3 +299,4 @@ public class StartScreen {
     }
 
 }
+

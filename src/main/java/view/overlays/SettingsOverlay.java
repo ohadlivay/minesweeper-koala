@@ -26,12 +26,22 @@ public class SettingsOverlay extends OverlayView {
     private JTextField player2Name;
     private JLabel gameInfo;
     private GameDifficulty selectedDifficulty;
+    private ColorsInUse player1Color;
+    private ColorsInUse player2Color;
+    private JPanel player1ColorPanel;
+    private JPanel player2ColorPanel;
+    private java.util.List<JButton> player1ColorButtons;
+    private java.util.List<JButton> player2ColorButtons;
 
     private final int PlAYER_TEXT_LENGTH = 15;
 
     public SettingsOverlay(NavigationController nav) {
         super(nav, true);
         initUI();
+
+        // Initialize default colors
+        this.player1Color = ColorsInUse.CRIMSON;
+        this.player2Color = ColorsInUse.SUNSET_ORANGE;
 
         buttonStart.addActionListener(e -> onOK());
         buttonBack.addActionListener(e -> onCancel());
@@ -86,11 +96,21 @@ public class SettingsOverlay extends OverlayView {
         }
     }
 
+    public SettingsOverlay(NavigationController nav, String player1, String player2, GameDifficulty difficulty, ColorsInUse color1, ColorsInUse color2) {
+        this(nav, player1, player2, difficulty);
+        if (color1 != null) {
+            this.player1Color = color1;
+        }
+        if (color2 != null) {
+            this.player2Color = color2;
+        }
+    }
+
     private void initUI() {
         contentPane = new BackgroundPanel("/overlay-bg.png");
         contentPane.setLayout(new BorderLayout());
         contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
-        contentPane.setPreferredSize(new Dimension(700, 530));
+        contentPane.setPreferredSize(new Dimension(700, 650));
 
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(ColorsInUse.BG_COLOR.get());
@@ -187,6 +207,25 @@ public class SettingsOverlay extends OverlayView {
 
         centerPanel.add(namesPanel, gbc);
 
+        // --- color selection panel ---
+        JPanel colorPanel = new JPanel(new GridLayout(1, 2, 20, 0));
+        colorPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        colorPanel.setBorder(new EmptyBorder(0, 20, 0, 20));
+
+        player1ColorPanel = createColorSelectionGroup("Player 1 Board Color", 1);
+        player2ColorPanel = createColorSelectionGroup("Player 2 Board Color", 2);
+
+        colorPanel.add(player1ColorPanel);
+        colorPanel.add(player2ColorPanel);
+
+        gbc.gridy++;
+        gbc.insets = new Insets(5, 50, 5, 50);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.weightx = 1.0;
+
+        centerPanel.add(colorPanel, gbc);
+
         // --- bottom buttons: back on the left, start centered ---
         buttonStart = createButton("START");
         buttonStart.setPreferredSize(new Dimension(180, 50));
@@ -266,7 +305,7 @@ public class SettingsOverlay extends OverlayView {
         }
         try {
             // Check to see if the system has enough questions to start a game
-            GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty);
+            GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty, player1Color, player2Color);
         } catch (IllegalStateException e) {
             // e.getMessage() contains the detailed "Current: X, Required: Y..." string we built
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -287,6 +326,14 @@ public class SettingsOverlay extends OverlayView {
 
     public String getPlayer2Name() {
         return player2Name.getText();
+    }
+
+    public ColorsInUse getPlayer1Color() {
+        return player1Color;
+    }
+
+    public ColorsInUse getPlayer2Color() {
+        return player2Color;
     }
 
 
@@ -333,6 +380,149 @@ public class SettingsOverlay extends OverlayView {
 
         textField.addKeyListener(answerKeyListener(textField, label, bottomLabel));
         return panel;
+    }
+
+    private JPanel createColorSelectionGroup(String labelText, int playerNumber) {
+        JPanel panel = new JPanel(new BorderLayout(0, 10));
+        panel.setBackground(ColorsInUse.BG_COLOR.get());
+
+        JLabel label = new JLabel(labelText, SwingConstants.CENTER);
+        label.setForeground(ColorsInUse.TEXT.get());
+        label.setFont(FontsInUse.PIXEL.getSize(20f));
+
+        JPanel colorButtonsPanel = new JPanel(new GridLayout(2, 4, 8, 8));
+        colorButtonsPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        colorButtonsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        ColorsInUse[] warmColors = ColorsInUse.getBoardColors();
+        ColorsInUse selectedColor = (playerNumber == 1) ? player1Color : player2Color;
+
+        java.util.List<JButton> buttonsList = new java.util.ArrayList<>();
+
+        for (ColorsInUse color : warmColors) {
+            JButton colorBtn = createColorButton(color, playerNumber, selectedColor);
+            buttonsList.add(colorBtn);
+            colorButtonsPanel.add(colorBtn);
+        }
+
+        // Store the button list for this player
+        if (playerNumber == 1) {
+            player1ColorButtons = buttonsList;
+        } else {
+            player2ColorButtons = buttonsList;
+        }
+
+        JScrollPane scrollPane = new JScrollPane(colorButtonsPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setPreferredSize(new Dimension(280, 120));
+        scrollPane.setMinimumSize(new Dimension(280, 100));
+        scrollPane.setMaximumSize(new Dimension(280, 100));
+        scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR.get());
+        scrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+
+        panel.add(label, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        return panel;
+    }
+
+    private JButton createColorButton(ColorsInUse color, int playerNumber, ColorsInUse selectedColor) {
+        JButton btn = new JButton();
+        btn.setPreferredSize(new Dimension(20, 20));
+        btn.setBackground(color.get());
+        btn.setOpaque(true);
+        btn.setBorderPainted(true);
+        btn.setFocusPainted(false);
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btn.setContentAreaFilled(true);
+
+        // Store the color in the button for later reference
+        btn.putClientProperty("color", color);
+        btn.putClientProperty("playerNumber", playerNumber);
+
+        // Check if this color is taken by the other player
+        boolean isTakenByOther = (playerNumber == 1) ? (color == player2Color) : (color == player1Color);
+        boolean isSelected = (color == selectedColor);
+
+        updateColorButtonAppearance(btn, color, isSelected, isTakenByOther);
+
+        btn.addActionListener(e -> {
+            if (!isTakenByOther) {
+                if (playerNumber == 1) {
+                    player1Color = color;
+                } else {
+                    player2Color = color;
+                }
+                soundManager.playOnce(SoundManager.SoundId.SELECTION);
+                // Refresh all color buttons to show updated state
+                refreshColorButtons();
+            }
+        });
+
+        return btn;
+    }
+
+    private void updateColorButtonAppearance(JButton btn, ColorsInUse color, boolean isSelected, boolean isTaken) {
+        if (isTaken) {
+            // Disabled state: grayed out appearance
+            btn.setEnabled(false);
+            btn.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
+            // Create a dimmed version of the color
+            Color originalColor = color.get();
+            Color dimmedColor = new Color(
+                (originalColor.getRed() + 32) / 2,
+                (originalColor.getGreen() + 32) / 2,
+                (originalColor.getBlue() + 32) / 2,
+                128  // Semi-transparent
+            );
+            btn.setBackground(dimmedColor);
+
+            // Add diagonal stripes pattern to indicate disabled state
+            btn.setBorder(BorderFactory.createLineBorder(new Color(100, 100, 100), 2));
+            btn.setToolTipText("Already selected by other player");
+        } else if (isSelected) {
+            // Selected state: bright border with highlight
+            btn.setEnabled(true);
+            btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            btn.setBackground(color.get());
+            btn.setBorder(BorderFactory.createLineBorder(ColorsInUse.BOARD_ACTIVE_BORDER.get(), 4));
+            btn.setToolTipText("Selected");
+        } else {
+            // Available state: normal appearance
+            btn.setEnabled(true);
+            btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            btn.setBackground(color.get());
+            btn.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
+            btn.setToolTipText("Click to select");
+        }
+    }
+
+    private void refreshColorButtons() {
+        // Update all player 1 color buttons
+        if (player1ColorButtons != null) {
+            for (JButton btn : player1ColorButtons) {
+                ColorsInUse color = (ColorsInUse) btn.getClientProperty("color");
+                if (color != null) {
+                    boolean isSelected = (color == player1Color);
+                    boolean isTaken = (color == player2Color);
+                    updateColorButtonAppearance(btn, color, isSelected, isTaken);
+                }
+            }
+        }
+
+        // Update all player 2 color buttons
+        if (player2ColorButtons != null) {
+            for (JButton btn : player2ColorButtons) {
+                ColorsInUse color = (ColorsInUse) btn.getClientProperty("color");
+                if (color != null) {
+                    boolean isSelected = (color == player2Color);
+                    boolean isTaken = (color == player1Color);
+                    updateColorButtonAppearance(btn, color, isSelected, isTaken);
+                }
+            }
+        }
     }
 
     private JTextField createTextField() {

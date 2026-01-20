@@ -70,37 +70,18 @@ public enum ColorsInUse {
     MUTED_CYAN      (new Color(80, 150, 170)),
     DENIM_BLUE      (new Color(75, 120, 180)),
     SAGE_GREEN      (new Color(140, 170, 130)),
-    PINE_TEAL       (new Color(80, 130, 120));
+    PINE_TEAL       (new Color(87, 122, 115));
 
-    // Warm colors – Board 1
-    private static final ColorsInUse[] BOARD_COLORS_WARM = {
-            CRIMSON,
-            SUNSET_ORANGE,
-            BROWN,
-            ROSE_GOLD,
-            TERRA_COTTA,
-            WINE,
-            SOFT_MAROON,
-            WARM_TAUPE,
-            CLAY_ORANGE,
-            COPPER_RED,
-            PEACH
-    };
-
-    // Cold colors – Board 2
-    private static final ColorsInUse[] BOARD_COLORS_COLD = {
-            MIDNIGHT_BLUE,
+    // Single mixed board palette (up to 8 muted, medium-toned colors)
+    private static final ColorsInUse[] BOARD_COLORS_MIXED = {
             ARCTIC_CYAN,
             EMERALD_GREEN,
+            CRIMSON,
             ROYAL_PURPLE,
-            FROST_BLUE,
-            PINE_GREEN,
-            SLATE_BLUE,
-            STEEL_TEAL,
-            MUTED_CYAN,
-            DENIM_BLUE,
-            SAGE_GREEN,
-            PINE_TEAL
+            WINE,
+            CLAY_ORANGE,
+            PEACH,
+            MIDNIGHT_BLUE
     };
 
     private final Color color;
@@ -113,18 +94,23 @@ public enum ColorsInUse {
         return color;
     }
 
+    // Primary API: random color from the single mixed palette
+    public static ColorsInUse getRandomBoardColor() {
+        return BOARD_COLORS_MIXED[new Random().nextInt(BOARD_COLORS_MIXED.length)];
+    }
+
+    // Backwards-compatible methods mapped to the mixed palette
     public static ColorsInUse getRandomWarmBoardColor() {
-        return BOARD_COLORS_WARM[
-                new Random().nextInt(BOARD_COLORS_WARM.length)
-                ];
+        return getRandomBoardColor();
     }
 
     public static ColorsInUse getRandomColdBoardColor() {
-        return BOARD_COLORS_COLD[
-                new Random().nextInt(BOARD_COLORS_COLD.length)
-                ];
+        return getRandomBoardColor();
     }
 
+    public static ColorsInUse[] getBoardColors() {
+        return BOARD_COLORS_MIXED;
+    }
 
     public static Color getBoardBorderColor(boolean turn) {
         if (turn)
