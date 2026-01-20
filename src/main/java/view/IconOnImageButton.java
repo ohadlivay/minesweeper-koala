@@ -3,7 +3,7 @@ package main.java.view;
 import javax.swing.*;
 import java.awt.*;
 
-class IconOnImageButton extends JButton {
+public class IconOnImageButton extends JButton {
     private final ImageIcon bg;
     private final Icon fg;
 
@@ -40,7 +40,7 @@ class IconOnImageButton extends JButton {
         setMargin(new Insets(0, 0, 0, 0));
 
         setToolTipText(tooltip);
-        setBorderPainted(false);
+        setBorderPainted(true);
         setContentAreaFilled(false);
         setFocusPainted(false);
         setOpaque(false);
@@ -66,6 +66,64 @@ class IconOnImageButton extends JButton {
         }
 
         g2.dispose();
+    }
+
+    // Factory method to create a koala difficulty button with wood background, koala icon, and text
+    public static IconOnImageButton createKoalaButton(
+            ImageIcon woodBg,
+            ImageIcon koalaIcon,
+            String text,
+            String tooltip,
+            Dimension size,
+            Runnable onClick
+    ) {
+        IconOnImageButton b = new IconOnImageButton(onClick, tooltip, size, null, null) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+
+                // bg
+                if (woodBg != null) {
+                    g2d.drawImage(woodBg.getImage(), 0, 0, getWidth(), getHeight(), this);
+                }
+
+                // koala
+                if (koalaIcon != null) {
+                    int koalaSize = 100;
+                    int koalaX = (getWidth() - koalaSize) / 2;
+                    int koalaY = 5;
+                    g2d.drawImage(koalaIcon.getImage(), koalaX, koalaY, this);
+                }
+
+                // text
+                g2d.setColor(Color.WHITE);
+                g2d.setFont(new Font("Arial", Font.BOLD, 16));
+                FontMetrics fm = g2d.getFontMetrics();
+                int textX = (getWidth() - fm.stringWidth(text)) / 2;
+                int textY = getHeight() - 12;
+                g2d.drawString(text, textX, textY);
+
+                // IMPORTANT: paint border last so it’s on top
+                javax.swing.border.Border border = getBorder();
+                if (border != null) {
+                    border.paintBorder(this, g2d, 0, 0, getWidth(), getHeight());
+                }
+
+                g2d.dispose();
+            }
+        };
+
+        // IMPORTANT: allow border painting
+        b.setBorderPainted(true);
+
+        // default padding (unselected state)
+        b.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+
+        return b;
     }
 
 }

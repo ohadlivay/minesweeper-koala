@@ -72,6 +72,11 @@ public enum ColorsInUse {
     SAGE_GREEN      (new Color(140, 170, 130)),
     PINE_TEAL       (new Color(87, 122, 115));
 
+    // Outline colors for difficulty (reusable static Colors so enum ordering is unaffected)
+    public static final Color DIFFICULTY_EASY_OUTLINE   = new Color(25, 135, 84);   // green
+    public static final Color DIFFICULTY_MEDIUM_OUTLINE = new Color(232, 132, 4);  // muted yellow-orange
+    public static final Color DIFFICULTY_HARD_OUTLINE   = new Color(220, 53, 69);   // red
+
     // Single mixed board palette (up to 8 muted, medium-toned colors)
     private static final ColorsInUse[] BOARD_COLORS_MIXED = {
             ARCTIC_CYAN,
@@ -110,6 +115,20 @@ public enum ColorsInUse {
 
     public static ColorsInUse[] getBoardColors() {
         return BOARD_COLORS_MIXED;
+    }
+
+    /**
+     * Return an outline color for a difficulty level.
+     * level: 0 = easy (green), 1 = medium (yellow-orange), 2 = hard (red).
+     * Any other value returns the medium color as default.
+     */
+    public static Color getDifficultyOutlineColor(int level) {
+        switch (level) {
+            case 0: return DIFFICULTY_EASY_OUTLINE;
+            case 1: return DIFFICULTY_MEDIUM_OUTLINE;
+            case 2: return DIFFICULTY_HARD_OUTLINE;
+            default: return DIFFICULTY_MEDIUM_OUTLINE;
+        }
     }
 
     public static Color getBoardBorderColor(boolean turn) {
