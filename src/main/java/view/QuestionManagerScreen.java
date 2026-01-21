@@ -126,7 +126,7 @@ public class QuestionManagerScreen extends JPanel {
         centerPanel.setOpaque(false);
 
         JScrollPane scrollPane = new JScrollPane(questionsTable);
-        scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
+        scrollPane.getViewport().setBackground(ColorsInUse.TABLE_BG_COLOR.get());
         scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
         centerPanel.add(scrollPane, BorderLayout.CENTER);
 
@@ -139,21 +139,11 @@ public class QuestionManagerScreen extends JPanel {
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setOpaque(false);
         bottomPanel.setBorder(new EmptyBorder(15, 0, 0, 0));
-        homeButton = createHomeButton();
+        homeButton = createIconButton("btn-square", "home-pixel", "Home");
         homeButton.addActionListener(e -> nav.goToHome());
         bottomPanel.add(homeButton, BorderLayout.WEST);
-        btnAdd = createStyledButton("", ColorsInUse.BTN_COLOR.get());
-        btnAdd.setPreferredSize(new Dimension(70, 40));
 
-        java.net.URL addIconUrl = getClass().getResource("/plus-pixel.png");
-        if (addIconUrl != null) {
-            ImageIcon icon = new ImageIcon(addIconUrl);
-            Image img = icon.getImage().getScaledInstance(24, 24, Image.SCALE_DEFAULT);
-            if(btnAdd != null)
-                btnAdd.setIcon(new ImageIcon(img));
-
-        }
-
+        btnAdd = createIconButton("btn-square", "plus-pixel", "Add a new question");
         btnAdd.addActionListener(e -> OverlayController.getInstance().showAddEditOverlay(null));
         bottomPanel.add(btnAdd, BorderLayout.EAST);
 
@@ -265,7 +255,7 @@ public class QuestionManagerScreen extends JPanel {
     }
 
     private void styleTable(JTable table) {
-        table.setBackground(ColorsInUse.BG_COLOR.get());
+        table.setBackground(ColorsInUse.TABLE_BG_COLOR.get());
         table.setForeground(ColorsInUse.TEXT.get());
         table.setSelectionBackground(ColorsInUse.BOARD_ACTIVE_BORDER2.get());
         table.setSelectionForeground(Color.BLACK);
@@ -310,13 +300,13 @@ public class QuestionManagerScreen extends JPanel {
         return btn;
     }
 
-    private JButton createHomeButton() {
-        ImageIcon bg = loadScaledIcon("btn-koala", 80, 70);
-        ImageIcon home = loadScaledIcon("home-pixel", 25, 25);
+    private JButton createIconButton(String resourcePathBtn, String resourcePathIcon, String tooltip) {
+        ImageIcon bg = loadScaledIcon(resourcePathBtn, 80, 70);
+        ImageIcon icon = loadScaledIcon(resourcePathIcon, 25, 25);
 
-        JButton homeButton = new IconOnImageButton("Home", new Dimension(80, 70), home, bg);
+        JButton iconOnImageButton = new IconOnImageButton(tooltip, new Dimension(80, 70), icon, bg);
 
-        return homeButton;
+        return iconOnImageButton;
     }
 
     private ImageIcon loadScaledIcon(String resourceBase, int width, int height) {

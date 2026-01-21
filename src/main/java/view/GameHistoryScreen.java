@@ -43,37 +43,51 @@ public class GameHistoryScreen extends JPanel{
 
     private void initUI() {
         setLayout(new BorderLayout());
-
         mainPanel = new BackgroundPanel("/start-bg.jpeg");
         mainPanel.setLayout(new BorderLayout(15, 15));
-        mainPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        mainPanel.setBackground(ColorsInUse.TABLE_BG_COLOR.get());
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+
         OutlinedLabel titleLabel = new OutlinedLabel("GAME HISTORY", Color.BLACK, 6f);
         titleLabel.setFont(FontsInUse.PIXEL.getSize(62f));
         titleLabel.setForeground(ColorsInUse.TEXT.get());
         titleLabel.setBorder(new EmptyBorder(0, 0, 10, 0));
         mainPanel.add(titleLabel, BorderLayout.NORTH);
 
-        //bottom panel holds home button
-        bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.setOpaque(false);
-        bottomPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
-        homeButton = createHomeButton();
-        homeButton.addActionListener(e -> nav.goToHome());
-        bottomPanel.add(homeButton, BorderLayout.WEST);
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+        JPanel centerPanel = createCenterPanel();
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
 
-        String[] columnNames = {"ID", "Date", "Player 1", "Player 2", "Score", "Difficulty","Result"};
+        JPanel controlsPanel = createControlsPanel();
+        mainPanel.add(controlsPanel, BorderLayout.SOUTH);
 
+        add(mainPanel, BorderLayout.CENTER);
+    }
+
+    private JPanel createCenterPanel() {
+        JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
+        centerPanel.setOpaque(false);
+
+        String[] columnNames = {"ID", "Date", "Player 1", "Player 2", "Score", "Difficulty", "Result"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Make all cells non-editable
+                return false;
             }
         };
         historyTable = new JTable(tableModel);
         styleTable(historyTable);
+        setupTableHeaderListener();
 
+        JScrollPane scrollPane = new JScrollPane(historyTable);
+        scrollPane.getViewport().setBackground(ColorsInUse.TABLE_BG_COLOR.get());
+        scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
+
+        centerPanel.add(createPagesPanel(), BorderLayout.SOUTH);
+        return centerPanel;
+    }
+
+    private void setupTableHeaderListener() {
         historyTable.getTableHeader().addMouseListener(new java.awt.event.MouseAdapter() {
             private int lastCol = -1;
             private boolean asc = true;
@@ -81,23 +95,18 @@ public class GameHistoryScreen extends JPanel{
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 int col = historyTable.columnAtPoint(e.getPoint());
-
-                // toggle direction if clicking same column
                 if (col == lastCol) asc = !asc;
                 else { asc = true; lastCol = col; }
 
                 Comparator<GameData> cmp = switch (col) {
                     case 0, 1 -> Comparator.comparingLong(GameData::getTimestampMillis);
-                    case 2 -> Comparator.comparing(g -> safe(g.getLeftPlayerName()),
-                            String.CASE_INSENSITIVE_ORDER);
-                    case 3 -> Comparator.comparing(g -> safe(g.getRightPlayerName()),
-                            String.CASE_INSENSITIVE_ORDER);
+                    case 2 -> Comparator.comparing(g -> safe(g.getLeftPlayerName()), String.CASE_INSENSITIVE_ORDER);
+                    case 3 -> Comparator.comparing(g -> safe(g.getRightPlayerName()), String.CASE_INSENSITIVE_ORDER);
                     case 4 -> Comparator.comparingInt(GameData::getPoints);
                     case 5 -> Comparator.comparingInt(g -> g.getGameDifficulty().ordinal());
                     case 6 -> Comparator.comparing(GameData::isWin);
                     default -> null;
                 };
-
 
                 if (cmp != null) {
                     allSessions.sort(asc ? cmp : cmp.reversed());
@@ -107,29 +116,18 @@ public class GameHistoryScreen extends JPanel{
 
             private String safe(String s) { return s == null ? "" : s; }
         });
+    }
 
-        JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
-        centerPanel.setOpaque(false);
+    private JPanel createControlsPanel() {
+        JPanel controlsPanel = new JPanel(new BorderLayout());
+        controlsPanel.setOpaque(false);
+        controlsPanel.setBorder(new EmptyBorder(15, 0, 0, 0));
 
-        JScrollPane scrollPane = new JScrollPane(historyTable);
-        scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR.get());
-        scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
-        centerPanel.add(scrollPane, BorderLayout.CENTER);
-
-        //pages navigation panel
-        JPanel pagesPanel = createPagesPanel();
-        centerPanel.add(pagesPanel, BorderLayout.SOUTH);
-
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
-
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.setOpaque(false);
-        bottomPanel.setBorder(new EmptyBorder(15, 0, 0, 0));
-        homeButton = createHomeButton();
+        homeButton = createIconButton("btn-square", "home-pixel", "Home");
         homeButton.addActionListener(e -> nav.goToHome());
-        bottomPanel.add(homeButton, BorderLayout.WEST);
+        controlsPanel.add(homeButton, BorderLayout.WEST);
 
-        JButton deleteBtn = createStyledButton("DELETE ALL", new Color(180, 50, 50));
+        JButton deleteBtn = createDeleteAllButton();
         deleteBtn.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(this,
                     "Are you sure you want to delete all history?", "Confirm", JOptionPane.YES_NO_OPTION);
@@ -137,11 +135,9 @@ public class GameHistoryScreen extends JPanel{
                 main.java.controller.HistoryController.getInstance().clearAllHistory();
             }
         });
-        bottomPanel.add(deleteBtn, BorderLayout.EAST);
+        controlsPanel.add(deleteBtn, BorderLayout.EAST);
 
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
-
-        add(mainPanel, BorderLayout.CENTER);
+        return controlsPanel;
     }
 
     public void populateHistoryTable(List<GameData> games) {
@@ -242,7 +238,7 @@ public class GameHistoryScreen extends JPanel{
     }
 
     private void styleTable(JTable table) {
-        table.setBackground(ColorsInUse.BG_COLOR.get());
+        table.setBackground(ColorsInUse.TABLE_BG_COLOR.get());
         table.setForeground(ColorsInUse.TEXT.get());
         table.setSelectionBackground(ColorsInUse.BOARD_ACTIVE_BORDER2.get());
         table.setSelectionForeground(Color.BLACK);
@@ -289,14 +285,58 @@ public class GameHistoryScreen extends JPanel{
         return btn;
     }
 
-    private JButton createHomeButton() {
-        ImageIcon bg = loadScaledIcon("btn-koala", 80, 70);
-        ImageIcon home = loadScaledIcon("home-pixel", 25, 25);
+    private JButton createIconButton(String resourcePathBtn, String resourcePathIcon, String tooltip) {
+        ImageIcon bg = loadScaledIcon(resourcePathBtn, 80, 70);
+        ImageIcon icon = loadScaledIcon(resourcePathIcon, 25, 25);
 
-        homeButton = new IconOnImageButton("Home", new Dimension(80, 70), home, bg);
-        homeButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        JButton iconOnImageButton = new IconOnImageButton(tooltip, new Dimension(80, 70), icon, bg);
 
-        return homeButton;
+        return iconOnImageButton;
+    }
+
+    private JButton createDeleteAllButton() {
+        ImageIcon bgIcon = loadScaledIcon("btn-koala", 150, 70);
+        JButton deleteBtn = new JButton(bgIcon);
+        deleteBtn.setPreferredSize(new Dimension(150, 70));
+        deleteBtn.setFocusPainted(false);
+        deleteBtn.setContentAreaFilled(false);
+        deleteBtn.setBorderPainted(false);
+        deleteBtn.setOpaque(false);
+        deleteBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        Color bgColor = ColorsInUse.DIFFICULTY_HARD_OUTLINE;
+
+        OutlinedLabel label = new OutlinedLabel("DELETE ALL", Color.WHITE, 2f);
+        label.setFont(FontsInUse.PIXEL.getSize(26f));
+        label.setForeground(bgColor); // Red text color
+
+
+        // need this ugly thing just for the slight downwards text offset
+        GridBagLayout gbl = new GridBagLayout();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(8, 0, 0, 0); // Top padding for downward offset
+
+        deleteBtn.setLayout(gbl);
+        gbl.setConstraints(label, gbc);
+        deleteBtn.add(label);
+
+        deleteBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                if (deleteBtn.isEnabled()) {
+                    label.setForeground(new Color(255, 100, 100));
+                }
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                if (deleteBtn.isEnabled()) {
+                    label.setForeground(bgColor);
+                }
+            }
+        });
+
+        return deleteBtn;
     }
 
     private ImageIcon loadScaledIcon(String resourceBase, int width, int height) {

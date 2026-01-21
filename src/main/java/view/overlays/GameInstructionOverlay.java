@@ -7,11 +7,15 @@ import main.java.view.ColorsInUse;
 import main.java.view.FontsInUse;
 import main.java.view.OutlinedLabel;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 
 public class GameInstructionOverlay extends OverlayView {
 
@@ -52,7 +56,7 @@ public class GameInstructionOverlay extends OverlayView {
         // --- MAIN CONTENT ---
         JPanel mainBody = new JPanel();
         mainBody.setLayout(new BoxLayout(mainBody, BoxLayout.Y_AXIS));
-        mainBody.setOpaque(false); // Fix for "white block" issue
+        mainBody.setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
 
         // 1. Cooperative Goal
         mainBody.add(Box.createRigidArea(new Dimension(0, 15)));
@@ -87,7 +91,7 @@ public class GameInstructionOverlay extends OverlayView {
         splitPanel.add(tilesCol);
 
         mainBody.add(splitPanel);
-        mainBody.add(Box.createRigidArea(new Dimension(0, 20)));
+        mainBody.add(Box.createRigidArea(new Dimension(0, 10)));
 
         // 3. Strategy Note
         mainBody.add(createHeader("PRO TIP"));
@@ -98,7 +102,7 @@ public class GameInstructionOverlay extends OverlayView {
         scroll.setBorder(null);
         scroll.setOpaque(false);
         scroll.getViewport().setOpaque(false);
-        scroll.getViewport().setBackground(new Color(0,0,0,0)); // Extra transparency layer
+        scroll.getViewport().setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get()); // Extra transparency layer
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         contentPane.add(scroll, BorderLayout.CENTER);
 
@@ -107,12 +111,7 @@ public class GameInstructionOverlay extends OverlayView {
         bottomPanel.setOpaque(false);
         bottomPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
-        JButton btnClose = new JButton("Close");
-        btnClose.setPreferredSize(new Dimension(110, 40));
-        btnClose.setBackground(ColorsInUse.BTN_COLOR.get());
-        btnClose.setForeground(ColorsInUse.TEXT.get());
-        btnClose.setFont(FontsInUse.PIXEL.getSize(20f));
-        btnClose.setFocusPainted(false);
+        JButton btnClose = createCloseButton();
         btnClose.addActionListener(e -> close());
 
         bottomPanel.add(btnClose);
@@ -139,17 +138,18 @@ public class GameInstructionOverlay extends OverlayView {
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.setOpaque(false);
-        textArea.setBackground(new Color(0,0,0,0)); // Ensure transparency
+        textArea.setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get()); // Ensure transparency
         textArea.setEditable(false);
         textArea.setFocusable(false);
         textArea.setAlignmentX(Component.CENTER_ALIGNMENT);
         // Corrected: Uses Insets instead of EmptyBorder
-        textArea.setMargin(new Insets(0, 10, 0, 10));
+        textArea.setMargin(new Insets(10, 10, 10, 10));
+        textArea.setBorder(new EmptyBorder(10, 10, 10, 10));
         return textArea;
     }
 
     private JPanel createInstructionRow(String resourcePath, String text) {
-        JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 5));
+        JPanel row = new JPanel(new FlowLayout(FlowLayout.CENTER, 12, 5));
         row.setOpaque(false);
         row.setMaximumSize(new Dimension(400, 45));
 
@@ -176,5 +176,55 @@ public class GameInstructionOverlay extends OverlayView {
     public void close() {
         GameSessionController.getInstance().setBlocked(false);
         super.close();
+    }
+
+    private JButton createCloseButton() {
+        ImageIcon bgIcon = loadScaledIcon("btn-koala", 150, 60);
+        JButton deleteBtn = new JButton(bgIcon);
+        deleteBtn.setPreferredSize(new Dimension(150, 60));
+        deleteBtn.setFocusPainted(false);
+        deleteBtn.setContentAreaFilled(false);
+        deleteBtn.setBorderPainted(false);
+        deleteBtn.setOpaque(false);
+        deleteBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        Color bgColor = ColorsInUse.TEXT.get();
+
+        OutlinedLabel label = new OutlinedLabel("CLOSE", Color.BLACK, 2f);
+        label.setFont(FontsInUse.PIXEL.getSize(30f));
+        label.setForeground(bgColor); // Red text color
+
+
+        // need this ugly thing just for the slight downwards text offset
+        GridBagLayout gbl = new GridBagLayout();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(8, 0, 0, 0); // Top padding for downward offset
+
+        deleteBtn.setLayout(gbl);
+        gbl.setConstraints(label, gbc);
+        deleteBtn.add(label);
+
+        return deleteBtn;
+    }
+
+    private ImageIcon loadScaledIcon(String resourceBase, int width, int height) {
+        String[] exts = {".png", ".jpg", ".jpeg", ".gif"};
+        for (String ext : exts) {
+            URL url = getClass().getResource("/" + resourceBase + ext);
+            if (url != null) {
+                try {
+                    BufferedImage img = ImageIO.read(url);
+                    if (img != null) {
+                        Image scaled = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+                        return new ImageIcon(scaled);
+                    }
+                } catch (IOException ignored) {
+                }
+            }
+        }
+        return null;
     }
 }

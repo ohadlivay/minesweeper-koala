@@ -256,8 +256,8 @@ public class SettingsOverlay extends OverlayView {
 
         // --- bottom buttons: back on the left, start centered ---
 
-        buttonStart = createButton("START");
-        buttonStart.setPreferredSize(new Dimension(180, 50));
+        buttonStart = createStartButton();
+       // buttonStart.setPreferredSize(new Dimension(180, 50));
 
         buttonBack = createTransparentIconButton("/back-pixel-2.png", 60, 50);
         buttonBack.addActionListener(e -> onCancel());
@@ -621,22 +621,16 @@ public class SettingsOverlay extends OverlayView {
 
     private JButton createKoalaButton(String resourcePath, String text, String tooltip, GameDifficulty difficulty) {
         int SQUARE_SIZE = 130;
+        int KOALA_SIZE = 80;
 
         // Load wood background
         ImageIcon woodBg = loadScaledIcon("btn-square", SQUARE_SIZE, SQUARE_SIZE);
 
-        // Load koala icon
-        ImageIcon koalaIcon = null;
-        try {
-            URL koalaUrl = getClass().getResource(resourcePath);
-            if (koalaUrl != null) {
-                ImageIcon icon = new ImageIcon(koalaUrl);
-                Image scaled = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-                koalaIcon = new ImageIcon(scaled);
-            }
-        } catch (Exception e) {
-            System.err.println("Error loading koala icon: " + e.getMessage());
-        }
+        // Load koala icon - extract filename without extension and load using consistent method
+        String iconName = resourcePath.contains("/") ? resourcePath.substring(resourcePath.lastIndexOf("/") + 1) : resourcePath;
+        // Remove extension if present
+        iconName = iconName.contains(".") ? iconName.substring(0, iconName.lastIndexOf(".")) : iconName;
+        ImageIcon koalaIcon = loadScaledIcon(iconName, KOALA_SIZE, KOALA_SIZE);
 
         // Create button using IconOnImageButton factory method
         IconOnImageButton btn = IconOnImageButton.createKoalaButton(
@@ -801,6 +795,38 @@ public class SettingsOverlay extends OverlayView {
         buffered = op.filter(buffered, null);
 
         return new ImageIcon(buffered);
+    }
+
+    private JButton createStartButton() {
+        ImageIcon bgIcon = loadScaledIcon("btn-koala", 150, 70);
+        JButton deleteBtn = new JButton(bgIcon);
+        deleteBtn.setPreferredSize(new Dimension(150, 70));
+        deleteBtn.setFocusPainted(false);
+        deleteBtn.setContentAreaFilled(false);
+        deleteBtn.setBorderPainted(false);
+        deleteBtn.setOpaque(false);
+        deleteBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        Color bgColor = ColorsInUse.TEXT.get();
+
+        OutlinedLabel label = new OutlinedLabel("START", Color.BLACK, 2f);
+        label.setFont(FontsInUse.PIXEL.getSize(30f));
+        label.setForeground(bgColor); // Red text color
+
+
+        // need this ugly thing just for the slight downwards text offset
+        GridBagLayout gbl = new GridBagLayout();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(8, 0, 0, 0); // Top padding for downward offset
+
+        deleteBtn.setLayout(gbl);
+        gbl.setConstraints(label, gbc);
+        deleteBtn.add(label);
+
+        return deleteBtn;
     }
 
     private ImageIcon loadScaledIcon(String resourceBase, int width, int height) {

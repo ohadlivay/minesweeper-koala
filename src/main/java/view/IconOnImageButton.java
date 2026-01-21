@@ -91,20 +91,21 @@ public class IconOnImageButton extends JButton {
                     g2d.drawImage(woodBg.getImage(), 0, 0, getWidth(), getHeight(), this);
                 }
 
-                // koala
+                // koala - center horizontally and position in upper portion
                 if (koalaIcon != null) {
-                    int koalaSize = 100;
-                    int koalaX = (getWidth() - koalaSize) / 2;
-                    int koalaY = 20;
-                    g2d.drawImage(koalaIcon.getImage(), koalaX, koalaY, this);
+                    int koalaWidth = koalaIcon.getIconWidth();
+                    int koalaHeight = koalaIcon.getIconHeight();
+                    int koalaX = (getWidth() - koalaWidth) / 2;
+                    int koalaY = 22; // Position lower on button
+                    g2d.drawImage(koalaIcon.getImage(), koalaX, koalaY, koalaWidth, koalaHeight, this);
                 }
 
-                // text
+                // text - position at bottom
                 g2d.setColor(Color.WHITE);
                 g2d.setFont(new Font("Arial", Font.BOLD, 16));
                 FontMetrics fm = g2d.getFontMetrics();
                 int textX = (getWidth() - fm.stringWidth(text)) / 2;
-                int textY = getHeight() - 14;
+                int textY = getHeight() - 20;
                 g2d.drawString(text, textX, textY);
 
                 // IMPORTANT: paint border last so it’s on top
