@@ -50,4 +50,19 @@ public class HistoryController {
         List<GameData> games = SysData.getInstance().getGames();
         view.populateHistoryTable(games);
     }
+
+    // clear all games from the list
+    public void clearAllHistory()
+    {
+        try {
+            // clear the list of games
+            SysData.getInstance().clearGames();
+            // clear the CSV file
+            main.java.util.GameDataCSVManager.deleteAllGames("GameHistory.csv");
+            // refresh the list
+            refreshGamesList();
+        }catch (Exception e){
+            System.err.println("Error clearing history: " + e.getMessage());
+        }
+    }
 }

@@ -129,6 +129,16 @@ public class GameHistoryScreen extends JPanel{
         homeButton.addActionListener(e -> nav.goToHome());
         bottomPanel.add(homeButton, BorderLayout.WEST);
 
+        JButton deleteBtn = createStyledButton("DELETE ALL", new Color(180, 50, 50));
+        deleteBtn.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "Are you sure you want to delete all history?", "Confirm", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                main.java.controller.HistoryController.getInstance().clearAllHistory();
+            }
+        });
+        bottomPanel.add(deleteBtn, BorderLayout.EAST);
+
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         add(mainPanel, BorderLayout.CENTER);
