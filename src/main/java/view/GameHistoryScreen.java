@@ -112,7 +112,7 @@ public class GameHistoryScreen extends JPanel{
         centerPanel.setOpaque(false);
 
         JScrollPane scrollPane = new JScrollPane(historyTable);
-        scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
+        scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR.get());
         scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
         centerPanel.add(scrollPane, BorderLayout.CENTER);
 
@@ -242,7 +242,7 @@ public class GameHistoryScreen extends JPanel{
     }
 
     private void styleTable(JTable table) {
-        table.setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
+        table.setBackground(ColorsInUse.BG_COLOR.get());
         table.setForeground(ColorsInUse.TEXT.get());
         table.setSelectionBackground(ColorsInUse.BOARD_ACTIVE_BORDER2.get());
         table.setSelectionForeground(Color.BLACK);

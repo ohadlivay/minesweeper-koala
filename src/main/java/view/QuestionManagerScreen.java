@@ -265,7 +265,7 @@ public class QuestionManagerScreen extends JPanel {
     }
 
     private void styleTable(JTable table) {
-        table.setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
+        table.setBackground(ColorsInUse.BG_COLOR.get());
         table.setForeground(ColorsInUse.TEXT.get());
         table.setSelectionBackground(ColorsInUse.BOARD_ACTIVE_BORDER2.get());
         table.setSelectionForeground(Color.BLACK);
