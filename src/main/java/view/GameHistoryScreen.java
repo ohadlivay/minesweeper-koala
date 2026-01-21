@@ -9,6 +9,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -17,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class GameHistoryScreen extends JPanel{
@@ -29,6 +32,11 @@ public class GameHistoryScreen extends JPanel{
     private DefaultTableModel tableModel;
     private JTable historyTable;
     private List<GameData> allSessions = new ArrayList<>();
+
+    // Add: filtered list and search field
+    private List<GameData> filteredSessions = new ArrayList<>();
+    private JTextField searchField;
+
     private int currentPage = 1;
     private final int rowsPerPage = 10;
     private OutlinedLabel pageLabel;
@@ -98,9 +106,11 @@ public class GameHistoryScreen extends JPanel{
                     default -> null;
                 };
 
-
                 if (cmp != null) {
-                    allSessions.sort(asc ? cmp : cmp.reversed());
+                    Comparator<GameData> finalCmp = asc ? cmp : cmp.reversed();
+                    allSessions.sort(finalCmp);
+                    // also sort filtered view to keep UI consistent
+                    filteredSessions.sort(finalCmp);
                     refreshPage();
                 }
             }
@@ -114,6 +124,26 @@ public class GameHistoryScreen extends JPanel{
         JScrollPane scrollPane = new JScrollPane(historyTable);
         scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR.get());
         scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
+
+        // ADD: Search Panel (placed above table)
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        searchPanel.setOpaque(false);
+        OutlinedLabel searchLabel = new OutlinedLabel("Search:", Color.BLACK, 2f);
+        searchLabel.setFont(FontsInUse.PIXEL.getSize(24f));
+        searchLabel.setForeground(ColorsInUse.TEXT.get());
+
+        searchField = new JTextField(15);
+        searchField.setFont(FontsInUse.PIXEL.getSize(20f));
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) { filterSessions(); }
+            public void removeUpdate(DocumentEvent e) { filterSessions(); }
+            public void changedUpdate(DocumentEvent e) { filterSessions(); }
+        });
+
+        searchPanel.add(searchLabel);
+        searchPanel.add(searchField);
+
+        centerPanel.add(searchPanel, BorderLayout.NORTH);
         centerPanel.add(scrollPane, BorderLayout.CENTER);
 
         //pages navigation panel
@@ -150,8 +180,8 @@ public class GameHistoryScreen extends JPanel{
         } else {
             this.allSessions = new ArrayList<>(games);
         }
-        this.currentPage = 1;
-        refreshPage();
+        // initialize filtered list according to current search (if any)
+        filterSessions();
     }
 
     private JPanel createPagesPanel() {
@@ -161,7 +191,7 @@ public class GameHistoryScreen extends JPanel{
         btnPrev = createStyledButton("<", ColorsInUse.BTN_COLOR.get());
         btnPrev.setPreferredSize(new Dimension(50, 36));
         btnPrev.addActionListener(e -> {
-            int maxPage = (int) Math.ceil((double) allSessions.size() / rowsPerPage);
+            int maxPage = (int) Math.ceil((double) filteredSessions.size() / rowsPerPage);
             if (currentPage > 1) {
                 currentPage--;
             }
@@ -179,7 +209,7 @@ public class GameHistoryScreen extends JPanel{
         btnNext = createStyledButton(">", ColorsInUse.BTN_COLOR.get());
         btnNext.setPreferredSize(new Dimension(50, 36));
         btnNext.addActionListener(e -> {
-            int maxPage = (int) Math.ceil((double) allSessions.size() / rowsPerPage);
+            int maxPage = (int) Math.ceil((double) filteredSessions.size() / rowsPerPage);
             if (currentPage < maxPage) {
                 currentPage++;
             }
@@ -196,17 +226,38 @@ public class GameHistoryScreen extends JPanel{
         return panel;
     }
 
+    // ADD: Filtering logic
+    private void filterSessions() {
+        String query = (searchField == null ? "" : searchField.getText()).toLowerCase().trim();
+        if (query.isEmpty()) {
+            filteredSessions = new ArrayList<>(allSessions);
+        } else {
+            filteredSessions = allSessions.stream()
+                    .filter(g ->
+                            (g.getLeftPlayerName() != null && g.getLeftPlayerName().toLowerCase().contains(query)) ||
+                            (g.getRightPlayerName() != null && g.getRightPlayerName().toLowerCase().contains(query)) ||
+                            (g.getGameDifficulty() != null && g.getGameDifficulty().toString().toLowerCase().contains(query)) ||
+                            String.valueOf(g.getPoints()).contains(query) ||
+                            (g.isWin() ? "win" : "lose").contains(query)
+                    )
+                    .collect(Collectors.toList());
+        }
+        currentPage = 1;
+        refreshPage();
+    }
+
+    // UPDATE: refreshPage to use filteredSessions
     private void refreshPage() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         tableModel.setRowCount(0);
-        if (allSessions.isEmpty()) {
+        if (filteredSessions == null || filteredSessions.isEmpty()) {
             pageLabel.setText("PAGE 0 OF 0");
             btnPrev.setEnabled(false);
             btnNext.setEnabled(false);
             return;
         }
 
-        int totalSessions= allSessions.size();
+        int totalSessions= filteredSessions.size();
         int maxPage = (int) Math.ceil((double) totalSessions / rowsPerPage);
 
         //ensure current page is valid
@@ -218,7 +269,7 @@ public class GameHistoryScreen extends JPanel{
 
         //add rows for the current page
         for (int i = start; i < end; i++) {
-            GameData s = allSessions.get(i);
+            GameData s = filteredSessions.get(i);
             String formattedDate = s.getTimeStamp().format(formatter);
             String result = s.isWin() ? "WIN" : "LOSE";
 
