@@ -234,11 +234,11 @@ public class GameHistoryScreen extends JPanel{
         } else {
             filteredSessions = allSessions.stream()
                     .filter(g ->
-                            (g.getLeftPlayerName() != null && g.getLeftPlayerName().toLowerCase().contains(query)) ||
-                            (g.getRightPlayerName() != null && g.getRightPlayerName().toLowerCase().contains(query)) ||
-                            (g.getGameDifficulty() != null && g.getGameDifficulty().toString().toLowerCase().contains(query)) ||
-                            String.valueOf(g.getPoints()).contains(query) ||
-                            (g.isWin() ? "win" : "lose").contains(query)
+                            g.getTimeStamp().toString().toLowerCase().contains(query) ||
+                                    g.getLeftPlayerName() != null && g.getLeftPlayerName().toLowerCase().contains(query) ||
+                                    g.getRightPlayerName() != null && g.getRightPlayerName().toLowerCase().contains(query) ||
+                                    g.getGameDifficulty() != null && g.getGameDifficulty().toString().toLowerCase().contains(query) ||
+                                    String.valueOf(g.getPoints()).contains(query) || (g.isWin() ? "win" : "lose").contains(query)
                     )
                     .collect(Collectors.toList());
         }
