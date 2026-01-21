@@ -52,8 +52,21 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     }
 
     public void setBoards(Board left, Board right) {
-        Color leftColor = ColorsInUse.getRandomWarmBoardColor().get();
-        Color rightColor = ColorsInUse.getRandomColdBoardColor().get();
+        Color leftColor;
+        Color rightColor;
+
+        // Use colors from controller if available, otherwise use defaults
+        if (GameSessionController.getInstance().getPlayer1BoardColor() != null) {
+            leftColor = GameSessionController.getInstance().getPlayer1BoardColor().get();
+        } else {
+            leftColor = ColorsInUse.getRandomWarmBoardColor().get();
+        }
+
+        if (GameSessionController.getInstance().getPlayer2BoardColor() != null) {
+            rightColor = GameSessionController.getInstance().getPlayer2BoardColor().get();
+        } else {
+            rightColor = ColorsInUse.getRandomColdBoardColor().get();
+        }
 
         leftBoard = new BoardLayout(left, leftColor);
         rightBoard = new BoardLayout(right, rightColor);

@@ -5,6 +5,7 @@ model.GameSession
 package main.java.controller;
 
 import main.java.model.*;
+import main.java.view.ColorsInUse;
 import main.java.view.GameScreen;
 
 import java.io.IOException;
@@ -15,6 +16,9 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
     private boolean isBlocked = false;
     private ArrayList<InputBlockListener> blockListeners = new ArrayList<>();
     private static GameSessionController instance;
+    private ColorsInUse player1BoardColor;
+    private ColorsInUse player2BoardColor;
+
     private GameSessionController() {
 
     }
@@ -43,6 +47,24 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
         session.clearListeners();
         this.blockListeners.clear();
         this.isBlocked = false;
+        this.player1BoardColor = null;
+        this.player2BoardColor = null;
+        assert session != null;
+        if( !(session.setLeftPlayerName(leftName) && session.setRightPlayerName(rightName) && session.setGameDifficulty(difficulty))) {
+            System.out.println("couldnt set either difficulty or player names");
+        }
+        session.initGame();
+        session.setDisplayQuestionListener(this);
+    }
+
+    // retrieves user inputs and sets up a new game session with custom board colors
+    public void setupGame(String leftName, String rightName, GameDifficulty difficulty, ColorsInUse color1, ColorsInUse color2) {
+        session = GameSession.getInstance();
+        session.clearListeners();
+        this.blockListeners.clear();
+        this.isBlocked = false;
+        this.player1BoardColor = color1;
+        this.player2BoardColor = color2;
         assert session != null;
         if( !(session.setLeftPlayerName(leftName) && session.setRightPlayerName(rightName) && session.setGameDifficulty(difficulty))) {
             System.out.println("couldnt set either difficulty or player names");
@@ -101,6 +123,14 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
 
     public GameSession getSession() {
         return session;
+    }
+
+    public ColorsInUse getPlayer1BoardColor() {
+        return player1BoardColor;
+    }
+
+    public ColorsInUse getPlayer2BoardColor() {
+        return player2BoardColor;
     }
 
 
