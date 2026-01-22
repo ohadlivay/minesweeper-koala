@@ -47,8 +47,8 @@ public class GameSessionController implements DisplayQuestionListener, InputBloc
         session.clearListeners();
         this.blockListeners.clear();
         this.isBlocked = false;
-        this.player1BoardColor = null;
-        this.player2BoardColor = null;
+        this.player1BoardColor = ColorsInUse.CRIMSON;
+        this.player2BoardColor = ColorsInUse.PEACH;
         assert session != null;
         if( !(session.setLeftPlayerName(leftName) && session.setRightPlayerName(rightName) && session.setGameDifficulty(difficulty))) {
             System.out.println("couldnt set either difficulty or player names");
