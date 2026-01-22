@@ -38,7 +38,8 @@ public class QuestionManagerScreen extends JPanel {
     private final int rowsPerPage = 10;
     private OutlinedLabel pageLabel;
     private JButton btnPrev, btnNext;
-    private JTextField searchField;
+    private JTextField questionFilterField;
+    private JComboBox difficultyBox;
 
     private final ComponentAnimator animator;
 
@@ -133,24 +134,9 @@ public class QuestionManagerScreen extends JPanel {
         JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
         centerPanel.setOpaque(false);
 
-        // Search panel (filters results as the user types)
-        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        searchPanel.setOpaque(false);
-        OutlinedLabel searchLabel = new OutlinedLabel("Search:", Color.BLACK, 2f);
-        searchLabel.setFont(FontsInUse.PIXEL.getSize(24f));
-        searchLabel.setForeground(Color.WHITE);
-
-        searchField = new JTextField(15);
-        searchField.setFont(FontsInUse.PIXEL.getSize(20f));
-        searchField.getDocument().addDocumentListener(new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) { filterQuestions(); }
-            public void removeUpdate(DocumentEvent e) { filterQuestions(); }
-            public void changedUpdate(DocumentEvent e) { filterQuestions(); }
-        });
-
-        searchPanel.add(searchLabel);
-        searchPanel.add(searchField);
-        centerPanel.add(searchPanel, BorderLayout.NORTH);
+        // Filter panel (filters results as the user types/selects)
+        JPanel filterPanel = createFilterPanel();
+        centerPanel.add(filterPanel, BorderLayout.NORTH);
 
         JScrollPane scrollPane = new JScrollPane(questionsTable);
         scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
@@ -207,7 +193,7 @@ public class QuestionManagerScreen extends JPanel {
             this.allQuestions = new ArrayList<>(questions);
         }
         // clear search so newly added item is visible, and reset filtered list
-        if (searchField != null) searchField.setText("");
+        if (questionFilterField != null) questionFilterField.setText("");
         this.filteredQuestions = new ArrayList<>(allQuestions);
 
         this.currentPage = (int) Math.ceil((double) filteredQuestions.size() / rowsPerPage);
@@ -216,6 +202,39 @@ public class QuestionManagerScreen extends JPanel {
         }
         refreshPage();
         animator.flashForeground(questionsTable, ColorsInUse.CONFIRM.get(), ColorsInUse.TEXT.get());
+    }
+
+    private JPanel createFilterPanel() {
+        JPanel toReturn = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        toReturn.setOpaque(false);
+        OutlinedLabel searchLabel = new OutlinedLabel("Question Text:", Color.BLACK, 2f);
+        searchLabel.setFont(FontsInUse.PIXEL.getSize(24f));
+        searchLabel.setForeground(ColorsInUse.TEXT.get());
+
+        questionFilterField = new JTextField(15);
+        questionFilterField.setFont(FontsInUse.PIXEL.getSize(20f));
+        questionFilterField.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) { filterQuestions(); }
+            public void removeUpdate(DocumentEvent e) { filterQuestions(); }
+            public void changedUpdate(DocumentEvent e) { filterQuestions(); }
+        });
+
+        toReturn.add(searchLabel);
+        toReturn.add(questionFilterField);
+        toReturn.add(Box.createRigidArea(new Dimension(10, 0)));
+
+        OutlinedLabel difficultyLabel = new OutlinedLabel("Difficulty:", Color.BLACK, 2f);
+        difficultyLabel.setFont(FontsInUse.PIXEL.getSize(24f));
+        difficultyLabel.setForeground(ColorsInUse.TEXT.get());
+        difficultyBox = new JComboBox<>(new String[]{"All", "Easy", "Medium", "Hard"});
+        difficultyBox.setFont(FontsInUse.PIXEL.getSize(20f));
+        difficultyBox.addActionListener(e -> filterQuestions());
+
+        toReturn.add(difficultyLabel);
+        toReturn.add(difficultyBox);
+        toReturn.add(Box.createRigidArea(new Dimension(10, 0)));
+
+        return toReturn;
     }
 
     private JPanel createPagesPanel() {
@@ -256,19 +275,27 @@ public class QuestionManagerScreen extends JPanel {
         return panel;
     }
 
-    // Filter logic: updates filteredQuestions based on searchField text and refreshes page
+    // Filter logic: updates filteredQuestions based on searchField text and difficulty filter
     private void filterQuestions() {
-        String query = (searchField != null ? searchField.getText() : "").toLowerCase();
-        if (query.trim().isEmpty()) {
-            filteredQuestions = new ArrayList<>(allQuestions);
-        } else {
-            filteredQuestions = allQuestions.stream()
-                    .filter(q -> String.valueOf(q.getId()).contains(query) ||
+        String query = (questionFilterField != null ? questionFilterField.getText() : "").toLowerCase().trim();
+        String selectedDifficulty = (difficultyBox != null) ? (String) difficultyBox.getSelectedItem() : "All";
+
+        filteredQuestions = allQuestions.stream()
+                .filter(q -> {
+                    // Question text filter
+                    boolean matchesQuery = query.isEmpty() ||
+                            String.valueOf(q.getId()).contains(query) ||
                             (q.getQuestionText() != null && q.getQuestionText().toLowerCase().contains(query)) ||
-                            (q.getDifficulty() != null && q.getDifficulty().toString().toLowerCase().contains(query)) ||
-                            (q.getAnswer1() != null && q.getAnswer1().toLowerCase().contains(query)))
-                    .collect(Collectors.toList());
-        }
+                            (q.getAnswer1() != null && q.getAnswer1().toLowerCase().contains(query));
+
+                    // Difficulty filter ("All" = show all)
+                    boolean matchesDifficulty = selectedDifficulty.equals("All") ||
+                            (q.getDifficulty() != null && q.getDifficulty().toString().equalsIgnoreCase(selectedDifficulty));
+
+                    return matchesQuery && matchesDifficulty;
+                })
+                .collect(Collectors.toList());
+
         currentPage = 1;
         refreshPage();
     }
