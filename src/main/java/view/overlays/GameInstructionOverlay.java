@@ -37,7 +37,7 @@ public class GameInstructionOverlay extends OverlayView {
         // Use BackgroundPanel as the main content pane
         JPanel contentPane = new BackgroundPanel("/overlay-bg.png");
         contentPane.setLayout(new BorderLayout());
-        contentPane.setBorder(new EmptyBorder(25, 30, 20, 30));
+        contentPane.setBorder(new EmptyBorder(18, 30, 18, 30));
 
         // --- TITLE SECTION ---
         // Use a thinner, semi-transparent outline and add bottom padding so the stroke doesn't create a visible line
@@ -109,8 +109,7 @@ public class GameInstructionOverlay extends OverlayView {
         // --- BOTTOM PANEL ---
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.setOpaque(false);
-        bottomPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        bottomPanel.setPreferredSize(new Dimension(800, 150));
+        bottomPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
 
         JButton btnClose = createCloseButton();
         btnClose.addActionListener(e -> close());
