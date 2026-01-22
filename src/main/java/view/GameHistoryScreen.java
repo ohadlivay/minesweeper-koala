@@ -69,19 +69,6 @@ public class GameHistoryScreen extends JPanel{
         titleLabel.setBorder(new EmptyBorder(0, 0, 10, 0));
         mainPanel.add(titleLabel, BorderLayout.NORTH);
 
-        JPanel centerPanel = createCenterPanel();
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
-
-        JPanel controlsPanel = createControlsPanel();
-        mainPanel.add(controlsPanel, BorderLayout.SOUTH);
-
-        add(mainPanel, BorderLayout.CENTER);
-    }
-
-    private JPanel createCenterPanel() {
-        JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
-        centerPanel.setOpaque(false);
-
         String[] columnNames = {"ID", "Date", "Player 1", "Player 2", "Score", "Difficulty", "Result"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
@@ -92,6 +79,22 @@ public class GameHistoryScreen extends JPanel{
         historyTable = new JTable(tableModel);
         styleTable(historyTable);
         setupTableHeaderListener();
+
+        JPanel centerPanel = createCenterPanel();
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
+
+        JPanel bottomPanel = createBottomPanel();
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        add(mainPanel, BorderLayout.CENTER);
+    }
+
+    private JPanel createCenterPanel() {
+        JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
+        centerPanel.setOpaque(false);
+
+        JPanel filterPanel = createFilterPanel();
+        centerPanel.add(filterPanel, BorderLayout.NORTH);
 
         JScrollPane scrollPane = new JScrollPane(historyTable);
         scrollPane.getViewport().setBackground(ColorsInUse.TABLE_BG_COLOR.get());
@@ -136,23 +139,14 @@ public class GameHistoryScreen extends JPanel{
         });
     }
 
-    private JPanel createControlsPanel() {
-        JPanel controlsPanel = new JPanel(new BorderLayout());
-        controlsPanel.setOpaque(false);
-        controlsPanel.setBorder(new EmptyBorder(15, 0, 0, 0));
-        JScrollPane scrollPane = new JScrollPane(historyTable);
-        scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR.get());
-        scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
-
-        // ADD: Search Panel (placed above table)
-        JPanel filterPanel = createFilterPanel();
-
-        controlsPanel.add(filterPanel, BorderLayout.NORTH);
-        controlsPanel.add(scrollPane, BorderLayout.CENTER);
+    private JPanel createBottomPanel() {
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.setOpaque(false);
+        bottomPanel.setBorder(new EmptyBorder(15, 0, 0, 0));
 
         homeButton = createIconButton("btn-square", "home-pixel", "Home");
         homeButton.addActionListener(e -> nav.goToHome());
-        controlsPanel.add(homeButton, BorderLayout.WEST);
+        bottomPanel.add(homeButton, BorderLayout.WEST);
 
         JButton deleteBtn = createDeleteAllButton();
         deleteBtn.addActionListener(e -> {
@@ -162,9 +156,9 @@ public class GameHistoryScreen extends JPanel{
                 main.java.controller.HistoryController.getInstance().clearAllHistory();
             }
         });
-        controlsPanel.add(deleteBtn, BorderLayout.EAST);
+        bottomPanel.add(deleteBtn, BorderLayout.EAST);
 
-        return controlsPanel;
+        return bottomPanel;
     }
 
     public void populateHistoryTable(List<GameData> games) {
