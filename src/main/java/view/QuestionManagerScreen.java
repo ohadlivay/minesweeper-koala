@@ -216,7 +216,7 @@ public class QuestionManagerScreen extends JPanel {
         OutlinedLabel difficultyLabel = new OutlinedLabel("Difficulty:", Color.BLACK, 2f);
         difficultyLabel.setFont(FontsInUse.PIXEL.getSize(24f));
         difficultyLabel.setForeground(ColorsInUse.TEXT.get());
-        difficultyBox = new JComboBox<>(new String[]{"All", "Easy", "Medium", "Hard"});
+        difficultyBox = new JComboBox<>(new String[]{"All", "Easy", "Medium", "Hard","Master"});
         difficultyBox.setFont(FontsInUse.PIXEL.getSize(20f));
         difficultyBox.addActionListener(e -> filterQuestions());
 
