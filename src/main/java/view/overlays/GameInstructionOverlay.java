@@ -109,7 +109,8 @@ public class GameInstructionOverlay extends OverlayView {
         // --- BOTTOM PANEL ---
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.setOpaque(false);
-        bottomPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
+        bottomPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        bottomPanel.setPreferredSize(new Dimension(800, 150));
 
         JButton btnClose = createCloseButton();
         btnClose.addActionListener(e -> close());
@@ -208,23 +209,5 @@ public class GameInstructionOverlay extends OverlayView {
         deleteBtn.add(label);
 
         return deleteBtn;
-    }
-
-    private ImageIcon loadScaledIcon(String resourceBase, int width, int height) {
-        String[] exts = {".png", ".jpg", ".jpeg", ".gif"};
-        for (String ext : exts) {
-            URL url = getClass().getResource("/" + resourceBase + ext);
-            if (url != null) {
-                try {
-                    BufferedImage img = ImageIO.read(url);
-                    if (img != null) {
-                        Image scaled = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-                        return new ImageIcon(scaled);
-                    }
-                } catch (IOException ignored) {
-                }
-            }
-        }
-        return null;
     }
 }

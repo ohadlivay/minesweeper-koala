@@ -134,7 +134,7 @@ public class SettingsOverlay extends OverlayView {
         //centerPanel.setBackground(ColorsInUse.BG_COLOR.get());
         centerPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 15, 15, 15);
+        gbc.insets = new Insets(10, 15, 10, 15);
         gbc.gridx = 0;
 
         JPanel difficultyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 0));
@@ -184,7 +184,7 @@ public class SettingsOverlay extends OverlayView {
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.NONE;
         gbc.weightx = 1.0;
-        gbc.insets = new Insets(15, 15, 10, 15);
+        gbc.insets = new Insets(10, 15, 10, 15);
         centerPanel.add(difficultyPanel, gbc);
 
         // --- game info ---
@@ -264,7 +264,7 @@ public class SettingsOverlay extends OverlayView {
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setOpaque(false);
-        bottomPanel.setPreferredSize(new Dimension(700, 70));
+        bottomPanel.setPreferredSize(new Dimension(700, 100));
 
         // a little padding so the back button isn't glued to the edge
         JPanel backWrap = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
@@ -547,7 +547,7 @@ public class SettingsOverlay extends OverlayView {
             btn.setEnabled(true);
             btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             btn.setBackground(color.get());
-            btn.setBorder(BorderFactory.createLineBorder(ColorsInUse.BOARD_ACTIVE_BORDER.get(), 4));
+            btn.setBorder(BorderFactory.createLineBorder(ColorsInUse.BOARD_ACTIVE_BORDER.get(), 4, true));
             btn.setToolTipText("Selected");
         } else {
             // Available state: normal appearance
@@ -827,24 +827,6 @@ public class SettingsOverlay extends OverlayView {
         deleteBtn.add(label);
 
         return deleteBtn;
-    }
-
-    private ImageIcon loadScaledIcon(String resourceBase, int width, int height) {
-        String[] exts = {".png", ".jpg", ".jpeg", ".gif"};
-        for (String ext : exts) {
-            URL url = getClass().getResource("/" + resourceBase + ext);
-            if (url != null) {
-                try {
-                    BufferedImage img = ImageIO.read(url);
-                    if (img != null) {
-                        Image scaled = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-                        return new ImageIcon(scaled);
-                    }
-                } catch (IOException ignored) {
-                }
-            }
-        }
-        return null;
     }
 
 }

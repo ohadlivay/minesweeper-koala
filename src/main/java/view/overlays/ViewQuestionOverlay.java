@@ -7,9 +7,7 @@ import main.java.model.Board;
 import main.java.model.DisplayQuestionListener;
 import main.java.model.Question;
 import main.java.model.QuestionDifficulty;
-import main.java.view.ColorsInUse;
-import main.java.view.FontsInUse;
-import main.java.view.OutlinedLabel;
+import main.java.view.*;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -55,21 +53,21 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
     }
 
     private void initUI() {
-        contentPane = new JPanel(new BorderLayout());
-        contentPane.setBackground(ColorsInUse.BG_COLOR.get());
-        contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
+        contentPane = new BackgroundPanel("/wood-bg.png");
+        contentPane.setOpaque(false);
+        contentPane.setBorder(new EmptyBorder(50, 20, 20, 20));
         contentPane.setPreferredSize(new Dimension(800, 600));
 
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
-        titlePanel.setBackground(ColorsInUse.BG_COLOR.get());
+        titlePanel.setOpaque(false);
 
         OutlinedLabel titleLabel = new OutlinedLabel("Question", Color.BLACK, 6f);
         titleLabel.setFont(FontsInUse.PIXEL.getSize(62f));
         titleLabel.setForeground(ColorsInUse.TEXT.get());
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        difficultyLabel = new JLabel("Difficulty: Easy");
+        difficultyLabel = new OutlinedLabel("Difficulty: Easy", Color.BLACK, 3f);
         difficultyLabel.setFont(FontsInUse.PIXEL.getSize(32f));
         difficultyLabel.setForeground(ColorsInUse.TEXT.get());
         difficultyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -77,13 +75,13 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         titlePanel.add(titleLabel);
         titlePanel.add(Box.createVerticalStrut(5));
         titlePanel.add(difficultyLabel);
-        titlePanel.add(Box.createVerticalStrut(20));
+        titlePanel.add(Box.createVerticalStrut(10));
 
         contentPane.add(titlePanel, BorderLayout.NORTH);
 
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-        centerPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        centerPanel.setOpaque(false);
         centerPanel.setBorder(new EmptyBorder(0, 40, 0, 40));
 
         // Initialized as a JLabel with center alignment
@@ -91,24 +89,25 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         questionText.setFont(FontsInUse.PIXEL.getSize(36f));
         questionText.setForeground(ColorsInUse.TEXT.get());
         questionText.setAlignmentX(Component.CENTER_ALIGNMENT);
-        questionText.setPreferredSize(new Dimension(700, 100));
+        questionText.setOpaque(false);
+        questionText.setPreferredSize(new Dimension(600, 100));
 
         centerPanel.add(questionText);
-        centerPanel.add(Box.createVerticalStrut(20));
+        centerPanel.add(Box.createVerticalStrut(10));
 
         answersPanel = new JPanel(new GridLayout(4, 1, 0, 15));
-        answersPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        answersPanel.setOpaque(false);
         answersPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        answersPanel.setMaximumSize(new Dimension(800, 300));
+        answersPanel.setMaximumSize(new Dimension(600, 300));
 
         centerPanel.add(answersPanel);
         contentPane.add(centerPanel, BorderLayout.CENTER);
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        bottomPanel.setBackground(ColorsInUse.BG_COLOR.get());
-        bottomPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
+        bottomPanel.setOpaque(false);
+        bottomPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
-        buttonSubmit = createButton("/v-pixel.png");
+        buttonSubmit = createIconButton("/v-pixel.png", "Submit Answer");
 
         bottomPanel.add(buttonSubmit);
         contentPane.add(bottomPanel, BorderLayout.SOUTH);
@@ -176,26 +175,13 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         return btn;
     }
 
-    private JButton createButton(String iconPath) {
-        JButton btn = new JButton();
-        btn.setPreferredSize(new Dimension(150, 45));
-        btn.setMinimumSize(new Dimension(150, 45));
-        btn.setMaximumSize(new Dimension(150, 45));
-        btn.setBackground(ColorsInUse.BTN_COLOR.get());
-        btn.setFocusPainted(false);
+    private JButton createIconButton(String resourcePath, String tooltip) {
+        ImageIcon bg = loadScaledIcon("btn-square", 100, 90);
+        ImageIcon icon = loadScaledIcon(resourcePath, 30, 30);
 
-        java.net.URL iconUrl = getClass().getResource(iconPath);
-        if (iconUrl != null) {
-            ImageIcon icon = new ImageIcon(iconUrl);
-            Image scaled = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-            btn.setIcon(new ImageIcon(scaled));
-        } else {
-            btn.setText("Submit");
-            btn.setForeground(ColorsInUse.TEXT.get());
-            btn.setFont(FontsInUse.PIXEL.getSize(32f));
-        }
+        JButton iconOnImageButton = new IconOnImageButton(tooltip, new Dimension(100, 90), icon, bg);
 
-        return btn;
+        return iconOnImageButton;
     }
 
     @Override

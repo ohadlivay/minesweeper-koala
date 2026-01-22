@@ -147,6 +147,7 @@ public class ComponentAnimator {
         });
 
         c.setBackground(base);
+        c.setOpaque(false);
 
         if (canAnimate(c, t)) t.start();
     }

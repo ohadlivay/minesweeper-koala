@@ -101,7 +101,13 @@ public class IconOnImageButton extends JButton {
                 }
 
                 // text - position at bottom
-                g2d.setColor(Color.WHITE);
+                switch (text) {
+                    case "Easy" -> g2d.setColor(ColorsInUse.DIFFICULTY_EASY_OUTLINE);
+                    case "Medium" -> g2d.setColor(ColorsInUse.DIFFICULTY_MEDIUM_OUTLINE);
+                    case "Hard" -> g2d.setColor(ColorsInUse.DIFFICULTY_HARD_OUTLINE);
+                    default -> g2d.setFont(new Font("Arial", Font.BOLD, 14));
+                }
+
                 g2d.setFont(new Font("Arial", Font.BOLD, 16));
                 FontMetrics fm = g2d.getFontMetrics();
                 int textX = (getWidth() - fm.stringWidth(text)) / 2;

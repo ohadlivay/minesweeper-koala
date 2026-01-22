@@ -7,9 +7,7 @@ import main.java.model.QuestionDifficulty;
 import main.java.model.SysData;
 import main.java.util.QuestionCSVManager;
 import main.java.util.SoundManager;
-import main.java.view.ColorsInUse;
-import main.java.view.FontsInUse;
-import main.java.view.OutlinedLabel;
+import main.java.view.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -61,9 +59,10 @@ public class AddEditQuestionOverlay extends OverlayView {
     }
 
     private void initUI() {
-        JPanel contentPanel = new JPanel(new BorderLayout(20, 20));
-        contentPanel.setBorder(new EmptyBorder(20, 50, 20, 50));
-        contentPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        JPanel contentPanel = new BackgroundPanel("/wood-bg.png");
+        contentPanel.setLayout(new BorderLayout(20, 20));
+        contentPanel.setBorder(new EmptyBorder(20, 55, 20, 55));
+        //contentPanel.setBackground(ColorsInUse.BG_COLOR.get());
         contentPanel.setPreferredSize(new Dimension(800, 600));
 
 
@@ -72,13 +71,13 @@ public class AddEditQuestionOverlay extends OverlayView {
         OutlinedLabel titleLabel = new OutlinedLabel(titleText, Color.BLACK, 5f);
         titleLabel.setFont(FontsInUse.PIXEL.getSize(40f));
         titleLabel.setForeground(ColorsInUse.TEXT.get());
-        titleLabel.setBorder(new EmptyBorder(0, 0, 5, 0));
+        titleLabel.setBorder(new EmptyBorder(0, 2, 5, 2));
         contentPanel.add(titleLabel, BorderLayout.NORTH);
 
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 0, 5, 0);
+        gbc.insets = new Insets(5, 10, 5, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.weightx = 1.0;
@@ -92,7 +91,7 @@ public class AddEditQuestionOverlay extends OverlayView {
 
         formPanel.add(createLabel("Question Text:"), gbc);
         gbc.gridy++;
-        questionArea = new JTextArea(6, 20);
+        questionArea = new JTextArea(6, 18);
         questionArea.setLineWrap(true);
         questionArea.setWrapStyleWord(true);
         questionArea.setFont(FontsInUse.PIXEL.getSize(22f));
@@ -108,8 +107,8 @@ public class AddEditQuestionOverlay extends OverlayView {
         questionArea.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
         questionArea.addFocusListener(placeholderListener);
 
-        textLimitLabel = new JLabel("0/" + Question.getMaxQuestionLength());
-        textLimitLabel.setFont(FontsInUse.PIXEL.getSize(14f));
+        textLimitLabel = new OutlinedLabel("0/" + Question.getMaxQuestionLength(), Color.BLACK, 3f);
+        textLimitLabel.setFont(FontsInUse.PIXEL.getSize(18f));
         textLimitLabel.setForeground(ColorsInUse.PLACEHOLDER_TEXT.get());
 
         questionArea.addKeyListener(new KeyAdapter() {
@@ -210,7 +209,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         gbc.gridy++;
 
         // answers area
-        gbc.insets = new Insets(4, 0, 4, 0);
+        gbc.insets = new Insets(4, 10, 4, 10);
         formPanel.add(createLabel("Answers:"), gbc);
         gbc.gridy++;
 
@@ -260,9 +259,25 @@ public class AddEditQuestionOverlay extends OverlayView {
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         wrapper.add(btn);
 
-        wrapper.add(Box.createVerticalStrut(5));
+        wrapper.add(Box.createVerticalStrut(2));
 
-        JLabel lbl = new JLabel(labelText);
+        Color labelColor = ColorsInUse.TEXT.get();
+        switch (labelText) {
+            case "Easy":
+                labelColor = ColorsInUse.DIFFICULTY_EASY_OUTLINE;
+                break;
+            case "Medium":
+                labelColor = ColorsInUse.DIFFICULTY_MEDIUM_OUTLINE;
+                break;
+            case "Hard":
+                labelColor = ColorsInUse.DIFFICULTY_HARD_OUTLINE;
+                break;
+            case "Master":
+                labelColor = ColorsInUse.DIFFICULTY_MASTER_OUTLINE;
+                break;
+        }
+
+        JLabel lbl = new OutlinedLabel(labelText, labelColor, 3f);
         lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
         lbl.setFont(FontsInUse.PIXEL.getSize(20f));
         lbl.setForeground(ColorsInUse.TEXT.get());
@@ -278,8 +293,7 @@ public class AddEditQuestionOverlay extends OverlayView {
         btn.setFocusPainted(false);
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(true);
-        btn.setBackground(ColorsInUse.BG_COLOR.get());
-
+        btn.setOpaque(false);
         try {
             java.net.URL url = getClass().getResource(resourcePath);
             if (url != null) {
@@ -298,37 +312,12 @@ public class AddEditQuestionOverlay extends OverlayView {
     }
 
     private JButton createIconButton(String resourcePath, String tooltip) {
-        JButton btn = new JButton();
-        btn.setToolTipText(tooltip);
-        btn.setBackground(ColorsInUse.BTN_COLOR.get());
-        btn.setPreferredSize(new Dimension(100, 50));
-        btn.setFocusPainted(false);
+        ImageIcon bg = loadScaledIcon("btn-square", 80, 70);
+        ImageIcon icon = loadScaledIcon(resourcePath, 25, 25);
 
-        try {
-            java.net.URL url = getClass().getResource(resourcePath);
-            if (url != null) {
-                ImageIcon icon = new ImageIcon(url);
-                Image img = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
-                btn.setIcon(new ImageIcon(img));
-            } else {
-                btn.setText(tooltip);
-            }
-        } catch (Exception e) {
-            btn.setText(tooltip);
-        }
+        JButton iconOnImageButton = new IconOnImageButton(tooltip, new Dimension(80, 70), icon, bg);
 
-        //hover animation for buttons
-        btn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btn.setBackground(ColorsInUse.BTN_COLOR.get().brighter());
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                btn.setBackground(ColorsInUse.BTN_COLOR.get());
-            }
-        });
-
-        return btn;
+        return iconOnImageButton;
     }
 
     /**
@@ -350,7 +339,7 @@ public class AddEditQuestionOverlay extends OverlayView {
                 case HARD -> btnHard;
                 case MASTER -> btnMaster;
             };
-            animator.flashBackground(target, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), ColorsInUse.BG_COLOR.get());
+            animator.flashBackground(target, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), new Color(0,0,0,0));
         }
     }
 
@@ -443,7 +432,7 @@ public class AddEditQuestionOverlay extends OverlayView {
     }
 
     private JLabel createLabel(String text) {
-        JLabel lbl = new JLabel(text);
+        JLabel lbl = new OutlinedLabel(text, Color.BLACK, 3f);
         lbl.setFont(FontsInUse.PIXEL.getSize(24f));
         lbl.setForeground(ColorsInUse.TEXT.get());
         return lbl;
