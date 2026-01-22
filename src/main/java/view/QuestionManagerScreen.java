@@ -11,6 +11,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -18,6 +20,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class QuestionManagerScreen extends JPanel {
 
@@ -30,10 +33,13 @@ public class QuestionManagerScreen extends JPanel {
 
     //fields required for page navigation
     private List<Question> allQuestions = new ArrayList<>();
+    private List<Question> filteredQuestions = new ArrayList<>();
     private int currentPage = 1;
     private final int rowsPerPage = 10;
     private OutlinedLabel pageLabel;
     private JButton btnPrev, btnNext;
+    private JTextField questionFilterField;
+    private JComboBox difficultyBox;
 
     private final ComponentAnimator animator;
 
@@ -89,7 +95,10 @@ public class QuestionManagerScreen extends JPanel {
                 };
 
                 if (cmp != null) {
-                    allQuestions.sort(asc ? cmp : cmp.reversed());
+                    // Sort both master and filtered lists so order persists when filter changes/cleared
+                    Comparator<Question> finalCmp = asc ? cmp : cmp.reversed();
+                    allQuestions.sort(finalCmp);
+                    filteredQuestions.sort(finalCmp);
                     refreshPage();
                 }
             }
@@ -125,14 +134,17 @@ public class QuestionManagerScreen extends JPanel {
         JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
         centerPanel.setOpaque(false);
 
+        // Filter panel (filters results as the user types/selects)
+        JPanel filterPanel = createFilterPanel();
+        centerPanel.add(filterPanel, BorderLayout.NORTH);
+
         JScrollPane scrollPane = new JScrollPane(questionsTable);
         scrollPane.getViewport().setBackground(ColorsInUse.TABLE_BG_COLOR.get());
         scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
         centerPanel.add(scrollPane, BorderLayout.CENTER);
 
         //pages navigation panel
-        JPanel pagesPanel = createPagesPanel();
-        centerPanel.add(pagesPanel, BorderLayout.SOUTH);
+        centerPanel.add(createPagesPanel(), BorderLayout.SOUTH);
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
@@ -159,12 +171,8 @@ public class QuestionManagerScreen extends JPanel {
         } else {
             this.allQuestions = new ArrayList<>(questions);
         }
-        //make sure the current page isnt out of bounds after changes (like delete)
-        int maxPage = (int) Math.ceil((double) allQuestions.size() / rowsPerPage);
-        if (currentPage > maxPage) {
-            currentPage = Math.max(1, maxPage);
-        }
-        refreshPage();
+        // initialize filtered list according to current search text (if any)
+        filterQuestions();
     }
 
     //for jumping to last page after adding a question
@@ -174,13 +182,49 @@ public class QuestionManagerScreen extends JPanel {
         } else {
             this.allQuestions = new ArrayList<>(questions);
         }
-        this.currentPage = (int) Math.ceil((double) allQuestions.size() / rowsPerPage);
+        // clear search so newly added item is visible, and reset filtered list
+        if (questionFilterField != null) questionFilterField.setText("");
+        this.filteredQuestions = new ArrayList<>(allQuestions);
+
+        this.currentPage = (int) Math.ceil((double) filteredQuestions.size() / rowsPerPage);
         if (this.currentPage < 1) {
             this.currentPage = 1;
         }
         refreshPage();
-
         animator.flashForeground(questionsTable, ColorsInUse.CONFIRM.get(), ColorsInUse.TEXT.get());
+    }
+
+    private JPanel createFilterPanel() {
+        JPanel toReturn = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        toReturn.setOpaque(false);
+        OutlinedLabel searchLabel = new OutlinedLabel("Question Text:", Color.BLACK, 2f);
+        searchLabel.setFont(FontsInUse.PIXEL.getSize(24f));
+        searchLabel.setForeground(ColorsInUse.TEXT.get());
+
+        questionFilterField = new JTextField(15);
+        questionFilterField.setFont(FontsInUse.PIXEL.getSize(20f));
+        questionFilterField.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) { filterQuestions(); }
+            public void removeUpdate(DocumentEvent e) { filterQuestions(); }
+            public void changedUpdate(DocumentEvent e) { filterQuestions(); }
+        });
+
+        toReturn.add(searchLabel);
+        toReturn.add(questionFilterField);
+        toReturn.add(Box.createRigidArea(new Dimension(10, 0)));
+
+        OutlinedLabel difficultyLabel = new OutlinedLabel("Difficulty:", Color.BLACK, 2f);
+        difficultyLabel.setFont(FontsInUse.PIXEL.getSize(24f));
+        difficultyLabel.setForeground(ColorsInUse.TEXT.get());
+        difficultyBox = new JComboBox<>(new String[]{"All", "Easy", "Medium", "Hard"});
+        difficultyBox.setFont(FontsInUse.PIXEL.getSize(20f));
+        difficultyBox.addActionListener(e -> filterQuestions());
+
+        toReturn.add(difficultyLabel);
+        toReturn.add(difficultyBox);
+        toReturn.add(Box.createRigidArea(new Dimension(10, 0)));
+
+        return toReturn;
     }
 
     private JPanel createPagesPanel() {
@@ -190,7 +234,7 @@ public class QuestionManagerScreen extends JPanel {
         btnPrev = createStyledButton("<", ColorsInUse.BTN_COLOR.get());
         btnPrev.setPreferredSize(new Dimension(50, 36));
         btnPrev.addActionListener(e -> {
-            int maxPage = (int) Math.ceil((double) allQuestions.size() / rowsPerPage);
+            int maxPage = (int) Math.ceil((double) filteredQuestions.size() / rowsPerPage);
             if (currentPage > 1) {
                 currentPage--;
             } else {
@@ -206,7 +250,7 @@ public class QuestionManagerScreen extends JPanel {
         btnNext = createStyledButton(">", ColorsInUse.BTN_COLOR.get());
         btnNext.setPreferredSize(new Dimension(50, 36));
         btnNext.addActionListener(e -> {
-            int maxPage = (int) Math.ceil((double) allQuestions.size() / rowsPerPage);
+            int maxPage = (int) Math.ceil((double) filteredQuestions.size() / rowsPerPage);
             if (currentPage < maxPage) {
                 currentPage++;
             } else {
@@ -221,16 +265,42 @@ public class QuestionManagerScreen extends JPanel {
         return panel;
     }
 
+    // Filter logic: updates filteredQuestions based on searchField text and difficulty filter
+    private void filterQuestions() {
+        String query = (questionFilterField != null ? questionFilterField.getText() : "").toLowerCase().trim();
+        String selectedDifficulty = (difficultyBox != null) ? (String) difficultyBox.getSelectedItem() : "All";
+
+        filteredQuestions = allQuestions.stream()
+                .filter(q -> {
+                    // Question text filter
+                    boolean matchesQuery = query.isEmpty() ||
+                            String.valueOf(q.getId()).contains(query) ||
+                            (q.getQuestionText() != null && q.getQuestionText().toLowerCase().contains(query)) ||
+                            (q.getAnswer1() != null && q.getAnswer1().toLowerCase().contains(query));
+
+                    // Difficulty filter ("All" = show all)
+                    boolean matchesDifficulty = selectedDifficulty.equals("All") ||
+                            (q.getDifficulty() != null && q.getDifficulty().toString().equalsIgnoreCase(selectedDifficulty));
+
+                    return matchesQuery && matchesDifficulty;
+                })
+                .collect(Collectors.toList());
+
+        currentPage = 1;
+        refreshPage();
+    }
+
     private void refreshPage() {
         tableModel.setRowCount(0);
-        if (allQuestions.isEmpty()) {
+        // Use filteredQuestions for pagination and display
+        if (filteredQuestions == null || filteredQuestions.isEmpty()) {
             pageLabel.setText("PAGE 0 OF 0");
             btnPrev.setEnabled(false);
             btnNext.setEnabled(false);
             return;
         }
 
-        int totalQuestions = allQuestions.size();
+        int totalQuestions = filteredQuestions.size();
         int maxPage = (int) Math.ceil((double) totalQuestions / rowsPerPage);
 
         //ensure current page is valid
@@ -242,12 +312,12 @@ public class QuestionManagerScreen extends JPanel {
 
         //add rows for the current page
         for (int i = start; i < end; i++) {
-            Question q = allQuestions.get(i);
+            Question q = filteredQuestions.get(i);
             Object[] rowData = {q.getId(), q.getQuestionText(), q.getDifficulty(), q.getAnswer1(), ""};
             tableModel.addRow(rowData);
         }
 
-        //buttons are only enabled if there is only 1 page
+        //buttons are only enabled if there is more than one page
         pageLabel.setText("PAGE " + currentPage + " OF " + maxPage);
         boolean canScroll = maxPage > 1;
         btnPrev.setEnabled(canScroll);

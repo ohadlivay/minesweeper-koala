@@ -9,14 +9,18 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class GameHistoryScreen extends JPanel{
@@ -29,6 +33,17 @@ public class GameHistoryScreen extends JPanel{
     private DefaultTableModel tableModel;
     private JTable historyTable;
     private List<GameData> allSessions = new ArrayList<>();
+
+    // Add: filtered list and search field
+    private List<GameData> filteredSessions = new ArrayList<>();
+    private JTextField nameField;
+    private JComboBox difficultyBox;
+    private JComboBox winLossBox;
+    private JButton fromDateButton;
+    private JButton toDateButton;
+    private LocalDate fromDate;
+    private LocalDate toDate;
+
     private int currentPage = 1;
     private final int rowsPerPage = 10;
     private OutlinedLabel pageLabel;
@@ -109,7 +124,10 @@ public class GameHistoryScreen extends JPanel{
                 };
 
                 if (cmp != null) {
-                    allSessions.sort(asc ? cmp : cmp.reversed());
+                    Comparator<GameData> finalCmp = asc ? cmp : cmp.reversed();
+                    allSessions.sort(finalCmp);
+                    // also sort filtered view to keep UI consistent
+                    filteredSessions.sort(finalCmp);
                     refreshPage();
                 }
             }
@@ -122,6 +140,15 @@ public class GameHistoryScreen extends JPanel{
         JPanel controlsPanel = new JPanel(new BorderLayout());
         controlsPanel.setOpaque(false);
         controlsPanel.setBorder(new EmptyBorder(15, 0, 0, 0));
+        JScrollPane scrollPane = new JScrollPane(historyTable);
+        scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR.get());
+        scrollPane.setBorder(new LineBorder(new Color(70, 80, 100), 1));
+
+        // ADD: Search Panel (placed above table)
+        JPanel filterPanel = createFilterPanel();
+
+        controlsPanel.add(filterPanel, BorderLayout.NORTH);
+        controlsPanel.add(scrollPane, BorderLayout.CENTER);
 
         homeButton = createIconButton("btn-square", "home-pixel", "Home");
         homeButton.addActionListener(e -> nav.goToHome());
@@ -146,7 +173,9 @@ public class GameHistoryScreen extends JPanel{
         } else {
             this.allSessions = new ArrayList<>(games);
         }
-        this.currentPage = 1;
+        // initialize filtered list to show all by default
+        this.filteredSessions = new ArrayList<>(this.allSessions);
+        currentPage = 1;
         refreshPage();
     }
 
@@ -157,7 +186,7 @@ public class GameHistoryScreen extends JPanel{
         btnPrev = createStyledButton("<", ColorsInUse.BTN_COLOR.get());
         btnPrev.setPreferredSize(new Dimension(50, 36));
         btnPrev.addActionListener(e -> {
-            int maxPage = (int) Math.ceil((double) allSessions.size() / rowsPerPage);
+            int maxPage = (int) Math.ceil((double) filteredSessions.size() / rowsPerPage);
             if (currentPage > 1) {
                 currentPage--;
             }
@@ -175,7 +204,7 @@ public class GameHistoryScreen extends JPanel{
         btnNext = createStyledButton(">", ColorsInUse.BTN_COLOR.get());
         btnNext.setPreferredSize(new Dimension(50, 36));
         btnNext.addActionListener(e -> {
-            int maxPage = (int) Math.ceil((double) allSessions.size() / rowsPerPage);
+            int maxPage = (int) Math.ceil((double) filteredSessions.size() / rowsPerPage);
             if (currentPage < maxPage) {
                 currentPage++;
             }
@@ -192,17 +221,196 @@ public class GameHistoryScreen extends JPanel{
         return panel;
     }
 
+    private JPanel createFilterPanel() {
+        JPanel toReturn = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        toReturn.setOpaque(false);
+        OutlinedLabel searchLabel = new OutlinedLabel("Player Name:", Color.BLACK, 2f);
+        searchLabel.setFont(FontsInUse.PIXEL.getSize(24f));
+        searchLabel.setForeground(ColorsInUse.TEXT.get());
+
+        nameField = new JTextField(15);
+        nameField.setFont(FontsInUse.PIXEL.getSize(20f));
+        nameField.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) { filterSessions(); }
+            public void removeUpdate(DocumentEvent e) { filterSessions(); }
+            public void changedUpdate(DocumentEvent e) { filterSessions(); }
+        });
+
+        toReturn.add(searchLabel);
+        toReturn.add(nameField);
+        toReturn.add(Box.createRigidArea(new Dimension(10, 0)));
+
+        OutlinedLabel difficultyLabel = new OutlinedLabel("Difficulty:", Color.BLACK, 2f);
+        difficultyLabel.setFont(FontsInUse.PIXEL.getSize(24f));
+        difficultyLabel.setForeground(ColorsInUse.TEXT.get());
+        difficultyBox = new JComboBox<>(new String[]{"All", "Easy", "Medium", "Hard"});
+        difficultyBox.setFont(FontsInUse.PIXEL.getSize(20f));
+        difficultyBox.addActionListener(e -> filterSessions());
+
+        toReturn.add(difficultyLabel);
+        toReturn.add(difficultyBox);
+        toReturn.add(Box.createRigidArea(new Dimension(10, 0)));
+
+        OutlinedLabel winLossLabel = new OutlinedLabel("Win/Loss:", Color.BLACK, 2f);
+        winLossLabel.setFont(FontsInUse.PIXEL.getSize(24f));
+        winLossLabel.setForeground(ColorsInUse.TEXT.get());
+        winLossBox = new JComboBox<>(new String[]{"All", "Win", "Loss"});
+        winLossBox.setFont(FontsInUse.PIXEL.getSize(20f));
+        winLossBox.addActionListener(e -> filterSessions());
+
+        toReturn.add(winLossLabel);
+        toReturn.add(winLossBox);
+        toReturn.add(Box.createRigidArea(new Dimension(10, 0)));
+
+        // Date Range Filter
+        OutlinedLabel dateRangeLabel = new OutlinedLabel("Date Range:", Color.BLACK, 2f);
+        dateRangeLabel.setFont(FontsInUse.PIXEL.getSize(24f));
+        dateRangeLabel.setForeground(ColorsInUse.TEXT.get());
+
+        fromDate = LocalDate.now().minusMonths(1);
+        toDate = LocalDate.now();
+
+        fromDateButton = createDateButton(fromDate, true);
+        toDateButton = createDateButton(toDate, false);
+
+        JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        datePanel.setOpaque(false);
+        JLabel fromLabel = new OutlinedLabel("From:", Color.BLACK, 2f);
+        fromLabel.setFont(FontsInUse.PIXEL.getSize(20f));
+        fromLabel.setForeground(ColorsInUse.TEXT.get());
+        datePanel.add(fromLabel);
+        datePanel.add(fromDateButton);
+        JLabel toLabel = new OutlinedLabel("To:", Color.BLACK, 2f);
+        toLabel.setFont(FontsInUse.PIXEL.getSize(20f));
+        toLabel.setForeground(ColorsInUse.TEXT.get());
+        datePanel.add(toLabel);
+        datePanel.add(toDateButton);
+
+        toReturn.add(dateRangeLabel);
+        toReturn.add(datePanel);
+        toReturn.add(Box.createRigidArea(new Dimension(10, 0)));
+
+        return toReturn;
+    }
+
+    private JButton createDateButton(LocalDate initialDate, boolean isFromDate) {
+        JButton btn = new JButton(initialDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        btn.setFont(FontsInUse.PIXEL.getSize(16f));
+        btn.setPreferredSize(new Dimension(120, 30));
+        btn.setBackground(ColorsInUse.BTN_COLOR.get());
+        btn.setForeground(ColorsInUse.TEXT.get());
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        btn.addActionListener(e -> {
+            LocalDate selectedDate = showDatePicker(isFromDate ? fromDate : toDate);
+            if (selectedDate != null) {
+                if (isFromDate) {
+                    fromDate = selectedDate;
+                    fromDateButton.setText(selectedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                } else {
+                    toDate = selectedDate;
+                    toDateButton.setText(selectedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                }
+                filterSessions();
+            }
+        });
+
+        return btn;
+    }
+
+    private LocalDate showDatePicker(LocalDate initialDate) {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        JSpinner monthSpinner = new JSpinner(new SpinnerNumberModel(initialDate.getMonthValue(), 1, 12, 1));
+        JSpinner yearSpinner = new JSpinner(new SpinnerNumberModel(initialDate.getYear(), 2000, 2100, 1));
+        JSpinner daySpinner = new JSpinner(new SpinnerNumberModel(initialDate.getDayOfMonth(), 1, 31, 1));
+
+        // Fix year spinner to not use comma formatting
+        JSpinner.NumberEditor yearEditor = new JSpinner.NumberEditor(yearSpinner, "0000");
+        yearSpinner.setEditor(yearEditor);
+
+        // Update day spinner max when month/year changes
+        var updateDayMax = new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent e) {
+                int year = (int) yearSpinner.getValue();
+                int month = (int) monthSpinner.getValue();
+                int maxDay = LocalDate.of(year, month, 1).lengthOfMonth();
+                int currentDay = (int) daySpinner.getValue();
+                daySpinner.setModel(new SpinnerNumberModel(Math.min(currentDay, maxDay), 1, maxDay, 1));
+            }
+        };
+        monthSpinner.addChangeListener(updateDayMax);
+        yearSpinner.addChangeListener(updateDayMax);
+
+        JPanel spinnerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        spinnerPanel.add(new JLabel("Day:"));
+        spinnerPanel.add(daySpinner);
+        spinnerPanel.add(new JLabel("Month:"));
+        spinnerPanel.add(monthSpinner);
+        spinnerPanel.add(new JLabel("Year:"));
+        spinnerPanel.add(yearSpinner);
+
+        panel.add(spinnerPanel, BorderLayout.CENTER);
+
+        int result = JOptionPane.showConfirmDialog(this, panel, "Select Date", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                return LocalDate.of((int) yearSpinner.getValue(), (int) monthSpinner.getValue(), (int) daySpinner.getValue());
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Invalid date selected", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        return null;
+    }
+
+    private void filterSessions() {
+        String searchedName = (nameField == null ? "" : nameField.getText()).toLowerCase().trim();
+        String selectedDifficulty = (difficultyBox != null) ? (String) difficultyBox.getSelectedItem() : "All";
+        String selectedWinLoss = (winLossBox != null) ? (String) winLossBox.getSelectedItem() : "All";
+
+        filteredSessions = allSessions.stream()
+                .filter(g -> {
+                    // Name filter
+                    boolean matchesQuery = searchedName.isEmpty() ||
+                            (g.getLeftPlayerName() != null && g.getLeftPlayerName().toLowerCase().contains(searchedName)) ||
+                            (g.getRightPlayerName() != null && g.getRightPlayerName().toLowerCase().contains(searchedName));
+
+                    // Difficulty filter ("All" = show all)
+                    boolean matchesDifficulty = selectedDifficulty.equals("All") ||
+                            g.getGameDifficulty().toString().equalsIgnoreCase(selectedDifficulty);
+
+                    // Win/Loss filter ("All" = show all)
+                    boolean matchesWinLoss = selectedWinLoss.equals("All") ||
+                            (selectedWinLoss.equalsIgnoreCase("Win") && g.isWin()) ||
+                            (selectedWinLoss.equalsIgnoreCase("Loss") && !g.isWin());
+
+                    // Date range filter
+                    LocalDate gameDate = g.getTimeStamp().toLocalDate();
+                    boolean matchesDateRange = (fromDate == null || !gameDate.isBefore(fromDate)) &&
+                            (toDate == null || !gameDate.isAfter(toDate));
+
+                    return matchesQuery && matchesDifficulty && matchesWinLoss && matchesDateRange;
+                })
+                .collect(Collectors.toList());
+
+        currentPage = 1;
+        refreshPage();
+    }
+
+    // UPDATE: refreshPage to use filteredSessions
     private void refreshPage() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         tableModel.setRowCount(0);
-        if (allSessions.isEmpty()) {
+        if (filteredSessions == null || filteredSessions.isEmpty()) {
             pageLabel.setText("PAGE 0 OF 0");
             btnPrev.setEnabled(false);
             btnNext.setEnabled(false);
             return;
         }
 
-        int totalSessions= allSessions.size();
+        int totalSessions= filteredSessions.size();
         int maxPage = (int) Math.ceil((double) totalSessions / rowsPerPage);
 
         //ensure current page is valid
@@ -214,7 +422,7 @@ public class GameHistoryScreen extends JPanel{
 
         //add rows for the current page
         for (int i = start; i < end; i++) {
-            GameData s = allSessions.get(i);
+            GameData s = filteredSessions.get(i);
             String formattedDate = s.getTimeStamp().format(formatter);
             String result = s.isWin() ? "WIN" : "LOSE";
 
