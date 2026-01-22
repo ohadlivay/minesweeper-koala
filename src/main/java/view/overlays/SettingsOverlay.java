@@ -47,11 +47,12 @@ public class SettingsOverlay extends OverlayView {
 
     public SettingsOverlay(NavigationController nav) {
         super(nav, true);
-        initUI();
 
-        // Initialize default colors
+        // Initialize default colors BEFORE initUI so buttons are created with correct selected state
         this.player1Color = ColorsInUse.CRIMSON;
-        this.player2Color = ColorsInUse.SUNSET_ORANGE;
+        this.player2Color = ColorsInUse.PEACH;
+
+        initUI();
 
         buttonStart.addActionListener(e -> onOK());
         buttonBack.addActionListener(e -> onCancel());
@@ -68,7 +69,7 @@ public class SettingsOverlay extends OverlayView {
             public void mouseClicked(MouseEvent e) {
                 resetSelection();
                 selectedDifficulty = GameDifficulty.EASY;
-                btnEasy.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ColorsInUse.BOARD_ACTIVE_BORDER.get(), 2), new EmptyBorder(5, 5, 5, 5)));
+                btnEasy.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ColorsInUse.BOARD_ACTIVE_BORDER.get(), 2, true), new EmptyBorder(5, 5, 5, 5)));
                 System.out.println("Selected Difficulty: EASY");
             }
         });
@@ -78,7 +79,7 @@ public class SettingsOverlay extends OverlayView {
             public void mouseClicked(MouseEvent e) {
                 resetSelection();
                 selectedDifficulty = GameDifficulty.MEDIUM;
-                btnMedium.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ColorsInUse.BOARD_ACTIVE_BORDER.get(), 2), new EmptyBorder(5, 5, 5, 5)));
+                btnMedium.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ColorsInUse.BOARD_ACTIVE_BORDER.get(), 2, true), new EmptyBorder(5, 5, 5, 5)));
                 System.out.println("Selected Difficulty: MEDIUM");
             }
         });
@@ -104,6 +105,8 @@ public class SettingsOverlay extends OverlayView {
         } else {
             resetSelection();
         }
+        // Refresh color buttons to display correctly
+        refreshColorButtons();
     }
 
     public SettingsOverlay(NavigationController nav, String player1, String player2, GameDifficulty difficulty, ColorsInUse color1, ColorsInUse color2) {
@@ -114,6 +117,8 @@ public class SettingsOverlay extends OverlayView {
         if (color2 != null) {
             this.player2Color = color2;
         }
+        // Refresh to show the updated colors
+        refreshColorButtons();
     }
 
     private void initUI() {
@@ -293,7 +298,8 @@ public class SettingsOverlay extends OverlayView {
 
         this.setContentPane(contentPane);
 
-
+        // Refresh buttons after UI is fully constructed
+        refreshColorButtons();
     }
 
     // pass the user input, close the overlay and go to the game screen
@@ -547,7 +553,7 @@ public class SettingsOverlay extends OverlayView {
             btn.setEnabled(true);
             btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             btn.setBackground(color.get());
-            btn.setBorder(BorderFactory.createLineBorder(ColorsInUse.BOARD_ACTIVE_BORDER.get(), 4, true));
+            btn.setBorder(BorderFactory.createLineBorder(ColorsInUse.BOARD_ACTIVE_BORDER.get(), 4));
             btn.setToolTipText("Selected");
         } else {
             // Available state: normal appearance
@@ -582,6 +588,16 @@ public class SettingsOverlay extends OverlayView {
                     updateColorButtonAppearance(btn, color, isSelected, isTaken);
                 }
             }
+        }
+
+        // Revalidate and repaint the color panels
+        if (player1ColorPanel != null) {
+            player1ColorPanel.revalidate();
+            player1ColorPanel.repaint();
+        }
+        if (player2ColorPanel != null) {
+            player2ColorPanel.revalidate();
+            player2ColorPanel.repaint();
         }
     }
 
@@ -655,7 +671,7 @@ public class SettingsOverlay extends OverlayView {
         soundManager.playOnce(SoundManager.SoundId.SELECTION);
         switch (selectedDifficulty) {
             case EASY:
-                btnEasy.setBorder(new LineBorder(selectedColor, 3));
+                btnEasy.setBorder(new LineBorder(selectedColor, 3, true));
                 animator.flashForeground(btnEasy, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), ColorsInUse.TEXT.get());
                 setGameInfo(GameDifficulty.EASY);
                 gameInfoTitle.setOutlineColor(ColorsInUse.DIFFICULTY_EASY_OUTLINE);
@@ -663,14 +679,14 @@ public class SettingsOverlay extends OverlayView {
                 break;
 
             case MEDIUM:
-                btnMedium.setBorder(new LineBorder(selectedColor, 3));
+                btnMedium.setBorder(new LineBorder(selectedColor, 3, true));
                 animator.flashForeground(btnMedium, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), ColorsInUse.TEXT.get());
                 setGameInfo(GameDifficulty.MEDIUM);
                 gameInfoTitle.setOutlineColor(ColorsInUse.DIFFICULTY_MEDIUM_OUTLINE);
                 gameInfoStats.setOutlineColor(ColorsInUse.DIFFICULTY_MEDIUM_OUTLINE);
                 break;
             case HARD:
-                btnHard.setBorder(new LineBorder(selectedColor, 3));
+                btnHard.setBorder(new LineBorder(selectedColor, 3, true));
                 animator.flashForeground(btnHard, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), ColorsInUse.TEXT.get());
                 setGameInfo(GameDifficulty.HARD);
                 gameInfoTitle.setOutlineColor(ColorsInUse.DIFFICULTY_HARD_OUTLINE);

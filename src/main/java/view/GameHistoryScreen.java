@@ -217,12 +217,13 @@ public class GameHistoryScreen extends JPanel{
 
     private JPanel createFilterPanel() {
         JPanel toReturn = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        toReturn.setPreferredSize(new Dimension(800, 50));
         toReturn.setOpaque(false);
         OutlinedLabel searchLabel = new OutlinedLabel("Player Name:", Color.BLACK, 2f);
         searchLabel.setFont(FontsInUse.PIXEL.getSize(24f));
         searchLabel.setForeground(ColorsInUse.TEXT.get());
 
-        nameField = new JTextField(15);
+        nameField = new JTextField(12);
         nameField.setFont(FontsInUse.PIXEL.getSize(20f));
         nameField.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) { filterSessions(); }
@@ -232,7 +233,7 @@ public class GameHistoryScreen extends JPanel{
 
         toReturn.add(searchLabel);
         toReturn.add(nameField);
-        toReturn.add(Box.createRigidArea(new Dimension(10, 0)));
+        toReturn.add(Box.createRigidArea(new Dimension(5, 0)));
 
         OutlinedLabel difficultyLabel = new OutlinedLabel("Difficulty:", Color.BLACK, 2f);
         difficultyLabel.setFont(FontsInUse.PIXEL.getSize(24f));
@@ -243,7 +244,7 @@ public class GameHistoryScreen extends JPanel{
 
         toReturn.add(difficultyLabel);
         toReturn.add(difficultyBox);
-        toReturn.add(Box.createRigidArea(new Dimension(10, 0)));
+        toReturn.add(Box.createRigidArea(new Dimension(5, 0)));
 
         OutlinedLabel winLossLabel = new OutlinedLabel("Win/Loss:", Color.BLACK, 2f);
         winLossLabel.setFont(FontsInUse.PIXEL.getSize(24f));
@@ -254,7 +255,7 @@ public class GameHistoryScreen extends JPanel{
 
         toReturn.add(winLossLabel);
         toReturn.add(winLossBox);
-        toReturn.add(Box.createRigidArea(new Dimension(10, 0)));
+        toReturn.add(Box.createRigidArea(new Dimension(5, 0)));
 
         // Date Range Filter
         OutlinedLabel dateRangeLabel = new OutlinedLabel("Date Range:", Color.BLACK, 2f);
@@ -282,7 +283,7 @@ public class GameHistoryScreen extends JPanel{
 
         toReturn.add(dateRangeLabel);
         toReturn.add(datePanel);
-        toReturn.add(Box.createRigidArea(new Dimension(10, 0)));
+        toReturn.add(Box.createRigidArea(new Dimension(5, 0)));
 
         return toReturn;
     }
