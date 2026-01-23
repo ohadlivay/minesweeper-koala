@@ -86,30 +86,33 @@ public class StartScreen {
 
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
-        mainPanel.add(topPanel, BorderLayout.NORTH);
-
         // Setup for animated GIF + static PNG combination to create a dynamic intro
-        java.net.URL animURL = getClass().getResource("/start-gif.gif");
-        java.net.URL staticURL = getClass().getResource("/start-static.png");
+        // Load GIF at original size to preserve animation
+        ImageIcon animationIcon = null;
+        URL gifUrl = getClass().getResource("/logo-gif.gif");
+        if (gifUrl != null) {
+            animationIcon = new ImageIcon(gifUrl);
+        }
 
-        if (animURL != null) {
-            // start with gif
-            ImageIcon animation = new ImageIcon(animURL);
-            startScreenLabel = new JLabel(animation);
+        if (animationIcon != null) {
+            // start with gif at original size
+            startScreenLabel = new JLabel(animationIcon);
 
-            // timer to stop the gif and swap with static image
+            // timer to stop the gif and swap with static image scaled to 512x285
             int animationDurationMs = 3000;
             Timer stopAnimationTimer = new Timer(animationDurationMs, e -> {
-                if (staticURL != null) {
-                    startScreenLabel.setIcon(new ImageIcon(staticURL));
+                ImageIcon staticIcon = loadScaledIcon("logo-static", 512, 285);
+                if (staticIcon != null) {
+                    startScreenLabel.setIcon(staticIcon);
                 }
             });
             stopAnimationTimer.setRepeats(false); // Ensure it only runs once
             stopAnimationTimer.start();
         } else {
-            // fallback
-            if (staticURL != null) {
-                startScreenLabel = new JLabel(new ImageIcon(staticURL));
+            // fallback to static logo scaled to 512x285
+            ImageIcon staticIcon = loadScaledIcon("logo-static", 512, 285);
+            if (staticIcon != null) {
+                startScreenLabel = new JLabel(staticIcon);
             } else {
                 startScreenLabel = new JLabel("KOALA MINESWEEPER (Image Missing)");
                 startScreenLabel.setForeground(Color.RED);
@@ -134,7 +137,7 @@ public class StartScreen {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.anchor = GridBagConstraints.CENTER;
 
-        JButton[] centerButtons = { startGameBtn, gameHistoryBtn, mngQuestionsBtn };
+        JButton[] centerButtons = {startGameBtn, gameHistoryBtn, mngQuestionsBtn};
 
         URL borderURL = getClass().getResource("/labelBorder.png");
         BufferedImage borderImg = null;
@@ -154,7 +157,7 @@ public class StartScreen {
         int gap = 20;
 
         // Resource names for the three center buttons (Start, History, Questions)
-        String[] centerResources = { "start-koala", "history-koala", "questions-koala" };
+        String[] centerResources = {"start-koala", "history-koala", "questions-koala"};
         Dimension btnSize = new Dimension(210, 70);
         for (int i = 0; i < centerButtons.length; i++) {
             JButton btn = centerButtons[i];

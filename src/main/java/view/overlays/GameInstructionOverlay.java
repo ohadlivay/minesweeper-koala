@@ -7,15 +7,11 @@ import main.java.view.ColorsInUse;
 import main.java.view.FontsInUse;
 import main.java.view.OutlinedLabel;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
 
 public class GameInstructionOverlay extends OverlayView {
 
@@ -35,13 +31,13 @@ public class GameInstructionOverlay extends OverlayView {
 
     private void initUI() {
         // Use BackgroundPanel as the main content pane
-        JPanel contentPane = new BackgroundPanel("/overlay-bg.png");
+        JPanel contentPane = new BackgroundPanel("/wood-bg.png");
         contentPane.setLayout(new BorderLayout());
-        contentPane.setBorder(new EmptyBorder(18, 30, 18, 30));
+        contentPane.setBorder(new EmptyBorder(18, 57, 18, 57));
 
         // --- TITLE SECTION ---
         // Use a thinner, semi-transparent outline and add bottom padding so the stroke doesn't create a visible line
-        JLabel titleLabel = new OutlinedLabel("How to Play", new Color(0,0,0,120), 2f);
+        JLabel titleLabel = new OutlinedLabel("How to Play", new Color(0,0,0,120), 3f);
         titleLabel.setForeground(ColorsInUse.TEXT.get());
         titleLabel.setFont(FontsInUse.PIXEL.getSize(42f));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -57,15 +53,16 @@ public class GameInstructionOverlay extends OverlayView {
         JPanel mainBody = new JPanel();
         mainBody.setLayout(new BoxLayout(mainBody, BoxLayout.Y_AXIS));
         mainBody.setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
+        mainBody.setPreferredSize(new Dimension(420, 300));
 
         // 1. Cooperative Goal
-        mainBody.add(Box.createRigidArea(new Dimension(0, 15)));
+        mainBody.add(Box.createRigidArea(new Dimension(0, 10)));
         mainBody.add(createHeader("COOPERATIVE MISSION"));
         mainBody.add(createWrappedText("This is a 2-player team effort! Collaborate with your partner to neutralize mines and clear the board. It is not a competition; you win or lose together."));
-        mainBody.add(Box.createRigidArea(new Dimension(0, 20)));
+        mainBody.add(Box.createRigidArea(new Dimension(0, 12)));
 
         // 2. Side-by-Side Panel (Actions & Tiles)
-        JPanel splitPanel = new JPanel(new GridLayout(1, 2, 40, 0));
+        JPanel splitPanel = new JPanel(new GridLayout(1, 2, 20, 0));
         splitPanel.setOpaque(false);
 
         // Column A: Game Actions
@@ -103,6 +100,8 @@ public class GameInstructionOverlay extends OverlayView {
         scroll.setOpaque(false);
         scroll.getViewport().setOpaque(false);
         scroll.getViewport().setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get()); // Extra transparency layer
+        scroll.getVerticalScrollBar().setUnitIncrement(16);
+        scroll.setPreferredSize(new Dimension(420, 500));
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         contentPane.add(scroll, BorderLayout.CENTER);
 
@@ -123,7 +122,7 @@ public class GameInstructionOverlay extends OverlayView {
     }
 
     private JLabel createHeader(String text) {
-        JLabel header = new JLabel(text);
+        JLabel header = new OutlinedLabel(text, Color.BLACK, 3f);
         header.setForeground(ColorsInUse.TEXT.get());
         header.setFont(FontsInUse.PIXEL.getSize(26f));
         header.setBorder(new EmptyBorder(5, 0, 5, 0));
@@ -142,9 +141,8 @@ public class GameInstructionOverlay extends OverlayView {
         textArea.setEditable(false);
         textArea.setFocusable(false);
         textArea.setAlignmentX(Component.CENTER_ALIGNMENT);
-        // Corrected: Uses Insets instead of EmptyBorder
-        textArea.setMargin(new Insets(10, 10, 10, 10));
-        textArea.setBorder(new EmptyBorder(10, 10, 10, 10));
+        // Reduced padding: 5px top/bottom, 8px left/right
+        textArea.setBorder(new EmptyBorder(5, 8, 0, 8));
         return textArea;
     }
 
@@ -165,7 +163,7 @@ public class GameInstructionOverlay extends OverlayView {
 
         JLabel textLabel = new JLabel(text);
         textLabel.setForeground(ColorsInUse.TEXT.get());
-        textLabel.setFont(FontsInUse.PIXEL.getSize(18f));
+        textLabel.setFont(FontsInUse.PIXEL.getSize(22f));
 
         row.add(iconLabel);
         row.add(textLabel);
