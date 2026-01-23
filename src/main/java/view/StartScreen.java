@@ -89,7 +89,7 @@ public class StartScreen {
         // Setup for animated GIF + static PNG combination to create a dynamic intro
         // Load GIF at original size to preserve animation
         ImageIcon animationIcon = null;
-        URL gifUrl = getClass().getResource("/logo-gif.gif");
+        URL gifUrl = getClass().getResource("/logo-gif (2).gif");
         if (gifUrl != null) {
             animationIcon = new ImageIcon(gifUrl);
         }
@@ -101,7 +101,7 @@ public class StartScreen {
             // timer to stop the gif and swap with static image scaled to 512x285
             int animationDurationMs = 3000;
             Timer stopAnimationTimer = new Timer(animationDurationMs, e -> {
-                ImageIcon staticIcon = loadScaledIcon("logo-static", 512, 285);
+                ImageIcon staticIcon = loadScaledIcon("logo-static", 768, 428);
                 if (staticIcon != null) {
                     startScreenLabel.setIcon(staticIcon);
                 }
@@ -110,7 +110,7 @@ public class StartScreen {
             stopAnimationTimer.start();
         } else {
             // fallback to static logo scaled to 512x285
-            ImageIcon staticIcon = loadScaledIcon("logo-static", 512, 285);
+            ImageIcon staticIcon = loadScaledIcon("logo-static", 768, 428);
             if (staticIcon != null) {
                 startScreenLabel = new JLabel(staticIcon);
             } else {
@@ -120,7 +120,7 @@ public class StartScreen {
         }
 
         startScreenLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        startScreenLabel.setBorder(BorderFactory.createEmptyBorder(60, 0, 0, 0));
+        startScreenLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
         startGameBtn = new JButton();
         gameHistoryBtn = new JButton();
