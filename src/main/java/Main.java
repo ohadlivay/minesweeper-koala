@@ -31,8 +31,6 @@ public class Main {
         } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException
                 | IllegalAccessException e) {
             // If Nimbus is not available, fall back to default and log the error.
-            // In a production app, we might want to handle this more gracefully or just
-            // ignore it.
             throw new RuntimeException(e);
         }
 
