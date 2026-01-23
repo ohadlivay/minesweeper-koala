@@ -177,7 +177,7 @@ public class GameInstructionOverlay extends OverlayView {
     }
 
     private JButton createCloseButton() {
-        ImageIcon bgIcon = loadScaledIcon("btn-koala", 150, 60);
+        ImageIcon bgIcon = loadScaledIcon("btn-koala", 102, 57);
         JButton deleteBtn = new JButton(bgIcon);
         deleteBtn.setPreferredSize(new Dimension(150, 60));
         deleteBtn.setFocusPainted(false);

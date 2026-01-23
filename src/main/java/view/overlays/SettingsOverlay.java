@@ -811,7 +811,7 @@ public class SettingsOverlay extends OverlayView {
     }
 
     private JButton createStartButton() {
-        ImageIcon bgIcon = loadScaledIcon("btn-koala", 150, 70);
+        ImageIcon bgIcon = loadScaledIcon("btn-koala", 102, 57);
         JButton deleteBtn = new JButton(bgIcon);
         deleteBtn.setPreferredSize(new Dimension(150, 70));
         deleteBtn.setFocusPainted(false);

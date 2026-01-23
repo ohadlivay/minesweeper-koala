@@ -89,7 +89,7 @@ public class StartScreen {
         // Setup for animated GIF + static PNG combination to create a dynamic intro
         // Load GIF at original size to preserve animation
         ImageIcon animationIcon = null;
-        URL gifUrl = getClass().getResource("/logo-gif (2).gif");
+        URL gifUrl = getClass().getResource("/logo-gif.gif");
         if (gifUrl != null) {
             animationIcon = new ImageIcon(gifUrl);
         }
