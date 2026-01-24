@@ -77,7 +77,7 @@ public class StartScreen {
         // Setup for animated GIF + static PNG combination to create a dynamic intro
         // Load GIF at original size to preserve animation
         ImageIcon animationIcon = null;
-        URL gifUrl = getClass().getResource("/logo-gif.gif");
+        URL gifUrl = getClass().getResource("/start-gif1.gif");
         if (gifUrl != null) {
             animationIcon = new ImageIcon(gifUrl);
         }
@@ -87,7 +87,7 @@ public class StartScreen {
             startScreenLabel = new JLabel(animationIcon);
 
             // timer to stop the gif and swap with static image scaled to 512x285
-            int animationDurationMs = 3000;
+            int animationDurationMs = 7000;
             Timer stopAnimationTimer = new Timer(animationDurationMs, e -> {
                 ImageIcon staticIcon = loadScaledIcon("logo-static", 768, 428);
                 if (staticIcon != null) {
