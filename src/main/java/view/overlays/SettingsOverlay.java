@@ -2,18 +2,17 @@ package main.java.view.overlays;
 
 import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
+import main.java.controller.OverlayController;
 import main.java.model.GameDifficulty;
 import main.java.util.SoundManager;
 import main.java.view.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.RescaleOp;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +101,7 @@ public class SettingsOverlay extends OverlayView {
         JPanel titlePanel = new JPanel();
         // titlePanel.setBackground(ColorsInUse.BG_COLOR.get());
         titlePanel.setOpaque(false);
-        OutlinedLabel title = new OutlinedLabel("CHOOSE DIFFICULTY:", Color.BLACK, 6f);
+        OutlinedLabel title = new OutlinedLabel(" CHOOSE DIFFICULTY:", Color.BLACK, 6f);
         title.setFont(FontsInUse.PIXEL.getSize(52f));
         title.setForeground(ColorsInUse.TEXT.get());
         titlePanel.add(title);
@@ -320,7 +319,7 @@ public class SettingsOverlay extends OverlayView {
             return;
         }
         nav.goToGame();
-        close();
+        OverlayController.getInstance().closeCurrentOverlay();
     }
 
     private void onCancel() {
@@ -607,19 +606,6 @@ public class SettingsOverlay extends OverlayView {
         return field;
     }
 
-    private JButton createButton(String text) {
-        JButton btn = new JButton(text);
-        btn.setPreferredSize(new Dimension(150, 45));
-        btn.setMinimumSize(new Dimension(150, 45));
-        btn.setMaximumSize(new Dimension(150, 45));
-        btn.setBackground(ColorsInUse.BTN_COLOR.get());
-        btn.setForeground(ColorsInUse.TEXT.get());
-        btn.setFocusPainted(false);
-        btn.setFont(FontsInUse.PIXEL.getSize(28f));
-
-        return btn;
-    }
-
     private IconOnImageButton createKoalaButton(String resourcePath, String text, String tooltip,
             GameDifficulty difficulty) {
         int SQUARE_SIZE = 130;
@@ -704,42 +690,26 @@ public class SettingsOverlay extends OverlayView {
     }
 
     private JButton createTransparentIconButton(String resourcePath, int width, int height) {
-        JButton btn = new JButton();
-
-        // Core styling for transparency
-        btn.setContentAreaFilled(false);
-        btn.setBorderPainted(false);
-        btn.setFocusPainted(false);
-        btn.setOpaque(false);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setPreferredSize(new Dimension(width + 10, height + 10));
-
+        ImageIcon icon = null;
         try {
             URL url = getClass().getResource(resourcePath);
             if (url != null) {
                 ImageIcon normalIcon = new ImageIcon(url);
                 Image img = normalIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
-
-                ImageIcon standard = new ImageIcon(img);
-                btn.setIcon(standard);
-
-                // create light version of the icon
-                ImageIcon hover = createLighterIcon(img);
-
-                // switch to lighter icon when hovered
-                btn.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseEntered(MouseEvent evt) {
-                        btn.setIcon(hover);
-                    }
-
-                    @Override
-                    public void mouseExited(MouseEvent evt) {
-                        btn.setIcon(standard);
-                    }
-                });
+                icon = new ImageIcon(img);
             }
         } catch (Exception e) {
+            // fallback
+        }
+
+        IconOnImageButton btn = new IconOnImageButton(
+                null,
+                null,
+                new Dimension(width + 10, height + 10),
+                icon,
+                null);
+
+        if (icon == null) {
             btn.setText("X");
             btn.setForeground(Color.WHITE);
         }
@@ -795,31 +765,40 @@ public class SettingsOverlay extends OverlayView {
         }
     }
 
-    // method to make an icon lighter for hover effect
-    private ImageIcon createLighterIcon(Image sourceImg) {
-        int w = sourceImg.getWidth(null);
-        int h = sourceImg.getHeight(null);
-        BufferedImage buffered = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-
-        Graphics2D g2 = buffered.createGraphics();
-        g2.drawImage(sourceImg, 0, 0, null);
-        g2.dispose();
-
-        RescaleOp op = new RescaleOp(1.4f, 0, null);
-        buffered = op.filter(buffered, null);
-
-        return new ImageIcon(buffered);
-    }
-
     private JButton createStartButton() {
         ImageIcon bgIcon = loadScaledIcon("btn-koala", 102, 57);
-        JButton deleteBtn = new JButton(bgIcon);
-        deleteBtn.setPreferredSize(new Dimension(150, 70));
-        deleteBtn.setFocusPainted(false);
-        deleteBtn.setContentAreaFilled(false);
-        deleteBtn.setBorderPainted(false);
-        deleteBtn.setOpaque(false);
-        deleteBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        // The original button had complex layout instructions to center text "START"
+        // IconOnImageButton supports text drawing in paintComponent but
+        // createStartButton
+        // used an OutlinedLabel added to the button.
+        // We can replicate that by continuing to use IconOnImageButton as a container,
+        // OR we can make a custom IconOnImageButton that draws the text if we want the
+        // hover effect on the bg.
+
+        // IconOnImageButton constructor allows no text if we pass it as icon?
+        // No, IconOnImageButton constructors don't take text.
+        // However, the base class paintComponent draws bg and fg.
+        // If we want the label to be a component, we can add it.
+        // But IconOnImageButton only draws custom BG/FG if provided.
+        // Does IconOnImageButton support standard 'add(component)'? Yes, it's a
+        // Container.
+
+        IconOnImageButton deleteBtn = new IconOnImageButton(
+                null,
+                "Start Game",
+                new Dimension(150, 70),
+                null,
+                bgIcon);
+
+        // We need to re-add the label logic because IconOnImageButton doesn't support
+        // the OutlinedLabel styling natively
+        // (it supports basic string drawing in createKoalaButton but not the base
+        // class).
+        // Wait, IconOnImageButton base class DOES NOT draw text.
+        // So successful strategy: Use IconOnImageButton for the background hover
+        // effect,
+        // and add the label on top as before.
 
         Color bgColor = ColorsInUse.TEXT.get();
 
@@ -827,7 +806,6 @@ public class SettingsOverlay extends OverlayView {
         label.setFont(FontsInUse.PIXEL.getSize(30f));
         label.setForeground(bgColor); // Red text color
 
-        // need this ugly thing just for the slight downwards text offset
         GridBagLayout gbl = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;

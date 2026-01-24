@@ -29,19 +29,6 @@ public class StartScreen {
     public StartScreen(NavigationController nav) {
         this.nav = nav;
         initUI();
-        startGameBtn.addActionListener(e -> OverlayController.getInstance().showOverlay(OverlayType.SETTINGS));
-        gameHistoryBtn.addActionListener(e -> nav.goToHistory());
-        mngQuestionsBtn.addActionListener(e -> nav.goToQuestionManager());
-        exitBtn.addActionListener(e -> {
-            int option = JOptionPane.showConfirmDialog(
-                    mainPanel,
-                    "Are you sure you want to exit the application?",
-                    "Exit Confirmation",
-                    JOptionPane.YES_NO_OPTION);
-            if (option == JOptionPane.YES_OPTION) {
-                System.exit(0);
-            }
-        });
     }
 
     /**
@@ -58,26 +45,27 @@ public class StartScreen {
         topPanel.setOpaque(false);
         topPanel.setBorder(new EmptyBorder(0, 20, 0, 20));
 
-        JButton infoIcon = new JButton();
-        infoIcon.setBorder(new EmptyBorder(0, 0, 0, 0));
-        infoIcon.setToolTipText("How to play");
-        infoIcon.setContentAreaFilled(false);
-        infoIcon.setBorderPainted(false);
-        infoIcon.setFocusPainted(false);
-        infoIcon.setOpaque(false);
-        infoIcon.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        infoIcon.addActionListener(e -> OverlayController.getInstance().showOverlay(OverlayType.INSTRUCTIONS));
-
         URL iconUrl = getClass().getResource("/info-koala.png");
+        IconOnImageButton infoIcon;
+
+        ImageIcon infoDrawable = null;
         if (iconUrl != null) {
             try {
                 BufferedImage img = ImageIO.read(iconUrl);
                 Image scaled = img.getScaledInstance(105, 70, Image.SCALE_SMOOTH);
-                infoIcon.setIcon(new ImageIcon(scaled));
+                infoDrawable = new ImageIcon(scaled);
             } catch (IOException ignored) {
             }
-        } else {
-            // fallback so you notice missing resource
+        }
+
+        infoIcon = new IconOnImageButton(
+                () -> OverlayController.getInstance().showOverlay(OverlayType.INSTRUCTIONS),
+                "How to play",
+                new Dimension(105, 70),
+                infoDrawable,
+                null);
+
+        if (infoDrawable == null) {
             infoIcon.setText("i");
             infoIcon.setForeground(Color.WHITE);
         }
@@ -122,32 +110,6 @@ public class StartScreen {
         startScreenLabel.setHorizontalAlignment(SwingConstants.CENTER);
         startScreenLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
-        startGameBtn = new JButton();
-        gameHistoryBtn = new JButton();
-        mngQuestionsBtn = new JButton();
-
-        java.awt.Font btnFont = FontsInUse.PIXEL.getSize(32f);
-
-        // helper to add label centered and make it fill the button
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.anchor = GridBagConstraints.CENTER;
-
-        JButton[] centerButtons = {startGameBtn, gameHistoryBtn, mngQuestionsBtn};
-
-        URL borderURL = getClass().getResource("/labelBorder.png");
-        BufferedImage borderImg = null;
-        if (borderURL != null) {
-            try {
-                borderImg = ImageIO.read(borderURL);
-            } catch (IOException ignored) {
-            }
-        }
-
         JPanel centerButtonContainer = new JPanel();
         centerButtonContainer.setLayout(new BoxLayout(centerButtonContainer, BoxLayout.X_AXIS));
         centerButtonContainer.setOpaque(false); // let background show through
@@ -157,47 +119,31 @@ public class StartScreen {
         int gap = 20;
 
         // Resource names for the three center buttons (Start, History, Questions)
-        String[] centerResources = {"start-koala", "history-koala", "questions-koala"};
+        String[] centerResources = { "start-koala", "history-koala", "questions-koala" };
         Dimension btnSize = new Dimension(210, 70);
-        for (int i = 0; i < centerButtons.length; i++) {
-            JButton btn = centerButtons[i];
 
-            // remove internal text/labels: keep layout so icon is centered
-            btn.setLayout(new GridBagLayout());
+        // 1. Start Game Button
+        ImageIcon startIcon = loadScaledIcon(centerResources[0], btnSize.width, btnSize.height);
+        startGameBtn = new IconOnImageButton(
+                () -> OverlayController.getInstance().showOverlay(OverlayType.SETTINGS),
+                null, btnSize, startIcon, null);
+        centerButtonContainer.add(startGameBtn);
+        centerButtonContainer.add(Box.createRigidArea(new Dimension(gap, 0)));
 
-            btn.setFocusable(false);
-            btn.setPreferredSize(btnSize);
-            btn.setMaximumSize(btnSize);
-            btn.setMinimumSize(btnSize);
-            btn.setBorderPainted(false);
-            btn.setContentAreaFilled(false);
-            btn.setOpaque(false);
-            btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        // 2. History Button
+        ImageIcon historyIcon = loadScaledIcon(centerResources[1], btnSize.width, btnSize.height);
+        gameHistoryBtn = new IconOnImageButton(
+                () -> nav.goToHistory(),
+                null, btnSize, historyIcon, null);
+        centerButtonContainer.add(gameHistoryBtn);
+        centerButtonContainer.add(Box.createRigidArea(new Dimension(gap, 0)));
 
-            // Try to load corresponding koala image and scale it to the button size
-            ImageIcon koalaIcon = loadScaledIcon(centerResources[i], btnSize.width, btnSize.height);
-            if (koalaIcon != null) {
-                btn.setIcon(koalaIcon);
-                btn.setHorizontalTextPosition(SwingConstants.CENTER);
-                btn.setVerticalTextPosition(SwingConstants.CENTER);
-            } else if (borderImg != null) {
-                Image scaled = borderImg.getScaledInstance(btnSize.width, btnSize.height, Image.SCALE_SMOOTH);
-                btn.setIcon(new ImageIcon(scaled));
-                btn.setHorizontalTextPosition(SwingConstants.CENTER);
-                btn.setVerticalTextPosition(SwingConstants.CENTER);
-                btn.setBorderPainted(false);
-                btn.setContentAreaFilled(false);
-                btn.setOpaque(false);
-            } else {
-                btn.setBackground(ColorsInUse.BTN_COLOR.get());
-            }
-
-            centerButtonContainer.add(btn);
-
-            if (i < centerButtons.length - 1) {
-                centerButtonContainer.add(Box.createRigidArea(new Dimension(gap, 0)));
-            }
-        }
+        // 3. Questions Button
+        ImageIcon questionsIcon = loadScaledIcon(centerResources[2], btnSize.width, btnSize.height);
+        mngQuestionsBtn = new IconOnImageButton(
+                () -> nav.goToQuestionManager(),
+                null, btnSize, questionsIcon, null);
+        centerButtonContainer.add(mngQuestionsBtn);
 
         JPanel centerWrapper = new JPanel();
         centerWrapper.setOpaque(false);
@@ -233,36 +179,25 @@ public class StartScreen {
 
         mainPanel.add(centerAnchor, BorderLayout.CENTER);
 
-        exitBtn = new JButton();
-        exitBtn.setFocusable(false);
+        // EXIT BUTTON
         Dimension exitBtnSize = new java.awt.Dimension(120, 52);
-        exitBtn.setPreferredSize(exitBtnSize);
-        exitBtn.setMaximumSize(exitBtnSize);
-        exitBtn.setMinimumSize(exitBtnSize);
-        exitBtn.setBorderPainted(false);
-        exitBtn.setContentAreaFilled(false);
-        exitBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-        // try to load exit koala and scale to exit button size
         ImageIcon exitIcon = loadScaledIcon("exit-koala", exitBtnSize.width, exitBtnSize.height);
-        if (exitIcon != null) {
-            exitBtn.setIcon(exitIcon);
-            exitBtn.setHorizontalTextPosition(SwingConstants.CENTER);
-            exitBtn.setVerticalTextPosition(SwingConstants.CENTER);
-            exitBtn.setBorderPainted(false);
-            exitBtn.setContentAreaFilled(false);
-            exitBtn.setOpaque(false);
-        } else if (borderImg != null) {
-            Image scaled = borderImg.getScaledInstance(exitBtnSize.width, exitBtnSize.height, Image.SCALE_SMOOTH);
-            exitBtn.setIcon(new ImageIcon(scaled));
-            exitBtn.setHorizontalTextPosition(SwingConstants.CENTER);
-            exitBtn.setVerticalTextPosition(SwingConstants.CENTER);
-            exitBtn.setBorderPainted(false);
-            exitBtn.setContentAreaFilled(false);
-            exitBtn.setOpaque(false);
-        } else {
-            exitBtn.setBackground(ColorsInUse.BTN_COLOR.get());
-        }
+
+        exitBtn = new IconOnImageButton(
+                () -> {
+                    int option = JOptionPane.showConfirmDialog(
+                            mainPanel,
+                            "Are you sure you want to exit the application?",
+                            "Exit Confirmation",
+                            JOptionPane.YES_NO_OPTION);
+                    if (option == JOptionPane.YES_OPTION) {
+                        System.exit(0);
+                    }
+                },
+                null, exitBtnSize, exitIcon, null);
+
+        // Fallback or setup logic handled by IconOnImageButton, we just feed it the
+        // icon.
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         bottomPanel.setOpaque(false); // let background show through
@@ -302,4 +237,3 @@ public class StartScreen {
     }
 
 }
-

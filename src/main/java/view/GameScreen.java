@@ -14,7 +14,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 
-public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftListener, GameOverListener, SurpriseListener, InputBlockListener {
+public class GameScreen extends JPanel
+        implements ActionMadeListener, MinesLeftListener, GameOverListener, SurpriseListener, InputBlockListener {
     private final NavigationController nav;
     private final GameSession session; // Always holds the current game session
     private final ComponentAnimator animator;
@@ -105,27 +106,25 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         topPanel.setOpaque(false);
         topPanel.setBorder(new EmptyBorder(0, 20, 0, 20));
 
-        infoIcon = new JButton();
-        infoIcon.setBorder(new EmptyBorder(0, 0, 0, 0));
-        infoIcon.setToolTipText("How to play");
-        infoIcon.setContentAreaFilled(false);
-        infoIcon.setBorderPainted(false);
-        infoIcon.setFocusPainted(false);
-        infoIcon.setOpaque(false);
-        infoIcon.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        infoIcon.addActionListener(e ->
-                OverlayController.getInstance().showOverlay(OverlayType.INSTRUCTIONS)
-        );
-
         URL iconUrl = getClass().getResource("/info-koala.png");
+        ImageIcon infoDrawable = null;
         if (iconUrl != null) {
             try {
                 BufferedImage img = ImageIO.read(iconUrl);
                 Image scaled = img.getScaledInstance(105, 70, Image.SCALE_SMOOTH);
-                infoIcon.setIcon(new ImageIcon(scaled));
-            } catch (IOException ignored) {}
-        } else {
-            // fallback so you notice missing resource
+                infoDrawable = new ImageIcon(scaled);
+            } catch (IOException ignored) {
+            }
+        }
+
+        infoIcon = new IconOnImageButton(
+                () -> OverlayController.getInstance().showOverlay(OverlayType.INSTRUCTIONS),
+                "How to play",
+                new Dimension(105, 70),
+                infoDrawable,
+                null);
+
+        if (infoDrawable == null) {
             infoIcon.setText("i");
             infoIcon.setForeground(Color.WHITE);
         }
@@ -180,7 +179,8 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         namesPanel.add(feedLabel, BorderLayout.CENTER);
         namesPanel.add(rightPanel, BorderLayout.EAST);
 
-        // North container stacks topPanel (feed + info) and namesPanel (player names) vertically
+        // North container stacks topPanel (feed + info) and namesPanel (player names)
+        // vertically
         JPanel northContainer = new JPanel();
         northContainer.setLayout(new BoxLayout(northContainer, BoxLayout.Y_AXIS));
         northContainer.setOpaque(false);
@@ -279,8 +279,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         mainPanel.add(southContainer, BorderLayout.SOUTH);
     }
 
-
-    //make sure to disable the info button when ViewQuestionOverlay is being viewed
+    // make sure to disable the info button when ViewQuestionOverlay is being viewed
     @Override
     public void onInputBlock(boolean isBlocked) {
         if (infoIcon != null) {
@@ -290,7 +289,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
 
     private JButton createHomeButton() {
         ImageIcon bg = loadScaledIcon("btn-koala", 80, 70);
-        ImageIcon home = loadScaledIcon("home-pixel", 25, 25);
+        ImageIcon home = loadScaledIcon("home-pixel", 35, 35);
 
         return new IconOnImageButton(
                 () -> {
@@ -299,8 +298,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
                                 mainPanel,
                                 "Are you sure you want to return to the main menu?",
                                 "Confirm Navigation",
-                                JOptionPane.YES_NO_OPTION
-                        );
+                                JOptionPane.YES_NO_OPTION);
                         if (option == JOptionPane.YES_OPTION) {
                             OverlayController.getInstance().closeCurrentOverlay();
                             nav.goToHome();
@@ -311,31 +309,32 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
                         nav.goToHome();
                     }
                 },
-                "Home",
+                null,
                 new Dimension(80, 70),
                 home,
-                bg
-        );
+                bg);
     }
-
 
     public JPanel getMainPanel() {
         return mainPanel;
     }
 
     public void updateMinesLeft(int minesLeft, Board board) {
-        if (board == session.getLeftBoard()) player1MinesLeftLabel.setText("x" + minesLeft);
-        else player2MinesLeftLabel.setText("x" + minesLeft);
+        if (board == session.getLeftBoard())
+            player1MinesLeftLabel.setText("x" + minesLeft);
+        else
+            player2MinesLeftLabel.setText("x" + minesLeft);
 
     }
 
-    //get the current health pool and points from the session
+    // get the current health pool and points from the session
     private void updateLabels() {
         pointsLabel.setText("Score: " + session.getPoints());
         healthLabel.setText("x" + session.getHealthPool());
     }
 
-    //this method replaces the old onPointsChange and onHealthChange, copmbining them together
+    // this method replaces the old onPointsChange and onHealthChange, copmbining
+    // them together
     @Override
     public void onActionMade(String message, boolean positive, int healthChange, int pointsChange) {
         // special-case: show "This is not your turn" in white
@@ -354,20 +353,24 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
 
         feedLabel.setText(message);
 
-        feedLabel.setForeground(positive ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get());
+        feedLabel
+                .setForeground(positive ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get());
         updateLabels();
         if (pointsChange != 0) {
             String text = (pointsChange > 0 ? "+" : "") + pointsChange;
-            Color color = pointsChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
+            Color color = pointsChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get()
+                    : ColorsInUse.FEEDBACK_BAD_COLOR.get();
             animator.pulseBorder(pointsLabel, 6);
             animator.floatingNumber(pointsLabel, text, color, pointsChange > 0);
         }
         if (healthChange != 0) {
             String text = (healthChange > 0 ? "+" : "") + healthChange;
-            Color color = healthChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get();
+            Color color = healthChange > 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get()
+                    : ColorsInUse.FEEDBACK_BAD_COLOR.get();
             animator.floatingNumber(healthLabel, text, color, healthChange > 0);
-            if (healthChange < 0) animator.shake(healthLabel);
-            if (session.getHealthPool() <3) {
+            if (healthChange < 0)
+                animator.shake(healthLabel);
+            if (session.getHealthPool() < 3) {
                 animator.shake(healthLabel);
                 healthLabel.setForeground(Color.RED);
             }
@@ -377,13 +380,14 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
         }
     }
 
-    //this method shows the end game screen when the game is over
+    // this method shows the end game screen when the game is over
     @Override
     public void onGameOver(boolean saved, boolean winOrLose, int score) {
         // mark session as ended so home button doesn't prompt again
         this.gameIsOver = true;
         if (!saved)
-            JOptionPane.showMessageDialog(mainPanel, "Error, could not save the game!", "Game Over", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(mainPanel, "Error, could not save the game!", "Game Over",
+                    JOptionPane.ERROR_MESSAGE);
         OverlayController.getInstance().showGameOverOverlay(winOrLose, score);
     }
 
@@ -393,7 +397,7 @@ public class GameScreen extends JPanel implements ActionMadeListener, MinesLeftL
     }
 
     private ImageIcon loadScaledIcon(String resourceBase, int width, int height) {
-        String[] exts = {".png", ".jpg", ".jpeg", ".gif"};
+        String[] exts = { ".png", ".jpg", ".jpeg", ".gif" };
         for (String ext : exts) {
             URL url = getClass().getResource("/" + resourceBase + ext);
             if (url != null) {

@@ -9,7 +9,7 @@ public enum ColorsInUse {
 
     BG_COLOR(new Color(20, 20, 20)),
     BG_COLOR_TRANSPARENT(new Color(20, 20, 20, 86)),
-    TABLE_BG_COLOR(new Color(142, 110, 157)),
+    TABLE_BG_COLOR(Color.BLACK),
     BTN_COLOR(new Color(10, 10, 10)),
     TEXT(Color.WHITE),
     ALT_TEXT(Color.BLACK),
@@ -22,7 +22,7 @@ public enum ColorsInUse {
     BOARD_BACKGROUND(new Color(32, 32, 32)),
     BOARD_BORDER_DEFAULT(new Color(0, 0, 0, 150)),
     BOARD_ACTIVE_BORDER(new Color(255, 215, 0, 200)),
-    BOARD_ACTIVE_BORDER2(new Color(133,235,217)),
+    BOARD_ACTIVE_BORDER2(new Color(142, 110, 157)),
 
     FEEDBACK_GOOD_COLOR(new Color(46, 204, 113)),
     FEEDBACK_BAD_COLOR(new Color(231, 76, 60)),

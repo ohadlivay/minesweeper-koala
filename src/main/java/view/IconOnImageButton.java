@@ -8,7 +8,21 @@ public class IconOnImageButton extends JButton {
     protected boolean isHovered = false;
     protected boolean isSelectedState = false;
     private ImageIcon bg;
+    private ImageIcon bgLight; // Lighter version for hover/select
     private Icon fg;
+    private Icon fgLight; // Lighter version for hover/select (if fg is ImageIcon)
+
+    // Helper to create lighter image from an Icon if it's an ImageIcon, else return
+    // null
+    private static ImageIcon createLighterIcon(Icon icon) {
+        if (icon instanceof ImageIcon ii) {
+            Image lighterElem = createLighterImage(ii.getImage());
+            if (lighterElem != null) {
+                return new ImageIcon(lighterElem);
+            }
+        }
+        return null;
+    }
 
     private static Image createLighterImage(Image img) {
         if (img == null)
@@ -21,7 +35,7 @@ public class IconOnImageButton extends JButton {
         g.dispose();
 
         // Use RescaleOp to brighten
-        java.awt.image.RescaleOp op = new java.awt.image.RescaleOp(1.4f, 0, null);
+        java.awt.image.RescaleOp op = new java.awt.image.RescaleOp(1.2f, 0, null);
         return op.filter(bi, null);
     }
 
@@ -36,7 +50,10 @@ public class IconOnImageButton extends JButton {
 
     public IconOnImageButton(Runnable onClick, String tooltip, Dimension size, Icon fg, Icon bg) {
         this.bg = (bg instanceof ImageIcon ii) ? ii : null;
+        this.bgLight = (this.bg != null) ? createLighterIcon(this.bg) : null;
+
         this.fg = fg;
+        this.fgLight = createLighterIcon(fg);
 
         setPreferredSize(size);
         setMinimumSize(size);
@@ -52,7 +69,9 @@ public class IconOnImageButton extends JButton {
         setOpaque(false);
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        addActionListener(e -> onClick.run());
+        if (onClick != null) {
+            addActionListener(e -> onClick.run());
+        }
 
         addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -70,54 +89,35 @@ public class IconOnImageButton extends JButton {
     }
 
     public IconOnImageButton(String tooltip, Dimension size, Icon fg, Icon bg) {
-        this.bg = (bg instanceof ImageIcon ii) ? ii : null;
-        this.fg = fg;
-
-        setPreferredSize(size);
-        setMinimumSize(size);
-        setMaximumSize(size);
-
-        setBorder(BorderFactory.createEmptyBorder());
-        setMargin(new Insets(0, 0, 0, 0));
-
-        setToolTipText(tooltip);
+        this(null, tooltip, size, fg, bg);
         setBorderPainted(true);
-        setContentAreaFilled(false);
-        setFocusPainted(false);
-        setOpaque(false);
-        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-        addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                isHovered = true;
-                repaint();
-            }
-
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                isHovered = false;
-                repaint();
-            }
-        });
     }
 
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g); // safe since contentAreaFilled=false + opaque=false
+        // super.paintComponent(g); // NOT calling super to avoid default button
+        // rendering which might interfere
 
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                 RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 
-        if (bg != null) {
-            g2.drawImage(bg.getImage(), 0, 0, getWidth(), getHeight(), this);
+        boolean active = isHovered || isSelectedState;
+        ImageIcon currentBg = active && bgLight != null ? bgLight : bg;
+        Icon currentFg = active && fgLight != null ? fgLight : fg;
+
+        if (currentBg != null) {
+            g2.drawImage(currentBg.getImage(), 0, 0, getWidth(), getHeight(), this);
         }
 
-        if (fg != null) {
-            int x = (getWidth() - fg.getIconWidth()) / 2;
-            int y = (getHeight() - fg.getIconHeight()) / 2 + 3;
-            fg.paintIcon(this, g2, x, y);
+        if (currentFg != null) {
+            int x = (getWidth() - currentFg.getIconWidth()) / 2;
+            int y = (getHeight() - currentFg.getIconHeight()) / 2 + 3;
+            if (currentFg instanceof ImageIcon ii) {
+                g2.drawImage(ii.getImage(), x, y, this);
+            } else {
+                currentFg.paintIcon(this, g2, x, y);
+            }
         }
 
         g2.dispose();
@@ -143,9 +143,6 @@ public class IconOnImageButton extends JButton {
         IconOnImageButton b = new IconOnImageButton(onClick, tooltip, size, null, null) {
             @Override
             protected void paintComponent(Graphics g) {
-                // Do NOT call super.paintComponent(g) because we want full custom painting here
-                // and the super class paints its own bg/fg which are null here.
-
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
                 g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
