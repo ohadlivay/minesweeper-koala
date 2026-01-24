@@ -46,8 +46,9 @@ public class SettingsOverlay extends OverlayView {
 
         // Initialize default colors BEFORE initUI so buttons are created with correct
         // selected state
-        this.player1Color = ColorsInUse.CRIMSON;
-        this.player2Color = ColorsInUse.PEACH;
+        // Default: no color chosen
+        this.player1Color = null;
+        this.player2Color = null;
 
         initUI();
 
@@ -81,7 +82,15 @@ public class SettingsOverlay extends OverlayView {
 
     public SettingsOverlay(NavigationController nav, String player1, String player2, GameDifficulty difficulty,
             ColorsInUse color1, ColorsInUse color2) {
-        this(nav, player1, player2, difficulty);
+        this(nav);
+        player1Name.setText(player1);
+        player2Name.setText(player2);
+        if (difficulty != null) {
+            this.selectedDifficulty = difficulty;
+            updateSelection();
+        } else {
+            resetSelection();
+        }
         if (color1 != null) {
             this.player1Color = color1;
         }
@@ -95,7 +104,7 @@ public class SettingsOverlay extends OverlayView {
     private void initUI() {
         contentPane = new BackgroundPanel("/wood-bg.png");
         contentPane.setLayout(new BorderLayout());
-        contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
+        contentPane.setBorder(new EmptyBorder(5, 20, 45, 20));
         contentPane.setPreferredSize(new Dimension(700, 650));
 
         JPanel titlePanel = new JPanel();
@@ -152,8 +161,6 @@ public class SettingsOverlay extends OverlayView {
         difficultyPanel.add(btnEasy);
         difficultyPanel.add(btnMedium);
         difficultyPanel.add(btnHard);
-        gbc.gridy = 0;
-        centerPanel.add(difficultyPanel, gbc);
 
         gbc.gridy = 0;
         gbc.gridx = 0;
@@ -204,7 +211,7 @@ public class SettingsOverlay extends OverlayView {
         namesPanel.add(createInputGroup("Player 2", player2Name = createTextField()));
 
         gbc.gridy++;
-        gbc.insets = new Insets(5, 50, 5, 50);
+        gbc.insets = new Insets(5, 50, 0, 50);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.weightx = 1.0;
@@ -224,7 +231,7 @@ public class SettingsOverlay extends OverlayView {
         colorPanel.add(player2ColorPanel);
 
         gbc.gridy++;
-        gbc.insets = new Insets(5, 50, 5, 50);
+        gbc.insets = new Insets(-10, 50, 5, 50);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.weightx = 1.0;
@@ -244,7 +251,7 @@ public class SettingsOverlay extends OverlayView {
         bottomPanel.setPreferredSize(new Dimension(700, 100));
 
         // a little padding so the back button isn't glued to the edge
-        JPanel backWrap = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        JPanel backWrap = new JPanel(new FlowLayout(FlowLayout.LEFT, 45, 20));
         backWrap.setOpaque(false);
         backWrap.add(buttonBack);
 
@@ -276,6 +283,13 @@ public class SettingsOverlay extends OverlayView {
     private void onOK() {
         String player1 = getPlayer1Name().equals(NAME_PLACEHOLDER) ? "" : getPlayer1Name();
         String player2 = getPlayer2Name().equals(NAME_PLACEHOLDER) ? "" : getPlayer2Name();
+
+        // check for colors
+        if (player1Color == null || player2Color == null) {
+            JOptionPane.showMessageDialog(this, "Both players must choose a board color.", "Color Selection Required",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         // check for difficulty
         if (selectedDifficulty == null) {
@@ -429,7 +443,7 @@ public class SettingsOverlay extends OverlayView {
     };
 
     private JPanel createColorSelectionGroup(String labelText, int playerNumber) {
-        JPanel panel = new JPanel(new BorderLayout(0, 10));
+        JPanel panel = new JPanel(new BorderLayout(0, 5));
         // panel.setBackground(ColorsInUse.BG_COLOR.get());
         panel.setOpaque(false);
 
@@ -537,7 +551,7 @@ public class SettingsOverlay extends OverlayView {
             btn.setEnabled(true);
             btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             btn.setBackground(color.get());
-            btn.setBorder(BorderFactory.createLineBorder(ColorsInUse.BOARD_ACTIVE_BORDER.get(), 4));
+            btn.setBorder(BorderFactory.createLineBorder(ColorsInUse.SURPRISE_TILE.get(), 4));
             btn.setToolTipText("Selected");
         } else {
             // Available state: normal appearance
