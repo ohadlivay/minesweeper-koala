@@ -780,23 +780,7 @@ public class SettingsOverlay extends OverlayView {
     }
 
     private JButton createStartButton() {
-        ImageIcon bgIcon = loadScaledIcon("btn-koala", 102, 57);
-
-        // The original button had complex layout instructions to center text "START"
-        // IconOnImageButton supports text drawing in paintComponent but
-        // createStartButton
-        // used an OutlinedLabel added to the button.
-        // We can replicate that by continuing to use IconOnImageButton as a container,
-        // OR we can make a custom IconOnImageButton that draws the text if we want the
-        // hover effect on the bg.
-
-        // IconOnImageButton constructor allows no text if we pass it as icon?
-        // No, IconOnImageButton constructors don't take text.
-        // However, the base class paintComponent draws bg and fg.
-        // If we want the label to be a component, we can add it.
-        // But IconOnImageButton only draws custom BG/FG if provided.
-        // Does IconOnImageButton support standard 'add(component)'? Yes, it's a
-        // Container.
+        ImageIcon bgIcon = loadScaledIcon("btn-koala", 102, 57)
 
         IconOnImageButton deleteBtn = new IconOnImageButton(
                 null,
@@ -804,15 +788,6 @@ public class SettingsOverlay extends OverlayView {
                 new Dimension(150, 70),
                 null,
                 bgIcon);
-
-        // We need to re-add the label logic because IconOnImageButton doesn't support
-        // the OutlinedLabel styling natively
-        // (it supports basic string drawing in createKoalaButton but not the base
-        // class).
-        // Wait, IconOnImageButton base class DOES NOT draw text.
-        // So successful strategy: Use IconOnImageButton for the background hover
-        // effect,
-        // and add the label on top as before.
 
         Color bgColor = ColorsInUse.TEXT.get();
 
