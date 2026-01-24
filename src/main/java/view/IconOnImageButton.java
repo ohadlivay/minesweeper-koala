@@ -106,13 +106,17 @@ public class IconOnImageButton extends JButton {
         ImageIcon currentBg = active && bgLight != null ? bgLight : bg;
         Icon currentFg = active && fgLight != null ? fgLight : fg;
 
+        if (!isEnabled()) {
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+        }
+
         if (currentBg != null) {
             g2.drawImage(currentBg.getImage(), 0, 0, getWidth(), getHeight(), this);
         }
 
         if (currentFg != null) {
             int x = (getWidth() - currentFg.getIconWidth()) / 2;
-            int y = (getHeight() - currentFg.getIconHeight()) / 2 + 3;
+            int y = (getHeight() - currentFg.getIconHeight()) / 2;
             if (currentFg instanceof ImageIcon ii) {
                 g2.drawImage(ii.getImage(), x, y, this);
             } else {

@@ -29,14 +29,14 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
     private JPanel answersPanel;
     private Board activeBoard;
 
-    private int selected = -1; //represents the currently selected answer
-    private int correct = -1; //track which button holds the correct answer
+    private int selected = -1; // represents the currently selected answer
+    private int correct = -1; // track which button holds the correct answer
 
     private Question currentQuestion;
 
     public ViewQuestionOverlay(NavigationController navigationController) {
         super(navigationController, false);
-        GameSessionController.getInstance().setBlocked(true); //blocks board interaction
+        GameSessionController.getInstance().setBlocked(true); // blocks board interaction
         initUI();
         displayQuestion(activeBoard);
         buttonSubmit.addActionListener(e -> onSubmit());
@@ -56,13 +56,13 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         contentPane = new BackgroundPanel("/wood-bg.png");
         contentPane.setOpaque(false);
         contentPane.setBorder(new EmptyBorder(50, 20, 20, 20));
-        contentPane.setPreferredSize(new Dimension(800, 600));
+        contentPane.setPreferredSize(new Dimension(1000, 650));
 
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
         titlePanel.setOpaque(false);
 
-        OutlinedLabel titleLabel = new OutlinedLabel("Question", Color.BLACK, 6f);
+        OutlinedLabel titleLabel = new OutlinedLabel(" Question", Color.BLACK, 6f);
         titleLabel.setFont(FontsInUse.PIXEL.getSize(62f));
         titleLabel.setForeground(ColorsInUse.TEXT.get());
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -90,7 +90,7 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         questionText.setForeground(ColorsInUse.TEXT.get());
         questionText.setAlignmentX(Component.CENTER_ALIGNMENT);
         questionText.setOpaque(false);
-        questionText.setPreferredSize(new Dimension(600, 100));
+        questionText.setPreferredSize(new Dimension(800, 100));
 
         centerPanel.add(questionText);
         centerPanel.add(Box.createVerticalStrut(10));
@@ -98,7 +98,7 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         answersPanel = new JPanel(new GridLayout(4, 1, 0, 15));
         answersPanel.setOpaque(false);
         answersPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        answersPanel.setMaximumSize(new Dimension(600, 300));
+        answersPanel.setMaximumSize(new Dimension(800, 400));
 
         centerPanel.add(answersPanel);
         contentPane.add(centerPanel, BorderLayout.CENTER);
@@ -117,11 +117,12 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
 
     private void onSubmit() {
         if (selected == -1) {
-            JOptionPane.showMessageDialog(this, "Please select an answer first!", "No Selection", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select an answer first!", "No Selection",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        //is the answer correct?
+        // is the answer correct?
         boolean isCorrect = (selected == correct);
         QuestionController.getInstance().submitQuestionResult(isCorrect, currentQuestion.getDifficulty(), activeBoard);
         close();
@@ -133,11 +134,6 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         this.selected = index;
         for (int i = 0; i < answerButtons.size(); i++) {
             JButton btn = answerButtons.get(i);
-
-            btn.setBorder(new CompoundBorder(
-                    new LineBorder(ColorsInUse.BG_COLOR.get(), 2, true),
-                    new EmptyBorder(10, 15, 10, 15)
-            ));
 
             if (i == index) {
                 btn.setBackground(ColorsInUse.CONFIRM.get());
@@ -158,17 +154,19 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
         btn.setFocusPainted(false);
         btn.setHorizontalAlignment(SwingConstants.LEFT);
 
-        btn.setBorder(new CompoundBorder(new LineBorder(ColorsInUse.BG_COLOR.get(), 2, true), new EmptyBorder(10, 15, 10, 15)));
+        btn.setBorder(new EmptyBorder(12, 20, 12, 20));
 
         btn.addActionListener(e -> updateSelection(index));
 
         btn.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
-                if (selected != index) btn.setBackground(ColorsInUse.BTN_COLOR.get().brighter());
+                if (selected != index)
+                    btn.setBackground(ColorsInUse.BTN_COLOR.get().brighter());
             }
 
             public void mouseExited(MouseEvent e) {
-                if (selected != index) btn.setBackground(ColorsInUse.BTN_COLOR.get());
+                if (selected != index)
+                    btn.setBackground(ColorsInUse.BTN_COLOR.get());
             }
         });
 
@@ -193,17 +191,22 @@ public class ViewQuestionOverlay extends OverlayView implements DisplayQuestionL
             return;
         }
 
-        //html for multiline center alignment
-        questionText.setText("<html><div style='text-align: center;'>" + currentQuestion.getQuestionText() + "</div></html>");
+        // html for multiline center alignment
+        questionText.setText(
+                "<html><div style='text-align: center;'>" + currentQuestion.getQuestionText() + "</div></html>");
         QuestionDifficulty diff = currentQuestion.getDifficulty();
         difficultyLabel.setText("Difficulty: " + (diff != null ? diff.toString() : "UNKNOWN"));
         List<String> answerStrings = new ArrayList<>();
         String correctAnswerText = currentQuestion.getAnswer1();
 
-        if (currentQuestion.getAnswer1() != null) answerStrings.add(currentQuestion.getAnswer1());
-        if (currentQuestion.getAnswer2() != null) answerStrings.add(currentQuestion.getAnswer2());
-        if (currentQuestion.getAnswer3() != null) answerStrings.add(currentQuestion.getAnswer3());
-        if (currentQuestion.getAnswer4() != null) answerStrings.add(currentQuestion.getAnswer4());
+        if (currentQuestion.getAnswer1() != null)
+            answerStrings.add(currentQuestion.getAnswer1());
+        if (currentQuestion.getAnswer2() != null)
+            answerStrings.add(currentQuestion.getAnswer2());
+        if (currentQuestion.getAnswer3() != null)
+            answerStrings.add(currentQuestion.getAnswer3());
+        if (currentQuestion.getAnswer4() != null)
+            answerStrings.add(currentQuestion.getAnswer4());
 
         Collections.shuffle(answerStrings);
 

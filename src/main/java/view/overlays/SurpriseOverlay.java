@@ -20,6 +20,7 @@ public class SurpriseOverlay extends OverlayView {
 
     private OutlinedLabel healthValueLabel;
     private OutlinedLabel pointsValueLabel;
+    private OutlinedLabel closeLabel;
     private final IconOnImageButton closeButton;
 
     private JPanel leftCardPanel;
@@ -79,7 +80,7 @@ public class SurpriseOverlay extends OverlayView {
         top.setOpaque(false);
         top.setBorder(new EmptyBorder(22, 10, 0, 10));
 
-        OutlinedLabel title = new OutlinedLabel("SURPRISE!", Color.BLACK, 4f);
+        OutlinedLabel title = new OutlinedLabel(" SURPRISE!", Color.BLACK, 5f);
         title.setFont(FontsInUse.PIXEL2.getSize(44f));
         title.setForeground(ColorsInUse.TEXT.get());
         title.setHorizontalAlignment(SwingConstants.CENTER);
@@ -130,7 +131,7 @@ public class SurpriseOverlay extends OverlayView {
             heart.setIcon(new ImageIcon(scaled));
         }
 
-        healthValueLabel = new OutlinedLabel("0", Color.BLACK, 3f);
+        healthValueLabel = new OutlinedLabel("0", Color.BLACK, 5f);
         healthValueLabel.setFont(FontsInUse.PIXEL.getSize(40f));
         healthValueLabel.setForeground(ColorsInUse.TEXT.get());
 
@@ -141,7 +142,7 @@ public class SurpriseOverlay extends OverlayView {
         JPanel rightHalf = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
         rightHalf.setOpaque(false);
 
-        pointsValueLabel = new OutlinedLabel("POINTS: 0", Color.BLACK, 3f);
+        pointsValueLabel = new OutlinedLabel(" POINTS: 0", Color.BLACK, 5f);
         pointsValueLabel.setFont(FontsInUse.PIXEL.getSize(40f));
         pointsValueLabel.setForeground(ColorsInUse.TEXT.get());
 
@@ -155,7 +156,7 @@ public class SurpriseOverlay extends OverlayView {
 
         // add to center with your existing gbc
         gbc.gridy = 1;
-        gbc.insets = new Insets(80, 0, 0, 0);
+        gbc.insets = new Insets(75, 0, 0, 0);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
         center.add(statsBar, gbc);
@@ -164,12 +165,17 @@ public class SurpriseOverlay extends OverlayView {
         gbc.weightx = 0;
 
         // --- Row 2: button small + centered ---
-        OutlinedLabel closeLabel = new OutlinedLabel("CLOSE", Color.BLACK, 2f);
-        closeLabel.setFont(FontsInUse.PIXEL.getSize(22f));
+        closeLabel = new OutlinedLabel(" CLOSE", Color.BLACK, 3f);
+        closeLabel.setFont(FontsInUse.PIXEL.getSize(26f));
         closeLabel.setForeground(ColorsInUse.TEXT.get());
 
         closeButton.setLayout(new GridBagLayout());
-        closeButton.add(closeLabel);
+        GridBagConstraints gbcClose = new GridBagConstraints();
+        gbcClose.gridx = 0;
+        gbcClose.gridy = 0;
+        gbcClose.anchor = GridBagConstraints.CENTER;
+        gbcClose.insets = new Insets(8, 0, 0, 0); // Visual adjustment for centering on wood bg
+        closeButton.add(closeLabel, gbcClose);
 
         closeButton.setPreferredSize(new Dimension(190, 54));
         closeButton.setBackground(ColorsInUse.BTN_COLOR.get());
@@ -178,7 +184,7 @@ public class SurpriseOverlay extends OverlayView {
         closeButton.setEnabled(false);
 
         gbc.gridy = 2;
-        gbc.insets = new Insets(20, 0, 0, 0);
+        gbc.insets = new Insets(5, 0, 0, 0);
         center.add(closeButton, gbc);
 
         contentPane.add(center, BorderLayout.CENTER);
@@ -296,12 +302,21 @@ public class SurpriseOverlay extends OverlayView {
 
         // seconds
         int closeTimerDuration = 7;
-        closeTimer = new Timer(closeTimerDuration * 1000, e -> closeOverlayImmediately());
-        closeTimer.setRepeats(false);
-        closeTimer.start();
+        final int[] remaining = { closeTimerDuration };
 
+        closeLabel.setText(" CLOSE (" + remaining[0] + ")");
         closeButton.setEnabled(true);
-        animator.closeCountdown(closeButton, 0, closeTimerDuration);
+
+        closeTimer = new Timer(1000, e -> {
+            remaining[0]--;
+            if (remaining[0] <= 0) {
+                ((Timer) e.getSource()).stop();
+                closeOverlayImmediately();
+            } else {
+                closeLabel.setText(" CLOSE (" + remaining[0] + ")");
+            }
+        });
+        closeTimer.start();
     }
 
     private void closeOverlayImmediately() {
