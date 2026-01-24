@@ -62,8 +62,6 @@ public class SettingsOverlay extends OverlayView {
             }
         });
 
-        // Mouse listeners for borders removed as per requirements
-
     }
 
     public SettingsOverlay(NavigationController nav, String player1, String player2, GameDifficulty difficulty) {
