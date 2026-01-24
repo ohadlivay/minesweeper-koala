@@ -35,7 +35,7 @@ public class IconOnImageButton extends JButton {
         g.dispose();
 
         // Use RescaleOp to brighten
-        java.awt.image.RescaleOp op = new java.awt.image.RescaleOp(1.2f, 0, null);
+        java.awt.image.RescaleOp op = new java.awt.image.RescaleOp(1.3f, 0, null);
         return op.filter(bi, null);
     }
 

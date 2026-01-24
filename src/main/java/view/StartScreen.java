@@ -25,6 +25,7 @@ public class StartScreen {
     private JButton mngQuestionsBtn;
     private JButton exitBtn;
     private final NavigationController nav;
+    private Timer stopAnimationTimer;
 
     public StartScreen(NavigationController nav) {
         this.nav = nav;
@@ -76,6 +77,9 @@ public class StartScreen {
 
         // Setup for animated GIF + static PNG combination to create a dynamic intro
         // Load GIF at original size to preserve animation
+        if (stopAnimationTimer != null) {
+            stopAnimationTimer.stop();
+        }
         ImageIcon animationIcon = null;
         URL gifUrl = getClass().getResource("/start-gif1.gif");
         if (gifUrl != null) {
@@ -88,7 +92,7 @@ public class StartScreen {
 
             // timer to stop the gif and swap with static image scaled to 512x285
             int animationDurationMs = 7000;
-            Timer stopAnimationTimer = new Timer(animationDurationMs, e -> {
+            stopAnimationTimer = new Timer(animationDurationMs, e -> {
                 ImageIcon staticIcon = loadScaledIcon("logo-static", 768, 428);
                 if (staticIcon != null) {
                     startScreenLabel.setIcon(staticIcon);

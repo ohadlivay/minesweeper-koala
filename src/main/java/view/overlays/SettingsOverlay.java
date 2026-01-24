@@ -209,7 +209,7 @@ public class SettingsOverlay extends OverlayView {
         namesPanel.add(createInputGroup("Player 2", player2Name = createTextField()));
 
         gbc.gridy++;
-        gbc.insets = new Insets(5, 50, 0, 50);
+        gbc.insets = new Insets(0, 50, 8, 50);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.weightx = 1.0;
@@ -229,7 +229,7 @@ public class SettingsOverlay extends OverlayView {
         colorPanel.add(player2ColorPanel);
 
         gbc.gridy++;
-        gbc.insets = new Insets(-10, 50, 5, 50);
+        gbc.insets = new Insets(-5, 50, 5, 50);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.weightx = 1.0;
@@ -778,7 +778,7 @@ public class SettingsOverlay extends OverlayView {
     }
 
     private JButton createStartButton() {
-        ImageIcon bgIcon = loadScaledIcon("btn-koala", 102, 57)
+        ImageIcon bgIcon = loadScaledIcon("btn-koala", 102, 57);
 
         IconOnImageButton deleteBtn = new IconOnImageButton(
                 null,
