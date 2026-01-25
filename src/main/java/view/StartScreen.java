@@ -91,7 +91,7 @@ public class StartScreen {
             startScreenLabel = new JLabel(animationIcon);
 
             // timer to stop the gif and swap with static image scaled to 512x285
-            int animationDurationMs = 7000;
+            int animationDurationMs = 6000;
             stopAnimationTimer = new Timer(animationDurationMs, e -> {
                 ImageIcon staticIcon = loadScaledIcon("logo-static", 768, 428);
                 if (staticIcon != null) {

@@ -289,7 +289,7 @@ public class GameScreen extends JPanel
 
     private JButton createHomeButton() {
         ImageIcon bg = loadScaledIcon("btn-koala", 80, 70);
-        ImageIcon home = loadScaledIcon("home-pixel", 35, 35);
+        ImageIcon home = loadScaledIcon("home-pixel", 25, 25);
 
         return new IconOnImageButton(
                 () -> {
