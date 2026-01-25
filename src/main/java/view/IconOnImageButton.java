@@ -24,6 +24,12 @@ public class IconOnImageButton extends JButton {
         return null;
     }
 
+    public void setForegroundIcon(Icon icon) {
+        this.fg = icon;
+        this.fgLight = createLighterIcon(icon);
+        repaint();
+    }
+
     private static Image createLighterImage(Image img) {
         if (img == null)
             return null;

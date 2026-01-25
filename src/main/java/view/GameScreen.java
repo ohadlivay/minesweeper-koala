@@ -4,6 +4,7 @@ import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
 import main.java.controller.OverlayController;
 import main.java.model.*;
+import main.java.util.SoundManager;
 import main.java.view.overlays.OverlayType;
 
 import javax.imageio.ImageIO;
@@ -129,7 +130,37 @@ public class GameScreen extends JPanel
             infoIcon.setForeground(Color.WHITE);
         }
 
-        topPanel.add(infoIcon, BorderLayout.EAST);
+        // Mute button
+        JButton muteButton = new IconOnImageButton(
+                null,
+                "Toggle Music",
+                new Dimension(105, 70),
+                null, // Icon set below
+                null // Transparent background (icon replaces button)
+        );
+
+        // Let's load the icons
+        ImageIcon soundOn = loadScaledIcon("sound-on", 105, 70);
+        ImageIcon soundOff = loadScaledIcon("sound-off", 105, 70);
+
+        // Define update logic
+        Runnable updateMuteIcon = () -> {
+            boolean isMuted = SoundManager.getInstance().isMuted();
+            ((IconOnImageButton) muteButton).setForegroundIcon(isMuted ? soundOff : soundOn);
+        };
+        updateMuteIcon.run(); // Set initial state
+
+        muteButton.addActionListener(e -> {
+            SoundManager.getInstance().toggleMute();
+            updateMuteIcon.run();
+        });
+
+        JPanel topRightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+        topRightPanel.setOpaque(false);
+        topRightPanel.add(muteButton);
+        topRightPanel.add(infoIcon);
+
+        topPanel.add(topRightPanel, BorderLayout.EAST);
 
         // Names panel: appears below the topPanel and above the boards
         JPanel namesPanel = new JPanel(new BorderLayout());
@@ -383,6 +414,7 @@ public class GameScreen extends JPanel
     // this method shows the end game screen when the game is over
     @Override
     public void onGameOver(boolean saved, boolean winOrLose, int score) {
+        SoundManager.getInstance().stopBackgroundMusic();
         // mark session as ended so home button doesn't prompt again
         this.gameIsOver = true;
         if (!saved)

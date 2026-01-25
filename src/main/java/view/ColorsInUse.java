@@ -38,8 +38,8 @@ public enum ColorsInUse {
     NUMBER_1(Color.BLUE),
     NUMBER_2(new Color(0, 128, 0)),
     NUMBER_3(Color.RED),
-    NUMBER_4(Color.PINK),
-    NUMBER_5(Color.ORANGE),
+    NUMBER_4(Color.MAGENTA),
+    NUMBER_5(new Color(255, 94, 0)),
     NUMBER_6(new Color(93, 33, 196)),
     NUMBER_7(new Color(38, 8, 8)),
     NUMBER_8(Color.BLACK),
@@ -48,29 +48,14 @@ public enum ColorsInUse {
     // Board colors
     CRIMSON         (new Color(184, 15, 10)),
     SUNSET_ORANGE   (new Color(255, 94, 0)),
-    BROWN      (new Color(64, 34, 3)),
-    ROSE_GOLD       (new Color(183, 110, 121)),
-    TERRA_COTTA     (new Color(204, 78, 92)),
     WINE   (new Color(89, 15, 12)),
-    SOFT_MAROON     (new Color(150, 85, 95)),
-    WARM_TAUPE      (new Color(150, 130, 110)),
     CLAY_ORANGE     (new Color(190, 135, 85)),
-    COPPER_RED      (new Color(180, 105, 85)),
     PEACH           (new Color(235, 92, 52)),
 
-    // --- Cool Colors (Board B) ---
     MIDNIGHT_BLUE   (new Color(25, 25, 112)),
     ARCTIC_CYAN     (new Color(0, 191, 255)),
     EMERALD_GREEN   (new Color(46, 139, 87)),
-    ROYAL_PURPLE    (new Color(61, 71, 212)),
-    FROST_BLUE      (new Color(83, 245, 237)),
-    PINE_GREEN      (new Color(1, 121, 111)),
-    SLATE_BLUE      (new Color(90, 110, 160)),
-    STEEL_TEAL      (new Color(70, 140, 135)),
-    MUTED_CYAN      (new Color(80, 150, 170)),
-    DENIM_BLUE      (new Color(75, 120, 180)),
-    SAGE_GREEN      (new Color(140, 170, 130)),
-    PINE_TEAL       (new Color(87, 122, 115));
+    ROYAL_PURPLE    (new Color(61, 71, 212));
 
     // Outline colors for difficulty (reusable static Colors so enum ordering is unaffected)
     public static final Color DIFFICULTY_EASY_OUTLINE   = new Color(25, 135, 84);   // green
