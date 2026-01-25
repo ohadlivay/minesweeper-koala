@@ -31,7 +31,7 @@ public class GameScreen extends JPanel
     private JLabel player2MinesLeftLabel;
     private JLabel healthLabel;
     private JLabel pointsLabel;
-    private JLabel feedLabel;
+    private OutlinedLabel feedLabel;
     private BoardLayout leftBoard;
     private BoardLayout rightBoard;
 
@@ -96,7 +96,7 @@ public class GameScreen extends JPanel
 
         Font font = FontsInUse.PIXEL.getSize(28f);
 
-        feedLabel = new JLabel("Welcome! Click a tile to start.", SwingConstants.CENTER);
+        feedLabel = new OutlinedLabel("Welcome! Click a tile to start.", Color.BLACK, 4f);
         feedLabel.setFont(font);
         feedLabel.setForeground(ColorsInUse.TEXT.get());
         feedLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
