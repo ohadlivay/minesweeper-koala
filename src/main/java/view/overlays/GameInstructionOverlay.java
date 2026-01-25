@@ -72,7 +72,7 @@ public class GameInstructionOverlay extends OverlayView {
         actionsCol.add(createHeader("ACTIONS"));
         actionsCol.add(createInstructionRow("/click-pixel.png", "Left Click: Reveal safe tiles"));
         actionsCol.add(createInstructionRow("/pixel-flag.png", "Right Click: Flag mines to Win"));
-        actionsCol.add(createInstructionRow("/heart.png", "Lives: Shared pool, Don't run out!"));
+        actionsCol.add(createInstructionRow("/heart.png", "Health pool: Don't run out!"));
         actionsCol.add(createInstructionRow("/home-pixel.png", "Home: Exit game"));
         splitPanel.add(actionsCol);
 
