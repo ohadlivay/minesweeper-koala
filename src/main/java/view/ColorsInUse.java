@@ -38,11 +38,11 @@ public enum ColorsInUse {
     NUMBER_1(Color.BLUE),
     NUMBER_2(new Color(0, 128, 0)),
     NUMBER_3(Color.RED),
-    NUMBER_4(new Color(93, 33, 196)),
-    NUMBER_5(new Color(38, 8, 8)),
-    NUMBER_6(Color.CYAN),
-    NUMBER_7(Color.BLACK),
-    NUMBER_8(Color.GRAY),
+    NUMBER_4(Color.PINK),
+    NUMBER_5(Color.ORANGE),
+    NUMBER_6(new Color(93, 33, 196)),
+    NUMBER_7(new Color(38, 8, 8)),
+    NUMBER_8(Color.BLACK),
 
 
     // Board colors
