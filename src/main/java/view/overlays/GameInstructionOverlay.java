@@ -58,7 +58,7 @@ public class GameInstructionOverlay extends OverlayView {
         // 1. Cooperative Goal
         mainBody.add(Box.createRigidArea(new Dimension(0, 10)));
         mainBody.add(createHeader("COOPERATIVE MISSION"));
-        mainBody.add(createWrappedText("This is a 2-player team effort! Collaborate with your partner to neutralize mines and clear the board. It is not a competition; you win or lose together."));
+        mainBody.add(createWrappedText("This is a 2-player team effort! Collaborate with your partner to neutralize mines and clear the board. It is not a competition - you win or lose together."));
         mainBody.add(Box.createRigidArea(new Dimension(0, 12)));
 
         // 2. Side-by-Side Panel (Actions & Tiles)
@@ -70,9 +70,9 @@ public class GameInstructionOverlay extends OverlayView {
         actionsCol.setLayout(new BoxLayout(actionsCol, BoxLayout.Y_AXIS));
         actionsCol.setOpaque(false);
         actionsCol.add(createHeader("ACTIONS"));
-        actionsCol.add(createInstructionRow("/click-pixel.png", "Left Click: Reveal tile"));
-        actionsCol.add(createInstructionRow("/pixel-flag.png", "Right Click: Flag mine"));
-        actionsCol.add(createInstructionRow("/heart.png", "Lives: Shared pool"));
+        actionsCol.add(createInstructionRow("/click-pixel.png", "Left Click: Reveal safe tiles"));
+        actionsCol.add(createInstructionRow("/pixel-flag.png", "Right Click: Flag mines to Win"));
+        actionsCol.add(createInstructionRow("/heart.png", "Lives: Shared pool, Don't run out!"));
         actionsCol.add(createInstructionRow("/home-pixel.png", "Home: Exit game"));
         splitPanel.add(actionsCol);
 
@@ -82,9 +82,9 @@ public class GameInstructionOverlay extends OverlayView {
         tilesCol.setOpaque(false);
         tilesCol.add(createHeader("TILE TYPES"));
         tilesCol.add(createInstructionRow("/tile-info.png", "Numbers: Nearby mines"));
-        tilesCol.add(createInstructionRow("/pixel-question.png", "Q: Answer for rewards"));
-        tilesCol.add(createInstructionRow("/gift-pixel.png", "S: Surprise effects"));
         tilesCol.add(createInstructionRow("/white-outline-mine.png", "Mine: Avoid these!"));
+        tilesCol.add(createInstructionRow("/pixel-question.png", "Question: Answer for rewards"));
+        tilesCol.add(createInstructionRow("/gift-pixel.png", "Surprise: Chance to Win or Lose"));
         splitPanel.add(tilesCol);
 
         mainBody.add(splitPanel);
@@ -92,7 +92,7 @@ public class GameInstructionOverlay extends OverlayView {
 
         // 3. Strategy Note
         mainBody.add(createHeader("PRO TIP"));
-        mainBody.add(createWrappedText("Special tiles (Q & S) cost points to activate. Manage your score carefully! sometimes revealing standard tiles is the safer path to victory!"));
+        mainBody.add(createWrappedText("Surprise and Question tiles cost points to activate. Manage your Score carefully!"));
 
         // Scroll Pane Configuration
         JScrollPane scroll = new JScrollPane(mainBody);
