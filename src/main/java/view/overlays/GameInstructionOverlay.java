@@ -34,7 +34,7 @@ public class GameInstructionOverlay extends OverlayView {
         // Use BackgroundPanel as the main content pane
         JPanel contentPane = new BackgroundPanel("/wood-bg.png");
         contentPane.setLayout(new BorderLayout());
-        contentPane.setBorder(new EmptyBorder(18, 57, 18, 57));
+        contentPane.setBorder(new EmptyBorder(18, 57, 40, 57)); // Increased bottom padding to move button up
 
         // --- TITLE SECTION ---
         OutlinedLabel titleLabel = new OutlinedLabel("How to Play", Color.BLACK, 5f);
@@ -42,7 +42,7 @@ public class GameInstructionOverlay extends OverlayView {
         titleLabel.setFont(FontsInUse.PIXEL.getSize(42f));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setOpaque(false);
-        titleLabel.setBorder(new EmptyBorder(8, 0, 10, 0));
+        titleLabel.setBorder(new EmptyBorder(-30, 0, 30, 0)); // Increased top padding to move title down
 
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setOpaque(false); // Ensure background shows through
@@ -58,7 +58,10 @@ public class GameInstructionOverlay extends OverlayView {
         // 1. Cooperative Goal
         mainBody.add(Box.createRigidArea(new Dimension(0, 10)));
         mainBody.add(createHeader("COOPERATIVE MISSION"));
-        mainBody.add(createWrappedText("This is a 2-player team effort! Collaborate with your partner to neutralize mines and clear the board. It is not a competition - you win or lose together."));
+        addOutlinedTextLines(mainBody,
+                "This is a 2-player team effort! Collaborate with your partner",
+                "to neutralize mines and clear the board. It is not a",
+                "competition - you win or lose together.");
         mainBody.add(Box.createRigidArea(new Dimension(0, 12)));
 
         // 2. Side-by-Side Panel (Actions & Tiles)
@@ -72,7 +75,7 @@ public class GameInstructionOverlay extends OverlayView {
         actionsCol.add(createHeader("ACTIONS"));
         actionsCol.add(createInstructionRow("/click-pixel.png", "Left Click: Reveal safe tiles"));
         actionsCol.add(createInstructionRow("/pixel-flag.png", "Right Click: Flag mines to Win"));
-        actionsCol.add(createInstructionRow("/heart.png", "Lives: Shared pool, Don't run out!"));
+        actionsCol.add(createInstructionRow("/heart.png", "Lives: Shared pool"));
         actionsCol.add(createInstructionRow("/home-pixel.png", "Home: Exit game"));
         splitPanel.add(actionsCol);
 
@@ -92,7 +95,9 @@ public class GameInstructionOverlay extends OverlayView {
 
         // 3. Strategy Note
         mainBody.add(createHeader(" PRO TIP"));
-        mainBody.add(createWrappedText("Surprise and Question tiles cost points to activate. Manage your Score carefully!"));
+        addOutlinedTextLines(mainBody,
+                "Surprise and Question tiles cost points to activate.",
+                "Manage your Score carefully!");
 
         // Scroll Pane Configuration
         JScrollPane scroll = new JScrollPane(mainBody);
@@ -107,7 +112,7 @@ public class GameInstructionOverlay extends OverlayView {
         // --- BOTTOM PANEL ---
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.setOpaque(false);
-        bottomPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
+        bottomPanel.setBorder(new EmptyBorder(5, 0, 0, 0)); // Reduced top padding
 
         JButton btnClose = createCloseButton();
         btnClose.addActionListener(e -> close());
@@ -121,28 +126,29 @@ public class GameInstructionOverlay extends OverlayView {
     }
 
     private JLabel createHeader(String text) {
-        JLabel header = new OutlinedLabel(text, Color.BLACK, 3f);
+        JLabel header = new OutlinedLabel(text, Color.BLACK, 4f);
         header.setForeground(ColorsInUse.TEXT.get());
-        header.setFont(FontsInUse.PIXEL.getSize(26f));
+        header.setFont(FontsInUse.PIXEL.getSize(30f));
         header.setBorder(new EmptyBorder(5, 0, 5, 0));
         header.setAlignmentX(Component.CENTER_ALIGNMENT);
         return header;
     }
 
-    private JTextArea createWrappedText(String text) {
-        JTextArea textArea = new JTextArea(text);
-        textArea.setFont(FontsInUse.PIXEL.getSize(20f));
-        textArea.setForeground(ColorsInUse.TEXT.get());
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        textArea.setOpaque(false);
-        textArea.setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get()); // Ensure transparency
-        textArea.setEditable(false);
-        textArea.setFocusable(false);
-        textArea.setAlignmentX(Component.CENTER_ALIGNMENT);
-        // Reduced padding: 5px top/bottom, 8px left/right
-        textArea.setBorder(new EmptyBorder(5, 8, 0, 8));
-        return textArea;
+    private void addOutlinedTextLines(JPanel container, String... lines) {
+        for (String line : lines) {
+            container.add(createOutlinedText(line));
+        }
+    }
+
+    private JLabel createOutlinedText(String text) {
+        OutlinedLabel label = new OutlinedLabel(text, Color.BLACK, 3f);
+        label.setForeground(ColorsInUse.TEXT.get());
+        label.setFont(FontsInUse.PIXEL.getSize(22f));
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        // Reduced top padding for tighter spacing between lines
+        label.setBorder(new EmptyBorder(1, 8, 1, 8));
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return label;
     }
 
     private JPanel createInstructionRow(String resourcePath, String text) {
@@ -158,9 +164,10 @@ public class GameInstructionOverlay extends OverlayView {
                 Image img = icon.getImage().getScaledInstance(26, 26, Image.SCALE_SMOOTH);
                 iconLabel.setIcon(new ImageIcon(img));
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
-        OutlinedLabel textLabel = new OutlinedLabel(text, Color.BLACK, 2f);
+        OutlinedLabel textLabel = new OutlinedLabel(text, Color.BLACK, 3f);
         textLabel.setForeground(ColorsInUse.TEXT.get());
         textLabel.setFont(FontsInUse.PIXEL.getSize(24f));
 
@@ -194,10 +201,9 @@ public class GameInstructionOverlay extends OverlayView {
 
         Color bgColor = ColorsInUse.TEXT.get();
 
-        OutlinedLabel label = new OutlinedLabel(" CLOSE", Color.BLACK, 2f);
+        OutlinedLabel label = new OutlinedLabel(" CLOSE", Color.BLACK, 4f);
         label.setFont(FontsInUse.PIXEL.getSize(30f));
         label.setForeground(bgColor);
-
 
         // need this ugly thing just for the slight downwards text offset
         GridBagLayout gbl = new GridBagLayout();
