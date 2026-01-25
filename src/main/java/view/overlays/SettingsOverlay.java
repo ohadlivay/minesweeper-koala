@@ -16,6 +16,7 @@ import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom; // <-- added import
 
 public class SettingsOverlay extends OverlayView {
     private JPanel contentPane;
@@ -282,10 +283,49 @@ public class SettingsOverlay extends OverlayView {
         String player1 = getPlayer1Name().equals(NAME_PLACEHOLDER) ? "" : getPlayer1Name();
         String player2 = getPlayer2Name().equals(NAME_PLACEHOLDER) ? "" : getPlayer2Name();
 
-        // check for colors
+        // If players didn't pick colors, choose for them randomly.
+        ColorsInUse[] available = ColorsInUse.getBoardColors();
         if (player1Color == null || player2Color == null) {
-            JOptionPane.showMessageDialog(this, "Both players must choose a board color.", "Color Selection Required",
-                    JOptionPane.ERROR_MESSAGE);
+            if (available == null || available.length < 2) {
+                // Not enough distinct colors to assign
+                JOptionPane.showMessageDialog(this,
+                        "Not enough available board colors to assign to both players.",
+                        "Color Selection Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            ThreadLocalRandom rnd = ThreadLocalRandom.current();
+
+            if (player1Color == null && player2Color == null) {
+                int idx1 = rnd.nextInt(available.length);
+                int idx2;
+                do {
+                    idx2 = rnd.nextInt(available.length);
+                } while (idx2 == idx1 && available.length > 1);
+                player1Color = available[idx1];
+                player2Color = available[idx2];
+            } else if (player1Color == null) {
+                ColorsInUse pick;
+                do {
+                    pick = available[rnd.nextInt(available.length)];
+                } while (pick == player2Color && available.length > 1);
+                player1Color = pick;
+            } else { // player2Color == null
+                ColorsInUse pick;
+                do {
+                    pick = available[rnd.nextInt(available.length)];
+                } while (pick == player1Color && available.length > 1);
+                player2Color = pick;
+            }
+
+            // Update UI so players can see the randomly assigned colors
+            refreshColorButtons();
+        }
+
+        // If both players end up with the same color, show an error (user must choose different)
+        if (player1Color == player2Color) {
+            JOptionPane.showMessageDialog(this,
+                    "Both players cannot have the same board color. Please pick different colors.",
+                    "Color Selection Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
