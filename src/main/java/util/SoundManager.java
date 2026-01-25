@@ -21,6 +21,7 @@ public class SoundManager {
     private final Map<SoundId, Clip> clips = new EnumMap<>(SoundId.class);
 
     private SoundManager() {
+        updateVolume();
     }
 
     public void preload() {
@@ -61,6 +62,7 @@ public class SoundManager {
         c.start(); // Play
     }
 
+
     private boolean muted = false;
 
     public boolean isMuted() {
@@ -69,7 +71,6 @@ public class SoundManager {
 
     public void toggleMute() {
         muted = !muted;
-        updateVolume();
     }
 
     private void updateVolume() {
@@ -80,7 +81,12 @@ public class SoundManager {
                 if (muted) {
                     gainControl.setValue(gainControl.getMinimum());
                 } else {
-                    gainControl.setValue(0.0f);
+                    float targetGain = 0.0f;
+                    // original music too loud need to reduce the volume
+                    if (currentMusicPath != null && (currentMusicPath.contains("76 Load Game.wav") || currentMusicPath.contains("62 Mines (Star Lumpy).wav"))) {
+                        targetGain = -15.0f; // Reduce by 15 dB
+                    }
+                    gainControl.setValue(targetGain);
                 }
             } catch (Exception e) {
                 System.err.println("Volume control not supported: " + e.getMessage());
@@ -110,8 +116,8 @@ public class SoundManager {
             backgroundMusic.open(ais);
             backgroundMusic.loop(Clip.LOOP_CONTINUOUSLY); // Loop forever
             backgroundMusic.start();
-            updateVolume();
             currentMusicPath = resourcePath;
+            updateVolume();
         } catch (Exception e) {
             System.err.println("Failed to play background music: " + e.getMessage());
         }
