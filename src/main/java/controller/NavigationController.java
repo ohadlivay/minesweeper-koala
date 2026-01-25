@@ -1,5 +1,6 @@
 package main.java.controller;
 
+import main.java.util.SoundManager;
 import main.java.view.GameHistoryScreen;
 import main.java.view.GameScreen;
 import main.java.view.QuestionManagerScreen;
@@ -27,15 +28,17 @@ public class NavigationController {
         return instance;
     }
 
-    //***Methods to navigate between screens***//
+    // ***Methods to navigate between screens***//
 
     public void goToHome() {
+        SoundManager.getInstance().playBackgroundMusic("/sounds/76 Load Game.wav");
         StartScreen startScreen = new StartScreen(this);
         visFrame.setContentPane(startScreen.getMainPanel());
         refresh();
     }
 
     public void goToGame() {
+        SoundManager.getInstance().playBackgroundMusic("/sounds/62 Mines (Star Lumpy).wav");
         GameSessionController gsc = GameSessionController.getInstance();
         GameScreen gameScreen = gsc.startNewGame(this);
         visFrame.setContentPane(gameScreen.getMainPanel());
@@ -64,12 +67,11 @@ public class NavigationController {
         return visFrame;
     }
 
-    //***Helper Methods***//
+    // ***Helper Methods***//
 
     private void refresh() {
         visFrame.revalidate();
         visFrame.repaint();
     }
-
 
 }
