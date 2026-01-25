@@ -62,7 +62,6 @@ public class SoundManager {
         c.start(); // Play
     }
 
-
     private boolean muted = false;
 
     public boolean isMuted() {
@@ -71,6 +70,7 @@ public class SoundManager {
 
     public void toggleMute() {
         muted = !muted;
+        updateVolume();
     }
 
     private void updateVolume() {
@@ -83,8 +83,9 @@ public class SoundManager {
                 } else {
                     float targetGain = 0.0f;
                     // original music too loud need to reduce the volume
+                            
                     if (currentMusicPath != null && (currentMusicPath.contains("76 Load Game.wav") || currentMusicPath.contains("62 Mines (Star Lumpy).wav"))) {
-                        targetGain = -15.0f; // Reduce by 15 dB
+                        targetGain = -25.0f; // Reduce by 25 dB
                     }
                     gainControl.setValue(targetGain);
                 }
