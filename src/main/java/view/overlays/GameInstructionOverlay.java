@@ -52,7 +52,7 @@ public class GameInstructionOverlay extends OverlayView {
         // --- MAIN CONTENT ---
         JPanel mainBody = new JPanel();
         mainBody.setLayout(new BoxLayout(mainBody, BoxLayout.Y_AXIS));
-        mainBody.setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get());
+        mainBody.setOpaque(false);
         mainBody.setPreferredSize(new Dimension(420, 300));
 
         // 1. Cooperative Goal
@@ -99,7 +99,6 @@ public class GameInstructionOverlay extends OverlayView {
         scroll.setBorder(null);
         scroll.setOpaque(false);
         scroll.getViewport().setOpaque(false);
-        scroll.getViewport().setBackground(ColorsInUse.BG_COLOR_TRANSPARENT.get()); // Extra transparency layer
         scroll.getVerticalScrollBar().setUnitIncrement(16);
         scroll.setPreferredSize(new Dimension(420, 500));
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -161,9 +160,9 @@ public class GameInstructionOverlay extends OverlayView {
             }
         } catch (Exception ignored) {}
 
-        JLabel textLabel = new JLabel(text);
+        OutlinedLabel textLabel = new OutlinedLabel(text, Color.BLACK, 2f);
         textLabel.setForeground(ColorsInUse.TEXT.get());
-        textLabel.setFont(FontsInUse.PIXEL.getSize(22f));
+        textLabel.setFont(FontsInUse.PIXEL.getSize(24f));
 
         row.add(iconLabel);
         row.add(textLabel);
