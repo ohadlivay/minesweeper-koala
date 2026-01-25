@@ -22,8 +22,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
-public class GameHistoryScreen extends JPanel{
+public class GameHistoryScreen extends JPanel {
 
     private final NavigationController nav;
 
@@ -49,7 +48,6 @@ public class GameHistoryScreen extends JPanel{
     private OutlinedLabel pageLabel;
     private JButton btnPrev, btnNext;
 
-
     public GameHistoryScreen(NavigationController navigationController) {
         nav = navigationController;
         initUI();
@@ -63,13 +61,39 @@ public class GameHistoryScreen extends JPanel{
         mainPanel.setBackground(ColorsInUse.TABLE_BG_COLOR.get());
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+
         OutlinedLabel titleLabel = new OutlinedLabel("GAME HISTORY", Color.BLACK, 6f);
         titleLabel.setFont(FontsInUse.PIXEL.getSize(62f));
         titleLabel.setForeground(ColorsInUse.TEXT.get());
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setBorder(new EmptyBorder(0, 0, 10, 0));
-        mainPanel.add(titleLabel, BorderLayout.NORTH);
 
-        String[] columnNames = {"ID", "Date", "Player 1", "Player 2", "Score", "Difficulty", "Result"};
+        topPanel.add(titleLabel, BorderLayout.CENTER);
+
+        MuteButton muteButton = new MuteButton();
+        // Add a wrapper for the button if needed, or add directly.
+        // To align properly to the right without expanding, we might want a small
+        // container or just EAST
+        JPanel rightContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        rightContainer.setOpaque(false);
+        rightContainer.add(muteButton);
+
+        topPanel.add(rightContainer, BorderLayout.EAST);
+
+        // Add dummy panel to LEFT to balance the title centering if necessary,
+        // but BorderLayout.CENTER usually handles it fine if component aligns center.
+        // Let's add an empty panel of same size to WEST to perfect-center the title
+        // relative to screen
+        JPanel leftDummy = new JPanel();
+        leftDummy.setOpaque(false);
+        leftDummy.setPreferredSize(new Dimension(105, 70));
+        topPanel.add(leftDummy, BorderLayout.WEST);
+
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+
+        String[] columnNames = { "ID", "Date", "Player 1", "Player 2", "Score", "Difficulty", "Result" };
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -113,8 +137,12 @@ public class GameHistoryScreen extends JPanel{
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 int col = historyTable.columnAtPoint(e.getPoint());
-                if (col == lastCol) asc = !asc;
-                else { asc = true; lastCol = col; }
+                if (col == lastCol)
+                    asc = !asc;
+                else {
+                    asc = true;
+                    lastCol = col;
+                }
 
                 Comparator<GameData> cmp = switch (col) {
                     case 0, 1 -> Comparator.comparingLong(GameData::getTimestampMillis);
@@ -135,7 +163,9 @@ public class GameHistoryScreen extends JPanel{
                 }
             }
 
-            private String safe(String s) { return s == null ? "" : s; }
+            private String safe(String s) {
+                return s == null ? "" : s;
+            }
         });
     }
 
@@ -183,9 +213,7 @@ public class GameHistoryScreen extends JPanel{
             int maxPage = (int) Math.ceil((double) filteredSessions.size() / rowsPerPage);
             if (currentPage > 1) {
                 currentPage--;
-            }
-            else
-            {
+            } else {
                 currentPage = Math.max(1, maxPage); // if this is the first page, go to last page (carousel)
             }
             refreshPage();
@@ -201,10 +229,8 @@ public class GameHistoryScreen extends JPanel{
             int maxPage = (int) Math.ceil((double) filteredSessions.size() / rowsPerPage);
             if (currentPage < maxPage) {
                 currentPage++;
-            }
-            else
-            {
-                currentPage = 1; //if this is the last page, go back to first page (carousel)
+            } else {
+                currentPage = 1; // if this is the last page, go back to first page (carousel)
             }
             refreshPage();
         });
@@ -226,9 +252,17 @@ public class GameHistoryScreen extends JPanel{
         nameField = new JTextField(12);
         nameField.setFont(FontsInUse.PIXEL.getSize(20f));
         nameField.getDocument().addDocumentListener(new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) { filterSessions(); }
-            public void removeUpdate(DocumentEvent e) { filterSessions(); }
-            public void changedUpdate(DocumentEvent e) { filterSessions(); }
+            public void insertUpdate(DocumentEvent e) {
+                filterSessions();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                filterSessions();
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                filterSessions();
+            }
         });
 
         toReturn.add(searchLabel);
@@ -238,7 +272,7 @@ public class GameHistoryScreen extends JPanel{
         OutlinedLabel difficultyLabel = new OutlinedLabel("Difficulty:", Color.BLACK, 2f);
         difficultyLabel.setFont(FontsInUse.PIXEL.getSize(24f));
         difficultyLabel.setForeground(ColorsInUse.TEXT.get());
-        difficultyBox = new JComboBox<>(new String[]{"All", "Easy", "Medium", "Hard"});
+        difficultyBox = new JComboBox<>(new String[] { "All", "Easy", "Medium", "Hard" });
         difficultyBox.setFont(FontsInUse.PIXEL.getSize(20f));
         difficultyBox.addActionListener(e -> filterSessions());
 
@@ -249,7 +283,7 @@ public class GameHistoryScreen extends JPanel{
         OutlinedLabel winLossLabel = new OutlinedLabel("Win/Loss:", Color.BLACK, 2f);
         winLossLabel.setFont(FontsInUse.PIXEL.getSize(24f));
         winLossLabel.setForeground(ColorsInUse.TEXT.get());
-        winLossBox = new JComboBox<>(new String[]{"All", "Win", "Loss"});
+        winLossBox = new JComboBox<>(new String[] { "All", "Win", "Loss" });
         winLossBox.setFont(FontsInUse.PIXEL.getSize(20f));
         winLossBox.addActionListener(e -> filterSessions());
 
@@ -352,7 +386,8 @@ public class GameHistoryScreen extends JPanel{
         int result = JOptionPane.showConfirmDialog(this, panel, "Select Date", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
             try {
-                return LocalDate.of((int) yearSpinner.getValue(), (int) monthSpinner.getValue(), (int) daySpinner.getValue());
+                return LocalDate.of((int) yearSpinner.getValue(), (int) monthSpinner.getValue(),
+                        (int) daySpinner.getValue());
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Invalid date selected", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -369,8 +404,11 @@ public class GameHistoryScreen extends JPanel{
                 .filter(g -> {
                     // Name filter
                     boolean matchesQuery = searchedName.isEmpty() ||
-                            (g.getLeftPlayerName() != null && g.getLeftPlayerName().toLowerCase().contains(searchedName)) ||
-                            (g.getRightPlayerName() != null && g.getRightPlayerName().toLowerCase().contains(searchedName));
+                            (g.getLeftPlayerName() != null
+                                    && g.getLeftPlayerName().toLowerCase().contains(searchedName))
+                            ||
+                            (g.getRightPlayerName() != null
+                                    && g.getRightPlayerName().toLowerCase().contains(searchedName));
 
                     // Difficulty filter ("All" = show all)
                     boolean matchesDifficulty = selectedDifficulty.equals("All") ||
@@ -405,17 +443,19 @@ public class GameHistoryScreen extends JPanel{
             return;
         }
 
-        int totalSessions= filteredSessions.size();
+        int totalSessions = filteredSessions.size();
         int maxPage = (int) Math.ceil((double) totalSessions / rowsPerPage);
 
-        //ensure current page is valid
-        if (currentPage > maxPage) currentPage = maxPage;
-        if (currentPage < 1) currentPage = 1;
+        // ensure current page is valid
+        if (currentPage > maxPage)
+            currentPage = maxPage;
+        if (currentPage < 1)
+            currentPage = 1;
 
         int start = (currentPage - 1) * rowsPerPage;
         int end = Math.min(start + rowsPerPage, totalSessions);
 
-        //add rows for the current page
+        // add rows for the current page
         for (int i = start; i < end; i++) {
             GameData s = filteredSessions.get(i);
             String formattedDate = s.getTimeStamp().format(formatter);
@@ -433,7 +473,7 @@ public class GameHistoryScreen extends JPanel{
             tableModel.addRow(rowData);
         }
 
-        //buttons are only enabled if there is only 1 page
+        // buttons are only enabled if there is only 1 page
         pageLabel.setText("PAGE " + currentPage + " OF " + maxPage);
         boolean canScroll = maxPage > 1;
         btnPrev.setEnabled(canScroll);
@@ -479,10 +519,13 @@ public class GameHistoryScreen extends JPanel{
 
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                if (btn.isEnabled()) btn.setBackground(bg.brighter());
+                if (btn.isEnabled())
+                    btn.setBackground(bg.brighter());
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                if (btn.isEnabled()) btn.setBackground(bg);
+                if (btn.isEnabled())
+                    btn.setBackground(bg);
             }
         });
         return btn;
@@ -513,7 +556,6 @@ public class GameHistoryScreen extends JPanel{
         label.setFont(FontsInUse.PIXEL.getSize(26f));
         label.setForeground(bgColor); // Red text color
 
-
         // need this ugly thing just for the slight downwards text offset
         GridBagLayout gbl = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
@@ -532,6 +574,7 @@ public class GameHistoryScreen extends JPanel{
                     label.setForeground(new Color(255, 100, 100));
                 }
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 if (deleteBtn.isEnabled()) {
                     label.setForeground(bgColor);
@@ -543,7 +586,7 @@ public class GameHistoryScreen extends JPanel{
     }
 
     private ImageIcon loadScaledIcon(String resourceBase, int width, int height) {
-        String[] exts = {".png", ".jpg", ".jpeg", ".gif"};
+        String[] exts = { ".png", ".jpg", ".jpeg", ".gif" };
         for (String ext : exts) {
             URL url = getClass().getResource("/" + resourceBase + ext);
             if (url != null) {
