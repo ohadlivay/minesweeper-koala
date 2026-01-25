@@ -9,7 +9,7 @@ public enum ColorsInUse {
 
     BG_COLOR(new Color(20, 20, 20)),
     BG_COLOR_TRANSPARENT(new Color(20, 20, 20, 86)),
-    TABLE_BG_COLOR(new Color(142, 110, 157)),
+    TABLE_BG_COLOR(Color.BLACK),
     BTN_COLOR(new Color(10, 10, 10)),
     TEXT(Color.WHITE),
     ALT_TEXT(Color.BLACK),
@@ -22,7 +22,7 @@ public enum ColorsInUse {
     BOARD_BACKGROUND(new Color(32, 32, 32)),
     BOARD_BORDER_DEFAULT(new Color(0, 0, 0, 150)),
     BOARD_ACTIVE_BORDER(new Color(255, 215, 0, 200)),
-    BOARD_ACTIVE_BORDER2(new Color(133,235,217)),
+    BOARD_ACTIVE_BORDER2(new Color(142, 110, 157)),
 
     FEEDBACK_GOOD_COLOR(new Color(46, 204, 113)),
     FEEDBACK_BAD_COLOR(new Color(231, 76, 60)),
@@ -38,11 +38,11 @@ public enum ColorsInUse {
     NUMBER_1(Color.BLUE),
     NUMBER_2(new Color(0, 128, 0)),
     NUMBER_3(Color.RED),
-    NUMBER_4(new Color(93, 33, 196)),
-    NUMBER_5(new Color(38, 8, 8)),
-    NUMBER_6(Color.CYAN),
-    NUMBER_7(Color.BLACK),
-    NUMBER_8(Color.GRAY),
+    NUMBER_4(Color.PINK),
+    NUMBER_5(Color.ORANGE),
+    NUMBER_6(new Color(93, 33, 196)),
+    NUMBER_7(new Color(38, 8, 8)),
+    NUMBER_8(Color.BLACK),
 
 
     // Board colors

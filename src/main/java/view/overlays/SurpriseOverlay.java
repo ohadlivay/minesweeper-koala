@@ -6,20 +6,22 @@ import main.java.util.SoundManager;
 import main.java.view.BackgroundPanel;
 import main.java.view.ColorsInUse;
 import main.java.view.FontsInUse;
+import main.java.view.IconOnImageButton;
 import main.java.view.OutlinedLabel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-public class SurpriseOverlay extends OverlayView{
+public class SurpriseOverlay extends OverlayView {
 
     private final int healthChange;
     private final int pointsChange;
 
     private OutlinedLabel healthValueLabel;
     private OutlinedLabel pointsValueLabel;
-    private final JButton closeButton;
+    private OutlinedLabel closeLabel;
+    private final IconOnImageButton closeButton;
 
     private JPanel leftCardPanel;
     private JPanel rightCardPanel;
@@ -27,7 +29,6 @@ public class SurpriseOverlay extends OverlayView{
     private Timer animationTimer;
     private Timer closeTimer;
     private boolean closed;
-
 
     private static final Dimension OVERLAY_SIZE = new Dimension(520, 520);
 
@@ -43,7 +44,25 @@ public class SurpriseOverlay extends OverlayView{
 
         this.healthChange = health;
         this.pointsChange = points;
-        this.closeButton = new JButton("CLOSE");
+
+        // Load bg for button
+        ImageIcon closeBg = null;
+        try {
+            java.net.URL bgUrl = getClass().getResource("/btn-koala.png");
+            if (bgUrl != null) {
+                java.awt.image.BufferedImage img = javax.imageio.ImageIO.read(bgUrl);
+                Image scaled = img.getScaledInstance(190, 54, Image.SCALE_SMOOTH);
+                closeBg = new ImageIcon(scaled);
+            }
+        } catch (Exception ignored) {
+        }
+
+        this.closeButton = new IconOnImageButton(
+                null,
+                "Close",
+                new Dimension(190, 54),
+                null,
+                closeBg);
         this.closed = false;
 
         initUI();
@@ -61,7 +80,7 @@ public class SurpriseOverlay extends OverlayView{
         top.setOpaque(false);
         top.setBorder(new EmptyBorder(22, 10, 0, 10));
 
-        OutlinedLabel title = new OutlinedLabel("SURPRISE!", Color.BLACK, 4f);
+        OutlinedLabel title = new OutlinedLabel(" SURPRISE!", Color.BLACK, 5f);
         title.setFont(FontsInUse.PIXEL2.getSize(44f));
         title.setForeground(ColorsInUse.TEXT.get());
         title.setHorizontalAlignment(SwingConstants.CENTER);
@@ -83,9 +102,8 @@ public class SurpriseOverlay extends OverlayView{
         JPanel cardsRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 70, 0));
         cardsRow.setOpaque(false);
 
-
         // creating cards, default is unselected card
-        leftCardPanel  = (JPanel) createCardTile();
+        leftCardPanel = (JPanel) createCardTile();
         rightCardPanel = (JPanel) createCardTile();
 
         cardsRow.add(leftCardPanel);
@@ -99,7 +117,7 @@ public class SurpriseOverlay extends OverlayView{
         JPanel statsBar = new JPanel(new GridLayout(1, 2));
         statsBar.setOpaque(false);
         statsBar.setPreferredSize(new Dimension(460, 60));
-        statsBar.setBorder(new EmptyBorder(0, 10, 0, 10)); // padding inside bar
+        statsBar.setBorder(new EmptyBorder(15, 10, 0, 10)); // padding inside bar
 
         // LEFT HALF: heart + "x"
         JPanel leftHalf = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
@@ -113,7 +131,7 @@ public class SurpriseOverlay extends OverlayView{
             heart.setIcon(new ImageIcon(scaled));
         }
 
-        healthValueLabel = new OutlinedLabel("0", Color.BLACK, 3f);
+        healthValueLabel = new OutlinedLabel("0", Color.BLACK, 5f);
         healthValueLabel.setFont(FontsInUse.PIXEL.getSize(40f));
         healthValueLabel.setForeground(ColorsInUse.TEXT.get());
 
@@ -124,7 +142,7 @@ public class SurpriseOverlay extends OverlayView{
         JPanel rightHalf = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
         rightHalf.setOpaque(false);
 
-        pointsValueLabel = new OutlinedLabel("POINTS: 0", Color.BLACK, 3f);
+        pointsValueLabel = new OutlinedLabel(" POINTS: 0", Color.BLACK, 5f);
         pointsValueLabel.setFont(FontsInUse.PIXEL.getSize(40f));
         pointsValueLabel.setForeground(ColorsInUse.TEXT.get());
 
@@ -138,7 +156,7 @@ public class SurpriseOverlay extends OverlayView{
 
         // add to center with your existing gbc
         gbc.gridy = 1;
-        gbc.insets = new Insets(80, 0, 0, 0);
+        gbc.insets = new Insets(75, 0, 0, 0);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
         center.add(statsBar, gbc);
@@ -146,19 +164,27 @@ public class SurpriseOverlay extends OverlayView{
         gbc.fill = GridBagConstraints.NONE;
         gbc.weightx = 0;
 
-
         // --- Row 2: button small + centered ---
-        closeButton.setText("close");
+        closeLabel = new OutlinedLabel(" CLOSE", Color.BLACK, 3f);
+        closeLabel.setFont(FontsInUse.PIXEL.getSize(26f));
+        closeLabel.setForeground(ColorsInUse.TEXT.get());
+
+        closeButton.setLayout(new GridBagLayout());
+        GridBagConstraints gbcClose = new GridBagConstraints();
+        gbcClose.gridx = 0;
+        gbcClose.gridy = 0;
+        gbcClose.anchor = GridBagConstraints.CENTER;
+        gbcClose.insets = new Insets(8, 0, 0, 0); // Visual adjustment for centering on wood bg
+        closeButton.add(closeLabel, gbcClose);
+
         closeButton.setPreferredSize(new Dimension(190, 54));
         closeButton.setBackground(ColorsInUse.BTN_COLOR.get());
-        closeButton.setForeground(ColorsInUse.TEXT.get());
-        closeButton.setFont(FontsInUse.PIXEL.getSize(22f));
-        closeButton.setFocusPainted(false);
         closeButton.addActionListener(e -> closeOverlayImmediately());
+
         closeButton.setEnabled(false);
 
         gbc.gridy = 2;
-        gbc.insets = new Insets(20, 0, 0, 0);
+        gbc.insets = new Insets(5, 0, 0, 0);
         center.add(closeButton, gbc);
 
         contentPane.add(center, BorderLayout.CENTER);
@@ -169,7 +195,6 @@ public class SurpriseOverlay extends OverlayView{
 
         pack();
     }
-
 
     private JComponent createCardTile() {
         JPanel tile = new JPanel(new GridBagLayout());
@@ -184,7 +209,6 @@ public class SurpriseOverlay extends OverlayView{
         setTileIcon(tile, SurpriseOverlay.UNSELECTED_CARD);
         return tile;
     }
-
 
     private void setTileIcon(JPanel tile, String imagePath) {
         JLabel card = (JLabel) tile.getComponent(0);
@@ -207,13 +231,13 @@ public class SurpriseOverlay extends OverlayView{
         int targetIndex = (int) (Math.random() * 2); // 0 = left, 1 = right
         boolean isGood = pointsChange > 0;
 
-        JPanel[] cardPanels = new JPanel[]{leftCardPanel, rightCardPanel};
+        JPanel[] cardPanels = new JPanel[] { leftCardPanel, rightCardPanel };
 
         final int loops = 6;
         final int totalSteps = loops * 2 + targetIndex;
 
-        final int[] step = {0};
-        final int[] current = {0};
+        final int[] step = { 0 };
+        final int[] current = { 0 };
 
         final int minDelay = 40;
         final int maxDelay = 240;
@@ -249,7 +273,7 @@ public class SurpriseOverlay extends OverlayView{
                 ((Timer) e.getSource()).stop();
 
                 // reveal the TARGET card result; keep the other unselected
-                setTileIcon(cardPanels[1- targetIndex], isGood ? GOOD_CARD : BAD_CARD);
+                setTileIcon(cardPanels[1 - targetIndex], isGood ? GOOD_CARD : BAD_CARD);
                 setTileIcon(cardPanels[targetIndex], UNSELECTED_CARD);
 
                 // stats
@@ -257,13 +281,12 @@ public class SurpriseOverlay extends OverlayView{
                 pointsValueLabel.setText("POINTS: " + pointsChange);
 
                 healthValueLabel.setForeground(
-                        (healthChange >= 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR : ColorsInUse.FEEDBACK_BAD_COLOR).get()
-                );
+                        (healthChange >= 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR : ColorsInUse.FEEDBACK_BAD_COLOR).get());
                 pointsValueLabel.setForeground(
-                        pointsChange >= 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get() : ColorsInUse.FEEDBACK_BAD_COLOR.get()
-                );
-                SoundManager.getInstance().playOnce(pointsChange>=0 ? SoundManager.SoundId.POINTS_WIN : SoundManager.SoundId.POINTS_LOSE);
-
+                        pointsChange >= 0 ? ColorsInUse.FEEDBACK_GOOD_COLOR.get()
+                                : ColorsInUse.FEEDBACK_BAD_COLOR.get());
+                SoundManager.getInstance().playOnce(
+                        pointsChange >= 0 ? SoundManager.SoundId.POINTS_WIN : SoundManager.SoundId.POINTS_LOSE);
 
                 closeOverlay();
 
@@ -274,25 +297,37 @@ public class SurpriseOverlay extends OverlayView{
     }
 
     private void closeOverlay() {
-        if (closeTimer != null) closeTimer.stop();
+        if (closeTimer != null)
+            closeTimer.stop();
 
         // seconds
         int closeTimerDuration = 7;
-        closeTimer = new Timer(closeTimerDuration *1000, e -> closeOverlayImmediately());
-        closeTimer.setRepeats(false);
-        closeTimer.start();
+        final int[] remaining = { closeTimerDuration };
 
+        closeLabel.setText(" CLOSE (" + remaining[0] + ")");
         closeButton.setEnabled(true);
-        animator.closeCountdown(closeButton, 0, closeTimerDuration);
+
+        closeTimer = new Timer(1000, e -> {
+            remaining[0]--;
+            if (remaining[0] <= 0) {
+                ((Timer) e.getSource()).stop();
+                closeOverlayImmediately();
+            } else {
+                closeLabel.setText(" CLOSE (" + remaining[0] + ")");
+            }
+        });
+        closeTimer.start();
     }
 
-
     private void closeOverlayImmediately() {
-        if (closed) return;
+        if (closed)
+            return;
         closed = true;
 
-        if (animationTimer != null) animationTimer.stop();
-        if (closeTimer != null) closeTimer.stop();
+        if (animationTimer != null)
+            animationTimer.stop();
+        if (closeTimer != null)
+            closeTimer.stop();
 
         GameSessionController.getInstance()
                 .setSurpriseToGameScreen(healthChange, pointsChange, pointsChange > 0);

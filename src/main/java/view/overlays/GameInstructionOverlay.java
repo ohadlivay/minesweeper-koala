@@ -5,6 +5,7 @@ import main.java.controller.NavigationController;
 import main.java.view.BackgroundPanel;
 import main.java.view.ColorsInUse;
 import main.java.view.FontsInUse;
+import main.java.view.IconOnImageButton;
 import main.java.view.OutlinedLabel;
 
 import javax.swing.*;
@@ -36,8 +37,7 @@ public class GameInstructionOverlay extends OverlayView {
         contentPane.setBorder(new EmptyBorder(18, 57, 18, 57));
 
         // --- TITLE SECTION ---
-        // Use a thinner, semi-transparent outline and add bottom padding so the stroke doesn't create a visible line
-        JLabel titleLabel = new OutlinedLabel("How to Play", new Color(0,0,0,120), 3f);
+        OutlinedLabel titleLabel = new OutlinedLabel("How to Play", Color.BLACK, 5f);
         titleLabel.setForeground(ColorsInUse.TEXT.get());
         titleLabel.setFont(FontsInUse.PIXEL.getSize(42f));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -80,7 +80,7 @@ public class GameInstructionOverlay extends OverlayView {
         JPanel tilesCol = new JPanel();
         tilesCol.setLayout(new BoxLayout(tilesCol, BoxLayout.Y_AXIS));
         tilesCol.setOpaque(false);
-        tilesCol.add(createHeader("TILE TYPES"));
+        tilesCol.add(createHeader(" TILE TYPES"));
         tilesCol.add(createInstructionRow("/tile-info.png", "Numbers: Nearby mines"));
         tilesCol.add(createInstructionRow("/white-outline-mine.png", "Mine: Avoid these!"));
         tilesCol.add(createInstructionRow("/pixel-question.png", "Question: Answer for rewards"));
@@ -91,7 +91,7 @@ public class GameInstructionOverlay extends OverlayView {
         mainBody.add(Box.createRigidArea(new Dimension(0, 10)));
 
         // 3. Strategy Note
-        mainBody.add(createHeader("PRO TIP"));
+        mainBody.add(createHeader(" PRO TIP"));
         mainBody.add(createWrappedText("Surprise and Question tiles cost points to activate. Manage your Score carefully!"));
 
         // Scroll Pane Configuration
@@ -178,7 +178,14 @@ public class GameInstructionOverlay extends OverlayView {
 
     private JButton createCloseButton() {
         ImageIcon bgIcon = loadScaledIcon("btn-koala", 102, 57);
-        JButton deleteBtn = new JButton(bgIcon);
+
+        IconOnImageButton deleteBtn = new IconOnImageButton(
+                null,
+                "Close",
+                new Dimension(150, 60),
+                null,
+                bgIcon);
+
         deleteBtn.setPreferredSize(new Dimension(150, 60));
         deleteBtn.setFocusPainted(false);
         deleteBtn.setContentAreaFilled(false);
@@ -188,9 +195,9 @@ public class GameInstructionOverlay extends OverlayView {
 
         Color bgColor = ColorsInUse.TEXT.get();
 
-        OutlinedLabel label = new OutlinedLabel("CLOSE", Color.BLACK, 2f);
+        OutlinedLabel label = new OutlinedLabel(" CLOSE", Color.BLACK, 2f);
         label.setFont(FontsInUse.PIXEL.getSize(30f));
-        label.setForeground(bgColor); // Red text color
+        label.setForeground(bgColor);
 
 
         // need this ugly thing just for the slight downwards text offset
@@ -199,7 +206,7 @@ public class GameInstructionOverlay extends OverlayView {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(8, 0, 0, 0); // Top padding for downward offset
+        gbc.insets = new Insets(8, 0, 0, 0);
 
         deleteBtn.setLayout(gbl);
         gbl.setConstraints(label, gbc);

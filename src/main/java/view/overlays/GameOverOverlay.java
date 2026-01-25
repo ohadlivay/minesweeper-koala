@@ -7,11 +7,13 @@ import main.java.util.SoundManager;
 import main.java.view.BackgroundPanel;
 import main.java.view.ColorsInUse;
 import main.java.view.FontsInUse;
+import main.java.view.IconOnImageButton;
 import main.java.view.OutlinedLabel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class GameOverOverlay extends OverlayView {
     private final boolean isWin;
@@ -22,7 +24,7 @@ public class GameOverOverlay extends OverlayView {
         this.isWin = isWin;
         this.finalScore = finalScore;
 
-        //we enable closing the overlay when the user clicks the X button
+        // we enable closing the overlay when the user clicks the X button
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {
@@ -33,7 +35,6 @@ public class GameOverOverlay extends OverlayView {
         initUI();
         playMusic();
     }
-
 
     private void initUI() {
         String bgPath = isWin ? "/win-bg-gif.gif" : "/loss-bg-gif.gif";
@@ -72,7 +73,7 @@ public class GameOverOverlay extends OverlayView {
         centerPanel.add(iconLabel);
         centerPanel.add(Box.createVerticalStrut(20));
 
-        OutlinedLabel scoreLabel = new OutlinedLabel(" FINAL SCORE: " + finalScore, Color.BLACK, 3f);
+        OutlinedLabel scoreLabel = new OutlinedLabel("FINAL SCORE: " + finalScore, Color.BLACK, 3f);
         scoreLabel.setFont(FontsInUse.PIXEL.getSize(40f));
         scoreLabel.setForeground(ColorsInUse.TEXT.get());
         scoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -82,44 +83,86 @@ public class GameOverOverlay extends OverlayView {
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         bottomPanel.setOpaque(false);
+        bottomPanel.setBorder(new EmptyBorder(0, 30, 0, 0)); // Align buttons with score text visually
 
-        //give the players an option to play again
-        JButton btnPlayAgain = new JButton(isWin ? "PLAY AGAIN" : "TRY AGAIN");
-        btnPlayAgain.setPreferredSize(new Dimension(180, 50));
-        btnPlayAgain.setBackground(ColorsInUse.BTN_COLOR.get());
-        btnPlayAgain.setForeground(ColorsInUse.TEXT.get());
-        btnPlayAgain.setFont(FontsInUse.PIXEL.getSize(24f));
-        btnPlayAgain.setFocusPainted(false);
-
-        btnPlayAgain.addActionListener(e -> {
-            String player1 = GameSessionController.getInstance().getSession().getLeftPlayerName();
-            String player2 = GameSessionController.getInstance().getSession().getRightPlayerName();
-            GameDifficulty selectedDifficulty = GameSessionController.getInstance().getSession().getGameDifficulty();
-
-            // restart a game with the same difficulty and names
-            GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty);
-            nav.goToGame();
-            close();
-        });
-
-        //Home button
-        JButton btnHome = new JButton();
-        btnHome.setPreferredSize(new Dimension(72, 50));
-        java.net.URL icon = getClass().getResource("/home.png");
-        if (icon != null) {
-            btnHome.setIcon(new ImageIcon(icon));
+        // give the players an option to play again
+        ImageIcon bgIcon = null;
+        try {
+            java.net.URL bgUrl = getClass().getResource("/btn-koala.png");
+            if (bgUrl != null) {
+                BufferedImage img = javax.imageio.ImageIO.read(bgUrl);
+                Image scaled = img.getScaledInstance(180, 52, Image.SCALE_SMOOTH); // sized for 180x50 approx
+                bgIcon = new ImageIcon(scaled);
+            }
+        } catch (Exception ignored) {
         }
 
-        btnHome.setBackground(new Color(10, 10, 10));
-        btnHome.setFocusPainted(false);
-        btnHome.setContentAreaFilled(true);
-        btnHome.addActionListener(e -> {
-            nav.goToHome();
-            close();
-        });
+        IconOnImageButton btnPlayAgain = new IconOnImageButton(
+                () -> {
+                    String player1 = GameSessionController.getInstance().getSession().getLeftPlayerName();
+                    String player2 = GameSessionController.getInstance().getSession().getRightPlayerName();
+                    GameDifficulty selectedDifficulty = GameSessionController.getInstance().getSession()
+                            .getGameDifficulty();
 
-        bottomPanel.add(btnHome, BorderLayout.WEST);
-        bottomPanel.add(btnPlayAgain, BorderLayout.EAST);
+                    // restart a game with the same difficulty and names
+                    GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty);
+                    nav.goToGame();
+                    close();
+                },
+                null,
+                new Dimension(180, 50),
+                null,
+                bgIcon);
+
+        // Add label manually since base IconOnImageButton doesn't draw text
+        OutlinedLabel playLabel = new OutlinedLabel(isWin ? "PLAY AGAIN" : "TRY AGAIN", Color.BLACK, 2f);
+        playLabel.setFont(FontsInUse.PIXEL.getSize(24f));
+        playLabel.setForeground(ColorsInUse.TEXT.get());
+
+        btnPlayAgain.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(4, 0, 0, 0); // Visual adjustment for centering text on this specific bg
+        btnPlayAgain.add(playLabel, gbc);
+
+        // Home button
+        ImageIcon homeIcon = null;
+        try {
+            java.net.URL url = getClass().getResource("/home-pixel.png");
+            if (url != null) {
+                ImageIcon icon = new ImageIcon(url);
+                Image img = icon.getImage().getScaledInstance(28, 28, Image.SCALE_SMOOTH);
+                homeIcon = new ImageIcon(img);
+            }
+        } catch (Exception ignored) {
+        }
+
+        // Load bg for button
+        ImageIcon homeBg = null;
+        try {
+            java.net.URL bgUrl = getClass().getResource("/btn-koala.png");
+            if (bgUrl != null) {
+                BufferedImage img = javax.imageio.ImageIO.read(bgUrl);
+                Image scaled = img.getScaledInstance(80, 70, Image.SCALE_SMOOTH);
+                homeBg = new ImageIcon(scaled);
+            }
+        } catch (Exception ignored) {
+        }
+
+        IconOnImageButton btnHome = new IconOnImageButton(
+                () -> {
+                    nav.goToHome();
+                    close();
+                },
+                null,
+                new Dimension(72, 50),
+                homeIcon,
+                homeBg);
+
+        bottomPanel.add(btnHome);
+        bottomPanel.add(btnPlayAgain);
 
         contentPane.add(bottomPanel, BorderLayout.SOUTH);
 

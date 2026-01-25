@@ -2,18 +2,17 @@ package main.java.view.overlays;
 
 import main.java.controller.GameSessionController;
 import main.java.controller.NavigationController;
+import main.java.controller.OverlayController;
 import main.java.model.GameDifficulty;
 import main.java.util.SoundManager;
 import main.java.view.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.RescaleOp;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +21,9 @@ public class SettingsOverlay extends OverlayView {
     private JPanel contentPane;
     private JButton buttonStart;
     private JButton buttonBack;
-    private JButton btnEasy;
-    private JButton btnMedium;
-    private JButton btnHard;
+    private IconOnImageButton btnEasy;
+    private IconOnImageButton btnMedium;
+    private IconOnImageButton btnHard;
     private JTextField player1Name;
     private JTextField player2Name;
     private OutlinedLabel gameInfoTitle;
@@ -45,9 +44,11 @@ public class SettingsOverlay extends OverlayView {
     public SettingsOverlay(NavigationController nav) {
         super(nav, true);
 
-        // Initialize default colors BEFORE initUI so buttons are created with correct selected state
-        this.player1Color = ColorsInUse.CRIMSON;
-        this.player2Color = ColorsInUse.PEACH;
+        // Initialize default colors BEFORE initUI so buttons are created with correct
+        // selected state
+        // Default: no color chosen
+        this.player1Color = null;
+        this.player2Color = null;
 
         initUI();
 
@@ -61,35 +62,6 @@ public class SettingsOverlay extends OverlayView {
             }
         });
 
-        btnEasy.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                resetSelection();
-                selectedDifficulty = GameDifficulty.EASY;
-                btnEasy.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ColorsInUse.BOARD_ACTIVE_BORDER.get(), 2, true), new EmptyBorder(5, 5, 5, 5)));
-                System.out.println("Selected Difficulty: EASY");
-            }
-        });
-
-        btnMedium.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                resetSelection();
-                selectedDifficulty = GameDifficulty.MEDIUM;
-                btnMedium.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ColorsInUse.BOARD_ACTIVE_BORDER.get(), 2, true), new EmptyBorder(5, 5, 5, 5)));
-                System.out.println("Selected Difficulty: MEDIUM");
-            }
-        });
-
-        btnHard.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                resetSelection();
-                selectedDifficulty = GameDifficulty.HARD;
-                btnHard.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ColorsInUse.BOARD_ACTIVE_BORDER.get(), 2), new EmptyBorder(5, 5, 5, 5)));
-                System.out.println("Selected Difficulty: HARD");
-            }
-        });
     }
 
     public SettingsOverlay(NavigationController nav, String player1, String player2, GameDifficulty difficulty) {
@@ -106,8 +78,17 @@ public class SettingsOverlay extends OverlayView {
         refreshColorButtons();
     }
 
-    public SettingsOverlay(NavigationController nav, String player1, String player2, GameDifficulty difficulty, ColorsInUse color1, ColorsInUse color2) {
-        this(nav, player1, player2, difficulty);
+    public SettingsOverlay(NavigationController nav, String player1, String player2, GameDifficulty difficulty,
+            ColorsInUse color1, ColorsInUse color2) {
+        this(nav);
+        player1Name.setText(player1);
+        player2Name.setText(player2);
+        if (difficulty != null) {
+            this.selectedDifficulty = difficulty;
+            updateSelection();
+        } else {
+            resetSelection();
+        }
         if (color1 != null) {
             this.player1Color = color1;
         }
@@ -121,33 +102,34 @@ public class SettingsOverlay extends OverlayView {
     private void initUI() {
         contentPane = new BackgroundPanel("/wood-bg.png");
         contentPane.setLayout(new BorderLayout());
-        contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
+        contentPane.setBorder(new EmptyBorder(5, 20, 45, 20));
         contentPane.setPreferredSize(new Dimension(700, 650));
 
         JPanel titlePanel = new JPanel();
-        //titlePanel.setBackground(ColorsInUse.BG_COLOR.get());
+        // titlePanel.setBackground(ColorsInUse.BG_COLOR.get());
         titlePanel.setOpaque(false);
-        OutlinedLabel title = new OutlinedLabel("CHOOSE DIFFICULTY:", Color.BLACK, 6f);
+        OutlinedLabel title = new OutlinedLabel(" CHOOSE DIFFICULTY:", Color.BLACK, 6f);
         title.setFont(FontsInUse.PIXEL.getSize(52f));
         title.setForeground(ColorsInUse.TEXT.get());
         titlePanel.add(title);
 
         JPanel centerPanel = new JPanel(new GridBagLayout());
-        //centerPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        // centerPanel.setBackground(ColorsInUse.BG_COLOR.get());
         centerPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 15, 10, 15);
         gbc.gridx = 0;
 
         JPanel difficultyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 0));
-        //difficultyPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        // difficultyPanel.setBackground(ColorsInUse.BG_COLOR.get());
         difficultyPanel.setOpaque(false);
 
-        //create tooltip text
+        // create tooltip text
         String easyTip = "<html>" +
                 "<b><font color='#027315'>EASY DIFFICULTY</font></b><br/>" +
                 "<hr/>" +
-                "<font color='#0cc42b'>Grid:</font> " + GameDifficulty.EASY.getRows() + "x" + GameDifficulty.EASY.getCols() + "<br/>" +
+                "<font color='#0cc42b'>Grid:</font> " + GameDifficulty.EASY.getRows() + "x"
+                + GameDifficulty.EASY.getCols() + "<br/>" +
                 "<font color='#0cc42b'>Mines:</font> " + GameDifficulty.EASY.getMineCount() + "<br/>" +
                 "<font color='#0cc42b'>Activation Cost:</font> " + GameDifficulty.EASY.getActivationCost() + " pts" +
                 "</html>";
@@ -155,7 +137,8 @@ public class SettingsOverlay extends OverlayView {
         String medTip = "<html>" +
                 "<b><font color='#c78800'>MEDIUM DIFFICULTY</font></b><br/>" +
                 "<hr/>" +
-                "<font color='#c78800'>Grid:</font> " + GameDifficulty.MEDIUM.getRows() + "x" + GameDifficulty.MEDIUM.getCols() + "<br/>" +
+                "<font color='#c78800'>Grid:</font> " + GameDifficulty.MEDIUM.getRows() + "x"
+                + GameDifficulty.MEDIUM.getCols() + "<br/>" +
                 "<font color='#c78800'>Mines:</font> " + GameDifficulty.MEDIUM.getMineCount() + "<br/>" +
                 "<font color='#c78800'>Activation Cost:</font> " + GameDifficulty.MEDIUM.getActivationCost() + " pts" +
                 "</html>";
@@ -163,7 +146,8 @@ public class SettingsOverlay extends OverlayView {
         String hardTip = "<html>" +
                 "<b><font color='#FF6B6B'>HARD DIFFICULTY</font></b><br/>" +
                 "<hr/>" +
-                "<font color='#FF6B6B'>Grid:</font> " + GameDifficulty.HARD.getRows() + "x" + GameDifficulty.HARD.getCols() + "<br/>" +
+                "<font color='#FF6B6B'>Grid:</font> " + GameDifficulty.HARD.getRows() + "x"
+                + GameDifficulty.HARD.getCols() + "<br/>" +
                 "<font color='#FF6B6B'>Mines:</font> " + GameDifficulty.HARD.getMineCount() + "<br/>" +
                 "<font color='#FF6B6B'>Activation Cost:</font> " + GameDifficulty.HARD.getActivationCost() + " pts" +
                 "</html>";
@@ -172,13 +156,9 @@ public class SettingsOverlay extends OverlayView {
         btnMedium = createKoalaButton("/yellow-koala-pixel.png", "Medium", medTip, GameDifficulty.MEDIUM);
         btnHard = createKoalaButton("/red-koala-pixel.png", "Hard", hardTip, GameDifficulty.HARD);
 
-
-
         difficultyPanel.add(btnEasy);
         difficultyPanel.add(btnMedium);
         difficultyPanel.add(btnHard);
-        gbc.gridy = 0;
-        centerPanel.add(difficultyPanel, gbc);
 
         gbc.gridy = 0;
         gbc.gridx = 0;
@@ -221,7 +201,7 @@ public class SettingsOverlay extends OverlayView {
 
         // --- names panel ---
         JPanel namesPanel = new JPanel(new GridLayout(1, 2, 20, 0));
-        //namesPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        // namesPanel.setBackground(ColorsInUse.BG_COLOR.get());
         namesPanel.setOpaque(false);
         namesPanel.setBorder(new EmptyBorder(0, 20, 0, 20));
 
@@ -229,7 +209,7 @@ public class SettingsOverlay extends OverlayView {
         namesPanel.add(createInputGroup("Player 2", player2Name = createTextField()));
 
         gbc.gridy++;
-        gbc.insets = new Insets(5, 50, 5, 50);
+        gbc.insets = new Insets(0, 50, 8, 50);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.weightx = 1.0;
@@ -238,7 +218,7 @@ public class SettingsOverlay extends OverlayView {
 
         // --- color selection panel ---
         JPanel colorPanel = new JPanel(new GridLayout(1, 2, 20, 0));
-      //  colorPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        // colorPanel.setBackground(ColorsInUse.BG_COLOR.get());
         colorPanel.setOpaque(false);
         colorPanel.setBorder(new EmptyBorder(0, 20, 0, 20));
 
@@ -249,7 +229,7 @@ public class SettingsOverlay extends OverlayView {
         colorPanel.add(player2ColorPanel);
 
         gbc.gridy++;
-        gbc.insets = new Insets(5, 50, 5, 50);
+        gbc.insets = new Insets(-5, 50, 5, 50);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.weightx = 1.0;
@@ -259,7 +239,7 @@ public class SettingsOverlay extends OverlayView {
         // --- bottom buttons: back on the left, start centered ---
 
         buttonStart = createStartButton();
-       // buttonStart.setPreferredSize(new Dimension(180, 50));
+        // buttonStart.setPreferredSize(new Dimension(180, 50));
 
         buttonBack = createTransparentIconButton("/back-pixel-2.png", 60, 50);
         buttonBack.addActionListener(e -> onCancel());
@@ -269,7 +249,7 @@ public class SettingsOverlay extends OverlayView {
         bottomPanel.setPreferredSize(new Dimension(700, 100));
 
         // a little padding so the back button isn't glued to the edge
-        JPanel backWrap = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        JPanel backWrap = new JPanel(new FlowLayout(FlowLayout.LEFT, 45, 20));
         backWrap.setOpaque(false);
         backWrap.add(buttonBack);
 
@@ -287,8 +267,6 @@ public class SettingsOverlay extends OverlayView {
         bottomPanel.add(startWrap, BorderLayout.CENTER);
         bottomPanel.add(rightSpacer, BorderLayout.EAST);
 
-
-
         contentPane.add(titlePanel, BorderLayout.NORTH);
         contentPane.add(centerPanel, BorderLayout.CENTER);
         contentPane.add(bottomPanel, BorderLayout.SOUTH);
@@ -303,6 +281,13 @@ public class SettingsOverlay extends OverlayView {
     private void onOK() {
         String player1 = getPlayer1Name().equals(NAME_PLACEHOLDER) ? "" : getPlayer1Name();
         String player2 = getPlayer2Name().equals(NAME_PLACEHOLDER) ? "" : getPlayer2Name();
+
+        // check for colors
+        if (player1Color == null || player2Color == null) {
+            JOptionPane.showMessageDialog(this, "Both players must choose a board color.", "Color Selection Required",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         // check for difficulty
         if (selectedDifficulty == null) {
@@ -321,10 +306,10 @@ public class SettingsOverlay extends OverlayView {
             return;
         }
 
-        //check for player names
+        // check for player names
         if (player1.trim().isEmpty() || player2.trim().isEmpty()) {
-            int choice = JOptionPane.showConfirmDialog(this, nameWarning(player1, player2), "Names not chosen", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE
-            );
+            int choice = JOptionPane.showConfirmDialog(this, nameWarning(player1, player2), "Names not chosen",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (choice == JOptionPane.NO_OPTION) {
                 return; // do not proceed if user selects NO
             }
@@ -337,14 +322,16 @@ public class SettingsOverlay extends OverlayView {
         }
         try {
             // Check to see if the system has enough questions to start a game
-            GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty, player1Color, player2Color);
+            GameSessionController.getInstance().setupGame(player1, player2, selectedDifficulty, player1Color,
+                    player2Color);
         } catch (IllegalStateException e) {
-            // e.getMessage() contains the detailed "Current: X, Required: Y..." string we built
+            // e.getMessage() contains the detailed "Current: X, Required: Y..." string we
+            // built
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         nav.goToGame();
-        close();
+        OverlayController.getInstance().closeCurrentOverlay();
     }
 
     private void onCancel() {
@@ -368,13 +355,24 @@ public class SettingsOverlay extends OverlayView {
         return player2Color;
     }
 
-
     // HELPER METHODS //
 
     private void resetSelection() {
-        btnEasy.setBorder(new EmptyBorder(7, 7, 7, 7));
-        btnMedium.setBorder(new EmptyBorder(7, 7, 7, 7));
-        btnHard.setBorder(new EmptyBorder(7, 7, 7, 7));
+        Dimension normalSize = new Dimension(130, 130);
+        if (btnEasy != null) {
+            btnEasy.setPreferredSize(normalSize);
+            btnEasy.setSelectedState(false);
+        }
+        if (btnMedium != null) {
+            btnMedium.setPreferredSize(normalSize);
+            btnMedium.setSelectedState(false);
+        }
+        if (btnHard != null) {
+            btnHard.setPreferredSize(normalSize);
+            btnHard.setSelectedState(false);
+        }
+        contentPane.revalidate();
+        contentPane.repaint();
     }
 
     private String nameWarning(String player1, String player2) {
@@ -388,10 +386,9 @@ public class SettingsOverlay extends OverlayView {
 
     }
 
-
     private JPanel createInputGroup(String labelText, JTextField textField) {
         JPanel panel = new JPanel(new BorderLayout(0, 10));
-        //panel.setBackground(ColorsInUse.BG_COLOR.get());
+        // panel.setBackground(ColorsInUse.BG_COLOR.get());
         panel.setOpaque(false);
 
         JLabel label = new OutlinedLabel(labelText, Color.BLACK, 4f);
@@ -420,7 +417,8 @@ public class SettingsOverlay extends OverlayView {
     FocusAdapter placeholderListener = new FocusAdapter() {
         @Override
         public void focusGained(FocusEvent e) {
-            if (!(e.getComponent() instanceof JTextComponent tc)) return;
+            if (!(e.getComponent() instanceof JTextComponent tc))
+                return;
             Object ph = tc.getClientProperty("placeholder");
             if (ph instanceof String placeholder && tc.getText().equals(placeholder)) {
                 tc.setText("");
@@ -430,7 +428,8 @@ public class SettingsOverlay extends OverlayView {
 
         @Override
         public void focusLost(FocusEvent e) {
-            if (!(e.getComponent() instanceof JTextComponent tc)) return;
+            if (!(e.getComponent() instanceof JTextComponent tc))
+                return;
             if (tc.getText().trim().isEmpty()) {
                 Object ph = tc.getClientProperty("placeholder");
                 if (ph instanceof String placeholder) {
@@ -442,8 +441,8 @@ public class SettingsOverlay extends OverlayView {
     };
 
     private JPanel createColorSelectionGroup(String labelText, int playerNumber) {
-        JPanel panel = new JPanel(new BorderLayout(0, 10));
-        //panel.setBackground(ColorsInUse.BG_COLOR.get());
+        JPanel panel = new JPanel(new BorderLayout(0, 5));
+        // panel.setBackground(ColorsInUse.BG_COLOR.get());
         panel.setOpaque(false);
 
         JLabel label = new OutlinedLabel(labelText, Color.BLACK, 4f);
@@ -452,7 +451,7 @@ public class SettingsOverlay extends OverlayView {
         label.setFont(FontsInUse.PIXEL.getSize(28f));
 
         JPanel colorButtonsPanel = new JPanel(new GridLayout(2, 4, 8, 8));
-        //colorButtonsPanel.setBackground(ColorsInUse.BG_COLOR.get());
+        // colorButtonsPanel.setBackground(ColorsInUse.BG_COLOR.get());
         colorButtonsPanel.setOpaque(false);
         colorButtonsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
@@ -480,7 +479,7 @@ public class SettingsOverlay extends OverlayView {
         scrollPane.setPreferredSize(new Dimension(280, 120));
         scrollPane.setMinimumSize(new Dimension(280, 100));
         scrollPane.setMaximumSize(new Dimension(280, 100));
-        //scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR.get());
+        // scrollPane.getViewport().setBackground(ColorsInUse.BG_COLOR.get());
         scrollPane.getViewport().setOpaque(false);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
@@ -535,10 +534,10 @@ public class SettingsOverlay extends OverlayView {
             // Create a dimmed version of the color
             Color originalColor = color.get();
             Color dimmedColor = new Color(
-                (originalColor.getRed() + 32) / 2,
-                (originalColor.getGreen() + 32) / 2,
-                (originalColor.getBlue() + 32) / 2,
-                128  // Semi-transparent
+                    (originalColor.getRed() + 32) / 2,
+                    (originalColor.getGreen() + 32) / 2,
+                    (originalColor.getBlue() + 32) / 2,
+                    128 // Semi-transparent
             );
             btn.setBackground(dimmedColor);
 
@@ -550,7 +549,7 @@ public class SettingsOverlay extends OverlayView {
             btn.setEnabled(true);
             btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             btn.setBackground(color.get());
-            btn.setBorder(BorderFactory.createLineBorder(ColorsInUse.BOARD_ACTIVE_BORDER.get(), 4));
+            btn.setBorder(BorderFactory.createLineBorder(ColorsInUse.SURPRISE_TILE.get(), 4));
             btn.setToolTipText("Selected");
         } else {
             // Available state: normal appearance
@@ -619,56 +618,54 @@ public class SettingsOverlay extends OverlayView {
         return field;
     }
 
-    private JButton createButton(String text) {
-        JButton btn = new JButton(text);
-        btn.setPreferredSize(new Dimension(150, 45));
-        btn.setMinimumSize(new Dimension(150, 45));
-        btn.setMaximumSize(new Dimension(150, 45));
-        btn.setBackground(ColorsInUse.BTN_COLOR.get());
-        btn.setForeground(ColorsInUse.TEXT.get());
-        btn.setFocusPainted(false);
-        btn.setFont(FontsInUse.PIXEL.getSize(28f));
-
-        return btn;
-    }
-
-    private JButton createKoalaButton(String resourcePath, String text, String tooltip, GameDifficulty difficulty) {
+    private IconOnImageButton createKoalaButton(String resourcePath, String text, String tooltip,
+            GameDifficulty difficulty) {
         int SQUARE_SIZE = 130;
         int KOALA_SIZE = 80;
 
         // Load wood background
         ImageIcon woodBg = loadScaledIcon("btn-square", SQUARE_SIZE, SQUARE_SIZE);
 
-        // Load koala icon - extract filename without extension and load using consistent method
-        String iconName = resourcePath.contains("/") ? resourcePath.substring(resourcePath.lastIndexOf("/") + 1) : resourcePath;
+        // Load koala icon - extract filename without extension and load using
+        // consistent method
+        String iconName = resourcePath.contains("/") ? resourcePath.substring(resourcePath.lastIndexOf("/") + 1)
+                : resourcePath;
         // Remove extension if present
         iconName = iconName.contains(".") ? iconName.substring(0, iconName.lastIndexOf(".")) : iconName;
         ImageIcon koalaIcon = loadScaledIcon(iconName, KOALA_SIZE, KOALA_SIZE);
 
         // Create button using IconOnImageButton factory method
         IconOnImageButton btn = IconOnImageButton.createKoalaButton(
-            woodBg,
-            koalaIcon,
-            text,
-            tooltip,
-            new Dimension(SQUARE_SIZE, SQUARE_SIZE),
-            () -> {
-                this.selectedDifficulty = difficulty;
-                updateSelection();
-            }
-        );
+                woodBg,
+                koalaIcon,
+                text,
+                tooltip,
+                new Dimension(SQUARE_SIZE, SQUARE_SIZE),
+                () -> {
+                    this.selectedDifficulty = difficulty;
+                    updateSelection();
+                });
 
         return btn;
     }
 
-    //visual indication for difficulty selected
+    // visual indication for difficulty selected
     private void updateSelection() {
-        Color selectedColor = ColorsInUse.BOARD_ACTIVE_BORDER.get();
         resetSelection();
         soundManager.playOnce(SoundManager.SoundId.SELECTION);
+
+        Dimension normalSize = new Dimension(130, 130);
+        Dimension smallSize = new Dimension(110, 110);
+
+        // Make all small by default, then selected will be normal
+        btnEasy.setPreferredSize(smallSize);
+        btnMedium.setPreferredSize(smallSize);
+        btnHard.setPreferredSize(smallSize);
+
         switch (selectedDifficulty) {
             case EASY:
-                btnEasy.setBorder(new LineBorder(selectedColor, 3, true));
+                btnEasy.setSelectedState(true);
+                btnEasy.setPreferredSize(normalSize);
                 animator.flashForeground(btnEasy, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), ColorsInUse.TEXT.get());
                 setGameInfo(GameDifficulty.EASY);
                 gameInfoTitle.setOutlineColor(ColorsInUse.DIFFICULTY_EASY_OUTLINE);
@@ -676,20 +673,24 @@ public class SettingsOverlay extends OverlayView {
                 break;
 
             case MEDIUM:
-                btnMedium.setBorder(new LineBorder(selectedColor, 3, true));
+                btnMedium.setSelectedState(true);
+                btnMedium.setPreferredSize(normalSize);
                 animator.flashForeground(btnMedium, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), ColorsInUse.TEXT.get());
                 setGameInfo(GameDifficulty.MEDIUM);
                 gameInfoTitle.setOutlineColor(ColorsInUse.DIFFICULTY_MEDIUM_OUTLINE);
                 gameInfoStats.setOutlineColor(ColorsInUse.DIFFICULTY_MEDIUM_OUTLINE);
                 break;
             case HARD:
-                btnHard.setBorder(new LineBorder(selectedColor, 3, true));
+                btnHard.setSelectedState(true);
+                btnHard.setPreferredSize(normalSize);
                 animator.flashForeground(btnHard, ColorsInUse.FEEDBACK_GOOD_COLOR.get(), ColorsInUse.TEXT.get());
                 setGameInfo(GameDifficulty.HARD);
                 gameInfoTitle.setOutlineColor(ColorsInUse.DIFFICULTY_HARD_OUTLINE);
                 gameInfoStats.setOutlineColor(ColorsInUse.DIFFICULTY_HARD_OUTLINE);
                 break;
         }
+        contentPane.revalidate();
+        contentPane.repaint();
     }
 
     private void setGameInfo(GameDifficulty diff) {
@@ -697,49 +698,30 @@ public class SettingsOverlay extends OverlayView {
         gameInfoStats.setText(
                 "Grid: " + diff.getRows() + "x" + diff.getCols() +
                         " | Mines: " + diff.getMineCount() +
-                        " | Activation Cost: " + diff.getActivationCost() + " pts"
-        );
+                        " | Activation Cost: " + diff.getActivationCost() + " pts");
     }
 
-
     private JButton createTransparentIconButton(String resourcePath, int width, int height) {
-        JButton btn = new JButton();
-
-        // Core styling for transparency
-        btn.setContentAreaFilled(false);
-        btn.setBorderPainted(false);
-        btn.setFocusPainted(false);
-        btn.setOpaque(false);
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setPreferredSize(new Dimension(width + 10, height + 10));
-
+        ImageIcon icon = null;
         try {
             URL url = getClass().getResource(resourcePath);
             if (url != null) {
                 ImageIcon normalIcon = new ImageIcon(url);
                 Image img = normalIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
-
-
-                ImageIcon standard = new ImageIcon(img);
-                btn.setIcon(standard);
-
-                //create light version of the icon
-                ImageIcon hover = createLighterIcon(img);
-
-                //switch to lighter icon when hovered
-                btn.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseEntered(MouseEvent evt) {
-                        btn.setIcon(hover);
-                    }
-
-                    @Override
-                    public void mouseExited(MouseEvent evt) {
-                        btn.setIcon(standard);
-                    }
-                });
+                icon = new ImageIcon(img);
             }
         } catch (Exception e) {
+            // fallback
+        }
+
+        IconOnImageButton btn = new IconOnImageButton(
+                null,
+                null,
+                new Dimension(width + 10, height + 10),
+                icon,
+                null);
+
+        if (icon == null) {
             btn.setText("X");
             btn.setForeground(Color.WHITE);
         }
@@ -777,7 +759,8 @@ public class SettingsOverlay extends OverlayView {
                     showBottomTextLimit(bottomLabel, true);
                 } else if (tf.getText().length() >= PlAYER_TEXT_LENGTH * 0.7) {
                     name.setForeground(ColorsInUse.DENY.get());
-                    name.setToolTipText("Approaching maximum length " + tf.getText().length() + "/" + PlAYER_TEXT_LENGTH);
+                    name.setToolTipText(
+                            "Approaching maximum length " + tf.getText().length() + "/" + PlAYER_TEXT_LENGTH);
                     showBottomTextLimit(bottomLabel, true);
                 }
             }
@@ -794,31 +777,15 @@ public class SettingsOverlay extends OverlayView {
         }
     }
 
-    //method to make an icon lighter for hover effect
-    private ImageIcon createLighterIcon(Image sourceImg) {
-        int w = sourceImg.getWidth(null);
-        int h = sourceImg.getHeight(null);
-        BufferedImage buffered = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-
-        Graphics2D g2 = buffered.createGraphics();
-        g2.drawImage(sourceImg, 0, 0, null);
-        g2.dispose();
-
-        RescaleOp op = new RescaleOp(1.4f, 0, null);
-        buffered = op.filter(buffered, null);
-
-        return new ImageIcon(buffered);
-    }
-
     private JButton createStartButton() {
         ImageIcon bgIcon = loadScaledIcon("btn-koala", 102, 57);
-        JButton deleteBtn = new JButton(bgIcon);
-        deleteBtn.setPreferredSize(new Dimension(150, 70));
-        deleteBtn.setFocusPainted(false);
-        deleteBtn.setContentAreaFilled(false);
-        deleteBtn.setBorderPainted(false);
-        deleteBtn.setOpaque(false);
-        deleteBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        IconOnImageButton deleteBtn = new IconOnImageButton(
+                null,
+                "Start Game",
+                new Dimension(150, 70),
+                null,
+                bgIcon);
 
         Color bgColor = ColorsInUse.TEXT.get();
 
@@ -826,8 +793,6 @@ public class SettingsOverlay extends OverlayView {
         label.setFont(FontsInUse.PIXEL.getSize(30f));
         label.setForeground(bgColor); // Red text color
 
-
-        // need this ugly thing just for the slight downwards text offset
         GridBagLayout gbl = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
