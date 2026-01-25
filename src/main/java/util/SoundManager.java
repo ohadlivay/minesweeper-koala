@@ -80,12 +80,7 @@ public class SoundManager {
                 if (muted) {
                     gainControl.setValue(gainControl.getMinimum());
                 } else {
-                    float targetGain = 0.0f;
-                    // Special case: "76 Load Game.wav" is too loud, so we reduce it
-                    if (currentMusicPath != null && currentMusicPath.contains("76 Load Game.wav")) {
-                        targetGain = -15.0f; // Reduce by 15 dB
-                    }
-                    gainControl.setValue(targetGain);
+                    gainControl.setValue(0.0f);
                 }
             } catch (Exception e) {
                 System.err.println("Volume control not supported: " + e.getMessage());
@@ -115,8 +110,8 @@ public class SoundManager {
             backgroundMusic.open(ais);
             backgroundMusic.loop(Clip.LOOP_CONTINUOUSLY); // Loop forever
             backgroundMusic.start();
-            currentMusicPath = resourcePath;
             updateVolume();
+            currentMusicPath = resourcePath;
         } catch (Exception e) {
             System.err.println("Failed to play background music: " + e.getMessage());
         }
