@@ -9,13 +9,13 @@ Download the jar file and enjoy!
 
 ## Development Process
 
-This software was commisioned as part of in the SWE & QA course @ Haifa University.
+This software was commisioned as a project in Software Engineering and Quality Assurance course @ Haifa University.
 
 Implemented in Java 19, using an OOP approach. 
 
 We emphasized adherence to SOLID principles as our core learning goal (to help write maintainable and extendable software)
   
-Work was done in a SCRUM methodology with a planning phase and 3 sprints. SCRUM roles were rotated between the 4 group members.
+Work was done in a SCRUM methodology with a planning phase and 3 sprints. SCRUM roles were rotated between the 4 developers.
 
 The following design patterns were used: MVC, Singleton, Observer, Factory, Strategy.
 
