@@ -2,7 +2,7 @@
 
 A two-player variation on the classic Minesweeper game.
 
-Download the jar file and enjoy! 
+[Download](https://drive.google.com/file/d/1nSd85WPjVy3A9YBc99WmXvywRln8Z9ND/view?usp=sharing), unzip, run the jar and enjoy! 
 
 
 ---
